@@ -234,9 +234,16 @@ SQUASH_MERGE=FORBIDDEN
 REBASE_MERGE=FORBIDDEN
 AUTO_MERGE=FORBIDDEN
 EXPECTED_HEAD_PRECONDITION=REQUIRED
+GITHUB_REST_MERGE_HEAD_PARAMETER=sha
+GITHUB_REST_MERGE_HEAD_VALUE=Z0L_REVIEWED_CANDIDATE_COMMIT_REQUIRED
+CONNECTED_GITHUB_MERGE_HEAD_PARAMETER=expected_head_sha
+CONNECTED_GITHUB_MERGE_HEAD_VALUE=Z0L_REVIEWED_CANDIDATE_COMMIT_REQUIRED
+CONNECTED_EXPECTED_HEAD_SHA_TO_REST_SHA_PRECONDITION=REQUIRED
 ```
 
-The merge operation must use `expected_head_sha=Z0L_REVIEWED_CANDIDATE_COMMIT`. Because main is required to remain on the exact canonical base, the resulting merge commit must have exactly these two parents in this order and must have a tree exactly equal to the independently reviewed candidate tree:
+At the GitHub REST endpoint level, `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` must carry `sha=Z0L_REVIEWED_CANDIDATE_COMMIT`. When the merge is performed through the connected GitHub merge wrapper used for this PR, its `expected_head_sha` input is the wrapper field for this same exact-head merge precondition and must be set to `Z0L_REVIEWED_CANDIDATE_COMMIT`; the wrapper must enforce the REST `sha` mismatch rejection semantics. If that mapping/enforcement cannot be established, merge is not authorized.
+
+Because main is required to remain on the exact canonical base, the resulting merge commit must have exactly these two parents in this order and must have a tree exactly equal to the independently reviewed candidate tree:
 
 ```text
 MERGE_PARENT_1=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
@@ -244,27 +251,44 @@ MERGE_PARENT_2=Z0L_REVIEWED_CANDIDATE_COMMIT
 MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=YES_REQUIRED
 ```
 
-After merge, Z0L becomes authorized only if canonical main equals the returned merge commit, the merge parents match exactly, the merge tree equals `Z0L_REVIEWED_CANDIDATE_TREE` exactly, the merge tree contains the exact reviewed document blob, and the evidence report binds:
+After merge, Z0L becomes authorized only if canonical main equals the returned merge commit, the merge head precondition was enforced against the exact reviewed candidate, the merge parents match exactly, the merge tree equals `Z0L_REVIEWED_CANDIDATE_TREE` exactly, the merge tree contains the exact reviewed document blob, and the evidence report binds:
 
 ```text
 Z0L_CANONICAL_AUTHORIZATION_PR=160
 Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
 Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT=EXACT_POST_MERGE_VALUE
+Z0L_CANONICAL_MERGE_REST_SHA_PRECONDITION=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_MERGE_CONNECTOR_EXPECTED_HEAD_SHA=EXACT_REVIEWED_VALUE
+MERGE_HEAD_PRECONDITION_MATCH=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_AUTHORIZATION_TREE=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_AUTHORIZATION_MERGE_TREE=EXACT_REVIEWED_VALUE
 MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=YES_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_PROVIDER=CodeRabbit
+Z0L_CANONICAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+Z0L_CANONICAL_REVIEW_PR=160
+Z0L_CANONICAL_REVIEW_END_SHA=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
+Z0L_CANONICAL_REVIEW_STATUS_STATE=success
+Z0L_CANONICAL_REVIEW_STATUS_IS_EXACT_SHA_ATTESTATION=YES_REQUIRED
 Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
 Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_ID=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_BINDING=PASS_REQUIRED
 Z0L_CANONICAL_REVIEW_RECORD_ID=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RUN_ID=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEWER_IDENTITY=coderabbitai[bot]
+Z0L_CANONICAL_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+Z0L_CANONICAL_CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0
+Z0L_CANONICAL_INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
 ```
 
-Any mismatch, including `CANONICAL_MERGE_TREE_MISMATCH`, is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
+Any mismatch, including a missing/mismatched merge-head `sha` precondition or `CANONICAL_MERGE_TREE_MISMATCH`, is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
 
 ## 6. Z0L authorization boundary
 
@@ -390,6 +414,8 @@ Required order:
 20. STOP
 ```
 
+Before step 2, `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` must re-read canonical main, PR #160, the exact reviewed candidate commit/tree/document blob, the GitHub-native CodeRabbit status including authenticated publisher metadata and timestamp, the final CodeRabbit review record/run/end SHA, and current review threads. It must validate every Section 5.2-derived review field required by Section 7, the exact canonical merge commit and REST/wrapper head-precondition evidence, both merge parents in order, merge-tree equality, document-blob equality, and `CANONICAL_POST_MERGE_PROOF=PASS`. Any missing, stale, unauthenticated, differently scoped, or mismatched field stops Z0L before any network or filesystem acquisition action.
+
 Required controls:
 
 ```text
@@ -440,6 +466,7 @@ CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREAD_PRESENT
 PR_BODY_EDITED_AFTER_FINAL_REVIEW
 CANONICAL_MAIN_DRIFTED_FROM_AUTHORIZED_BASE
 CANONICAL_MERGE_METHOD_NOT_MERGE
+MERGE_HEAD_SHA_PRECONDITION_MISSING_OR_MISMATCHED
 CANONICAL_MERGE_PARENT_MISMATCH
 CANONICAL_MERGE_TREE_MISMATCH
 UPSTREAM_RELEASE_TAG_CHANGED
@@ -480,9 +507,12 @@ No failed Z0L attempt may broaden authority or fall back to another release, pla
 A future Z0L execution report must bind at least:
 
 ```text
-Z0L_CANONICAL_AUTHORIZATION_PR
+Z0L_CANONICAL_AUTHORIZATION_PR=160
 Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
 Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT
+Z0L_CANONICAL_MERGE_REST_SHA_PRECONDITION
+Z0L_CANONICAL_MERGE_CONNECTOR_EXPECTED_HEAD_SHA
+MERGE_HEAD_PRECONDITION_MATCH=PASS_REQUIRED
 Z0L_CANONICAL_MAIN_OBSERVED
 CANONICAL_MAIN_EQUALS_RETURNED_MERGE_COMMIT=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD
@@ -497,13 +527,31 @@ MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
 MERGE_DOCUMENT_BLOB_MATCH=PASS_REQUIRED
 CANONICAL_POST_MERGE_PROOF=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_PROVIDER=CodeRabbit
+Z0L_CANONICAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+Z0L_CANONICAL_REVIEW_PR=160
+Z0L_CANONICAL_REVIEW_RECORD_REPOSITORY_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_PR_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_END_SHA
+Z0L_CANONICAL_REVIEW_END_SHA_EQUALS_REVIEWED_HEAD=PASS_REQUIRED
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
+Z0L_CANONICAL_REVIEW_STATUS_STATE=success
+Z0L_CANONICAL_REVIEW_STATUS_IS_EXACT_SHA_ATTESTATION=YES_REQUIRED
 Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
 Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_ID
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_BINDING=PASS_REQUIRED
 Z0L_CANONICAL_REVIEW_RECORD_ID
 Z0L_CANONICAL_REVIEW_RUN_ID
 Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT
 Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT
+Z0L_CANONICAL_REVIEWER_IDENTITY=coderabbitai[bot]
+Z0L_CANONICAL_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_MUTABLE_PROSE_IS_AUTHORITY=NO
+Z0L_CANONICAL_CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0
+Z0L_CANONICAL_INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
 Z0L_RELEASE_TAG
 Z0L_RELEASE_COMMIT
 Z0L_RELEASE_VERIFICATION_STATE
@@ -539,7 +587,9 @@ PROVIDER_SPEND_USD=0.00
 Z0L_TERMINAL_STATUS
 ```
 
-Every post-merge proof field above is mandatory. `CANONICAL_POST_MERGE_PROOF=PASS` may be recorded only when canonical main equals the returned merge commit, parent 1 equals the authorized canonical base, parent 2 equals the exact reviewed candidate, both parents match in the required order, the merge tree equals the reviewed candidate tree, and the merge tree contains the exact reviewed document blob. Any missing or non-PASS result leaves `Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL` and `Z0L=NOT_AUTHORIZED`; only a complete PASS permits `Z0P=CLOSED_CANONICAL` and the bounded Z0L authorization.
+Every review-binding field derived from Section 5.2 and every post-merge proof field above is mandatory. `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` must re-read and validate all of them against live GitHub state before Z0L can perform any acquisition. In particular, repository/PR scope, exact review-end SHA, exact-head status state/attestation, authenticated status publisher, status timestamp, final-run identity/binding, review-record identity/timestamps, authenticated independent reviewer identity, current non-outdated unresolved material-thread count, REST/wrapper merge-head precondition, canonical-main equality, exact parent order, merge-tree equality, and document-blob equality must all match. Any missing or non-PASS review-binding result leaves Z0L not authorized.
+
+`CANONICAL_POST_MERGE_PROOF=PASS` may be recorded only when the REST/wrapper merge-head precondition matched the exact reviewed candidate, canonical main equals the returned merge commit, parent 1 equals the authorized canonical base, parent 2 equals the exact reviewed candidate, both parents match in the required order, the merge tree equals the reviewed candidate tree, and the merge tree contains the exact reviewed document blob. Any missing or non-PASS result leaves `Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL` and `Z0L=NOT_AUTHORIZED`; only a complete PASS permits `Z0P=CLOSED_CANONICAL` and the bounded Z0L authorization.
 
 The evidence report must contain no secrets and must not embed binary/archive payloads. `Z0L_RELEASE_VERIFICATION_CHECK` must be `PASS` only when the observed GitHub verification state/reason exactly match the pinned values. `Z0L_UPSTREAM_API_DIGEST_MATCH` must be `PASS` only when the observed upstream API digest exactly equals `Z0L_EXPECTED_API_DIGEST` and the upstream checksum binding remains valid.
 
@@ -577,7 +627,7 @@ Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL
 Z0L=NOT_AUTHORIZED
 ```
 
-Only after Section 5 exact candidate identity, commit-scoped independent-review attestation, zero current material threads, exact-head repository gates, unchanged canonical main/base, merge-method restriction, expected-head merge, exact merge-tree equality, and post-merge parent/tree/blob verification all pass:
+Only after Section 5 exact candidate identity, commit-scoped independent-review attestation, zero current material threads, exact-head repository gates, unchanged canonical main/base, merge-method restriction, exact REST/wrapper head-precondition enforcement, exact merge-tree equality, and post-merge parent/tree/blob verification all pass:
 
 ```text
 Z0P=CLOSED_CANONICAL
