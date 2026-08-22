@@ -329,7 +329,7 @@ TAG_BASED_BROWSER_DOWNLOAD_AS_AUTHORITY=FORBIDDEN
 
 The acquisition request must use the immutable GitHub release-asset endpoint for asset ID `423489481` with `Accept: application/octet-stream`. A tag-based browser download URL may be used only as descriptive provenance and not as acquisition authority.
 
-At the **download boundary**, after the fresh evidence directory exists and immediately before the first archive-byte request, the executor must re-read upstream GitHub release metadata and checksum authority and fail closed if tag, full release commit, GitHub verification state/reason, asset name, asset ID, expected size, upstream SHA-256, or API digest differs from the Z0P-bound values. No unrelated network or filesystem action may occur between this final identity recheck and issuance of the exact asset-ID download request.
+At the **download boundary**, after the fresh evidence directory exists, the executor must first re-read upstream GitHub release metadata and checksum authority and fail closed if tag, full release commit, GitHub verification state/reason, asset name, asset ID, expected size, upstream SHA-256, or API digest differs from the Z0P-bound values. After that upstream identity recheck, the executor must repeat the complete `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` against live GitHub state and require it to pass immediately before the first archive-byte request. Between the upstream identity recheck and the download, only this mandatory repeated canonical-authorization recheck may occur; no other network or filesystem action is permitted. No action of any kind may occur between the repeated canonical-authorization recheck and issuance of the exact asset-ID download request.
 
 ```text
 FLOATING_LATEST_URL=FORBIDDEN
@@ -392,29 +392,32 @@ Extraction must use a no-follow/safe extraction mechanism that does not material
 Required order:
 
 ```text
-1. RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING
+1. RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_INITIAL
 2. CREATE_FRESH_EMPTY_DISPOSABLE_EVIDENCE_DIRECTORY
 3. RECHECK_UPSTREAM_EXACT_IDENTITY_AT_DOWNLOAD_BOUNDARY
-4. DOWNLOAD_EXACT_ASSET_ID_TO_UNIQUE_TEMP_FILE
-5. RECORD_DOWNLOADED_SIZE_BYTES
-6. COMPUTE_DOWNLOADED_ARCHIVE_SHA256
-7. REQUIRE_EXACT_SIZE_AND_SHA256_MATCH
-8. LIST_AND_PARSE_ALL_ARCHIVE_HEADERS_WITHOUT_EXECUTION
-9. NORMALIZE_AND_VALIDATE_ALL_MEMBER_NAMES
-10. REJECT_LINKS_SPECIAL_FILES_DRIVE_UNC_TRAVERSAL_AND_COLLISIONS
-11. BUILD_AND_RECORD_EXACT_REGULAR_FILE_ALLOWLIST
-12. REQUIRE_EXPECTED_ZROK2_EXE_REGULAR_FILE_COUNT_EQUALS_ONE
-13. CREATE_FRESH_EMPTY_EXTRACTION_DIRECTORY
-14. EXTRACT_WITH_NO_FOLLOW_SAFE_MODE_AND_NO_OVERWRITE
-15. VERIFY_EACH_EXTRACTED_CANONICAL_PATH_REMAINS_UNDER_ROOT
-16. RECORD_EXTRACTED_FILE_LIST
-17. HASH_EXTRACTED_ZROK2_BINARY
-18. RECORD_AUTHENTICODE_STATE_IF_AVAILABLE_WITHOUT_EXECUTING_ZROK
-19. EMIT_REDACTED_Z0L_EVIDENCE_REPORT
-20. STOP
+4. RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_AT_DOWNLOAD_BOUNDARY
+5. DOWNLOAD_EXACT_ASSET_ID_TO_UNIQUE_TEMP_FILE
+6. RECORD_DOWNLOADED_SIZE_BYTES
+7. COMPUTE_DOWNLOADED_ARCHIVE_SHA256
+8. REQUIRE_EXACT_SIZE_AND_SHA256_MATCH
+9. LIST_AND_PARSE_ALL_ARCHIVE_HEADERS_WITHOUT_EXECUTION
+10. NORMALIZE_AND_VALIDATE_ALL_MEMBER_NAMES
+11. REJECT_LINKS_SPECIAL_FILES_DRIVE_UNC_TRAVERSAL_AND_COLLISIONS
+12. BUILD_AND_RECORD_EXACT_REGULAR_FILE_ALLOWLIST
+13. REQUIRE_EXPECTED_ZROK2_EXE_REGULAR_FILE_COUNT_EQUALS_ONE
+14. CREATE_FRESH_EMPTY_EXTRACTION_DIRECTORY
+15. EXTRACT_WITH_NO_FOLLOW_SAFE_MODE_AND_NO_OVERWRITE
+16. VERIFY_EACH_EXTRACTED_CANONICAL_PATH_REMAINS_UNDER_ROOT
+17. RECORD_EXTRACTED_FILE_LIST
+18. HASH_EXTRACTED_ZROK2_BINARY
+19. RECORD_AUTHENTICODE_STATE_IF_AVAILABLE_WITHOUT_EXECUTING_ZROK
+20. EMIT_REDACTED_Z0L_EVIDENCE_REPORT
+21. STOP
 ```
 
-Before step 2, `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` must re-read canonical main, PR #160, the exact reviewed candidate commit/tree/document blob, the GitHub-native CodeRabbit status including authenticated publisher metadata and timestamp, the final CodeRabbit review record/run/end SHA, and current review threads. It must validate every Section 5.2-derived review field required by Section 7, the exact canonical merge commit and REST/wrapper head-precondition evidence, both merge parents in order, merge-tree equality, document-blob equality, and `CANONICAL_POST_MERGE_PROOF=PASS`. Any missing, stale, unauthenticated, differently scoped, or mismatched field stops Z0L before any network or filesystem acquisition action.
+Before step 2, `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_INITIAL` must re-read canonical main, PR #160, the exact reviewed candidate commit/tree/document blob, the GitHub-native CodeRabbit status including authenticated publisher metadata and timestamp, the final CodeRabbit review record/run/end SHA, and current review threads. It must validate every Section 5.2-derived review field required by Section 7, the exact canonical merge commit and REST/wrapper head-precondition evidence, both merge parents in order, merge-tree equality, document-blob equality, and `CANONICAL_POST_MERGE_PROOF=PASS`. Any missing, stale, unauthenticated, differently scoped, or mismatched field stops Z0L before any network or filesystem acquisition action.
+
+At step 4, `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_AT_DOWNLOAD_BOUNDARY` must repeat the same complete live GitHub validation after the upstream identity recheck and immediately before step 5. Every canonical PR/review, commit/tree/document-blob, merge-head precondition, merge-parent order, merge-tree, review-status publisher/run binding, current-thread, and `CANONICAL_POST_MERGE_PROOF` requirement must still pass. Any missing, stale, unauthenticated, differently scoped, or mismatched field stops Z0L before any archive byte is requested. No network or filesystem action may occur between steps 4 and 5.
 
 Required controls:
 
@@ -478,6 +481,7 @@ ASSET_SIZE_CHANGED
 UPSTREAM_SHA256_CHANGED_OR_UNAVAILABLE
 UPSTREAM_API_DIGEST_CHANGED_OR_MISMATCH
 DOWNLOAD_BOUNDARY_RECHECK_NOT_IMMEDIATELY_PRECEDING_DOWNLOAD
+CANONICAL_AUTHORIZATION_RECHECK_NOT_IMMEDIATELY_PRECEDING_DOWNLOAD
 DOWNLOADED_SIZE_MISMATCH
 DOWNLOADED_SHA256_MISMATCH
 ARCHIVE_MEMBER_ABSOLUTE_PATH
@@ -527,6 +531,8 @@ MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
 MERGE_DOCUMENT_BLOB_MATCH=PASS_REQUIRED
 CANONICAL_POST_MERGE_PROOF=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_INITIAL_RECHECK=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_DOWNLOAD_BOUNDARY_RECHECK=PASS_REQUIRED
 Z0L_CANONICAL_REVIEW_PROVIDER=CodeRabbit
 Z0L_CANONICAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
 Z0L_CANONICAL_REVIEW_PR=160
@@ -587,7 +593,7 @@ PROVIDER_SPEND_USD=0.00
 Z0L_TERMINAL_STATUS
 ```
 
-Every review-binding field derived from Section 5.2 and every post-merge proof field above is mandatory. `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` must re-read and validate all of them against live GitHub state before Z0L can perform any acquisition. In particular, repository/PR scope, exact review-end SHA, exact-head status state/attestation, authenticated status publisher, status timestamp, final-run identity/binding, review-record identity/timestamps, authenticated independent reviewer identity, current non-outdated unresolved material-thread count, REST/wrapper merge-head precondition, canonical-main equality, exact parent order, merge-tree equality, and document-blob equality must all match. Any missing or non-PASS review-binding result leaves Z0L not authorized.
+Every review-binding field derived from Section 5.2 and every post-merge proof field above is mandatory. Both `Z0L_CANONICAL_AUTHORIZATION_INITIAL_RECHECK=PASS` and `Z0L_CANONICAL_AUTHORIZATION_DOWNLOAD_BOUNDARY_RECHECK=PASS` are required: the initial recheck must pass before any acquisition-side network or filesystem action, and the repeated download-boundary recheck must pass immediately before the first archive-byte request with no intervening action. `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` must re-read and validate all live GitHub bindings in both positions. In particular, repository/PR scope, exact review-end SHA, exact-head status state/attestation, authenticated status publisher, status timestamp, final-run identity/binding, review-record identity/timestamps, authenticated independent reviewer identity, current non-outdated unresolved material-thread count, REST/wrapper merge-head precondition, canonical-main equality, exact parent order, merge-tree equality, and document-blob equality must all match. Any missing or non-PASS review-binding result leaves Z0L not authorized.
 
 `CANONICAL_POST_MERGE_PROOF=PASS` may be recorded only when the REST/wrapper merge-head precondition matched the exact reviewed candidate, canonical main equals the returned merge commit, parent 1 equals the authorized canonical base, parent 2 equals the exact reviewed candidate, both parents match in the required order, the merge tree equals the reviewed candidate tree, and the merge tree contains the exact reviewed document blob. Any missing or non-PASS result leaves `Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL` and `Z0L=NOT_AUTHORIZED`; only a complete PASS permits `Z0P=CLOSED_CANONICAL` and the bounded Z0L authorization.
 
