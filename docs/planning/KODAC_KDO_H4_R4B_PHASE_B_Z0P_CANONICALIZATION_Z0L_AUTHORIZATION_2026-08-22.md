@@ -483,11 +483,20 @@ A future Z0L execution report must bind at least:
 Z0L_CANONICAL_AUTHORIZATION_PR
 Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
 Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT
+Z0L_CANONICAL_MAIN_OBSERVED
+CANONICAL_MAIN_EQUALS_RETURNED_MERGE_COMMIT=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD
+Z0L_CANONICAL_MERGE_PARENT_1
+Z0L_CANONICAL_MERGE_PARENT_2
+MERGE_PARENT_1_EQUALS_AUTHORIZED_BASE=PASS_REQUIRED
+MERGE_PARENT_2_EQUALS_REVIEWED_CANDIDATE=PASS_REQUIRED
+MERGE_PARENTS_MATCH=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_TREE
 Z0L_CANONICAL_AUTHORIZATION_MERGE_TREE
-MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=PASS_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
+MERGE_DOCUMENT_BLOB_MATCH=PASS_REQUIRED
+CANONICAL_POST_MERGE_PROOF=PASS_REQUIRED
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
 Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY
 Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT
@@ -529,6 +538,8 @@ Z0L_REAL_SECRET_ACCESS=NO
 PROVIDER_SPEND_USD=0.00
 Z0L_TERMINAL_STATUS
 ```
+
+Every post-merge proof field above is mandatory. `CANONICAL_POST_MERGE_PROOF=PASS` may be recorded only when canonical main equals the returned merge commit, parent 1 equals the authorized canonical base, parent 2 equals the exact reviewed candidate, both parents match in the required order, the merge tree equals the reviewed candidate tree, and the merge tree contains the exact reviewed document blob. Any missing or non-PASS result leaves `Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL` and `Z0L=NOT_AUTHORIZED`; only a complete PASS permits `Z0P=CLOSED_CANONICAL` and the bounded Z0L authorization.
 
 The evidence report must contain no secrets and must not embed binary/archive payloads. `Z0L_RELEASE_VERIFICATION_CHECK` must be `PASS` only when the observed GitHub verification state/reason exactly match the pinned values. `Z0L_UPSTREAM_API_DIGEST_MATCH` must be `PASS` only when the observed upstream API digest exactly equals `Z0L_EXPECTED_API_DIGEST` and the upstream checksum binding remains valid.
 
