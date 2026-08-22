@@ -126,7 +126,7 @@ PROVIDER_SPEND_USD=0.00
 Z0P=PASS
 ```
 
-If PR #160 is merged canonically after exact-head qualification, the Z0P status becomes:
+Only after every Section 5 pre-merge and post-merge requirement passes, including exact merge-parent, merge-tree, and document-blob verification, the Z0P status becomes:
 
 ```text
 Z0P=CLOSED_CANONICAL
