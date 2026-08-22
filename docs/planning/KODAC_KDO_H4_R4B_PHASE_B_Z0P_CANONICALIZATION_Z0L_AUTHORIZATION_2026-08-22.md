@@ -134,7 +134,7 @@ Z0P=CLOSED_CANONICAL
 
 ## 5. Exact candidate, independent-review, and canonical-merge gate
 
-The first CodeRabbit review of PR #160 completed on head `6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c` and produced three material findings. The next review completed on head `de94d147ebdff8d7989b3233736938f52ac7c28e` and produced additional current findings. Neither head is merge-qualified and neither can authorize Z0L.
+The first CodeRabbit review of PR #160 completed on head `6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c` and produced three material findings. The next review completed on head `de94d147ebdff8d7989b3233736938f52ac7c28e` and produced additional current findings. The full exact-head review on `a2d73f8c52c7ca3a8aa1be759775616fd3e333e2`, run `462d3c7e-0fbb-4d3e-9973-5487adb41395`, produced two additional material authorization findings. None of those reviewed heads is merge-qualified and none can authorize Z0L.
 
 ```text
 AUTHORIZATION_PR=160
@@ -142,6 +142,9 @@ PRE_REPAIR_REVIEWED_HEAD=6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c
 PRE_REPAIR_REVIEW_RESULT=MATERIAL_FINDINGS
 SECOND_REVIEWED_HEAD=de94d147ebdff8d7989b3233736938f52ac7c28e
 SECOND_REVIEW_RESULT=MATERIAL_FINDINGS
+THIRD_REVIEWED_HEAD=a2d73f8c52c7ca3a8aa1be759775616fd3e333e2
+THIRD_REVIEW_RUN_ID=462d3c7e-0fbb-4d3e-9973-5487adb41395
+THIRD_REVIEW_RESULT=MATERIAL_FINDINGS
 PREVIOUS_AUTHORIZATION_VALID=NO
 ```
 
@@ -176,9 +179,17 @@ Independent review is PASS only when all of the following are observed live:
 INDEPENDENT_REVIEW_PROVIDER=CodeRabbit
 INDEPENDENT_REVIEWER_IDENTITY=coderabbitai[bot]
 INDEPENDENT_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
+CODERABBIT_FINAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+CODERABBIT_FINAL_REVIEW_PR=160
+CODERABBIT_FINAL_REVIEW_RECORD_REPOSITORY_MATCH=YES_REQUIRED
+CODERABBIT_FINAL_REVIEW_RECORD_PR_MATCH=YES_REQUIRED
 CODERABBIT_COMMIT_STATUS_CONTEXT=CodeRabbit
 CODERABBIT_COMMIT_STATUS_STATE=success_REQUIRED_ON_EXACT_CANDIDATE_SHA
 CODERABBIT_COMMIT_STATUS_IS_EXACT_SHA_REVIEW_ATTESTATION=YES
+CODERABBIT_COMMIT_STATUS_PUBLISHER_IDENTITY=EXACT_GITHUB_IDENTITY_REQUIRED
+CODERABBIT_COMMIT_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+CODERABBIT_COMMIT_STATUS_UPDATED_AT=EXACT_TIMESTAMP_REQUIRED
+CODERABBIT_COMMIT_STATUS_FINAL_RUN_BINDING=CODERABBIT_FINAL_REVIEW_RUN_ID_REQUIRED
 CODERABBIT_FINAL_REVIEW_RECORD_ID=EXACT_GITHUB_ID_REQUIRED
 CODERABBIT_FINAL_REVIEW_RUN_ID=EXACT_RUN_ID_REQUIRED
 CODERABBIT_FINAL_REVIEW_END_SHA=EXACT_CANDIDATE_SHA_REQUIRED
@@ -190,9 +201,11 @@ CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0_REQUIRED
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
 ```
 
-The merge preflight must re-read the commit-scoped status, the bot-authored final review record, and current review threads from GitHub. A missing/non-success exact-head status, a mismatched review end SHA/run, an unauthenticated reviewer identity, an edited review record after final qualification, or any current non-outdated unresolved material thread is terminal fail-closed.
+The final review record must explicitly scope itself to repository `TheHalfMoon/Kodac`, PR `#160`, the exact final candidate SHA, and one exact `CODERABBIT_FINAL_REVIEW_RUN_ID`. The selected `CodeRabbit=success` status must be a GitHub-authenticated status published by the CodeRabbit GitHub identity for that same final review cycle. Its publisher identity and status timestamp must be read from GitHub-native status metadata and correlated with the final review record/run. A context-name match alone is insufficient.
 
-The review record ID and timestamps are audit evidence; the commit-scoped status on the exact candidate SHA is the authorization-bearing review attestation. If CodeRabbit cannot expose that exact-SHA success status plus an authenticated review record for the same review cycle, the PR must not merge under this slice.
+The merge preflight must re-read the commit-scoped status, its authenticated publisher metadata, the bot-authored final review record, and current review threads from GitHub. A stale or differently scoped success status, missing/non-success exact-head status, unauthenticated or mismatched status publisher, missing final-run binding, repository/PR mismatch, mismatched review end SHA/run, unauthenticated reviewer identity, edited review record after final qualification, or any current non-outdated unresolved material thread is terminal fail-closed.
+
+The review record ID and timestamps are audit evidence; the commit-scoped status on the exact candidate SHA is the authorization-bearing review attestation only when its authenticated publisher and final-run binding satisfy the requirements above. If the necessary GitHub-native status metadata cannot be observed, the PR must remain unqualified rather than inferring publisher identity from the `CodeRabbit` context string.
 
 ### 5.3 Exact repository gates and base continuity
 
@@ -223,14 +236,15 @@ AUTO_MERGE=FORBIDDEN
 EXPECTED_HEAD_PRECONDITION=REQUIRED
 ```
 
-The merge operation must use `expected_head_sha=Z0L_REVIEWED_CANDIDATE_COMMIT`. Because main is required to remain on the exact canonical base, the resulting merge commit must have exactly these two parents in this order:
+The merge operation must use `expected_head_sha=Z0L_REVIEWED_CANDIDATE_COMMIT`. Because main is required to remain on the exact canonical base, the resulting merge commit must have exactly these two parents in this order and must have a tree exactly equal to the independently reviewed candidate tree:
 
 ```text
 MERGE_PARENT_1=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
 MERGE_PARENT_2=Z0L_REVIEWED_CANDIDATE_COMMIT
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=YES_REQUIRED
 ```
 
-After merge, Z0L becomes authorized only if canonical main equals the returned merge commit, the merge parents match exactly, the merge tree contains the exact reviewed document blob, and the evidence report binds:
+After merge, Z0L becomes authorized only if canonical main equals the returned merge commit, the merge parents match exactly, the merge tree equals `Z0L_REVIEWED_CANDIDATE_TREE` exactly, the merge tree contains the exact reviewed document blob, and the evidence report binds:
 
 ```text
 Z0L_CANONICAL_AUTHORIZATION_PR=160
@@ -238,15 +252,19 @@ Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
 Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT=EXACT_POST_MERGE_VALUE
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_AUTHORIZATION_TREE=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_AUTHORIZATION_MERGE_TREE=EXACT_REVIEWED_VALUE
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=YES_REQUIRED
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RECORD_ID=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RUN_ID=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT=EXACT_REVIEWED_VALUE
 ```
 
-Any mismatch is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
+Any mismatch, including `CANONICAL_MERGE_TREE_MISMATCH`, is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
 
 ## 6. Z0L authorization boundary
 
@@ -270,6 +288,8 @@ Z0L may acquire exactly one upstream archive and no other zrok executable payloa
 Z0L_UPSTREAM_REPOSITORY=openziti/zrok
 Z0L_RELEASE_TAG=v2.0.4
 Z0L_RELEASE_COMMIT=6ff920390e77bf04b8e64871a049400cc417d871
+Z0L_EXPECTED_RELEASE_VERIFICATION=VERIFIED
+Z0L_EXPECTED_RELEASE_VERIFICATION_REASON=valid
 Z0L_ASSET_NAME=zrok_2.0.4_windows_amd64.tar.gz
 Z0L_ASSET_ID=423489481
 Z0L_EXPECTED_SIZE_BYTES=33087763
@@ -285,7 +305,7 @@ TAG_BASED_BROWSER_DOWNLOAD_AS_AUTHORITY=FORBIDDEN
 
 The acquisition request must use the immutable GitHub release-asset endpoint for asset ID `423489481` with `Accept: application/octet-stream`. A tag-based browser download URL may be used only as descriptive provenance and not as acquisition authority.
 
-At the **download boundary**, after the fresh evidence directory exists and immediately before the first archive-byte request, the executor must re-read upstream GitHub release metadata and checksum authority and fail closed if tag, full release commit, GitHub verification state, asset name, asset ID, expected size, upstream SHA-256, or API digest differs from the Z0P-bound values. No unrelated network or filesystem action may occur between this final identity recheck and issuance of the exact asset-ID download request.
+At the **download boundary**, after the fresh evidence directory exists and immediately before the first archive-byte request, the executor must re-read upstream GitHub release metadata and checksum authority and fail closed if tag, full release commit, GitHub verification state/reason, asset name, asset ID, expected size, upstream SHA-256, or API digest differs from the Z0P-bound values. No unrelated network or filesystem action may occur between this final identity recheck and issuance of the exact asset-ID download request.
 
 ```text
 FLOATING_LATEST_URL=FORBIDDEN
@@ -412,12 +432,16 @@ PR_160_REVIEWED_TREE_BINDING_MISMATCH
 PR_160_DOCUMENT_BLOB_BINDING_MISMATCH
 INDEPENDENT_REVIEW_ATTESTATION_MISSING_OR_MISMATCHED
 CODERABBIT_EXACT_HEAD_STATUS_NOT_SUCCESS
+CODERABBIT_STATUS_PUBLISHER_UNAUTHENTICATED_OR_MISMATCHED
+CODERABBIT_STATUS_FINAL_RUN_BINDING_MISSING_OR_MISMATCHED
+CODERABBIT_REVIEW_RECORD_REPOSITORY_OR_PR_SCOPE_MISMATCH
 CODERABBIT_REVIEW_RECORD_MISSING_EDITED_OR_MISMATCHED
 CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREAD_PRESENT
 PR_BODY_EDITED_AFTER_FINAL_REVIEW
 CANONICAL_MAIN_DRIFTED_FROM_AUTHORIZED_BASE
 CANONICAL_MERGE_METHOD_NOT_MERGE
 CANONICAL_MERGE_PARENT_MISMATCH
+CANONICAL_MERGE_TREE_MISMATCH
 UPSTREAM_RELEASE_TAG_CHANGED
 UPSTREAM_RELEASE_COMMIT_CHANGED
 UPSTREAM_RELEASE_VERIFICATION_NOT_VALID
@@ -461,14 +485,21 @@ Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
 Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD
 Z0L_CANONICAL_AUTHORIZATION_TREE
+Z0L_CANONICAL_AUTHORIZATION_MERGE_TREE
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY
+Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT
 Z0L_CANONICAL_REVIEW_RECORD_ID
 Z0L_CANONICAL_REVIEW_RUN_ID
 Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT
 Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT
 Z0L_RELEASE_TAG
 Z0L_RELEASE_COMMIT
+Z0L_RELEASE_VERIFICATION_STATE
+Z0L_RELEASE_VERIFICATION_REASON
+Z0L_RELEASE_VERIFICATION_CHECK
 Z0L_ASSET_NAME
 Z0L_ASSET_ID
 Z0L_ASSET_API_URL
@@ -477,6 +508,8 @@ Z0L_DOWNLOADED_SIZE_BYTES
 Z0L_EXPECTED_SHA256
 Z0L_DOWNLOADED_ARCHIVE_SHA256
 Z0L_SHA256_MATCH
+Z0L_UPSTREAM_API_DIGEST
+Z0L_UPSTREAM_API_DIGEST_MATCH
 Z0L_ARCHIVE_MEMBER_LIST_DIGEST
 Z0L_ARCHIVE_MEMBER_ALLOWLIST_DIGEST
 Z0L_ARCHIVE_PATH_CONFINEMENT_CHECK
@@ -497,7 +530,7 @@ PROVIDER_SPEND_USD=0.00
 Z0L_TERMINAL_STATUS
 ```
 
-The evidence report must contain no secrets and must not embed binary/archive payloads.
+The evidence report must contain no secrets and must not embed binary/archive payloads. `Z0L_RELEASE_VERIFICATION_CHECK` must be `PASS` only when the observed GitHub verification state/reason exactly match the pinned values. `Z0L_UPSTREAM_API_DIGEST_MATCH` must be `PASS` only when the observed upstream API digest exactly equals `Z0L_EXPECTED_API_DIGEST` and the upstream checksum binding remains valid.
 
 ## 8. Explicitly blocked stages
 
@@ -533,7 +566,7 @@ Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL
 Z0L=NOT_AUTHORIZED
 ```
 
-Only after Section 5 exact candidate identity, commit-scoped independent-review attestation, zero current material threads, exact-head repository gates, unchanged canonical main/base, merge-method restriction, expected-head merge, and post-merge parent/tree/blob verification all pass:
+Only after Section 5 exact candidate identity, commit-scoped independent-review attestation, zero current material threads, exact-head repository gates, unchanged canonical main/base, merge-method restriction, expected-head merge, exact merge-tree equality, and post-merge parent/tree/blob verification all pass:
 
 ```text
 Z0P=CLOSED_CANONICAL
