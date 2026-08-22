@@ -11,13 +11,43 @@ This document reconciles the independent-review attestation mechanics for PR #16
 
 For PR #160 only, this document is the later controlling governance text **only for**:
 
-1. Section 5.2 independent-review attestation mechanics in `KODAC_KDO_H4_R4B_PHASE_B_Z0P_CANONICALIZATION_Z0L_AUTHORIZATION_2026-08-22.md`; and
-2. the rule that every PR-body edit after final review invalidates qualification.
+1. all independent-review attestation mechanics in `KODAC_KDO_H4_R4B_PHASE_B_Z0P_CANONICALIZATION_Z0L_AUTHORIZATION_2026-08-22.md`, wherever those mechanics are referenced, including Section 5.2, canonical/post-merge evidence binding, Section 6 initial and download-boundary authorization rechecks, fail-closed conditions, Section 7 evidence output, and any later closure/authorization recheck that consumes the same review evidence;
+2. every primary-document requirement whose satisfaction depends specifically on CodeRabbit commit-status publisher identity, commit-status publisher authentication, commit-status timestamp as reviewer/run identity evidence, direct commit-status-to-final-run binding, or existence of a distinct clean CodeRabbit `PullRequestReview` object; and
+3. the rule that every PR-body edit after final review invalidates qualification.
 
-All other requirements in the 2026-08-22 authorization document remain unchanged and cumulative. Any ambiguity is resolved fail closed.
+All other requirements in the 2026-08-22 authorization document remain unchanged and cumulative. The replacement mechanics below apply transitively at every Z0L gate that consumes independent-review evidence; an obsolete attestation field may not survive as an additional cumulative requirement merely because it is repeated outside Section 5.2. Any ambiguity is resolved fail closed.
+
+### 1.1 Explicit primary-field replacement map
+
+For PR #160, every occurrence of the following old attestation concepts in the primary document is superseded wherever it appears:
+
+```text
+OLD_STATUS_PUBLISHER_IDENTITY_REQUIREMENT=SUPERSEDED
+OLD_STATUS_PUBLISHER_AUTHENTICATION_REQUIREMENT=SUPERSEDED
+OLD_STATUS_TIMESTAMP_AS_REVIEWER_OR_RUN_IDENTITY_REQUIREMENT=SUPERSEDED
+OLD_STATUS_TO_FINAL_RUN_BINDING_REQUIREMENT=SUPERSEDED
+OLD_CLEAN_PULL_REQUEST_REVIEW_OBJECT_REQUIREMENT=SUPERSEDED
+```
+
+They are replaced by:
+
+```text
+REVIEWER_IDENTITY_AUTHORITY=SECTION_4_1_GITHUB_AUTHENTICATED_CODERABBIT_BOT_RECORD
+FINAL_RUN_BINDING_AUTHORITY=SECTION_4_1_GITHUB_AUTHENTICATED_CODERABBIT_BOT_RECORD
+FINAL_END_SHA_AUTHORITY=SECTION_4_1_GITHUB_AUTHENTICATED_CODERABBIT_BOT_RECORD
+FINAL_CLEAN_RESULT_AUTHORITY=SECTION_4_1_GITHUB_AUTHENTICATED_CODERABBIT_BOT_RECORD
+REVIEW_RECORD_MUTATION_GUARD=SECTION_4_1_COMMENT_ID_AND_UPDATED_AT
+EXACT_HEAD_STATUS_AUTHORITY=SECTION_4_2_CONSISTENCY_GATE_ONLY
+CLEAN_PULL_REQUEST_REVIEW_OBJECT=NOT_REQUIRED
+```
+
+In particular, primary-document fields or checks equivalent to `CODERABBIT_COMMIT_STATUS_PUBLISHER_IDENTITY`, `CODERABBIT_COMMIT_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB`, `CODERABBIT_COMMIT_STATUS_UPDATED_AT` when used as reviewer/run identity evidence, `CODERABBIT_COMMIT_STATUS_FINAL_RUN_BINDING`, and their `Z0L_CANONICAL_REVIEW_STATUS_*` evidence aliases are satisfied only through the Section 4.1 replacement record and are **not** separately required from the commit-status object. Any primary execution recheck, fail-closed rule, or evidence report that names those old fields must validate the Section 4.1 replacement fields instead.
+
+This replacement does not supersede the exact-head status context/state requirement. `CodeRabbit=success` on the exact reviewed candidate remains independently mandatory under Section 4.2.
 
 ```text
 ATTESTATION_RECONCILIATION_SCOPE=PR_160_ONLY
+ATTESTATION_PRECEDENCE_REACHES_ALL_REVIEW_EVIDENCE_CONSUMERS=YES
 PRIMARY_AUTHORIZATION_DOCUMENT_REMAINS_REQUIRED=YES
 ACQUISITION_CONTRACT_CHANGED=NO
 EXTRACTION_CONTRACT_CHANGED=NO
@@ -182,7 +212,7 @@ EXACT_HEAD_REPOSITORY_GATES=PASS_REQUIRED
 CANONICAL_MAIN_UNCHANGED=8e366e4816efc7c1e056b3361c635bd8dd7d54a2_REQUIRED
 ```
 
-No Ready or merge action is authorized until every field above and every unaffected requirement in the primary authorization document passes live.
+No Ready or merge action is authorized until every field above and every unaffected requirement in the primary authorization document passes live. At every execution-time canonical authorization recheck, the review-related portion of that recheck is evaluated using Sections 4.1-4.3 of this reconciliation rather than the superseded primary status-publisher/status-to-run/PullRequestReview fields.
 
 ## 7. Merge and post-merge boundaries remain unchanged
 
