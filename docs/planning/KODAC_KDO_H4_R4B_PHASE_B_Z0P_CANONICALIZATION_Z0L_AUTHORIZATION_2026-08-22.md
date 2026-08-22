@@ -8,7 +8,7 @@ Repository: `TheHalfMoon/Kodac`
 
 Canonicalize the completed `Z0P=PUBLIC_PROVENANCE_CAPTURE` evidence produced under canonical PR #159, bind that evidence to exact KODAC and upstream zrok identities, and define a separately reviewable authorization boundary for `Z0L=LOCAL_ARTIFACT_VALIDATION`.
 
-This document is a governance mutation only. It does **not** execute Z0L. Until this document is merged canonically, Z0L remains blocked.
+This document is a governance mutation only. It does **not** execute Z0L. Until PR #160 is independently reviewed on its exact final head and merged canonically, Z0L remains blocked.
 
 ```text
 PROVIDER_SPEND_USD=0.00
@@ -127,17 +127,70 @@ PROVIDER_SPEND_USD=0.00
 Z0P=PASS
 ```
 
-If this governance slice is merged canonically, the Z0P status becomes:
+If PR #160 is merged canonically after exact-head qualification, the Z0P status becomes:
 
 ```text
 Z0P=CLOSED_CANONICAL
 ```
 
-## 5. Z0L authorization boundary
+## 5. Exact candidate binding and merge gate
 
-Z0L remains **not executable while this document is only a candidate PR**.
+The first CodeRabbit review of PR #160 completed on pre-repair head `6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c` and produced material findings. That head is **not merge-qualified** and cannot authorize Z0L.
 
-If and only if this exact governance candidate is independently reviewed, passes exact-head repository gates, and is merged canonically, Z0L becomes authorized to perform **local artifact validation only** under the constraints below.
+```text
+AUTHORIZATION_PR=160
+PRE_REPAIR_REVIEWED_HEAD=6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c
+PRE_REPAIR_REVIEWED_TREE=0538d3c85ce94200a4f4960fa7b8d548b0271a9c
+PRE_REPAIR_DOCUMENT_BLOB_SHA=68c8ae07c7dfacab872e1f39a7967825739637f8
+PRE_REPAIR_REVIEW_RESULT=MATERIAL_FINDINGS
+PRE_REPAIR_AUTHORIZATION_VALID=NO
+```
+
+The final reviewed candidate identity is intentionally carried in PR #160 metadata rather than embedded as a self-referential commit hash inside the file whose bytes determine that hash. Before Ready or merge, the PR body must contain **concrete** values read from GitHub for the final head:
+
+```text
+Z0L_REVIEWED_PR=160
+Z0L_REVIEWED_CANDIDATE_COMMIT=EXACT_40_HEX_REQUIRED_IN_PR_BODY
+Z0L_REVIEWED_CANDIDATE_TREE=EXACT_40_HEX_REQUIRED_IN_PR_BODY
+Z0L_REVIEWED_DOCUMENT_BLOB_SHA=EXACT_40_HEX_REQUIRED_IN_PR_BODY
+Z0L_REVIEWED_DOCUMENT_SHA256=EXACT_64_HEX_REQUIRED_IN_PR_BODY
+Z0L_REVIEW_RESULT=PASS_REQUIRED
+Z0L_UNRESOLVED_MATERIAL_FINDINGS=0_REQUIRED
+```
+
+`Z0L_REVIEWED_DOCUMENT_SHA256` is the SHA-256 of the exact UTF-8 bytes of this file at `Z0L_REVIEWED_CANDIDATE_COMMIT`.
+
+The merge operation must use the exact reviewed head SHA as its expected-head precondition. Immediately before merge, GitHub live state must prove:
+
+```text
+PR_NUMBER=160
+PR_HEAD_EQUALS_Z0L_REVIEWED_CANDIDATE_COMMIT=YES
+PR_HEAD_TREE_EQUALS_Z0L_REVIEWED_CANDIDATE_TREE=YES
+DOCUMENT_BLOB_EQUALS_Z0L_REVIEWED_DOCUMENT_BLOB_SHA=YES
+DOCUMENT_SHA256_EQUALS_Z0L_REVIEWED_DOCUMENT_SHA256=YES
+EXACT_HEAD_REPOSITORY_GATES=PASS
+INDEPENDENT_EXACT_HEAD_REVIEW=PASS
+UNRESOLVED_MATERIAL_FINDINGS=0
+```
+
+After merge, Z0L becomes authorized only if the canonical merge commit has the exact reviewed head as a parent and the merged tree contains the exact reviewed document blob. The evidence report must bind:
+
+```text
+Z0L_CANONICAL_AUTHORIZATION_PR=160
+Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT=EXACT_POST_MERGE_VALUE
+Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD=EXACT_PR_BODY_VALUE
+Z0L_CANONICAL_AUTHORIZATION_TREE=EXACT_PR_BODY_VALUE
+Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA=EXACT_PR_BODY_VALUE
+Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_SHA256=EXACT_PR_BODY_VALUE
+```
+
+Any mismatch is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
+
+## 6. Z0L authorization boundary
+
+Z0L remains **not executable while PR #160 is unmerged**.
+
+If and only if the exact final candidate satisfies Section 5, is independently reviewed with no unresolved material findings, passes exact-head repository gates, and is merged canonically, Z0L becomes authorized to perform **local artifact validation only**.
 
 ```text
 Z0L=AUTHORIZED_TO_EXECUTE_AFTER_CANONICAL_MERGE_ONLY
@@ -147,7 +200,7 @@ Z0R=NOT_AUTHORIZED
 Z0D=NOT_AUTHORIZED
 ```
 
-### 5.1 Exact permitted acquisition
+### 6.1 Exact permitted acquisition
 
 Z0L may acquire exactly one upstream archive and no other zrok executable payload:
 
@@ -159,39 +212,96 @@ Z0L_ASSET_NAME=zrok_2.0.4_windows_amd64.tar.gz
 Z0L_ASSET_ID=423489481
 Z0L_ASSET_SIZE_BYTES=33087763
 Z0L_EXPECTED_SHA256=8e4062a159f65c3735d67d82de0f6a6f59555e9f98a786e80c1e6ab22d92d8c9
-Z0L_ASSET_URL=https://github.com/openziti/zrok/releases/download/v2.0.4/zrok_2.0.4_windows_amd64.tar.gz
+Z0L_ASSET_API_URL=https://api.github.com/repos/openziti/zrok/releases/assets/423489481
+Z0L_ASSET_ACCEPT=application/octet-stream
+TAG_BASED_BROWSER_DOWNLOAD_AS_AUTHORITY=FORBIDDEN
 ```
 
-Immediately before acquisition, the executor must re-read upstream GitHub release metadata and fail closed if tag, commit, asset name, asset ID, size, or upstream SHA-256 differs from the Z0P-bound values.
+The acquisition request must use the immutable GitHub release-asset endpoint for asset ID `423489481` with `Accept: application/octet-stream`. A tag-based browser download URL may be used only as descriptive provenance and not as acquisition authority.
+
+Immediately before acquisition, the executor must re-read upstream GitHub release metadata and fail closed if tag, full release commit, GitHub verification state, asset name, asset ID, asset size, upstream SHA-256, or API digest differs from the Z0P-bound values.
 
 ```text
 FLOATING_LATEST_URL=FORBIDDEN
+TAG_BASED_ASSET_URL_AS_AUTHORITY=FORBIDDEN
 THIRD_PARTY_MIRROR_DOWNLOAD=FORBIDDEN
 THIRD_PARTY_CHECKSUM_AUTHORITY=FORBIDDEN
 UNPINNED_ASSET_DOWNLOAD=FORBIDDEN
 ```
 
-### 5.2 Quarantine and validation requirements
+### 6.2 Disposable evidence directory and partial-state controls
 
-The archive must be acquired only into a disposable local evidence directory that is not on `PATH` and is not a repository worktree.
+The evidence root and extraction directory must both be newly created, empty, disposable directories outside every repository worktree and outside `PATH`.
+
+```text
+EXISTING_EVIDENCE_DIRECTORY_REUSE=FORBIDDEN
+EXISTING_EXTRACTION_DIRECTORY_REUSE=FORBIDDEN
+PARTIAL_DOWNLOAD_REUSE=FORBIDDEN
+RESUMED_DOWNLOAD=FORBIDDEN
+OVERWRITE_EXISTING_ARCHIVE=FORBIDDEN
+OVERWRITE_EXISTING_EXTRACTED_FILE=FORBIDDEN
+FAILED_ATTEMPT_REUSE=FORBIDDEN
+```
+
+The archive must first be written to a unique temporary filename inside the evidence directory. Only after exact byte-size and SHA-256 verification may it be promoted to the evidence filename. Any failed or interrupted download is invalid evidence and may not be resumed or reused.
+
+### 6.3 Archive confinement and extraction requirements
+
+No archive member may be extracted until the complete archive header/member inventory has been inspected without executing zrok.
+
+For every member, normalize separators and path components before policy evaluation. Fail closed on any member that is:
+
+- an absolute POSIX path;
+- a Windows drive-qualified path such as `C:\...` or `C:/...`;
+- a UNC or device path such as `\\server\share`, `//server/share`, `\\?\...`, or `\\.\...`;
+- empty, `.`-only, or contains any `..` traversal component after normalization;
+- a symbolic link, hard link, junction, reparse-point-like member, FIFO, socket, device node, or any other non-regular special file;
+- a duplicate normalized path, including a case-insensitive collision relevant to Windows;
+- outside the freshly created extraction root after canonical path resolution;
+- an executable/installer surface other than the expected `zrok2.exe` regular file;
+- any file not explicitly admitted by the pre-extraction member allowlist.
+
+```text
+SYMLINK_MEMBERS=FORBIDDEN
+HARDLINK_MEMBERS=FORBIDDEN
+SPECIAL_FILE_MEMBERS=FORBIDDEN
+WINDOWS_DRIVE_PATHS=FORBIDDEN
+UNC_DEVICE_PATHS=FORBIDDEN
+DUPLICATE_NORMALIZED_PATHS=FORBIDDEN
+CASE_INSENSITIVE_COLLISIONS=FORBIDDEN
+UNEXPECTED_FILES=FORBIDDEN
+EXPECTED_PRIMARY_BINARY_BASENAME=zrok2.exe
+EXPECTED_PRIMARY_BINARY_TYPE=REGULAR_FILE
+EXPECTED_PRIMARY_BINARY_COUNT=1
+```
+
+The pre-extraction allowlist must be recorded in evidence and must permit only regular files expected from the exact upstream packaging surface. If the exact expected member set cannot be established without broadening trust, Z0L must stop before extraction.
+
+Extraction must use a no-follow/safe extraction mechanism that does not materialize links, does not follow pre-existing filesystem links, refuses overwrite, and verifies after each created file that its canonical path remains beneath the fresh extraction root. A generic unrestricted `tar -xf` or equivalent is not authorized.
 
 Required order:
 
 ```text
-1. RECHECK_UPSTREAM_EXACT_IDENTITY
-2. CREATE_DISPOSABLE_NON_PATH_EVIDENCE_DIRECTORY
-3. DOWNLOAD_EXACT_BOUND_ARCHIVE_ONLY
-4. RECORD_DOWNLOADED_SIZE_BYTES
-5. COMPUTE_DOWNLOADED_ARCHIVE_SHA256
-6. REQUIRE_SHA256_MATCH_BEFORE_EXTRACTION
-7. LIST_ARCHIVE_MEMBERS_WITHOUT_EXECUTION
-8. FAIL_ON_ABSOLUTE_PATH_OR_PATH_TRAVERSAL_MEMBER
-9. EXTRACT_ONLY_TO_DISPOSABLE_NON_PATH_DIRECTORY
-10. RECORD_EXTRACTED_FILE_LIST
-11. HASH_EXTRACTED_ZROK2_BINARY
-12. RECORD_AUTHENTICODE_STATE_IF_AVAILABLE_WITHOUT_EXECUTING_ZROK
-13. EMIT_REDACTED_Z0L_EVIDENCE_REPORT
-14. STOP
+1. RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING
+2. RECHECK_UPSTREAM_EXACT_IDENTITY
+3. CREATE_FRESH_EMPTY_DISPOSABLE_EVIDENCE_DIRECTORY
+4. DOWNLOAD_EXACT_ASSET_ID_TO_UNIQUE_TEMP_FILE
+5. RECORD_DOWNLOADED_SIZE_BYTES
+6. COMPUTE_DOWNLOADED_ARCHIVE_SHA256
+7. REQUIRE_EXACT_SIZE_AND_SHA256_MATCH
+8. LIST_AND_PARSE_ALL_ARCHIVE_HEADERS_WITHOUT_EXECUTION
+9. NORMALIZE_AND_VALIDATE_ALL_MEMBER_NAMES
+10. REJECT_LINKS_SPECIAL_FILES_DRIVE_UNC_TRAVERSAL_AND_COLLISIONS
+11. BUILD_AND_RECORD_EXACT_REGULAR_FILE_ALLOWLIST
+12. REQUIRE_EXPECTED_ZROK2_EXE_REGULAR_FILE_COUNT_EQUALS_ONE
+13. CREATE_FRESH_EMPTY_EXTRACTION_DIRECTORY
+14. EXTRACT_WITH_NO_FOLLOW_SAFE_MODE_AND_NO_OVERWRITE
+15. VERIFY_EACH_EXTRACTED_CANONICAL_PATH_REMAINS_UNDER_ROOT
+16. RECORD_EXTRACTED_FILE_LIST
+17. HASH_EXTRACTED_ZROK2_BINARY
+18. RECORD_AUTHENTICODE_STATE_IF_AVAILABLE_WITHOUT_EXECUTING_ZROK
+19. EMIT_REDACTED_Z0L_EVIDENCE_REPORT
+20. STOP
 ```
 
 Required controls:
@@ -199,7 +309,11 @@ Required controls:
 ```text
 VERIFY_SHA256_BEFORE_EXTRACTION=YES
 VERIFY_ARCHIVE_MEMBER_PATHS_BEFORE_EXTRACTION=YES
+VERIFY_ARCHIVE_MEMBER_TYPES_BEFORE_EXTRACTION=YES
+VERIFY_LINK_TARGETS_BY_REJECTING_ALL_LINK_MEMBERS=YES
 EXTRACT_TO_DISPOSABLE_NON_PATH_DIRECTORY_ONLY=YES
+EXTRACTION_NO_FOLLOW_SAFE_MODE=REQUIRED
+EXTRACTION_NO_OVERWRITE=REQUIRED
 SYSTEM_INSTALL=NO
 USER_PATH_MUTATION=NO
 REGISTRY_MUTATION=NO
@@ -221,12 +335,16 @@ APP_SOURCE_MUTATION=NO
 
 The extracted binary remains quarantined and **must not be executed**, including for `--version`, unless a later independently reviewed canonical authorization explicitly permits execution.
 
-### 5.3 Z0L fail-closed conditions
+### 6.4 Z0L fail-closed conditions
 
 Z0L must stop immediately if any of the following occurs:
 
 ```text
 KODAC_CANONICAL_AUTHORIZATION_NOT_PRESENT
+PR_160_REVIEWED_HEAD_BINDING_MISMATCH
+PR_160_REVIEWED_TREE_BINDING_MISMATCH
+PR_160_DOCUMENT_BLOB_BINDING_MISMATCH
+PR_160_DOCUMENT_SHA256_BINDING_MISMATCH
 UPSTREAM_RELEASE_TAG_CHANGED
 UPSTREAM_RELEASE_COMMIT_CHANGED
 UPSTREAM_RELEASE_VERIFICATION_NOT_VALID
@@ -234,37 +352,60 @@ ASSET_NAME_CHANGED
 ASSET_ID_CHANGED
 ASSET_SIZE_CHANGED
 UPSTREAM_SHA256_CHANGED_OR_UNAVAILABLE
+UPSTREAM_API_DIGEST_CHANGED_OR_MISMATCH
 DOWNLOADED_SIZE_MISMATCH
 DOWNLOADED_SHA256_MISMATCH
 ARCHIVE_MEMBER_ABSOLUTE_PATH
+ARCHIVE_MEMBER_WINDOWS_DRIVE_PATH
+ARCHIVE_MEMBER_UNC_OR_DEVICE_PATH
 ARCHIVE_MEMBER_PATH_TRAVERSAL
+ARCHIVE_MEMBER_LINK
+ARCHIVE_MEMBER_SPECIAL_FILE
+ARCHIVE_MEMBER_DUPLICATE_NORMALIZED_PATH
+ARCHIVE_MEMBER_CASE_INSENSITIVE_COLLISION
+ARCHIVE_MEMBER_UNEXPECTED_FILE
+EXPECTED_ZROK2_EXE_COUNT_NOT_ONE
+SAFE_EXTRACTION_MODE_UNAVAILABLE
+EXTRACTION_WOULD_OVERWRITE
+EXTRACTED_PATH_ESCAPES_ROOT
+PARTIAL_OR_FAILED_STATE_WOULD_BE_REUSED
 UNEXPECTED_EXECUTABLE_OR_INSTALLER_SURFACE
 VALIDATION_REQUIRES_ZROK_EXECUTION
 VALIDATION_REQUIRES_ACCOUNT_OR_SECRET
 VALIDATION_REQUIRES_PAYMENT
 ```
 
-No failed Z0L attempt may broaden authority or fall back to another release, platform, mirror, package manager, installer, or paid path.
+No failed Z0L attempt may broaden authority or fall back to another release, platform, mirror, package manager, installer, extraction mode, or paid path.
 
-## 6. Required Z0L evidence output
+## 7. Required Z0L evidence output
 
 A future Z0L execution report must bind at least:
 
 ```text
-Z0L_CANONICAL_AUTHORIZATION_COMMIT
+Z0L_CANONICAL_AUTHORIZATION_PR
+Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT
+Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD
 Z0L_CANONICAL_AUTHORIZATION_TREE
+Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
+Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_SHA256
 Z0L_RELEASE_TAG
 Z0L_RELEASE_COMMIT
 Z0L_ASSET_NAME
 Z0L_ASSET_ID
+Z0L_ASSET_API_URL
 Z0L_EXPECTED_SIZE_BYTES
 Z0L_DOWNLOADED_SIZE_BYTES
 Z0L_EXPECTED_SHA256
 Z0L_DOWNLOADED_ARCHIVE_SHA256
 Z0L_SHA256_MATCH
 Z0L_ARCHIVE_MEMBER_LIST_DIGEST
-Z0L_ARCHIVE_PATH_TRAVERSAL_CHECK
-Z0L_EXTRACTION_DIRECTORY_CLASS=DISPOSABLE_NON_PATH
+Z0L_ARCHIVE_MEMBER_ALLOWLIST_DIGEST
+Z0L_ARCHIVE_PATH_CONFINEMENT_CHECK
+Z0L_ARCHIVE_MEMBER_TYPE_CHECK
+Z0L_ARCHIVE_LINK_MEMBER_CHECK
+Z0L_ARCHIVE_COLLISION_CHECK
+Z0L_EXTRACTION_DIRECTORY_CLASS=FRESH_DISPOSABLE_NON_PATH
+Z0L_EXTRACTION_SAFE_MODE=PASS
 Z0L_EXTRACTED_FILE_LIST_DIGEST
 Z0L_EXTRACTED_BINARY_SHA256
 Z0L_AUTHENTICODE_STATE_IF_AVAILABLE
@@ -279,7 +420,7 @@ Z0L_TERMINAL_STATUS
 
 The evidence report must contain no secrets and must not embed binary/archive payloads.
 
-## 7. Explicitly blocked stages
+## 8. Explicitly blocked stages
 
 Neither Z0P closure nor a future Z0L pass authorizes any later stage.
 
@@ -304,7 +445,7 @@ In particular, this slice does not authorize:
 - any claim that zrok is selected as the final KODAC ingress path;
 - any claim that H4 is complete.
 
-## 8. Candidate merge effect
+## 9. Candidate merge effect
 
 Before merge:
 
@@ -313,7 +454,7 @@ Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL
 Z0L=NOT_AUTHORIZED
 ```
 
-Only after independent exact-head review, required repository gates, and canonical merge of this exact candidate:
+Only after all Section 5 bindings are concrete in PR #160 metadata, independent exact-head review has passed on that exact final head with zero unresolved material findings, repository gates pass on the same head, and the canonical merge uses that exact expected head:
 
 ```text
 Z0P=CLOSED_CANONICAL
@@ -326,4 +467,4 @@ H4_COMPLETE=NO
 PROVIDER_SPEND_USD=0.00
 ```
 
-Any head movement after review invalidates that review for merge qualification. No force-push, rebase, or destructive history rewriting is authorized.
+Any head movement after final review invalidates that review and every PR-body candidate binding for merge qualification. No force-push, rebase, or destructive history rewriting is authorized.
