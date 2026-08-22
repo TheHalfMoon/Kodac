@@ -325,7 +325,7 @@ Z0L_ASSET_ACCEPT=application/octet-stream
 TAG_BASED_BROWSER_DOWNLOAD_AS_AUTHORITY=FORBIDDEN
 ```
 
-`Z0L_EXPECTED_SIZE_BYTES` is the canonical expected-size field. `Z0L_ASSET_SIZE_BYTES_ALIAS` is retained only to make the relationship to the Z0P-captured release metadata explicit and must equal the canonical field exactly.
+`Z0L_EXPECTED_SIZE_BYTES` is the canonical expected-size field. `Z0L_ASSET_SIZE_BYTES_ALIAS=33087763` is retained only to make the relationship to the Z0P-captured release metadata explicit and must equal the canonical field exactly.
 
 The acquisition request must use the immutable GitHub release-asset endpoint for asset ID `423489481` with `Accept: application/octet-stream`. A tag-based browser download URL may be used only as descriptive provenance and not as acquisition authority.
 
@@ -646,4 +646,4 @@ H4_COMPLETE=NO
 PROVIDER_SPEND_USD=0.00
 ```
 
-Any head movement or PR-body edit after final review invalidates merge qualification and requires a fresh independent review cycle. No force-push, rebase, destructive history rewriting, squash merge, auto-merge, or Z0L execution is authorized by this candidate.
+Any head movement or PR-body edit after final review invalidates merge qualification and requires a fresh independent review cycle. The PR qualification and canonical merge action do not themselves execute Z0L; after successful canonical merge and complete post-merge proof, Z0L is authorized only for the bounded local artifact validation defined in Section 6. No force-push, rebase, destructive history rewriting, squash merge, auto-merge, or Z0L execution as part of PR qualification/merge is authorized.
