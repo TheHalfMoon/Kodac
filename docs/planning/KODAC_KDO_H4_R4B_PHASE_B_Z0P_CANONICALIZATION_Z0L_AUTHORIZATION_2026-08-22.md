@@ -273,7 +273,7 @@ Z0L remains **not executable while PR #160 is unmerged**.
 If and only if the exact final candidate satisfies every Section 5 requirement and is merged canonically, Z0L becomes authorized to perform **local artifact validation only**.
 
 ```text
-Z0L=AUTHORIZED_TO_EXECUTE_AFTER_CANONICAL_MERGE_ONLY
+Z0L=AUTHORIZED_TO_EXECUTE_LOCAL_ARTIFACT_VALIDATION_ONLY
 Z0A=NOT_AUTHORIZED
 Z0S=NOT_AUTHORIZED
 Z0R=NOT_AUTHORIZED
