@@ -147,20 +147,20 @@ PREVIOUS_AUTHORIZATION_VALID=NO
 
 ### 5.1 Exact final candidate identity
 
-The exact final candidate commit, tree, document blob SHA, and document SHA-256 are read directly from GitHub after the final docs repair. They may be mirrored in PR #160 metadata for audit readability, but **PR-body text is not authorization authority**.
+The exact final candidate commit, tree, and GitHub document blob digest are read directly from GitHub after the final docs repair. They may be mirrored in PR #160 metadata for audit readability, but **PR-body text is not authorization authority**.
 
 ```text
 Z0L_REVIEWED_PR=160
 Z0L_REVIEWED_CANDIDATE_COMMIT=EXACT_40_HEX_REQUIRED
 Z0L_REVIEWED_CANDIDATE_TREE=EXACT_40_HEX_REQUIRED
 Z0L_REVIEWED_DOCUMENT_BLOB_SHA=EXACT_40_HEX_REQUIRED
-Z0L_REVIEWED_DOCUMENT_SHA256=EXACT_64_HEX_REQUIRED
+Z0L_REVIEWED_DOCUMENT_DIGEST=Z0L_REVIEWED_DOCUMENT_BLOB_SHA
 PR_BODY_IS_AUTHORIZATION_AUTHORITY=NO
 ```
 
-`Z0L_REVIEWED_DOCUMENT_SHA256` is the SHA-256 of the exact UTF-8 bytes of this file at `Z0L_REVIEWED_CANDIDATE_COMMIT`.
+The GitHub blob SHA is the canonical document-content digest for this governance gate because it is directly bound by GitHub to the exact file bytes at `Z0L_REVIEWED_CANDIDATE_COMMIT`. No externally copied document digest may substitute for it.
 
-Any PR-body edit after final review invalidates merge qualification and requires a fresh independent review/attestation cycle before Ready or merge, even when the code/document head did not move.
+Any PR-body edit after final review invalidates merge qualification and requires a fresh independent review/attestation cycle before Ready or merge, even when the document head did not move.
 
 ```text
 PR_BODY_EDIT_AFTER_FINAL_REVIEW=INVALIDATES_MERGE_QUALIFICATION
@@ -168,7 +168,9 @@ PR_BODY_EDIT_AFTER_FINAL_REVIEW=INVALIDATES_MERGE_QUALIFICATION
 
 ### 5.2 Independent review attestation
 
-A mutable prose statement in the PR body is never sufficient evidence of review. Independent review is PASS only when all of the following are observed live and bound to the exact final candidate:
+A mutable prose statement in the PR body is never sufficient evidence of review. The authoritative exact-SHA review attestation is the GitHub commit-scoped `CodeRabbit` status on the exact final candidate. The GitHub-authenticated CodeRabbit bot review record supplies audit context and must agree with that status.
+
+Independent review is PASS only when all of the following are observed live:
 
 ```text
 INDEPENDENT_REVIEW_PROVIDER=CodeRabbit
@@ -176,20 +178,21 @@ INDEPENDENT_REVIEWER_IDENTITY=coderabbitai[bot]
 INDEPENDENT_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
 CODERABBIT_COMMIT_STATUS_CONTEXT=CodeRabbit
 CODERABBIT_COMMIT_STATUS_STATE=success_REQUIRED_ON_EXACT_CANDIDATE_SHA
+CODERABBIT_COMMIT_STATUS_IS_EXACT_SHA_REVIEW_ATTESTATION=YES
 CODERABBIT_FINAL_REVIEW_RECORD_ID=EXACT_GITHUB_ID_REQUIRED
 CODERABBIT_FINAL_REVIEW_RUN_ID=EXACT_RUN_ID_REQUIRED
 CODERABBIT_FINAL_REVIEW_END_SHA=EXACT_CANDIDATE_SHA_REQUIRED
 CODERABBIT_FINAL_REVIEW_RECORD_CREATED_AT=EXACT_TIMESTAMP_REQUIRED
 CODERABBIT_FINAL_REVIEW_RECORD_UPDATED_AT=EXACT_TIMESTAMP_REQUIRED
-CODERABBIT_FINAL_REVIEW_RECORD_BODY_SHA256=EXACT_64_HEX_REQUIRED
 CODERABBIT_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+CODERABBIT_REVIEW_RECORD_MUTABLE_PROSE_IS_AUTHORITY=NO
 CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0_REQUIRED
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
 ```
 
-The commit-scoped `CodeRabbit` status is the exact-SHA attestation anchor. The GitHub-authenticated CodeRabbit bot review record supplies reviewer identity, review-run identity, reviewed end SHA/range, conclusion context, and timestamps. The merge preflight must re-read both records from GitHub and recompute the review-record body SHA-256; an edited/missing record, a non-success exact-head status, a mismatched end SHA, or any current non-outdated unresolved material thread is terminal fail-closed.
+The merge preflight must re-read the commit-scoped status, the bot-authored final review record, and current review threads from GitHub. A missing/non-success exact-head status, a mismatched review end SHA/run, an unauthenticated reviewer identity, an edited review record after final qualification, or any current non-outdated unresolved material thread is terminal fail-closed.
 
-If the independent reviewer cannot expose this commit-scoped status plus authenticated review record, Z0L authorization cannot be proven and the PR must not merge under this slice.
+The review record ID and timestamps are audit evidence; the commit-scoped status on the exact candidate SHA is the authorization-bearing review attestation. If CodeRabbit cannot expose that exact-SHA success status plus an authenticated review record for the same review cycle, the PR must not merge under this slice.
 
 ### 5.3 Exact repository gates and base continuity
 
@@ -200,7 +203,6 @@ PR_NUMBER=160
 PR_HEAD_EQUALS_Z0L_REVIEWED_CANDIDATE_COMMIT=YES
 PR_HEAD_TREE_EQUALS_Z0L_REVIEWED_CANDIDATE_TREE=YES
 DOCUMENT_BLOB_EQUALS_Z0L_REVIEWED_DOCUMENT_BLOB_SHA=YES
-DOCUMENT_SHA256_EQUALS_Z0L_REVIEWED_DOCUMENT_SHA256=YES
 MAIN_EQUALS_CANONICAL_BASE=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
 EXACT_HEAD_REPOSITORY_GATES=PASS
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS
@@ -237,11 +239,11 @@ Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT=EXACT_POST_MERGE_VALUE
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_AUTHORIZATION_TREE=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA=EXACT_REVIEWED_VALUE
-Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_SHA256=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
 Z0L_CANONICAL_REVIEW_RECORD_ID=EXACT_REVIEWED_VALUE
 Z0L_CANONICAL_REVIEW_RUN_ID=EXACT_REVIEWED_VALUE
-Z0L_CANONICAL_REVIEW_RECORD_BODY_SHA256=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT=EXACT_REVIEWED_VALUE
 ```
 
 Any mismatch is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
@@ -408,10 +410,9 @@ KODAC_CANONICAL_AUTHORIZATION_NOT_PRESENT
 PR_160_REVIEWED_HEAD_BINDING_MISMATCH
 PR_160_REVIEWED_TREE_BINDING_MISMATCH
 PR_160_DOCUMENT_BLOB_BINDING_MISMATCH
-PR_160_DOCUMENT_SHA256_BINDING_MISMATCH
 INDEPENDENT_REVIEW_ATTESTATION_MISSING_OR_MISMATCHED
 CODERABBIT_EXACT_HEAD_STATUS_NOT_SUCCESS
-CODERABBIT_REVIEW_RECORD_EDITED_OR_MISMATCHED
+CODERABBIT_REVIEW_RECORD_MISSING_EDITED_OR_MISMATCHED
 CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREAD_PRESENT
 PR_BODY_EDITED_AFTER_FINAL_REVIEW
 CANONICAL_MAIN_DRIFTED_FROM_AUTHORIZED_BASE
@@ -461,13 +462,11 @@ Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT
 Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD
 Z0L_CANONICAL_AUTHORIZATION_TREE
 Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
-Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_SHA256
 Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
 Z0L_CANONICAL_REVIEW_RECORD_ID
 Z0L_CANONICAL_REVIEW_RUN_ID
 Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT
 Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT
-Z0L_CANONICAL_REVIEW_RECORD_BODY_SHA256
 Z0L_RELEASE_TAG
 Z0L_RELEASE_COMMIT
 Z0L_ASSET_NAME
