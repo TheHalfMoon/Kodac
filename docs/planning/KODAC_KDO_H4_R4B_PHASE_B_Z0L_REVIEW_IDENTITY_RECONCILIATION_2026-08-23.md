@@ -216,7 +216,7 @@ In particular, this document does not alter the PR #162 procedure that requires:
 - non-executing binary hashing and Authenticode-state observation if available;
 - cleanup/quarantine rules for interruption or failure;
 - redacted evidence only; and
-- terminal STOP.
++- terminal STOP.
 
 No `zrok2.exe` execution, including `--version`, is authorized.
 
@@ -225,7 +225,7 @@ No `zrok2.exe` execution, including `--version`, is authorized.
 The candidate must remain a single-file docs-only delta from Section 2.
 
 ```text
-Z0L_REVIEW_IDENTITY_RECONCILIATION_PR=GITHUB_ASSIGNED_PR_NUMBER_REQUIRED
+Z0L_REVIEW_IDENTITY_RECONCILIATION_PR=163
 Z0L_REVIEW_IDENTITY_RECONCILIATION_BASE=main
 Z0L_REVIEW_IDENTITY_RECONCILIATION_BASE_SHA=9079673a574815db8ae5986cb997c46e3164283f
 Z0L_REVIEW_IDENTITY_RECONCILIATION_CHANGED_FILE_COUNT=1_REQUIRED
@@ -233,7 +233,7 @@ Z0L_REVIEW_IDENTITY_RECONCILIATION_DOCS_ONLY=YES_REQUIRED
 Z0L_REVIEW_IDENTITY_RECONCILIATION_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
 ```
 
-After GitHub assigns the PR number, this same file must receive one normal follow-up commit binding that exact PR number before final qualification. All earlier candidate-head CI or review evidence then becomes historical only.
+GitHub assigned this reconciliation PR `#163`; this identity is now part of the exact document binding. This head movement invalidates all earlier candidate-head CI or review evidence for merge qualification.
 
 ## 7. Exact-head qualification contract for this reconciliation
 
