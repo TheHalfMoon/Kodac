@@ -216,7 +216,7 @@ In particular, this document does not alter the PR #162 procedure that requires:
 - non-executing binary hashing and Authenticode-state observation if available;
 - cleanup/quarantine rules for interruption or failure;
 - redacted evidence only; and
-+- terminal STOP.
+- terminal STOP.
 
 No `zrok2.exe` execution, including `--version`, is authorized.
 
