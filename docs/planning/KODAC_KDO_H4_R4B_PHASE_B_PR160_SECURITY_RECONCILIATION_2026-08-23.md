@@ -177,7 +177,7 @@ Resolved by making the GitHub-authenticated `coderabbitai[bot]` issue-comment re
 
 ### Finding D — Z0P canonicalization not gated on complete post-merge proof
 
-Resolved by Section 7.1 below. `Z0P=CLOSED_CANONICAL` is a post-merge classification and may be recorded only after the complete returned-merge/main, parent-order, tree-equality, governance-document-blob, and final review/thread proof passes. A merge response or landed commit by itself is insufficient.
+Resolved by Section 7.1 below. `Z0P_CLOSED_CANONICAL=YES` is a post-merge classification and may be recorded only after the complete returned-merge/main, parent-order, tree-equality, governance-document-blob, exact-path-set, and final review/thread proof passes. A merge response or landed commit by itself is insufficient.
 
 ### Scope repair — circular dependency
 
@@ -187,10 +187,11 @@ Resolved by restoring the canonical atomic-gate scope. Z0P-only canonicalization
 
 PR #160 may become eligible to leave Draft and merge **only as a Z0P-only canonicalization slice**. Green CI alone is insufficient, and a historical review from an earlier head is insufficient.
 
-Immediately before a Ready decision, and again immediately before merge, live GitHub state must prove all of:
+The Ready transition is two-phase. Immediately before converting the PR from Draft to Ready, live GitHub state must prove `PR_160_DRAFT=YES_REQUIRED_BEFORE_READY_TRANSITION` plus every non-draft-independent requirement below. Immediately after that transition, and again immediately before merge, live GitHub state must prove `PR_160_DRAFT=NO_REQUIRED` plus every requirement below.
 
 ```text
 PR_160_STATE=OPEN_REQUIRED
+PR_160_DRAFT=NO_REQUIRED_AFTER_READY_AND_BEFORE_MERGE
 PR_160_BASE=main_REQUIRED
 PR_160_BASE_SHA=8e366e4816efc7c1e056b3361c635bd8dd7d54a2_REQUIRED
 CANONICAL_MAIN=8e366e4816efc7c1e056b3361c635bd8dd7d54a2_REQUIRED
@@ -198,6 +199,10 @@ PR_160_HEAD=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 PR_160_TREE=EXACT_INDEPENDENTLY_REVIEWED_TREE_REQUIRED
 PR_160_CHANGED_FILE_COUNT=3_REQUIRED
 PR_160_DOCS_ONLY=YES_REQUIRED
+PR_160_CHANGED_PATH_1=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0P_CANONICALIZATION_Z0L_AUTHORIZATION_2026-08-22.md_REQUIRED
+PR_160_CHANGED_PATH_2=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_ATTESTATION_RECONCILIATION_2026-08-23.md_REQUIRED
+PR_160_CHANGED_PATH_3=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_PR160_SECURITY_RECONCILIATION_2026-08-23.md_REQUIRED
+PR_160_CHANGED_PATH_SET_EQUALS_EXACT_THREE_PATH_SET=PASS_REQUIRED
 
 EXACT_HEAD_GOVERNANCE=PASS_REQUIRED
 EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
@@ -217,7 +222,9 @@ H4_COMPLETE=NO_REQUIRED
 PROVIDER_SPEND_USD=0.00_REQUIRED
 ```
 
-Any head movement, base/main movement, material review finding, failed/non-terminal exact-head gate, or scope broadening invalidates qualification and requires a fresh exact-head cycle.
+For avoidance of ambiguity, a Ready transition is not qualified merely because the PR is open: the post-transition read must explicitly observe `draft=false`. A merge is forbidden if the PR is still draft or if the exact changed-path set differs in any way from the three paths above.
+
+Any head movement, base/main movement, material review finding, failed/non-terminal exact-head gate, changed-path-set mismatch, or scope broadening invalidates qualification and requires a fresh exact-head cycle.
 
 The only permitted merge method for this candidate is a GitHub merge commit with an exact-head precondition:
 
@@ -240,6 +247,10 @@ The exact independently reviewed candidate must bind, before merge, these immuta
 ```text
 PR_160_REVIEWED_HEAD=EXACT_40_HEX_REQUIRED
 PR_160_REVIEWED_TREE=EXACT_40_HEX_REQUIRED
+PR_160_REVIEWED_CHANGED_PATH_1=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0P_CANONICALIZATION_Z0L_AUTHORIZATION_2026-08-22.md_REQUIRED
+PR_160_REVIEWED_CHANGED_PATH_2=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_ATTESTATION_RECONCILIATION_2026-08-23.md_REQUIRED
+PR_160_REVIEWED_CHANGED_PATH_3=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_PR160_SECURITY_RECONCILIATION_2026-08-23.md_REQUIRED
+PR_160_REVIEWED_CHANGED_PATH_SET_EQUALS_EXACT_THREE_PATH_SET=PASS_REQUIRED
 PR_160_PRIMARY_DOCUMENT_BLOB_SHA=EXACT_40_HEX_REQUIRED
 PR_160_ATTESTATION_RECONCILIATION_BLOB_SHA=EXACT_40_HEX_REQUIRED
 PR_160_SECURITY_RECONCILIATION_BLOB_SHA=EXACT_40_HEX_REQUIRED
@@ -262,6 +273,8 @@ PR_160_MERGE_PARENT_ORDER_MATCH=PASS_REQUIRED
 
 PR_160_MERGE_TREE=EXACT_40_HEX_REQUIRED
 PR_160_MERGE_TREE_EQUALS_REVIEWED_TREE=PASS_REQUIRED
+PR_160_MERGE_CHANGED_PATH_SET_EQUALS_EXACT_THREE_PATH_SET=PASS_REQUIRED
+PR_160_MERGE_CHANGED_PATH_SET_EQUALS_REVIEWED_CHANGED_PATH_SET=PASS_REQUIRED
 
 PR_160_MERGE_PRIMARY_DOCUMENT_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
 PR_160_MERGE_ATTESTATION_RECONCILIATION_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
@@ -274,7 +287,7 @@ PR_160_POST_MERGE_CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0_REQUIRED
 PR_160_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
 ```
 
-The three governance-document blob checks must read each path from the returned canonical merge commit and compare it with the corresponding blob SHA from the exact independently reviewed candidate. Tree equality does not remove the requirement to record these explicit document-blob checks.
+The three governance-document blob checks must read each path from the returned canonical merge commit and compare it with the corresponding blob SHA from the exact independently reviewed candidate. The changed-path checks must compare the canonical base-to-merge delta with both the approved three-path set and the exact reviewed base-to-head path set. Tree equality does not remove the requirement to record these explicit path-set and document-blob checks.
 
 If **any** post-merge requirement above is missing or fails, the landed commit must not be classified as canonical Z0P closure:
 
@@ -294,7 +307,7 @@ Only if every Section 7 pre-merge qualification requirement and every Section 7.
 
 ```text
 PR_160_POST_MERGE_CANONICALIZATION_PROOF=PASS
-Z0P=CLOSED_CANONICAL
+Z0P_CLOSED_CANONICAL=YES
 Z0L=NOT_AUTHORIZED
 Z0A=NOT_AUTHORIZED
 Z0S=NOT_AUTHORIZED
