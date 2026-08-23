@@ -140,12 +140,12 @@ Z0L_AUTH_REVIEW_RUN_ID=EXACT_FINAL_RUN_ID_REQUIRED
 
 The terminal exact-head CodeRabbit issue comment `5383779002` proves the provider identity, authenticated GitHub author, repository, PR, reviewed end SHA, reviewed tree, reviewed document blob, terminal result, and current thread state. It does not expose a distinct provider review-run UUID.
 
-No distinct provider review-run UUID has been proven for that terminal review-command result. The GitHub issue-comment ID must not be relabeled or guessed to be a provider run UUID.
+No distinct provider review-run UUID is exposed in that authoritative terminal GitHub record, and no separate public run-ID attestation has been proven. The GitHub issue-comment ID must not be relabeled or guessed to be a provider run UUID.
 
 Therefore the controlling pre-reconciliation classification is:
 
 ```text
-PR_162_PROVIDER_RUN_UUID=NOT_EXPOSED_OR_NOT_PROVEN
+PR_162_PROVIDER_RUN_UUID=NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
 PR_162_REVIEW_RECORD_ID=5383779002_PROVEN
 PR_162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS_PROVEN
 PR_162_POST_MERGE_TOPOLOGY_PROOF=PASS
@@ -220,6 +220,15 @@ In particular, this document does not alter the PR #162 procedure that requires:
 
 No `zrok2.exe` execution, including `--version`, is authorized.
 
+A future Z0L authorization-lease recheck and evidence report must bind **both** review layers: the canonical PR #162 predecessor terminal review record and the canonical PR #163 reconciliation terminal review record. Neither record may substitute for the other.
+
+```text
+PR_162_PREDECESSOR_REVIEW_BINDING=REQUIRED
+PR_163_RECONCILIATION_REVIEW_BINDING=REQUIRED
+BOTH_REVIEW_BINDINGS_REQUIRED=YES
+EITHER_REVIEW_BINDING_ALONE_SUFFICIENT=NO
+```
+
 ## 6. This reconciliation candidate identity
 
 The candidate must remain a single-file docs-only delta from Section 2.
@@ -233,7 +242,7 @@ Z0L_REVIEW_IDENTITY_RECONCILIATION_DOCS_ONLY=YES_REQUIRED
 Z0L_REVIEW_IDENTITY_RECONCILIATION_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
 ```
 
-GitHub assigned this reconciliation PR `#163`; this identity is now part of the exact document binding. This head movement invalidates all earlier candidate-head CI or review evidence for merge qualification.
+GitHub assigned this reconciliation PR `#163`; this identity is now part of the exact document binding. Every candidate-head movement invalidates all earlier candidate-head CI and review evidence for merge qualification.
 
 ## 7. Exact-head qualification contract for this reconciliation
 
@@ -291,6 +300,7 @@ RECONCILIATION_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
 RECONCILIATION_TERMINAL_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_EXACT_HEAD_CODERABBIT_STATUS_STILL_SUCCESS=PASS_REQUIRED
 RECONCILIATION_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
 ```
 
@@ -323,29 +333,50 @@ PROVIDER_SPEND_USD=0.00
 
 This canonical state authorizes only a later, separately initiated Z0L local-artifact-validation run under the unchanged PR #162 procedure plus this reconciled review-identity/live-main model. It does not execute Z0L and does not prove Z0L PASS.
 
-The live authorization lease must bind canonical main to this reconciliation merge. If canonical main later moves away, Z0L authority expires fail-closed before the next action until separately reconciled or reauthorized.
+The live authorization lease must bind canonical main to this reconciliation merge and must continue to validate both PR #162 and PR #163 review records. If canonical main later moves away, or either required review binding no longer validates, Z0L authority expires fail-closed before the next action until separately reconciled or reauthorized.
 
 ## 10. Future Z0L evidence review fields
 
-The PR #162 evidence fields are preserved except for the run-ID observability reconciliation below.
+The PR #162 evidence fields are preserved except for the run-ID observability reconciliation below. Both review layers are mandatory evidence.
 
-A future Z0L evidence report must record:
+### 10.1 PR #162 predecessor review binding
 
 ```text
-Z0L_AUTH_REVIEW_PROVIDER=CodeRabbit
-Z0L_AUTH_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
-Z0L_AUTH_REVIEW_RECORD_ID=EXACT_GITHUB_ISSUE_COMMENT_ID
-Z0L_AUTH_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
-Z0L_AUTH_REVIEW_RECORD_AUTHOR_ID=136622811
-Z0L_AUTH_REVIEW_REPOSITORY=TheHalfMoon/Kodac
-Z0L_AUTH_REVIEW_PR=EXACT_AUTHORIZATION_OR_RECONCILIATION_PR
-Z0L_AUTH_REVIEW_END_SHA=EXACT_REVIEWED_HEAD
-Z0L_AUTH_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
-Z0L_AUTH_CODERABBIT_STATUS_STATE=success
-Z0L_AUTH_REVIEW_PROVIDER_RUN_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED
+Z0L_PR162_REVIEW_PROVIDER=CodeRabbit
+Z0L_PR162_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
+Z0L_PR162_REVIEW_RECORD_ID=5383779002
+Z0L_PR162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
+Z0L_PR162_REVIEW_RECORD_AUTHOR_ID=136622811
+Z0L_PR162_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+Z0L_PR162_REVIEW_PR=162
+Z0L_PR162_REVIEW_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
+Z0L_PR162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
+Z0L_PR162_CODERABBIT_STATUS_STATE=success
+Z0L_PR162_PROVIDER_RUN_ID=NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
 ```
 
-`NOT_EXPOSED` must be evidence-backed by the absence of a distinct run identifier in the authoritative terminal record; it may not be used to excuse a missing terminal record.
+### 10.2 PR #163 reconciliation review binding
+
+```text
+Z0L_PR163_REVIEW_PROVIDER=CodeRabbit
+Z0L_PR163_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
+Z0L_PR163_REVIEW_RECORD_ID=EXACT_CANONICAL_RECONCILIATION_TERMINAL_COMMENT_ID
+Z0L_PR163_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
+Z0L_PR163_REVIEW_RECORD_AUTHOR_ID=136622811
+Z0L_PR163_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+Z0L_PR163_REVIEW_PR=163
+Z0L_PR163_REVIEW_END_SHA=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
+Z0L_PR163_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
+Z0L_PR163_CODERABBIT_STATUS_STATE=success
+Z0L_PR163_PROVIDER_RUN_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
+```
+
+```text
+Z0L_BOTH_REVIEW_BINDINGS_PRESENT=PASS_REQUIRED
+Z0L_BOTH_REVIEW_BINDINGS_CURRENT=PASS_REQUIRED
+```
+
+For either review layer, `NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD` may be used only when the terminal GitHub record itself exposes no distinct provider run identifier. It may not excuse a missing terminal record, a stale SHA, a non-clean result, or a failed exact-head status.
 
 ## 11. Explicit non-effects
 
