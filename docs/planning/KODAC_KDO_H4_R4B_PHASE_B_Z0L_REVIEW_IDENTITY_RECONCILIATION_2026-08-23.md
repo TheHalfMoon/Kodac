@@ -241,6 +241,9 @@ FRESH_REVIEW_ACK_BASE_SHA=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
 FRESH_REVIEW_ACK_BASE_TREE=97242c91e9408806d32d4d754516bcc63489a2ef_REQUIRED
 FRESH_REVIEW_ACK_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
 FRESH_REVIEW_ACK_REQUEST_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
+FRESH_REVIEW_ACK_REQUEST_BODY_SHA256=EXACT_FRESH_REVIEW_REQUEST_BODY_SHA256_REQUIRED
+FRESH_REVIEW_ACK_REQUEST_UPDATED_AT=EXACT_FRESH_REVIEW_REQUEST_UPDATED_AT_REQUIRED
+FRESH_REVIEW_ACK_REQUEST_REVISION_TUPLE_MATCH=YES_REQUIRED
 FRESH_REVIEW_INVOCATION_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
 
 FRESH_REVIEW_MODE=FULL_REQUIRED
@@ -266,6 +269,13 @@ FRESH_REVIEW_PROCESSING_CYCLE_ID=EXACT_QUALIFICATION_CYCLE_ID_REQUIRED
 FRESH_REVIEW_PROCESSING_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
 FRESH_REVIEW_PROCESSING_PR=163_REQUIRED
 FRESH_REVIEW_PROCESSING_REQUEST_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
+FRESH_REVIEW_PROCESSING_REQUEST_BODY_SHA256=EXACT_FRESH_REVIEW_REQUEST_BODY_SHA256_REQUIRED
+FRESH_REVIEW_PROCESSING_REQUEST_UPDATED_AT=EXACT_FRESH_REVIEW_REQUEST_UPDATED_AT_REQUIRED
+FRESH_REVIEW_PROCESSING_REQUEST_REVISION_TUPLE_MATCH=YES_REQUIRED
+FRESH_REVIEW_PROCESSING_ACK_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
+FRESH_REVIEW_PROCESSING_ACK_BODY_SHA256=EXACT_FRESH_REVIEW_ACK_BODY_SHA256_REQUIRED
+FRESH_REVIEW_PROCESSING_ACK_UPDATED_AT=EXACT_FRESH_REVIEW_ACK_UPDATED_AT_REQUIRED
+FRESH_REVIEW_PROCESSING_ACK_REVISION_TUPLE_MATCH=YES_REQUIRED
 FRESH_REVIEW_PROCESSING_BASE_SHA=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
 FRESH_REVIEW_PROCESSING_BASE_TREE=97242c91e9408806d32d4d754516bcc63489a2ef_REQUIRED
 FRESH_REVIEW_PROCESSING_BASE_SHA_EQUALS_CANONICAL_BASE_MAIN=YES_REQUIRED
@@ -296,7 +306,13 @@ TERMINAL_CYCLE_RECORD_BASE_SHA_EQUALS_CANONICAL_BASE_MAIN=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_BASE_TREE_EQUALS_CANONICAL_BASE_TREE=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
 TERMINAL_CYCLE_RECORD_REQUEST_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
+TERMINAL_CYCLE_RECORD_REQUEST_BODY_SHA256=EXACT_FRESH_REVIEW_REQUEST_BODY_SHA256_REQUIRED
+TERMINAL_CYCLE_RECORD_REQUEST_UPDATED_AT=EXACT_FRESH_REVIEW_REQUEST_UPDATED_AT_REQUIRED
+TERMINAL_CYCLE_RECORD_REQUEST_REVISION_TUPLE_MATCH=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_ACK_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
+TERMINAL_CYCLE_RECORD_ACK_BODY_SHA256=EXACT_FRESH_REVIEW_ACK_BODY_SHA256_REQUIRED
+TERMINAL_CYCLE_RECORD_ACK_UPDATED_AT=EXACT_FRESH_REVIEW_ACK_UPDATED_AT_REQUIRED
+TERMINAL_CYCLE_RECORD_ACK_REVISION_TUPLE_MATCH=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_INVOCATION_ID=EXACT_EXPOSED_INVOCATION_ID_REQUIRED_IF_EXPOSED
 TERMINAL_CYCLE_RECORD_PROCESSING_RUN_ID=EXACT_EXPOSED_PROCESSING_RUN_ID_REQUIRED_IF_EXPOSED
 TERMINAL_CYCLE_RECORD_REVIEW_RESULT_RECORD_ID=EXACT_AUTHORITATIVE_REVIEW_RECORD_ID_REQUIRED
@@ -305,6 +321,11 @@ TERMINAL_CYCLE_RECORD_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
 TERMINAL_CYCLE_RECORD_CURRENT_UNRECONCILED_MATERIAL_RISKS=0_REQUIRED
 TERMINAL_CYCLE_RECORD_MUST_BIND_REQUEST_ACK_AND_ALL_EXPOSED_PROVIDER_IDENTITIES=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_MUST_BE_TERMINAL_FOR_THIS_CYCLE=YES_REQUIRED
+
+FRESH_REVIEW_PROPAGATED_REVISION_TUPLES_AVAILABLE=YES_REQUIRED
+FRESH_REVIEW_PROPAGATED_REVISION_TUPLES_IMMUTABLE=YES_REQUIRED
+FRESH_REVIEW_PROPAGATED_REVISION_TUPLES_MATCH_AT_ACK_PROCESSING_AND_TERMINAL=YES_REQUIRED
+FRESH_REVIEW_PROPAGATED_REVISION_TUPLE_EDIT_OR_MISMATCH=FAIL_CLOSED
 
 FRESH_REVIEW_EVENT_ORDER=REQUEST_ACK_PROCESSING_TERMINAL_REQUIRED
 FRESH_REVIEW_REQUEST_CREATED_AT_LT_ACK_CREATED_AT=YES_REQUIRED
@@ -316,9 +337,9 @@ FRESH_REVIEW_EVENT_REVISIONS_MATCH_PINNED_IDENTITIES=YES_REQUIRED
 FRESH_REVIEW_EVENT_ORDER_AMBIGUITY=FAIL_CLOSED
 ```
 
-A qualification cycle is invalid if it is incremental-only, partial, skipped, failed, limitation-affected, ambiguous, stale, reused, timestamp-incomplete, non-monotonic, revision-mismatched, or not demonstrably a successful provider-authenticated full review of the complete canonical-base-to-head delta. A clean result or `CodeRabbit=success` for only a subset of changes does not qualify.
+A qualification cycle is invalid if it is incremental-only, partial, skipped, failed, limitation-affected, ambiguous, stale, reused, timestamp-incomplete, non-monotonic, revision-mismatched, propagated-revision-tuple-incomplete, or not demonstrably a successful provider-authenticated full review of the complete canonical-base-to-head delta. A clean result or `CodeRabbit=success` for only a subset of changes does not qualify.
 
-The request, acknowledgement, processing evidence, terminal cycle record, and authoritative review record must all agree on canonical base SHA/tree, repository, PR, exact head, and cycle ID. Every request, acknowledgement, authoritative terminal, and terminal-cycle body hash must use `UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION`. Request and acknowledgement bodies must remain hash-identical to their pinned snapshots. The acknowledgement must remain GitHub-authenticated as `coderabbitai[bot]` ID `136622811`. The provider-authenticated processing evidence must prove the exact canonical base SHA/tree and exact end SHA. The terminal cycle record and authoritative review record are one immutable terminal review-result identity, not two interchangeable records. Their authenticated timestamps must prove the strict event order `REQUEST_ACK_PROCESSING_TERMINAL`; any unavailable timestamp, non-monotonic order, stale body revision, hash-input mismatch, or identity mismatch fails closed.
+The request, acknowledgement, processing evidence, terminal cycle record, and authoritative review record must all agree on canonical base SHA/tree, repository, PR, exact head, and cycle ID. Every request, acknowledgement, authoritative terminal, and terminal-cycle body hash must use `UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION`. The immutable request revision tuple is `(request comment ID, request body SHA-256, request updated_at)` and the immutable acknowledgement revision tuple is `(ack comment ID, ack body SHA-256, ack updated_at)`. The acknowledgement must carry and match the exact request revision tuple observed when it was accepted; processing must carry and match both the same request tuple and the exact acknowledgement tuple observed before processing; the terminal record must carry and match both tuples again. Any later edit, unavailable snapshot, or tuple mismatch invalidates the cycle fail-closed. The acknowledgement must remain GitHub-authenticated as `coderabbitai[bot]` ID `136622811`. The provider-authenticated processing evidence must prove the exact canonical base SHA/tree and exact end SHA. The terminal cycle record and authoritative review record are one immutable terminal review-result identity, not two interchangeable records. Their authenticated timestamps must prove the strict event order `REQUEST_ACK_PROCESSING_TERMINAL`; any unavailable timestamp, non-monotonic order, stale body revision, hash-input mismatch, propagated-revision-tuple mismatch, or identity mismatch fails closed.
 
 ## 5. PR #162 procedure preservation
 
@@ -382,6 +403,7 @@ FRESH_REVIEW_CANONICAL_BASE_SHA_TREE_BINDING=PASS_REQUIRED
 FRESH_REVIEW_PROCESSING_CANONICAL_BASE_SHA_TREE_EQUALITY=PASS_REQUIRED
 FRESH_REVIEW_PROVIDER_AUTHENTICATED_EXACT_CANONICAL_BASE_TO_HEAD_RANGE=PASS_REQUIRED
 FRESH_REVIEW_REQUEST_ACK_BODY_INTEGRITY_AND_ACK_AUTHENTICATION=PASS_REQUIRED
+FRESH_REVIEW_REQUEST_ACK_PROPAGATED_REVISION_TUPLES=PASS_REQUIRED
 FRESH_REVIEW_FULL_MODE_COMPLETE_CANONICAL_BASE_TO_HEAD_SCOPE_AND_SUCCESSFUL_COMPLETION=PASS_REQUIRED
 FRESH_REVIEW_NOT_INCREMENTAL_PARTIAL_SKIPPED_FAILED_OR_LIMITATION_AFFECTED=PASS_REQUIRED
 FRESH_REVIEW_EVENT_ORDER_AND_IMMUTABLE_TIMESTAMPS=PASS_REQUIRED
@@ -425,6 +447,7 @@ Immediately before merge, independently re-read and require unchanged:
 - exact-head CI;
 - literal PR #162 predecessor terminal-comment ID/node/body SHA-256/hash-input/timestamps/bot identity/GitHub App identity/end SHA/result and their live GitHub equality;
 - shared PR #163 raw-body hashing rule and exact request/ack hashes under that rule;
+- immutable request/ack revision tuples `(comment ID, body SHA-256, updated_at)` propagated unchanged through acknowledgement, processing, and terminal records;
 - unique full-review cycle evidence;
 - cycle/request/ack/processing/terminal canonical-base SHA/tree equality;
 - provider-authenticated exact base-to-head processing range;
@@ -467,6 +490,7 @@ RECONCILIATION_AUTHORITATIVE_REVIEW_RECORD_BODY_HASH_INPUT_STILL_MATCHES=PASS_RE
 RECONCILIATION_UNIQUE_QUALIFICATION_CYCLE_BINDING_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_REQUEST_ACK_BODY_HASHES_AND_HASH_INPUT_RULE_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_REQUEST_ACK_AUTHENTICATION_STILL_MATCH=PASS_REQUIRED
+RECONCILIATION_REQUEST_ACK_PROPAGATED_REVISION_TUPLES_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_EVENT_ORDER_TIMESTAMPS_AND_REVISIONS_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_FULL_REVIEW_MODE_COMPLETE_CANONICAL_BASE_TO_HEAD_SCOPE_AND_SUCCESSFUL_COMPLETION_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_TERMINAL_REVIEW_RESULT_ID_STILL_EQUALS_AUTHORITATIVE_REVIEW_RECORD_ID=PASS_REQUIRED
