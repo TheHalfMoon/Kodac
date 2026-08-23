@@ -216,27 +216,56 @@ REPAIR_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_PR160_POST_MERGE_CONT
 REPAIR_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
 ```
 
-Before leaving Draft and again before merge, live GitHub truth must prove:
+The Ready transition is intentionally two-phase because the repository's CodeRabbit configuration may skip review while a PR remains Draft. Ready status itself carries no merge authority.
+
+### 7.1 Phase A — Draft-to-Ready preflight
+
+Immediately before converting Draft to Ready, live GitHub truth must prove:
 
 ```text
 REPAIR_PR_STATE=OPEN_REQUIRED
+REPAIR_PR_DRAFT=YES_REQUIRED_BEFORE_READY_TRANSITION
+REPAIR_PR_BASE=main_REQUIRED
+REPAIR_PR_BASE_SHA=58dec3de7ad9ba61877e0319010ae76a3d36f00d_REQUIRED
+CANONICAL_MAIN=58dec3de7ad9ba61877e0319010ae76a3d36f00d_REQUIRED
+REPAIR_PR_HEAD=EXACT_CURRENT_CANDIDATE_HEAD_REQUIRED
+REPAIR_PR_TREE=EXACT_CURRENT_CANDIDATE_TREE_REQUIRED
+REPAIR_DOCUMENT_BLOB=EXACT_CURRENT_CANDIDATE_BLOB_REQUIRED
+REPAIR_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
+EXACT_HEAD_GOVERNANCE=PASS_REQUIRED
+EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
+REPAIR_PR_MERGEABLE=YES_REQUIRED
+Z0L=NOT_AUTHORIZED_REQUIRED
+```
+
+Independent review is **not** a prerequisite for the Draft-to-Ready transition. Immediately after the transition, the PR must be re-read and must explicitly show `draft=false`; only then may the final independent-review cycle be requested.
+
+### 7.2 Phase B — post-Ready exact-head review and merge qualification
+
+After Ready and before merge, live GitHub truth must prove all of:
+
+```text
+REPAIR_PR_STATE=OPEN_REQUIRED
+REPAIR_PR_DRAFT=NO_REQUIRED_AFTER_READY_AND_BEFORE_MERGE
 REPAIR_PR_BASE=main_REQUIRED
 REPAIR_PR_BASE_SHA=58dec3de7ad9ba61877e0319010ae76a3d36f00d_REQUIRED
 CANONICAL_MAIN=58dec3de7ad9ba61877e0319010ae76a3d36f00d_REQUIRED
 REPAIR_PR_HEAD=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 REPAIR_PR_TREE=EXACT_INDEPENDENTLY_REVIEWED_TREE_REQUIRED
 REPAIR_DOCUMENT_BLOB=EXACT_INDEPENDENTLY_REVIEWED_BLOB_REQUIRED
+REPAIR_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
 EXACT_HEAD_GOVERNANCE=PASS_REQUIRED
 EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
 CODERABBIT_EXACT_HEAD_STATUS=success_REQUIRED
 CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS_ON_REPAIR_PR=0_REQUIRED
 REPAIR_PR_MERGEABLE=YES_REQUIRED
+Z0L=NOT_AUTHORIZED_REQUIRED
 ```
 
 The independent review model for this repair is the same model selected by the PR #160 security reconciliation: GitHub-authenticated `coderabbitai[bot]` issue-comment evidence is authoritative for review identity/run/result/end-SHA, while exact-head `CodeRabbit=success` is a consistency gate only. PR-body bytes are not authorization authority.
 
-Any head movement, main/base drift, path-set change, failed or non-terminal repository gate, material review finding, unresolved current material review thread, missing/mismatched authoritative review record, or status/review disagreement invalidates qualification and requires a fresh exact-head cycle.
+Any head movement after the final review invalidates that review. Any head movement, main/base drift, path-set change, failed or non-terminal repository gate, material review finding, unresolved current material review thread, missing/mismatched authoritative review record, or status/review disagreement invalidates merge qualification and requires a fresh exact-head cycle. If a repair commit is needed after review, qualification returns to fail-closed state; no force-push, rebase, or destructive history rewriting is permitted.
 
 ## 8. Merge and mandatory post-merge proof
 
