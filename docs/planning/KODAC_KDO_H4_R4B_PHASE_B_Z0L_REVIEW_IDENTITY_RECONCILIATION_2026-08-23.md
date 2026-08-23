@@ -1,16 +1,14 @@
 # KODAC KDO H4-R4B Phase-B — Z0L Review-Identity Reconciliation
 
-Date: 2026-08-23
-Status: **RECONCILIATION CANDIDATE — DOCS ONLY — FAIL CLOSED — Z0L NOT AUTHORIZED**
+Date: 2026-08-23  
+Status: **RECONCILIATION CANDIDATE — DOCS ONLY — FAIL CLOSED — Z0L NOT AUTHORIZED**  
 Repository: `TheHalfMoon/Kodac`
 
 ## 1. Purpose and authority boundary
 
-This document is a narrow post-PR-#162 governance reconciliation. It repairs one observability mismatch in the Z0L authorization proof model without changing the bounded Z0L procedure or expanding any execution authority.
+This document is a narrow post-PR-#162 governance reconciliation. It repairs review-evidence observability and qualification binding only. It does **not** expand the Z0L procedure, grant execution authority while this PR is a candidate, or supersede any PR #162 safety/custody/confinement/cleanup/STOP rule.
 
-PR #162 was merged with the correct exact-head, topology, tree, blob, path, CI, terminal independent-review result, status, and thread-state bindings. Its terminal CodeRabbit issue comment exposes an exact GitHub issue-comment identity and exact reviewed Git identities, but it does not expose a distinct provider review-run UUID. The PR #162 document required such a run UUID as an independent field. Because that value is not proven, PR #162 alone must remain fail-closed for Z0L execution authority.
-
-Before this reconciliation is independently qualified, canonically merged, and proven post-merge:
+Controlling candidate state:
 
 ```text
 Z0L_REVIEW_IDENTITY_RECONCILIATION=NOT_CANONICAL
@@ -47,26 +45,27 @@ GITHUB_APP_MUTATION=NO
 WEBHOOK_ACTIVATION=NO
 APP_SOURCE_MUTATION=NO
 
+PHASE_B_SERVER_SIDE_ATOMIC_GATE=NOT_PROVEN
 FOUNDER_PROCESS_AUTHORITY_TRUST_ROOT_ESTABLISHMENT=NO
 H4_COMPLETE=NO
 PROVIDER_SPEND_USD=0.00
 ```
 
-No step in qualification, review, merge, or post-merge proof for this reconciliation may acquire or execute any zrok artifact or mutate external infrastructure.
+No qualification, review, merge, or post-merge proof step may acquire, extract, execute, install, or invoke zrok, mutate external infrastructure, access credentials/secrets, or spend provider funds.
 
-## 2. Exact canonical base and PR #162 predecessor proof
+## 2. Exact canonical predecessor
 
-This candidate is created from exact canonical main:
+The required canonical base is:
 
 ```text
 RECONCILIATION_BASE_MAIN=9079673a574815db8ae5986cb997c46e3164283f
 RECONCILIATION_BASE_TREE=97242c91e9408806d32d4d754516bcc63489a2ef
 ```
 
-PR #162 canonical merge facts:
+PR #162 canonical proof facts:
 
 ```text
-PR_162=MERGED
+PR_162=MERGED_CANONICAL
 PR_162_CANONICAL_MERGE=9079673a574815db8ae5986cb997c46e3164283f
 PR_162_MERGE_VERIFIED=true
 PR_162_MERGE_VERIFICATION_REASON=valid
@@ -74,15 +73,10 @@ PR_162_MERGE_PARENT_1=7e07218d0d2ead5585b355a90ad82591f3152094
 PR_162_MERGE_PARENT_2=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
 PR_162_REVIEWED_HEAD=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
 PR_162_REVIEWED_TREE=97242c91e9408806d32d4d754516bcc63489a2ef
-PR_162_MERGE_TREE=97242c91e9408806d32d4d754516bcc63489a2ef
 PR_162_AUTHORIZATION_DOCUMENT_BLOB=31c593f38ed9e1d95cd135b4baa8ab0c88af4622
-PR_162_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_SEPARATE_AUTHORIZATION_2026-08-23.md
 PR_162_CHANGED_PATH_COUNT=1
-```
+PR_162_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_SEPARATE_AUTHORIZATION_2026-08-23.md
 
-PR #162 exact-head repository qualification:
-
-```text
 PR_162_GOVERNANCE_RUN=32612578904
 PR_162_GOVERNANCE_RUN_NUMBER=2151
 PR_162_GOVERNANCE_RESULT=success
@@ -95,73 +89,28 @@ PR_162_K2_RUNTIME_RESULT=success
 PR_162_RUNTIME_CHANGE_CLASSIFIER_RESULT=success
 PR_162_K2_RUNTIME_GATE_RESULT=success
 PR_162_RUNTIME_RESULT=skipped_docs_only
-```
 
-PR #162 terminal independent-review record:
-
-```text
 PR_162_REVIEW_PROVIDER=CodeRabbit
 PR_162_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
 PR_162_REVIEW_RECORD_ID=5383779002
+PR_162_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug
 PR_162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
 PR_162_REVIEW_RECORD_AUTHOR_ID=136622811
 PR_162_REVIEW_REPOSITORY=TheHalfMoon/Kodac
 PR_162_REVIEW_PR=162
 PR_162_REVIEW_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
-PR_162_REVIEW_TREE=97242c91e9408806d32d4d754516bcc63489a2ef
-PR_162_REVIEW_DOCUMENT_BLOB=31c593f38ed9e1d95cd135b4baa8ab0c88af4622
 PR_162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
-PR_162_CODERABBIT_EXACT_HEAD_STATUS_HEAD_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
-PR_162_CODERABBIT_EXACT_HEAD_STATUS_STATE=success
-PR_162_CURRENT_UNRESOLVED_NON_OUTDATED_REVIEW_THREADS=0
-PR_162_PRIOR_MODERATE_MERGE_RISK=RECONCILED_ON_REVIEWED_HEAD
+PR_162_CODERABBIT_STATUS_HEAD_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
+PR_162_CODERABBIT_STATUS_STATE=success
 ```
 
-The following PR #162 post-merge checks are already proven:
-```text
-PR_162_MAIN_EQUALS_RETURNED_MERGE=PASS
-PR_162_MERGE_PARENT_COUNT=2_PASS
-PR_162_MERGE_PARENT_ORDER=PASS
-PR_162_MERGE_TREE_EQUALS_REVIEWED_TREE=PASS
-PR_162_CANONICAL_DOCUMENT_BLOB_EQUALS_REVIEWED_BLOB=PASS
-PR_162_CANONICAL_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS
-PR_162_TERMINAL_REVIEW_RECORD_STILL_MATCHES=PASS
-PR_162_CODERABBIT_STATUS_HEAD_STILL_EQUALS_REVIEWED_HEAD=PASS
-PR_162_CODERABBIT_STATUS_STILL_SUCCESS=PASS
-PR_162_CURRENT_UNRESOLVED_NON_OUTDATED_REVIEW_THREADS=0
-```
+PR #162 required a provider review-run UUID that its authoritative terminal GitHub record did not expose. That unproven field remains an observability gap; it must not be guessed, inferred, or relabeled from the GitHub issue-comment ID. Therefore PR #162 alone remains fail-closed for Z0L execution authority until this reconciliation becomes canonical and passes its own post-merge proof.
 
-## 3. Exact proof gap and fail-closed classification
+## 3. Reconciled review identity model
 
-The PR #162 authorization document required:
+When CodeRabbit does not expose a distinct provider-internal review-run UUID in the authoritative terminal GitHub record, the authorization-bearing observable review identity is the authenticated GitHub issue-comment record itself.
 
-```text
-Z0L_AUTH_REVIEW_RUN_ID=EXACT_FINAL_RUN_ID_REQUIRED
-```
-
-The terminal exact-head CodeRabbit issue comment `5383779002` proves only its GitHub-authenticated record identity, the reviewed end SHA and terminal result that its body explicitly records, and any other values as historical assertions inside that record. It does **not** by itself prove current repository state. Current tree, document blob, changed-path set, exact-head status, and unresolved non-outdated material-thread state must be independently re-read from GitHub/canonical Git and cross-checked against the reviewed identities. The comment does not expose a distinct provider review-run UUID.
-
-No distinct provider review-run UUID is exposed in that authoritative terminal GitHub record, and no separate public run-ID attestation has been proven. The GitHub issue-comment ID must not be relabeled or guessed to be a provider run UUID.
-
-Therefore the controlling pre-reconciliation classification is:
-
-```text
-PR_162_PROVIDER_RUN_UUID=NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
-PR_162_REVIEW_RECORD_ID=5383779002_PROVEN
-PR_162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS_PROVEN
-PR_162_POST_MERGE_TOPOLOGY_PROOF=PASS
-PR_162_POST_MERGE_REVIEW_BINDING_EXCEPT_PROVIDER_RUN_UUID=PASS
-PR_162_Z0L_AUTHORIZATION_POST_MERGE_PROOF=INCOMPLETE_FAIL_CLOSED
-Z0L=NOT_AUTHORIZED
-```
-
-This is an evidence-observability mismatch, not permission to infer or fabricate missing metadata.
-
-## 4. Reconciled independent-review identity model
-
-For Z0L authorization governance, the authorization-bearing review identity is the GitHub-authenticated issue-comment record itself, not an unobservable provider-internal run UUID.
-
-A qualifying terminal independent-review record must prove its **record identity and recorded result** independently from live repository state:
+A qualifying authoritative review record must prove:
 
 ```text
 AUTHORITATIVE_REVIEW_RECORD_PROVIDER=CodeRabbit_REQUIRED
@@ -171,30 +120,38 @@ AUTHORITATIVE_REVIEW_RECORD_NODE_ID=EXACT_GITHUB_NODE_ID_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_ID=136622811_REQUIRED
+AUTHORITATIVE_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
-AUTHORITATIVE_REVIEW_RECORD_PR=EXACT_TARGET_PR_REQUIRED
+AUTHORITATIVE_REVIEW_RECORD_PR=163_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_END_SHA=EXACT_REVIEWED_HEAD_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
-AUTHORITATIVE_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
 REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
-COMMENT_ASSERTION_MAY_SUBSTITUTE_FOR_LIVE_REPOSITORY_STATE=NO
 ```
 
-The following values are separate live GitHub/canonical-Git observations and must be re-read at qualification, immediately before merge, after merge, and at every later authorization-lease check:
+The record above proves its own identity/result only. It may **not** substitute for live repository state.
+
+Live state must be independently re-read from GitHub/canonical Git at qualification, immediately before merge, after merge, and at every later authorization-lease checkpoint:
 
 ```text
 LIVE_REPOSITORY_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
 LIVE_REPOSITORY_TREE=EXACT_REVIEWED_TREE_REQUIRED
 LIVE_REPOSITORY_DOCUMENT_BLOB=EXACT_REVIEWED_DOCUMENT_BLOB_REQUIRED
-LIVE_REPOSITORY_CHANGED_PATH_COUNT=EXACT_EXPECTED_COUNT_REQUIRED
-LIVE_REPOSITORY_CHANGED_PATH_SET=EXACT_EXPECTED_SET_REQUIRED
+LIVE_REPOSITORY_CHANGED_PATH_COUNT=1_REQUIRED
+LIVE_REPOSITORY_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
 LIVE_EXACT_HEAD_CODERABBIT_STATUS_HEAD_SHA=EXACT_REVIEWED_HEAD_REQUIRED
 LIVE_EXACT_HEAD_CODERABBIT_STATUS_STATE=success_REQUIRED
 LIVE_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
 LIVE_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
+COMMENT_ASSERTION_MAY_SUBSTITUTE_FOR_LIVE_REPOSITORY_STATE=NO
 ```
 
-A terminal result qualifies only as part of a **unique fresh qualification cycle for the current candidate head**. Every cycle must use a newly generated opaque identifier that is embedded in the initiating request and never reused:
+A provider-specific review-run ID remains required when it is actually exposed. A GitHub issue-comment ID may never be relabeled as a provider run ID.
+
+## 4. Unique fresh full-review qualification cycle
+
+Every candidate-head movement invalidates all earlier CI and review qualification evidence. Every qualifying cycle must use a new opaque cycle ID that is embedded in the initiating request and never reused.
+
+The complete cycle contract is:
 
 ```text
 QUALIFICATION_CYCLE_ID=UNIQUE_OPAQUE_ID_REQUIRED
@@ -205,20 +162,35 @@ QUALIFICATION_CYCLE_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
 
 FRESH_REVIEW_REQUEST_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
 FRESH_REVIEW_REQUEST_RECORD_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
+FRESH_REVIEW_REQUEST_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
 FRESH_REVIEW_REQUEST_CYCLE_ID=EXACT_QUALIFICATION_CYCLE_ID_REQUIRED
 FRESH_REVIEW_REQUEST_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
 FRESH_REVIEW_REQUEST_PR=163_REQUIRED
-FRESH_REVIEW_REQUEST_TARGET_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
+FRESH_REVIEW_REQUEST_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
 FRESH_REVIEW_REQUEST_CREATED_AFTER_CANDIDATE_HEAD=YES_REQUIRED
 
-FRESH_REVIEW_TRIGGER_ACK_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
-FRESH_REVIEW_TRIGGER_ACK_RECORD_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
-FRESH_REVIEW_TRIGGER_ACK_CYCLE_ID=EXACT_QUALIFICATION_CYCLE_ID_REQUIRED
-FRESH_REVIEW_TRIGGER_ACK_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
-FRESH_REVIEW_TRIGGER_ACK_PR=163_REQUIRED
-FRESH_REVIEW_TRIGGER_ACK_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
-FRESH_REVIEW_TRIGGER_ACK_REQUEST_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
-FRESH_REVIEW_TRIGGER_INVOCATION_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
+FRESH_REVIEW_ACK_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
+FRESH_REVIEW_ACK_RECORD_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
+FRESH_REVIEW_ACK_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
+FRESH_REVIEW_ACK_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
+FRESH_REVIEW_ACK_AUTHOR_ID=136622811_REQUIRED
+FRESH_REVIEW_ACK_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+FRESH_REVIEW_ACK_CYCLE_ID=EXACT_QUALIFICATION_CYCLE_ID_REQUIRED
+FRESH_REVIEW_ACK_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
+FRESH_REVIEW_ACK_PR=163_REQUIRED
+FRESH_REVIEW_ACK_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
+FRESH_REVIEW_ACK_REQUEST_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
+FRESH_REVIEW_INVOCATION_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
+
+FRESH_REVIEW_MODE=FULL_REQUIRED
+FRESH_REVIEW_SCOPE=COMPLETE_BASE_TO_HEAD_DELTA_REQUIRED
+FRESH_REVIEW_INCREMENTAL=NO_REQUIRED
+FRESH_REVIEW_PARTIAL=NO_REQUIRED
+FRESH_REVIEW_LIMITATION_AFFECTED=NO_REQUIRED
+FRESH_REVIEW_SKIPPED=NO_REQUIRED
+FRESH_REVIEW_FAILED=NO_REQUIRED
+FRESH_REVIEW_COMPLETION_STATE=COMPLETED_REQUIRED
+FRESH_REVIEW_COMPLETION_RESULT=SUCCESS_REQUIRED
 
 FRESH_REVIEW_PROCESSING_CYCLE_ID=EXACT_QUALIFICATION_CYCLE_ID_REQUIRED
 FRESH_REVIEW_PROCESSING_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
@@ -228,7 +200,11 @@ FRESH_REVIEW_PROCESSING_RUN_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
 FRESH_REVIEW_PROCESSING_RANGE_END_SHA=EXACT_REVIEWED_HEAD_REQUIRED
 
 TERMINAL_CYCLE_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
+TERMINAL_CYCLE_RECORD_ID=EXACT_AUTHORITATIVE_REVIEW_RECORD_ID_REQUIRED
+TERMINAL_CYCLE_RECORD_BODY_SHA256=EXACT_AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256_REQUIRED
 TERMINAL_CYCLE_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
+TERMINAL_CYCLE_RECORD_AUTHOR_ID=136622811_REQUIRED
+TERMINAL_CYCLE_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_CYCLE_ID=EXACT_QUALIFICATION_CYCLE_ID_REQUIRED
 TERMINAL_CYCLE_RECORD_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
 TERMINAL_CYCLE_RECORD_PR=163_REQUIRED
@@ -237,116 +213,88 @@ TERMINAL_CYCLE_RECORD_REQUEST_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
 TERMINAL_CYCLE_RECORD_ACK_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
 TERMINAL_CYCLE_RECORD_INVOCATION_ID=EXACT_EXPOSED_INVOCATION_ID_REQUIRED_IF_EXPOSED
 TERMINAL_CYCLE_RECORD_PROCESSING_RUN_ID=EXACT_EXPOSED_PROCESSING_RUN_ID_REQUIRED_IF_EXPOSED
-TERMINAL_CYCLE_RECORD_REVIEW_RESULT_RECORD_ID=EXACT_TERMINAL_REVIEW_RESULT_RECORD_ID_REQUIRED
+TERMINAL_CYCLE_RECORD_REVIEW_RESULT_RECORD_ID=EXACT_AUTHORITATIVE_REVIEW_RECORD_ID_REQUIRED
+TERMINAL_CYCLE_RECORD_REVIEW_RESULT_RECORD_ID_EQUALS_AUTHORITATIVE_REVIEW_RECORD_ID=YES_REQUIRED
 TERMINAL_CYCLE_RECORD_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
 TERMINAL_CYCLE_RECORD_CURRENT_UNRECONCILED_MATERIAL_RISKS=0_REQUIRED
-TERMINAL_CYCLE_RECORD_MUST_BIND_ALL_EXPOSED_CYCLE_IDENTITIES=YES_REQUIRED
-TERMINAL_CYCLE_RECORD_MUST_BE_TERMINAL_FOR_FRESH_CYCLE=YES_REQUIRED
-STALE_TERMINAL_RECORD_FOR_SAME_SHA_MAY_QUALIFY=NO
-INDEPENDENT_EXACT_HEAD_REVIEW=PASS_ONLY_AFTER_COMPLETE_FRESH_CYCLE_TERMINAL_BINDING
+TERMINAL_CYCLE_RECORD_MUST_BIND_REQUEST_ACK_AND_ALL_EXPOSED_PROVIDER_IDENTITIES=YES_REQUIRED
+TERMINAL_CYCLE_RECORD_MUST_BE_TERMINAL_FOR_THIS_CYCLE=YES_REQUIRED
 ```
 
-The request, acknowledgement, processing evidence, terminal review result, and terminal cycle record must all agree on repository, PR, reviewed head, and qualification-cycle ID. The terminal cycle record must bind the request and acknowledgement **and** every exposed invocation/processing identifier; alternative `OR` binding is forbidden. If CodeRabbit does not expose one of those provider identifiers, its absence must be stated explicitly in the terminal cycle record rather than inferred. Any mismatch or ambiguity fails closed.
+A qualification cycle is invalid if it is incremental-only, partial, skipped, failed, limitation-affected, ambiguous, stale, reused, or not demonstrably a successful full review of the complete base-to-head delta. A clean result or `CodeRabbit=success` for only a subset of changes does not qualify.
 
-Provider-specific review-run metadata is handled as follows:
+The request, acknowledgement, processing evidence, terminal cycle record, and authoritative review record must all agree on repository, PR, exact head, and cycle ID. Request and acknowledgement bodies must remain hash-identical to their pinned snapshots. The acknowledgement must remain GitHub-authenticated as `coderabbitai[bot]` ID `136622811`. The terminal cycle record and authoritative review record are one immutable terminal review-result identity, not two interchangeable records.
 
-```text
-PROVIDER_REVIEW_RUN_ID=REQUIRED_IF_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
-PROVIDER_REVIEW_RUN_ID_IF_NOT_EXPOSED=NOT_REQUIRED
-PROVIDER_REVIEW_RUN_ID_ABSENCE_MAY_NOT_HIDE_MISSING_TERMINAL_COMMENT=YES
-GITHUB_ISSUE_COMMENT_ID_MAY_BE_RELABELED_AS_PROVIDER_RUN_ID=NO
-INVENTED_OR_INFERRED_PROVIDER_RUN_ID=FORBIDDEN
-```
+## 5. PR #162 procedure preservation
 
-The absence of an unexposed provider-internal run UUID is non-fatal only when the complete GitHub issue-comment identity/result binding, unique fresh-cycle binding, separate live repository-state checks, and exact-head status-head binding above all pass. A missing terminal issue comment, wrong bot identity, changed terminal-comment body, stale end SHA, stale/reused review cycle, non-clean terminal result, mismatched live tree/blob/path set, status recorded for another SHA, current material review thread, or unreconciled material risk remains fatal.
-
-The exact-head status remains a consistency gate only. It cannot replace the terminal issue-comment record, unique fresh-cycle proof, or independent live repository-state verification.
-
-## 5. Precedence and preserved PR #162 procedure
 This reconciliation supersedes PR #162 only for:
 
 1. the requirement for a distinct provider review-run UUID when that UUID is not exposed in the authoritative terminal GitHub record; and
-2. the live canonical-main binding after this reconciliation itself becomes canonical.
+2. the live canonical-main binding after this reconciliation becomes canonical.
 
-Every other PR #162 safety, artifact identity, archive confinement, custody, cleanup, authorization-lease, evidence, and terminal-STOP rule remains controlling and unchanged.
+Every other PR #162 rule remains controlling, including:
 
-In particular, this document does not alter the PR #162 procedure that requires:
-
-- exact immutable upstream identity pinning;
-- fresh public-upstream identity verification before acquisition;
-- live authorization lease rechecks throughout the run;
-- immutable asset-ID acquisition only;
-- exact size and SHA-256 verification;
+- immutable upstream identity pinning and fresh public-upstream identity verification;
+- immutable asset-ID acquisition only after a later separately initiated authorized Z0L run;
+- exact size/SHA-256 checks;
 - whole-archive header inspection without zrok execution;
-- rejection of absolute, traversal, Windows-drive, UNC/device, link, special-file, duplicate, case-insensitive-collision, and unexpected-file members;
-- exactly one expected `zrok2.exe` regular file;
-- safe no-follow/no-overwrite extraction into fresh owner-only disposable roots outside repository worktrees and `PATH`;
-- canonical containment checks;
+- rejection of absolute/traversal/Windows-drive/UNC/device/link/special-file/duplicate/case-insensitive-collision/unexpected members;
+- exactly one expected regular `zrok2.exe`;
+- fresh owner-only disposable roots outside repository worktrees and `PATH`;
+- no-follow/no-overwrite extraction and canonical containment checks;
 - non-executing binary hashing and Authenticode-state observation if available;
-- cleanup/quarantine rules for interruption or failure;
-- redacted evidence only; and
+- interruption/failure cleanup and quarantine rules;
+- redacted evidence only;
+- live authorization-lease rechecks throughout any future run; and
 - terminal STOP.
 
-No `zrok2.exe` execution, including `--version`, is authorized.
+No `zrok2.exe` execution, including `--version`, is authorized by this reconciliation.
 
-A future Z0L authorization-lease recheck and evidence report must bind **both** review layers: the canonical PR #162 predecessor terminal review record and the canonical PR #163 reconciliation terminal review record. Neither record may substitute for the other.
+Future authorization evidence must bind both the canonical PR #162 predecessor review record and the canonical PR #163 reconciliation review record. Neither may substitute for the other.
 
-```text
-PR_162_PREDECESSOR_REVIEW_BINDING=REQUIRED
-PR_163_RECONCILIATION_REVIEW_BINDING=REQUIRED
-BOTH_REVIEW_BINDINGS_REQUIRED=YES
-EITHER_REVIEW_BINDING_ALONE_SUFFICIENT=NO
-```
+## 6. Exact-head qualification for PR #163
 
-## 6. This reconciliation candidate identity
-
-The candidate must remain a single-file docs-only delta from Section 2.
+This PR must remain one docs-only changed path from the canonical base:
 
 ```text
-Z0L_REVIEW_IDENTITY_RECONCILIATION_PR=163
-Z0L_REVIEW_IDENTITY_RECONCILIATION_BASE=main
-Z0L_REVIEW_IDENTITY_RECONCILIATION_BASE_SHA=9079673a574815db8ae5986cb997c46e3164283f
-Z0L_REVIEW_IDENTITY_RECONCILIATION_CHANGED_FILE_COUNT=1_REQUIRED
-Z0L_REVIEW_IDENTITY_RECONCILIATION_DOCS_ONLY=YES_REQUIRED
-Z0L_REVIEW_IDENTITY_RECONCILIATION_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
-```
-
-GitHub assigned this reconciliation PR `#163`; this identity is now part of the exact document binding. Every candidate-head movement invalidates all earlier candidate-head CI and review evidence for merge qualification.
-
-## 7. Exact-head qualification contract for this reconciliation
-
-Before merge, live GitHub truth must prove:
-
-```text
-RECONCILIATION_PR_STATE=OPEN_REQUIRED
-RECONCILIATION_PR_DRAFT=NO_REQUIRED
+RECONCILIATION_PR=163
 RECONCILIATION_PR_BASE=main_REQUIRED
 RECONCILIATION_PR_BASE_SHA=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
+RECONCILIATION_PR_STATE=OPEN_REQUIRED
+RECONCILIATION_PR_DRAFT=NO_REQUIRED
+RECONCILIATION_PR_MERGEABLE=YES_REQUIRED
+RECONCILIATION_CHANGED_FILE_COUNT=1_REQUIRED
+RECONCILIATION_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
+RECONCILIATION_DOCS_ONLY=YES_REQUIRED
+
 CANONICAL_MAIN=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
 RECONCILIATION_PR_HEAD=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 RECONCILIATION_PR_TREE=EXACT_INDEPENDENTLY_REVIEWED_TREE_REQUIRED
 RECONCILIATION_DOCUMENT_BLOB=EXACT_INDEPENDENTLY_REVIEWED_BLOB_REQUIRED
-RECONCILIATION_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
+
 EXACT_HEAD_GOVERNANCE=PASS_REQUIRED
 EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
+
 UNIQUE_QUALIFICATION_CYCLE_ID_BINDING=PASS_REQUIRED
+FRESH_REVIEW_REQUEST_ACK_BODY_INTEGRITY_AND_ACK_AUTHENTICATION=PASS_REQUIRED
+FRESH_REVIEW_FULL_MODE_COMPLETE_BASE_TO_HEAD_SCOPE_AND_SUCCESSFUL_COMPLETION=PASS_REQUIRED
+FRESH_REVIEW_NOT_INCREMENTAL_PARTIAL_SKIPPED_FAILED_OR_LIMITATION_AFFECTED=PASS_REQUIRED
 FRESH_REVIEW_CYCLE_COMPLETE_BINDING=PASS_REQUIRED
+TERMINAL_REVIEW_RESULT_ID_EQUALS_AUTHORITATIVE_REVIEW_RECORD_ID=PASS_REQUIRED
 TERMINAL_REVIEW_RECORD_BODY_SHA256_PINNED=PASS_REQUIRED
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
+
 LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
 EXACT_HEAD_CODERABBIT_STATUS_HEAD_SHA=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 EXACT_HEAD_CODERABBIT_STATUS_STATE=success_REQUIRED
 CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
 CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
-RECONCILIATION_PR_MERGEABLE=YES_REQUIRED
 Z0L=NOT_AUTHORIZED_REQUIRED
 ```
 
-For this reconciliation PR itself, the independent-review record must satisfy Section 4, including the unique fresh-cycle chain, complete request/ack/invocation/run/result binding, terminal-record body SHA-256 pin, separate live tree/blob/path/status/thread/risk checks, and exact status-to-head binding. A provider-specific run UUID is recorded if exposed, but its absence is not a failure only when the complete current-cycle chain is unambiguous and every live-state gate passes.
+Any new commit invalidates every prior exact-head CI/review qualification record.
 
-Any candidate-head movement invalidates all prior CI and independent-review qualification evidence for merge.
-
-## 8. Merge contract and mandatory post-merge proof
+## 7. Merge contract
 
 Only GitHub merge-commit semantics are permitted:
 
@@ -358,9 +306,11 @@ AUTO_MERGE=FORBIDDEN
 RECONCILIATION_MERGE_EXPECTED_HEAD_SHA=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 ```
 
-Immediately before merge, canonical main, base, head, tree, document blob, exact single-path delta, CI, unique fresh-review-cycle chain, authoritative terminal issue-comment record and body SHA-256, exact-head status with its bound SHA, material-risk state, thread state, and mergeability must all be independently re-read and remain valid. Assertions inside the terminal comment may not substitute for these live checks.
+Immediately before merge, independently re-read and require unchanged: canonical main, PR state/base/head, reviewed tree, reviewed document blob, exact one-path delta, exact-head CI, unique full-review cycle evidence, request/ack body hashes and authenticated ack identity, terminal review identity/body hash, terminal-result identity equality, CodeRabbit status bound to the exact head, zero current material threads, zero current material risks, and mergeability.
 
-After merge, no Z0L action may begin until live GitHub proves:
+## 8. Mandatory post-merge proof
+
+No Z0L action may begin until live GitHub proves:
 
 ```text
 CANONICAL_MAIN_EQUALS_RETURNED_RECONCILIATION_MERGE=PASS_REQUIRED
@@ -371,15 +321,19 @@ RECONCILIATION_MERGE_PARENT_ORDER_MATCH=PASS_REQUIRED
 RECONCILIATION_MERGE_TREE_EQUALS_REVIEWED_TREE=PASS_REQUIRED
 RECONCILIATION_CANONICAL_DOCUMENT_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
 RECONCILIATION_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
-RECONCILIATION_TERMINAL_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
-RECONCILIATION_TERMINAL_REVIEW_RECORD_BODY_SHA256_STILL_MATCHES=PASS_REQUIRED
+
+RECONCILIATION_AUTHORITATIVE_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
+RECONCILIATION_AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_UNIQUE_QUALIFICATION_CYCLE_BINDING_STILL_MATCHES=PASS_REQUIRED
-RECONCILIATION_FRESH_REVIEW_CYCLE_COMPLETE_BINDING_STILL_MATCHES=PASS_REQUIRED
-RECONCILIATION_LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
+RECONCILIATION_REQUEST_ACK_BODY_HASHES_AND_ACK_AUTHENTICATION_STILL_MATCH=PASS_REQUIRED
+RECONCILIATION_FULL_REVIEW_MODE_COMPLETE_SCOPE_AND_SUCCESSFUL_COMPLETION_STILL_MATCH=PASS_REQUIRED
+RECONCILIATION_TERMINAL_REVIEW_RESULT_ID_STILL_EQUALS_AUTHORITATIVE_REVIEW_RECORD_ID=PASS_REQUIRED
+
 RECONCILIATION_EXACT_HEAD_CODERABBIT_STATUS_HEAD_SHA_STILL_EQUALS_REVIEWED_HEAD=PASS_REQUIRED
 RECONCILIATION_EXACT_HEAD_CODERABBIT_STATUS_STILL_SUCCESS=PASS_REQUIRED
 RECONCILIATION_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
 RECONCILIATION_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
+
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_LIVE_STATE_CROSSCHECK=PASS_REQUIRED
 RECONCILIATION_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
@@ -387,9 +341,9 @@ RECONCILIATION_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
 
 Any failed post-merge check leaves `Z0L=NOT_AUTHORIZED`.
 
-## 9. Maximum canonical effect after this reconciliation
+## 9. Maximum canonical effect
 
-Only after every Section 8 post-merge proof passes may the controlling state become:
+Only after every Section 8 gate passes may the controlling state become:
 
 ```text
 Z0L_REVIEW_IDENTITY_RECONCILIATION=CLOSED_CANONICAL
@@ -412,116 +366,13 @@ H4_COMPLETE=NO
 PROVIDER_SPEND_USD=0.00
 ```
 
-This canonical state authorizes only a later, separately initiated Z0L local-artifact-validation run under the unchanged PR #162 procedure plus this reconciled review-identity/live-main model. It does not execute Z0L and does not prove Z0L PASS.
+This state authorizes only a **later, separately initiated** bounded Z0L local-artifact-validation run under the unchanged PR #162 procedure plus this reconciled review-identity model. It does not execute Z0L or prove Z0L PASS.
 
-The live authorization lease must bind canonical main to this reconciliation merge and must continue to validate both PR #162 and PR #163 review records. If canonical main later moves away, or either required review binding no longer validates, Z0L authority expires fail-closed before the next action until separately reconciled or reauthorized.
+The authorization lease must bind canonical main to the reconciliation merge and both canonical review records. If canonical main later moves away, or either review binding stops validating, Z0L authority expires fail-closed before the next action.
 
-## 10. Future Z0L evidence review fields
+## 10. Explicit non-effects
 
-The PR #162 evidence fields are preserved except for the run-ID observability reconciliation below. Both review layers are mandatory evidence.
-
-### 10.1 PR #162 predecessor review binding
-
-The terminal comment identifies the historical review result; the tree/blob/path/status/thread values below must be independently re-read from GitHub/canonical Git and may not be inferred from comment prose.
-
-```text
-Z0L_PR162_REVIEW_PROVIDER=CodeRabbit
-Z0L_PR162_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
-Z0L_PR162_REVIEW_RECORD_ID=5383779002
-Z0L_PR162_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug
-Z0L_PR162_REVIEW_RECORD_BODY_SHA256=EXACT_CANONICAL_SNAPSHOT_SHA256_REQUIRED
-Z0L_PR162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
-Z0L_PR162_REVIEW_RECORD_AUTHOR_ID=136622811
-Z0L_PR162_REVIEW_REPOSITORY=TheHalfMoon/Kodac
-Z0L_PR162_REVIEW_PR=162
-Z0L_PR162_REVIEW_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
-Z0L_PR162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
-Z0L_PR162_REVIEWED_TREE=97242c91e9408806d32d4d754516bcc63489a2ef
-Z0L_PR162_REVIEWED_DOCUMENT_BLOB=31c593f38ed9e1d95cd135b4baa8ab0c88af4622
-Z0L_PR162_CHANGED_PATH_COUNT=1
-Z0L_PR162_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_SEPARATE_AUTHORIZATION_2026-08-23.md
-Z0L_PR162_CODERABBIT_STATUS_HEAD_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
-Z0L_PR162_CODERABBIT_STATUS_STATE=success
-Z0L_PR162_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
-Z0L_PR162_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
-Z0L_PR162_LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
-Z0L_PR162_PROVIDER_RUN_ID=NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
-```
-
-PR #162 is a closed canonical predecessor, so its historical terminal record does not replace the fresh review required for PR #163. Its record body SHA-256 and independently observed Git identities become a frozen predecessor snapshot at PR #163 canonicalization and must continue to match at every later authorization-lease check.
-
-### 10.2 PR #163 reconciliation review binding
-
-```text
-Z0L_PR163_REVIEW_PROVIDER=CodeRabbit
-Z0L_PR163_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
-Z0L_PR163_REVIEW_RECORD_ID=EXACT_CANONICAL_RECONCILIATION_TERMINAL_COMMENT_ID
-Z0L_PR163_REVIEW_RECORD_NODE_ID=EXACT_CANONICAL_RECONCILIATION_TERMINAL_NODE_ID
-Z0L_PR163_REVIEW_RECORD_BODY_SHA256=EXACT_CANONICAL_TERMINAL_BODY_SHA256
-Z0L_PR163_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
-Z0L_PR163_REVIEW_RECORD_AUTHOR_ID=136622811
-Z0L_PR163_REVIEW_REPOSITORY=TheHalfMoon/Kodac
-Z0L_PR163_REVIEW_PR=163
-Z0L_PR163_REVIEW_END_SHA=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
-Z0L_PR163_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
-Z0L_PR163_REVIEWED_TREE=EXACT_CANONICAL_RECONCILIATION_REVIEWED_TREE
-Z0L_PR163_REVIEWED_DOCUMENT_BLOB=EXACT_CANONICAL_RECONCILIATION_DOCUMENT_BLOB
-Z0L_PR163_CHANGED_PATH_COUNT=1
-Z0L_PR163_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md
-Z0L_PR163_QUALIFICATION_CYCLE_ID=EXACT_UNIQUE_CANONICAL_CYCLE_ID
-Z0L_PR163_FRESH_REVIEW_REQUEST_COMMENT_ID=EXACT_CANONICAL_REQUEST_COMMENT_ID
-Z0L_PR163_FRESH_REVIEW_REQUEST_REPOSITORY=TheHalfMoon/Kodac
-Z0L_PR163_FRESH_REVIEW_REQUEST_PR=163
-Z0L_PR163_FRESH_REVIEW_REQUEST_HEAD=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
-Z0L_PR163_FRESH_REVIEW_ACK_COMMENT_ID=EXACT_CANONICAL_CODERABBIT_ACK_COMMENT_ID
-Z0L_PR163_FRESH_REVIEW_ACK_REPOSITORY=TheHalfMoon/Kodac
-Z0L_PR163_FRESH_REVIEW_ACK_PR=163
-Z0L_PR163_FRESH_REVIEW_ACK_HEAD=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
-Z0L_PR163_FRESH_REVIEW_ACK_REQUEST_ID=EXACT_CANONICAL_REQUEST_COMMENT_ID
-Z0L_PR163_FRESH_REVIEW_INVOCATION_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED
-Z0L_PR163_FRESH_REVIEW_PROCESSING_RUN_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED
-Z0L_PR163_FRESH_REVIEW_RANGE_END_SHA=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
-Z0L_PR163_TERMINAL_CYCLE_RECORD_ID=EXACT_CANONICAL_TERMINAL_CYCLE_RECORD_ID
-Z0L_PR163_TERMINAL_CYCLE_RECORD_CYCLE_ID=EXACT_UNIQUE_CANONICAL_CYCLE_ID
-Z0L_PR163_TERMINAL_CYCLE_RECORD_REQUEST_ID=EXACT_CANONICAL_REQUEST_COMMENT_ID
-Z0L_PR163_TERMINAL_CYCLE_RECORD_ACK_ID=EXACT_CANONICAL_CODERABBIT_ACK_COMMENT_ID
-Z0L_PR163_TERMINAL_CYCLE_RECORD_INVOCATION_ID=EXACT_EXPOSED_VALUE_IF_EXPOSED
-Z0L_PR163_TERMINAL_CYCLE_RECORD_PROCESSING_RUN_ID=EXACT_EXPOSED_VALUE_IF_EXPOSED
-Z0L_PR163_TERMINAL_CYCLE_RECORD_BOUND_TO_ALL_EXPOSED_IDENTITIES=PASS_REQUIRED
-Z0L_PR163_CODERABBIT_STATUS_HEAD_SHA=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
-Z0L_PR163_CODERABBIT_STATUS_STATE=success
-Z0L_PR163_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
-Z0L_PR163_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
-Z0L_PR163_LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
-Z0L_PR163_PROVIDER_RUN_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
-```
-
-```text
-Z0L_BOTH_REVIEW_BINDINGS_PRESENT=PASS_REQUIRED
-Z0L_BOTH_REVIEW_BINDINGS_CURRENT=PASS_REQUIRED
-Z0L_BOTH_REVIEW_RECORD_BODY_SHA256_VALUES_MATCH_CANONICAL_SNAPSHOTS=PASS_REQUIRED
-Z0L_BOTH_CODERABBIT_STATUS_HEAD_BINDINGS_MATCH_REVIEWED_HEADS=PASS_REQUIRED
-Z0L_BOTH_LIVE_STATE_CROSSCHECKS=PASS_REQUIRED
-```
-
-For either review layer, `NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD` may be used only when the terminal GitHub record itself exposes no distinct provider run identifier. It may not excuse a missing or revised terminal record, a stale SHA or review cycle, a non-clean result, a mismatched tree/blob/path set, a status from another head, a current material thread or risk, or a failed exact-head status.
-
-## 11. Explicit non-effects
-
-Neither this candidate nor its possible canonical merge authorizes:
-
-- downloading any zrok archive before a later separately initiated Z0L run;
-- executing `zrok2.exe` or any zrok command;
-- installing zrok or changing PATH, registry, services, or autostart;
-- account signup, login, environment enablement, share creation, or public endpoint creation;
-- payment-method addition or paid provider use;
-- real-secret or credential access;
-- GitHub App creation, installation, configuration, or mutation;
-- webhook activation or delivery;
-- application source mutation;
-- Z0A, Z0S, Z0R, or Z0D;
-- founder process-authority trust-root establishment; or
-- H4 completion.
+Neither this candidate nor its possible canonical merge authorizes any zrok download/extraction/execution/version command/installation; PATH/registry/service/autostart changes; signup/login/environment enablement/share/public endpoint; payment method or paid provider use; secret/credential access; GitHub App mutation; webhook activation; application-source mutation; Z0A/Z0S/Z0R/Z0D; founder process-authority trust-root establishment; or H4 completion.
 
 ```text
 PROVIDER_SPEND_USD=0.00
