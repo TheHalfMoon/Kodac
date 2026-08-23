@@ -131,6 +131,8 @@ This candidate does not reacquire or execute any upstream artifact. It binds the
 Z0L_UPSTREAM_REPOSITORY=openziti/zrok
 Z0L_RELEASE_TAG=v2.0.4
 Z0L_RELEASE_COMMIT=6ff920390e77bf04b8e64871a049400cc417d871
+Z0L_EXPECTED_RELEASE_VERIFICATION=VERIFIED
+Z0L_EXPECTED_RELEASE_VERIFICATION_REASON=valid
 Z0L_ASSET_NAME=zrok_2.0.4_windows_amd64.tar.gz
 Z0L_ASSET_ID=423489481
 Z0L_EXPECTED_SIZE_BYTES=33087763
@@ -145,14 +147,14 @@ THIRD_PARTY_CHECKSUM_AUTHORITY=FORBIDDEN
 UNPINNED_ASSET_DOWNLOAD=FORBIDDEN
 ```
 
-A future Z0L executor must fail closed if fresh upstream GitHub metadata differs from any pinned tag, full release commit, asset name, asset ID, size, SHA-256, or API digest value above. No fallback release, mirror, package manager, installer, or alternate architecture is authorized.
+A future Z0L executor must fail closed if fresh upstream GitHub metadata differs from any pinned tag, full release commit, GitHub verification state/reason, asset name, asset ID, size, SHA-256, or API digest value above. No fallback release, mirror, package manager, installer, or alternate architecture is authorized.
 
 ## 5. Authorization candidate identity and path scope
 
 This candidate must remain a single-file docs-only change from the exact canonical base in Section 2.
 
 ```text
-Z0L_AUTHORIZATION_PR=GITHUB_ASSIGNED_PR_NUMBER_TO_BE_CANONICALLY_BOUND_REQUIRED
+Z0L_AUTHORIZATION_PR=162
 Z0L_AUTHORIZATION_BASE=main
 Z0L_AUTHORIZATION_BASE_SHA=7e07218d0d2ead5585b355a90ad82591f3152094
 Z0L_AUTHORIZATION_CHANGED_FILE_COUNT=1_REQUIRED
@@ -161,13 +163,13 @@ Z0L_AUTHORIZATION_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_SEPARA
 Z0L_AUTHORIZATION_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
 ```
 
-The assigned GitHub PR number must be written into this document before final qualification. That edit creates a new head and invalidates every earlier review or status for merge qualification.
+GitHub assigned this candidate PR `#162`; that identity is now part of the exact document binding. This edit creates a new head and invalidates every earlier review or status for merge qualification.
 
 Any additional path, source-code change, workflow change, dependency change, credential surface, external-infrastructure mutation, or executable artifact is out of scope and fails closed.
 
 ## 6. Independent-review authority model
 
-The authorization-bearing independent-review record for this candidate is the GitHub-authenticated `coderabbitai[bot]` issue-comment record on the candidate PR.
+The authorization-bearing independent-review record for this candidate is the GitHub-authenticated `coderabbitai[bot]` issue-comment record on PR #162.
 
 It must bind all of:
 
@@ -177,7 +179,7 @@ Z0L_AUTH_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
 Z0L_AUTH_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
 Z0L_AUTH_REVIEW_RECORD_AUTHOR_ID=136622811
 Z0L_AUTH_REVIEW_RECORD_REPOSITORY=TheHalfMoon/Kodac
-Z0L_AUTH_REVIEW_RECORD_PR=EXACT_GITHUB_ASSIGNED_AUTHORIZATION_PR_REQUIRED
+Z0L_AUTH_REVIEW_RECORD_PR=162_REQUIRED
 Z0L_AUTH_REVIEW_END_SHA=EXACT_FINAL_CANDIDATE_HEAD_REQUIRED
 Z0L_AUTH_REVIEW_RUN_ID=EXACT_FINAL_RUN_ID_REQUIRED
 Z0L_AUTH_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
@@ -339,7 +341,7 @@ If and only if Section 9 is canonically true at execution time, the permitted pr
 
 ### 10.1 Authorization rechecks
 
-The initial recheck must occur before creating the evidence directory or making acquisition-side network requests. It must re-read canonical main and require it to equal the exact canonical Z0L authorization merge commit; re-read the authorization PR and exact reviewed head/tree/document blob/path set; verify merge parents/order/tree/blob; verify the authoritative CodeRabbit issue-comment review record and exact-head `CodeRabbit=success` consistency status; require zero current non-outdated unresolved material threads; and require the canonical post-merge proof to remain PASS.
+The initial recheck must occur before creating the evidence directory or making acquisition-side network requests. It must re-read canonical main and require it to equal the exact canonical Z0L authorization merge commit; re-read PR #162 and exact reviewed head/tree/document blob/path set; verify merge parents/order/tree/blob; verify the authoritative CodeRabbit issue-comment review record and exact-head `CodeRabbit=success` consistency status; require zero current non-outdated unresolved material threads; and require the canonical post-merge proof to remain PASS.
 
 At the download boundary, after the fresh upstream identity recheck, the same complete authorization binding must be repeated. No action may occur between this repeated authorization recheck and the exact asset-ID request.
 
@@ -448,6 +450,7 @@ CANONICAL_MERGE_DOCUMENT_BLOB_MISMATCH
 CANONICAL_POST_MERGE_PROOF_NOT_PASS
 UPSTREAM_RELEASE_TAG_CHANGED
 UPSTREAM_RELEASE_COMMIT_CHANGED
+UPSTREAM_RELEASE_VERIFICATION_NOT_VALID
 ASSET_NAME_CHANGED
 ASSET_ID_CHANGED
 ASSET_SIZE_CHANGED
@@ -484,7 +487,7 @@ No failure authorizes a retry, fallback, broader asset set, alternate release, a
 A future authorized execution report must bind at least:
 
 ```text
-Z0L_AUTHORIZATION_PR
+Z0L_AUTHORIZATION_PR=162
 Z0L_AUTHORIZATION_CANONICAL_MERGE
 Z0L_AUTHORIZATION_REVIEWED_HEAD
 Z0L_AUTHORIZATION_REVIEWED_TREE
@@ -500,7 +503,7 @@ Z0L_AUTH_REVIEW_PROVIDER=CodeRabbit
 Z0L_AUTH_REVIEW_RECORD_ID
 Z0L_AUTH_REVIEW_RUN_ID
 Z0L_AUTH_REVIEW_REPOSITORY=TheHalfMoon/Kodac
-Z0L_AUTH_REVIEW_PR
+Z0L_AUTH_REVIEW_PR=162
 Z0L_AUTH_REVIEW_END_SHA
 Z0L_AUTH_REVIEW_RESULT
 Z0L_AUTH_REVIEWER_IDENTITY=coderabbitai[bot]
@@ -509,6 +512,9 @@ Z0L_AUTH_CODERABBIT_STATUS_STATE=success
 Z0L_AUTH_CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0
 Z0L_RELEASE_TAG
 Z0L_RELEASE_COMMIT
+Z0L_RELEASE_VERIFICATION_STATE
+Z0L_RELEASE_VERIFICATION_REASON
+Z0L_RELEASE_VERIFICATION_CHECK
 Z0L_ASSET_NAME
 Z0L_ASSET_ID
 Z0L_ASSET_API_URL
