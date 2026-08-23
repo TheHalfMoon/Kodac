@@ -1,0 +1,649 @@
+# KODAC KDO H4-R4B Phase-B — Z0P Canonicalization / Z0L Authorization
+
+Date: 2026-08-22  
+Status: **AUTHORIZATION CANDIDATE — DOCS ONLY — FAIL CLOSED**  
+Repository: `TheHalfMoon/Kodac`
+
+## 1. Purpose
+
+Canonicalize the completed `Z0P=PUBLIC_PROVENANCE_CAPTURE` evidence produced under canonical PR #159, bind that evidence to exact KODAC and upstream zrok identities, and define a separately reviewable authorization boundary for `Z0L=LOCAL_ARTIFACT_VALIDATION`.
+
+This document is a governance mutation only. It does **not** execute Z0L. Until PR #160 is independently reviewed on its exact final head and merged canonically, Z0L remains blocked.
+
+```text
+PROVIDER_SPEND_USD=0.00
+PAID_FALLBACK=FORBIDDEN
+PAYMENT_METHOD_ADDITION=FORBIDDEN
+ZROK_ACCOUNT_MUTATION=NO
+PUBLIC_ENDPOINT_CREATION=NO
+REAL_SECRET_ACCESS=NO
+GITHUB_APP_MUTATION=NO
+WEBHOOK_ACTIVATION=NO
+APP_SOURCE_MUTATION=NO
+H4_COMPLETE=NO
+```
+
+## 2. Exact canonical baseline
+
+```text
+KODAC_CANONICAL_MAIN=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
+KODAC_CANONICAL_TREE=6b7c75796af0140b195e19c557f0dda29f52edd4
+PR_159=MERGED_CANONICAL
+PR_159_MERGE_COMMIT=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
+
+Z0P_AUTHORITY=PUBLIC_READ_ONLY_PROVENANCE_CAPTURE
+Z0L_AUTHORITY_AT_BASE=NOT_AUTHORIZED
+Z0A_AUTHORITY_AT_BASE=NOT_AUTHORIZED
+Z0S_AUTHORITY_AT_BASE=NOT_AUTHORIZED
+Z0R_AUTHORITY_AT_BASE=NOT_AUTHORIZED
+Z0D_AUTHORITY_AT_BASE=NOT_AUTHORIZED
+```
+
+Canonical PR #159 authorized only Z0P read-only public provenance capture and explicitly kept all mutation-bearing stages separately gated.
+
+## 3. Z0P executed evidence binding
+
+The bounded local Z0P probe completed successfully without downloading or executing the zrok archive/binary and without account, endpoint, secret, GitHub App, webhook, or app-source mutation.
+
+### 3.1 Evidence artifact digests
+
+```text
+Z0P_PROBE_PATH=/tmp/kodac-zrok-z0p.sh
+Z0P_PROBE_SHA256=e76c72380687992a778aa7906eb64b342529f561622186ab0545cc9f31461089
+
+Z0P_RESULT_PATH=/tmp/kodac-zrok-z0p-result.txt
+Z0P_RESULT_SHA256=be13cd252926a8a0d32fb39e8b8882df89563e784d5d2106f6229f12ace3d88c
+
+Z0P_REPORT_PATH=/tmp/KODAC_Z0P_UPSTREAM_PROVENANCE_CAPTURE_2026-08-22.md
+Z0P_REPORT_SHA256=48ebe5df66e762f9bcad22d24118a83db14214aa9a333c336d4993fd6d6a927c
+```
+
+The paths above identify the local evidence capture context; the SHA-256 values are the binding authority carried into this governance slice.
+
+### 3.2 Exact upstream release identity
+
+```text
+Z0P_UPSTREAM_REPOSITORY=openziti/zrok
+Z0P_RELEASE_TAG=v2.0.4
+Z0P_RELEASE_ID=324454840
+Z0P_RELEASE_COMMIT=6ff920390e77bf04b8e64871a049400cc417d871
+Z0P_RELEASE_VERIFICATION=VERIFIED
+Z0P_RELEASE_VERIFICATION_REASON=valid
+Z0P_RELEASE_API_ASSET_COUNT=9
+Z0P_PLATFORM=windows
+Z0P_ARCH=amd64
+```
+
+The earlier public-page observation of `Assets 11` is not used as execution authority. The exact GitHub release API response used by the successful probe reported 9 release assets and supplied the exact asset IDs, sizes, and digest below.
+
+### 3.3 Exact Windows amd64 archive identity
+
+```text
+Z0P_RELEASE_ASSET_NAME=zrok_2.0.4_windows_amd64.tar.gz
+Z0P_RELEASE_ASSET_ID=423489481
+Z0P_RELEASE_ASSET_SIZE_BYTES=33087763
+Z0P_RELEASE_ASSET_API_DIGEST=sha256:8e4062a159f65c3735d67d82de0f6a6f59555e9f98a786e80c1e6ab22d92d8c9
+Z0P_RELEASE_ASSET_SHA256=8e4062a159f65c3735d67d82de0f6a6f59555e9f98a786e80c1e6ab22d92d8c9
+```
+
+The SHA-256 obtained from upstream `checksums.sha256.txt` matched the GitHub API asset digest exactly.
+
+```text
+GITHUB_ASSET_DIGEST_MATCH=PASS
+UPSTREAM_CHECKSUM_MATCH=PASS
+THIRD_PARTY_CHECKSUM_AUTHORITY_USED=NO
+THIRD_PARTY_CHECKSUM_VALUE_USED=NO
+```
+
+### 3.4 Checksum and SBOM identities
+
+```text
+Z0P_RELEASE_CHECKSUM_FILE=checksums.sha256.txt
+Z0P_RELEASE_CHECKSUM_ASSET_ID=423489482
+Z0P_RELEASE_CHECKSUM_ASSET_SIZE_BYTES=771
+
+Z0P_RELEASE_SBOM_ASSET=sbom-v2.0.4.spdx.json
+Z0P_RELEASE_SBOM_ASSET_ID=423489459
+Z0P_RELEASE_SBOM_ASSET_SIZE_BYTES=2301255
+```
+
+Z0P required only SBOM presence/identity capture; the SBOM body was not required to be downloaded by Z0P.
+
+## 4. Z0P terminal reconciliation
+
+```text
+Z0P_UPSTREAM_RELEASE_IDENTITY=PASS
+Z0P_FULL_RELEASE_COMMIT=PASS
+Z0P_WINDOWS_AMD64_ASSET_IDENTITY=PASS
+Z0P_UPSTREAM_SHA256=PASS
+Z0P_SBOM_PRESENCE=PASS
+Z0P_NO_BINARY_DOWNLOADED=PASS
+Z0P_NO_EXECUTION=PASS
+Z0P_NO_ACCOUNT_MUTATION=PASS
+Z0P_NO_PUBLIC_ENDPOINT=PASS
+Z0P_NO_REAL_SECRET_ACCESS=PASS
+PROVIDER_SPEND_USD=0.00
+Z0P=PASS
+```
+
+Only after every Section 5 pre-merge and post-merge requirement passes, including exact merge-parent, merge-tree, and document-blob verification, the Z0P status becomes:
+
+```text
+Z0P=CLOSED_CANONICAL
+```
+
+## 5. Exact candidate, independent-review, and canonical-merge gate
+
+The first CodeRabbit review of PR #160 completed on head `6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c` and produced three material findings. The next review completed on head `de94d147ebdff8d7989b3233736938f52ac7c28e` and produced additional current findings. The full exact-head review on `a2d73f8c52c7ca3a8aa1be759775616fd3e333e2`, run `462d3c7e-0fbb-4d3e-9973-5487adb41395`, produced two additional material authorization findings. None of those reviewed heads is merge-qualified and none can authorize Z0L.
+
+```text
+AUTHORIZATION_PR=160
+PRE_REPAIR_REVIEWED_HEAD=6e376fbfc2e91e8ba59f0a17266987a4ca8caf6c
+PRE_REPAIR_REVIEW_RESULT=MATERIAL_FINDINGS
+SECOND_REVIEWED_HEAD=de94d147ebdff8d7989b3233736938f52ac7c28e
+SECOND_REVIEW_RESULT=MATERIAL_FINDINGS
+THIRD_REVIEWED_HEAD=a2d73f8c52c7ca3a8aa1be759775616fd3e333e2
+THIRD_REVIEW_RUN_ID=462d3c7e-0fbb-4d3e-9973-5487adb41395
+THIRD_REVIEW_RESULT=MATERIAL_FINDINGS
+PREVIOUS_AUTHORIZATION_VALID=NO
+```
+
+### 5.1 Exact final candidate identity
+
+The exact final candidate commit, tree, and GitHub document blob digest are read directly from GitHub after the final docs repair. They may be mirrored in PR #160 metadata for audit readability, but **PR-body text is not authorization authority**.
+
+```text
+Z0L_REVIEWED_PR=160
+Z0L_REVIEWED_CANDIDATE_COMMIT=EXACT_40_HEX_REQUIRED
+Z0L_REVIEWED_CANDIDATE_TREE=EXACT_40_HEX_REQUIRED
+Z0L_REVIEWED_DOCUMENT_BLOB_SHA=EXACT_40_HEX_REQUIRED
+Z0L_REVIEWED_DOCUMENT_DIGEST=Z0L_REVIEWED_DOCUMENT_BLOB_SHA
+PR_BODY_IS_AUTHORIZATION_AUTHORITY=NO
+```
+
+The GitHub blob SHA is the canonical document-content digest for this governance gate because it is directly bound by GitHub to the exact file bytes at `Z0L_REVIEWED_CANDIDATE_COMMIT`. No externally copied document digest may substitute for it.
+
+Any PR-body edit after final review invalidates merge qualification and requires a fresh independent review/attestation cycle before Ready or merge, even when the document head did not move.
+
+```text
+PR_BODY_EDIT_AFTER_FINAL_REVIEW=INVALIDATES_MERGE_QUALIFICATION
+```
+
+### 5.2 Independent review attestation
+
+A mutable prose statement in the PR body is never sufficient evidence of review. The authoritative exact-SHA review attestation is the GitHub commit-scoped `CodeRabbit` status on the exact final candidate. The GitHub-authenticated CodeRabbit bot review record supplies audit context and must agree with that status.
+
+Independent review is PASS only when all of the following are observed live:
+
+```text
+INDEPENDENT_REVIEW_PROVIDER=CodeRabbit
+INDEPENDENT_REVIEWER_IDENTITY=coderabbitai[bot]
+INDEPENDENT_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
+CODERABBIT_FINAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+CODERABBIT_FINAL_REVIEW_PR=160
+CODERABBIT_FINAL_REVIEW_RECORD_REPOSITORY_MATCH=YES_REQUIRED
+CODERABBIT_FINAL_REVIEW_RECORD_PR_MATCH=YES_REQUIRED
+CODERABBIT_COMMIT_STATUS_CONTEXT=CodeRabbit
+CODERABBIT_COMMIT_STATUS_STATE=success_REQUIRED_ON_EXACT_CANDIDATE_SHA
+CODERABBIT_COMMIT_STATUS_IS_EXACT_SHA_REVIEW_ATTESTATION=YES
+CODERABBIT_COMMIT_STATUS_PUBLISHER_IDENTITY=EXACT_GITHUB_IDENTITY_REQUIRED
+CODERABBIT_COMMIT_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+CODERABBIT_COMMIT_STATUS_UPDATED_AT=EXACT_TIMESTAMP_REQUIRED
+CODERABBIT_COMMIT_STATUS_FINAL_RUN_BINDING=CODERABBIT_FINAL_REVIEW_RUN_ID_REQUIRED
+CODERABBIT_FINAL_REVIEW_RECORD_ID=EXACT_GITHUB_ID_REQUIRED
+CODERABBIT_FINAL_REVIEW_RUN_ID=EXACT_RUN_ID_REQUIRED
+CODERABBIT_FINAL_REVIEW_END_SHA=EXACT_CANDIDATE_SHA_REQUIRED
+CODERABBIT_FINAL_REVIEW_RECORD_CREATED_AT=EXACT_TIMESTAMP_REQUIRED
+CODERABBIT_FINAL_REVIEW_RECORD_UPDATED_AT=EXACT_TIMESTAMP_REQUIRED
+CODERABBIT_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+CODERABBIT_REVIEW_RECORD_MUTABLE_PROSE_IS_AUTHORITY=NO
+CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0_REQUIRED
+INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
+```
+
+The final review record must explicitly scope itself to repository `TheHalfMoon/Kodac`, PR `#160`, the exact final candidate SHA, and one exact `CODERABBIT_FINAL_REVIEW_RUN_ID`. The selected `CodeRabbit=success` status must be a GitHub-authenticated status published by the CodeRabbit GitHub identity for that same final review cycle. Its publisher identity and status timestamp must be read from GitHub-native status metadata and correlated with the final review record/run. A context-name match alone is insufficient.
+
+The merge preflight must re-read the commit-scoped status, its authenticated publisher metadata, the bot-authored final review record, and current review threads from GitHub. A stale or differently scoped success status, missing/non-success exact-head status, unauthenticated or mismatched status publisher, missing final-run binding, repository/PR mismatch, mismatched review end SHA/run, unauthenticated reviewer identity, edited review record after final qualification, or any current non-outdated unresolved material thread is terminal fail-closed.
+
+The review record ID and timestamps are audit evidence; the commit-scoped status on the exact candidate SHA is the authorization-bearing review attestation only when its authenticated publisher and final-run binding satisfy the requirements above. If the necessary GitHub-native status metadata cannot be observed, the PR must remain unqualified rather than inferring publisher identity from the `CodeRabbit` context string.
+
+### 5.3 Exact repository gates and base continuity
+
+Immediately before Ready and again immediately before merge, GitHub live state must prove:
+
+```text
+PR_NUMBER=160
+PR_HEAD_EQUALS_Z0L_REVIEWED_CANDIDATE_COMMIT=YES
+PR_HEAD_TREE_EQUALS_Z0L_REVIEWED_CANDIDATE_TREE=YES
+DOCUMENT_BLOB_EQUALS_Z0L_REVIEWED_DOCUMENT_BLOB_SHA=YES
+MAIN_EQUALS_CANONICAL_BASE=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
+EXACT_HEAD_REPOSITORY_GATES=PASS
+INDEPENDENT_EXACT_HEAD_REVIEW=PASS
+CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0
+```
+
+Any main/base drift requires a new independently reviewed governance candidate. No rebase, force-push, or destructive history rewriting is authorized.
+
+### 5.4 Canonical merge method and post-merge proof
+
+For this authorization slice, the only permitted merge method is a GitHub merge commit.
+
+```text
+Z0L_CANONICAL_MERGE_METHOD=merge
+SQUASH_MERGE=FORBIDDEN
+REBASE_MERGE=FORBIDDEN
+AUTO_MERGE=FORBIDDEN
+EXPECTED_HEAD_PRECONDITION=REQUIRED
+GITHUB_REST_MERGE_HEAD_PARAMETER=sha
+GITHUB_REST_MERGE_HEAD_VALUE=Z0L_REVIEWED_CANDIDATE_COMMIT_REQUIRED
+CONNECTED_GITHUB_MERGE_HEAD_PARAMETER=expected_head_sha
+CONNECTED_GITHUB_MERGE_HEAD_VALUE=Z0L_REVIEWED_CANDIDATE_COMMIT_REQUIRED
+CONNECTED_EXPECTED_HEAD_SHA_TO_REST_SHA_PRECONDITION=REQUIRED
+```
+
+At the GitHub REST endpoint level, `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` must carry `sha=Z0L_REVIEWED_CANDIDATE_COMMIT`. When the merge is performed through the connected GitHub merge wrapper used for this PR, its `expected_head_sha` input is the wrapper field for this same exact-head merge precondition and must be set to `Z0L_REVIEWED_CANDIDATE_COMMIT`; the wrapper must enforce the REST `sha` mismatch rejection semantics. If that mapping/enforcement cannot be established, merge is not authorized.
+
+Because main is required to remain on the exact canonical base, the resulting merge commit must have exactly these two parents in this order and must have a tree exactly equal to the independently reviewed candidate tree:
+
+```text
+MERGE_PARENT_1=8e366e4816efc7c1e056b3361c635bd8dd7d54a2
+MERGE_PARENT_2=Z0L_REVIEWED_CANDIDATE_COMMIT
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=YES_REQUIRED
+```
+
+After merge, Z0L becomes authorized only if canonical main equals the returned merge commit, the merge head precondition was enforced against the exact reviewed candidate, the merge parents match exactly, the merge tree equals `Z0L_REVIEWED_CANDIDATE_TREE` exactly, the merge tree contains the exact reviewed document blob, and the evidence report binds:
+
+```text
+Z0L_CANONICAL_AUTHORIZATION_PR=160
+Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
+Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT=EXACT_POST_MERGE_VALUE
+Z0L_CANONICAL_MERGE_REST_SHA_PRECONDITION=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_MERGE_CONNECTOR_EXPECTED_HEAD_SHA=EXACT_REVIEWED_VALUE
+MERGE_HEAD_PRECONDITION_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_AUTHORIZATION_TREE=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_AUTHORIZATION_MERGE_TREE=EXACT_REVIEWED_VALUE
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=YES_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_PROVIDER=CodeRabbit
+Z0L_CANONICAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+Z0L_CANONICAL_REVIEW_PR=160
+Z0L_CANONICAL_REVIEW_END_SHA=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
+Z0L_CANONICAL_REVIEW_STATUS_STATE=success
+Z0L_CANONICAL_REVIEW_STATUS_IS_EXACT_SHA_ATTESTATION=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_ID=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_BINDING=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_ID=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_RUN_ID=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT=EXACT_REVIEWED_VALUE
+Z0L_CANONICAL_REVIEWER_IDENTITY=coderabbitai[bot]
+Z0L_CANONICAL_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+Z0L_CANONICAL_CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0
+Z0L_CANONICAL_INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
+```
+
+Any mismatch, including a missing/mismatched merge-head `sha` precondition or `CANONICAL_MERGE_TREE_MISMATCH`, is terminal fail-closed and leaves `Z0L=NOT_AUTHORIZED`.
+
+## 6. Z0L authorization boundary
+
+Z0L remains **not executable while PR #160 is unmerged**.
+
+If and only if the exact final candidate satisfies every Section 5 requirement and is merged canonically, Z0L becomes authorized to perform **local artifact validation only**.
+
+```text
+Z0L=AUTHORIZED_TO_EXECUTE_LOCAL_ARTIFACT_VALIDATION_ONLY
+Z0A=NOT_AUTHORIZED
+Z0S=NOT_AUTHORIZED
+Z0R=NOT_AUTHORIZED
+Z0D=NOT_AUTHORIZED
+```
+
+### 6.1 Exact permitted acquisition
+
+Z0L may acquire exactly one upstream archive and no other zrok executable payload:
+
+```text
+Z0L_UPSTREAM_REPOSITORY=openziti/zrok
+Z0L_RELEASE_TAG=v2.0.4
+Z0L_RELEASE_COMMIT=6ff920390e77bf04b8e64871a049400cc417d871
+Z0L_EXPECTED_RELEASE_VERIFICATION=VERIFIED
+Z0L_EXPECTED_RELEASE_VERIFICATION_REASON=valid
+Z0L_ASSET_NAME=zrok_2.0.4_windows_amd64.tar.gz
+Z0L_ASSET_ID=423489481
+Z0L_EXPECTED_SIZE_BYTES=33087763
+Z0L_ASSET_SIZE_BYTES_ALIAS=33087763
+Z0L_EXPECTED_SHA256=8e4062a159f65c3735d67d82de0f6a6f59555e9f98a786e80c1e6ab22d92d8c9
+Z0L_EXPECTED_API_DIGEST=sha256:8e4062a159f65c3735d67d82de0f6a6f59555e9f98a786e80c1e6ab22d92d8c9
+Z0L_ASSET_API_URL=https://api.github.com/repos/openziti/zrok/releases/assets/423489481
+Z0L_ASSET_ACCEPT=application/octet-stream
+TAG_BASED_BROWSER_DOWNLOAD_AS_AUTHORITY=FORBIDDEN
+```
+
+`Z0L_EXPECTED_SIZE_BYTES` is the canonical expected-size field. `Z0L_ASSET_SIZE_BYTES_ALIAS=33087763` is retained only to make the relationship to the Z0P-captured release metadata explicit and must equal the canonical field exactly.
+
+The acquisition request must use the immutable GitHub release-asset endpoint for asset ID `423489481` with `Accept: application/octet-stream`. A tag-based browser download URL may be used only as descriptive provenance and not as acquisition authority.
+
+At the **download boundary**, after the fresh evidence directory exists, the executor must first re-read upstream GitHub release metadata and checksum authority and fail closed if tag, full release commit, GitHub verification state/reason, asset name, asset ID, expected size, upstream SHA-256, or API digest differs from the Z0P-bound values. After that upstream identity recheck, the executor must repeat the complete `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` against live GitHub state and require it to pass immediately before the first archive-byte request. Between the upstream identity recheck and the download, only this mandatory repeated canonical-authorization recheck may occur; no other network or filesystem action is permitted. No action of any kind may occur between the repeated canonical-authorization recheck and issuance of the exact asset-ID download request.
+
+```text
+FLOATING_LATEST_URL=FORBIDDEN
+TAG_BASED_ASSET_URL_AS_AUTHORITY=FORBIDDEN
+THIRD_PARTY_MIRROR_DOWNLOAD=FORBIDDEN
+THIRD_PARTY_CHECKSUM_AUTHORITY=FORBIDDEN
+UNPINNED_ASSET_DOWNLOAD=FORBIDDEN
+```
+
+### 6.2 Disposable evidence directory and partial-state controls
+
+The evidence root and extraction directory must both be newly created, empty, disposable directories outside every repository worktree and outside `PATH`.
+
+```text
+EXISTING_EVIDENCE_DIRECTORY_REUSE=FORBIDDEN
+EXISTING_EXTRACTION_DIRECTORY_REUSE=FORBIDDEN
+PARTIAL_DOWNLOAD_REUSE=FORBIDDEN
+RESUMED_DOWNLOAD=FORBIDDEN
+OVERWRITE_EXISTING_ARCHIVE=FORBIDDEN
+OVERWRITE_EXISTING_EXTRACTED_FILE=FORBIDDEN
+FAILED_ATTEMPT_REUSE=FORBIDDEN
+```
+
+The archive must first be written to a unique temporary filename inside the evidence directory. Only after exact byte-size and SHA-256 verification may it be promoted to the evidence filename. Any failed or interrupted download is invalid evidence and may not be resumed or reused.
+
+### 6.3 Archive confinement and extraction requirements
+
+No archive member may be extracted until the complete archive header/member inventory has been inspected without executing zrok.
+
+For every member, normalize separators and path components before policy evaluation. Fail closed on any member that is:
+
+- an absolute POSIX path;
+- a Windows drive-qualified path such as `C:\\...` or `C:/...`;
+- a UNC or device path such as `\\\\server\\share`, `//server/share`, `\\\\?\\...`, or `\\\\.\\...`;
+- empty, `.`-only, or contains any `..` traversal component after normalization;
+- a symbolic link, hard link, junction, reparse-point-like member, FIFO, socket, device node, or any other non-regular special file;
+- a duplicate normalized path, including a case-insensitive collision relevant to Windows;
+- outside the freshly created extraction root after canonical path resolution;
+- an executable/installer surface other than the expected `zrok2.exe` regular file;
+- any file not explicitly admitted by the pre-extraction member allowlist.
+
+```text
+SYMLINK_MEMBERS=FORBIDDEN
+HARDLINK_MEMBERS=FORBIDDEN
+SPECIAL_FILE_MEMBERS=FORBIDDEN
+WINDOWS_DRIVE_PATHS=FORBIDDEN
+UNC_DEVICE_PATHS=FORBIDDEN
+DUPLICATE_NORMALIZED_PATHS=FORBIDDEN
+CASE_INSENSITIVE_COLLISIONS=FORBIDDEN
+UNEXPECTED_FILES=FORBIDDEN
+EXPECTED_PRIMARY_BINARY_BASENAME=zrok2.exe
+EXPECTED_PRIMARY_BINARY_TYPE=REGULAR_FILE
+EXPECTED_PRIMARY_BINARY_COUNT=1
+```
+
+The pre-extraction allowlist must be recorded in evidence and must permit only regular files expected from the exact upstream packaging surface. If the exact expected member set cannot be established without broadening trust, Z0L must stop before extraction.
+
+Extraction must use a no-follow/safe extraction mechanism that does not materialize links, does not follow pre-existing filesystem links, refuses overwrite, and verifies after each created file that its canonical path remains beneath the fresh extraction root. A generic unrestricted `tar -xf` or equivalent is not authorized.
+
+Required order:
+
+```text
+1. RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_INITIAL
+2. CREATE_FRESH_EMPTY_DISPOSABLE_EVIDENCE_DIRECTORY
+3. RECHECK_UPSTREAM_EXACT_IDENTITY_AT_DOWNLOAD_BOUNDARY
+4. RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_AT_DOWNLOAD_BOUNDARY
+5. DOWNLOAD_EXACT_ASSET_ID_TO_UNIQUE_TEMP_FILE
+6. RECORD_DOWNLOADED_SIZE_BYTES
+7. COMPUTE_DOWNLOADED_ARCHIVE_SHA256
+8. REQUIRE_EXACT_SIZE_AND_SHA256_MATCH
+9. LIST_AND_PARSE_ALL_ARCHIVE_HEADERS_WITHOUT_EXECUTION
+10. NORMALIZE_AND_VALIDATE_ALL_MEMBER_NAMES
+11. REJECT_LINKS_SPECIAL_FILES_DRIVE_UNC_TRAVERSAL_AND_COLLISIONS
+12. BUILD_AND_RECORD_EXACT_REGULAR_FILE_ALLOWLIST
+13. REQUIRE_EXPECTED_ZROK2_EXE_REGULAR_FILE_COUNT_EQUALS_ONE
+14. CREATE_FRESH_EMPTY_EXTRACTION_DIRECTORY
+15. EXTRACT_WITH_NO_FOLLOW_SAFE_MODE_AND_NO_OVERWRITE
+16. VERIFY_EACH_EXTRACTED_CANONICAL_PATH_REMAINS_UNDER_ROOT
+17. RECORD_EXTRACTED_FILE_LIST
+18. HASH_EXTRACTED_ZROK2_BINARY
+19. RECORD_AUTHENTICODE_STATE_IF_AVAILABLE_WITHOUT_EXECUTING_ZROK
+20. EMIT_REDACTED_Z0L_EVIDENCE_REPORT
+21. STOP
+```
+
+Before step 2, `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_INITIAL` must re-read canonical main, PR #160, the exact reviewed candidate commit/tree/document blob, the GitHub-native CodeRabbit status including authenticated publisher metadata and timestamp, the final CodeRabbit review record/run/end SHA, and current review threads. It must validate every Section 5.2-derived review field required by Section 7, the exact canonical merge commit and REST/wrapper head-precondition evidence, both merge parents in order, merge-tree equality, document-blob equality, and `CANONICAL_POST_MERGE_PROOF=PASS`. Any missing, stale, unauthenticated, differently scoped, or mismatched field stops Z0L before any network or filesystem acquisition action.
+
+At step 4, `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING_AT_DOWNLOAD_BOUNDARY` must repeat the same complete live GitHub validation after the upstream identity recheck and immediately before step 5. Every canonical PR/review, commit/tree/document-blob, merge-head precondition, merge-parent order, merge-tree, review-status publisher/run binding, current-thread, and `CANONICAL_POST_MERGE_PROOF` requirement must still pass. Any missing, stale, unauthenticated, differently scoped, or mismatched field stops Z0L before any archive byte is requested. No network or filesystem action may occur between steps 4 and 5.
+
+Required controls:
+
+```text
+VERIFY_SHA256_BEFORE_EXTRACTION=YES
+VERIFY_ARCHIVE_MEMBER_PATHS_BEFORE_EXTRACTION=YES
+VERIFY_ARCHIVE_MEMBER_TYPES_BEFORE_EXTRACTION=YES
+VERIFY_LINK_TARGETS_BY_REJECTING_ALL_LINK_MEMBERS=YES
+EXTRACT_TO_DISPOSABLE_NON_PATH_DIRECTORY_ONLY=YES
+EXTRACTION_NO_FOLLOW_SAFE_MODE=REQUIRED
+EXTRACTION_NO_OVERWRITE=REQUIRED
+SYSTEM_INSTALL=NO
+USER_PATH_MUTATION=NO
+REGISTRY_MUTATION=NO
+WINDOWS_SERVICE_INSTALL=NO
+AUTO_START=NO
+ZROK_BINARY_EXECUTION=NO
+ZROK_VERSION_COMMAND=NO
+ACCOUNT_SIGNUP=NO
+ACCOUNT_LOGIN=NO
+ENVIRONMENT_ENABLE=NO
+NETWORK_SHARE=NO
+PUBLIC_ENDPOINT=NO
+PAYMENT_METHOD_ADDITION=NO
+REAL_SECRET_ACCESS=NO
+GITHUB_APP_MUTATION=NO
+WEBHOOK_ACTIVATION=NO
+APP_SOURCE_MUTATION=NO
+```
+
+The extracted binary remains quarantined and **must not be executed**, including for `--version`, unless a later independently reviewed canonical authorization explicitly permits execution.
+
+### 6.4 Z0L fail-closed conditions
+
+Z0L must stop immediately if any of the following occurs:
+
+```text
+KODAC_CANONICAL_AUTHORIZATION_NOT_PRESENT
+PR_160_REVIEWED_HEAD_BINDING_MISMATCH
+PR_160_REVIEWED_TREE_BINDING_MISMATCH
+PR_160_DOCUMENT_BLOB_BINDING_MISMATCH
+INDEPENDENT_REVIEW_ATTESTATION_MISSING_OR_MISMATCHED
+CODERABBIT_EXACT_HEAD_STATUS_NOT_SUCCESS
+CODERABBIT_STATUS_PUBLISHER_UNAUTHENTICATED_OR_MISMATCHED
+CODERABBIT_STATUS_FINAL_RUN_BINDING_MISSING_OR_MISMATCHED
+CODERABBIT_REVIEW_RECORD_REPOSITORY_OR_PR_SCOPE_MISMATCH
+CODERABBIT_REVIEW_RECORD_MISSING_EDITED_OR_MISMATCHED
+CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREAD_PRESENT
+PR_BODY_EDITED_AFTER_FINAL_REVIEW
+CANONICAL_MAIN_DRIFTED_FROM_AUTHORIZED_BASE
+CANONICAL_MERGE_METHOD_NOT_MERGE
+MERGE_HEAD_SHA_PRECONDITION_MISSING_OR_MISMATCHED
+CANONICAL_MERGE_PARENT_MISMATCH
+CANONICAL_MERGE_TREE_MISMATCH
+UPSTREAM_RELEASE_TAG_CHANGED
+UPSTREAM_RELEASE_COMMIT_CHANGED
+UPSTREAM_RELEASE_VERIFICATION_NOT_VALID
+ASSET_NAME_CHANGED
+ASSET_ID_CHANGED
+ASSET_SIZE_CHANGED
+UPSTREAM_SHA256_CHANGED_OR_UNAVAILABLE
+UPSTREAM_API_DIGEST_CHANGED_OR_MISMATCH
+DOWNLOAD_BOUNDARY_RECHECK_NOT_IMMEDIATELY_PRECEDING_DOWNLOAD
+CANONICAL_AUTHORIZATION_RECHECK_NOT_IMMEDIATELY_PRECEDING_DOWNLOAD
+DOWNLOADED_SIZE_MISMATCH
+DOWNLOADED_SHA256_MISMATCH
+ARCHIVE_MEMBER_ABSOLUTE_PATH
+ARCHIVE_MEMBER_WINDOWS_DRIVE_PATH
+ARCHIVE_MEMBER_UNC_OR_DEVICE_PATH
+ARCHIVE_MEMBER_PATH_TRAVERSAL
+ARCHIVE_MEMBER_LINK
+ARCHIVE_MEMBER_SPECIAL_FILE
+ARCHIVE_MEMBER_DUPLICATE_NORMALIZED_PATH
+ARCHIVE_MEMBER_CASE_INSENSITIVE_COLLISION
+ARCHIVE_MEMBER_UNEXPECTED_FILE
+EXPECTED_ZROK2_EXE_COUNT_NOT_ONE
+SAFE_EXTRACTION_MODE_UNAVAILABLE
+EXTRACTION_WOULD_OVERWRITE
+EXTRACTED_PATH_ESCAPES_ROOT
+PARTIAL_OR_FAILED_STATE_WOULD_BE_REUSED
+UNEXPECTED_EXECUTABLE_OR_INSTALLER_SURFACE
+VALIDATION_REQUIRES_ZROK_EXECUTION
+VALIDATION_REQUIRES_ACCOUNT_OR_SECRET
+VALIDATION_REQUIRES_PAYMENT
+```
+
+No failed Z0L attempt may broaden authority or fall back to another release, platform, mirror, package manager, installer, extraction mode, or paid path.
+
+## 7. Required Z0L evidence output
+
+A future Z0L execution report must bind at least:
+
+```text
+Z0L_CANONICAL_AUTHORIZATION_PR=160
+Z0L_CANONICAL_AUTHORIZATION_MERGE_METHOD=merge
+Z0L_CANONICAL_AUTHORIZATION_MERGE_COMMIT
+Z0L_CANONICAL_MERGE_REST_SHA_PRECONDITION
+Z0L_CANONICAL_MERGE_CONNECTOR_EXPECTED_HEAD_SHA
+MERGE_HEAD_PRECONDITION_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_MAIN_OBSERVED
+CANONICAL_MAIN_EQUALS_RETURNED_MERGE_COMMIT=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_REVIEWED_HEAD
+Z0L_CANONICAL_MERGE_PARENT_1
+Z0L_CANONICAL_MERGE_PARENT_2
+MERGE_PARENT_1_EQUALS_AUTHORIZED_BASE=PASS_REQUIRED
+MERGE_PARENT_2_EQUALS_REVIEWED_CANDIDATE=PASS_REQUIRED
+MERGE_PARENTS_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_TREE
+Z0L_CANONICAL_AUTHORIZATION_MERGE_TREE
+MERGE_TREE_EQUALS_REVIEWED_CANDIDATE_TREE=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_DOCUMENT_BLOB_SHA
+MERGE_DOCUMENT_BLOB_MATCH=PASS_REQUIRED
+CANONICAL_POST_MERGE_PROOF=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_INITIAL_RECHECK=PASS_REQUIRED
+Z0L_CANONICAL_AUTHORIZATION_DOWNLOAD_BOUNDARY_RECHECK=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_PROVIDER=CodeRabbit
+Z0L_CANONICAL_REVIEW_REPOSITORY=TheHalfMoon/Kodac
+Z0L_CANONICAL_REVIEW_PR=160
+Z0L_CANONICAL_REVIEW_RECORD_REPOSITORY_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_PR_MATCH=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_END_SHA
+Z0L_CANONICAL_REVIEW_END_SHA_EQUALS_REVIEWED_HEAD=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_STATUS_CONTEXT=CodeRabbit
+Z0L_CANONICAL_REVIEW_STATUS_STATE=success
+Z0L_CANONICAL_REVIEW_STATUS_IS_EXACT_SHA_ATTESTATION=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_IDENTITY
+Z0L_CANONICAL_REVIEW_STATUS_PUBLISHER_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_STATUS_UPDATED_AT
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_ID
+Z0L_CANONICAL_REVIEW_STATUS_FINAL_RUN_BINDING=PASS_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_ID
+Z0L_CANONICAL_REVIEW_RUN_ID
+Z0L_CANONICAL_REVIEW_RECORD_CREATED_AT
+Z0L_CANONICAL_REVIEW_RECORD_UPDATED_AT
+Z0L_CANONICAL_REVIEWER_IDENTITY=coderabbitai[bot]
+Z0L_CANONICAL_REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+Z0L_CANONICAL_REVIEW_RECORD_MUTABLE_PROSE_IS_AUTHORITY=NO
+Z0L_CANONICAL_CURRENT_NON_OUTDATED_UNRESOLVED_MATERIAL_THREADS=0
+Z0L_CANONICAL_INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
+Z0L_RELEASE_TAG
+Z0L_RELEASE_COMMIT
+Z0L_RELEASE_VERIFICATION_STATE
+Z0L_RELEASE_VERIFICATION_REASON
+Z0L_RELEASE_VERIFICATION_CHECK
+Z0L_ASSET_NAME
+Z0L_ASSET_ID
+Z0L_ASSET_API_URL
+Z0L_EXPECTED_SIZE_BYTES
+Z0L_DOWNLOADED_SIZE_BYTES
+Z0L_EXPECTED_SHA256
+Z0L_DOWNLOADED_ARCHIVE_SHA256
+Z0L_SHA256_MATCH
+Z0L_UPSTREAM_API_DIGEST
+Z0L_UPSTREAM_API_DIGEST_MATCH
+Z0L_ARCHIVE_MEMBER_LIST_DIGEST
+Z0L_ARCHIVE_MEMBER_ALLOWLIST_DIGEST
+Z0L_ARCHIVE_PATH_CONFINEMENT_CHECK
+Z0L_ARCHIVE_MEMBER_TYPE_CHECK
+Z0L_ARCHIVE_LINK_MEMBER_CHECK
+Z0L_ARCHIVE_COLLISION_CHECK
+Z0L_EXTRACTION_DIRECTORY_CLASS=FRESH_DISPOSABLE_NON_PATH
+Z0L_EXTRACTION_SAFE_MODE=PASS
+Z0L_EXTRACTED_FILE_LIST_DIGEST
+Z0L_EXTRACTED_BINARY_SHA256
+Z0L_AUTHENTICODE_STATE_IF_AVAILABLE
+Z0L_BINARY_EXECUTION=NO
+Z0L_INSTALLATION=NO
+Z0L_ACCOUNT_MUTATION=NO
+Z0L_PUBLIC_ENDPOINT=NO
+Z0L_REAL_SECRET_ACCESS=NO
+PROVIDER_SPEND_USD=0.00
+Z0L_TERMINAL_STATUS
+```
+
+Every review-binding field derived from Section 5.2 and every post-merge proof field above is mandatory. Both `Z0L_CANONICAL_AUTHORIZATION_INITIAL_RECHECK=PASS` and `Z0L_CANONICAL_AUTHORIZATION_DOWNLOAD_BOUNDARY_RECHECK=PASS` are required: the initial recheck must pass before any acquisition-side network or filesystem action, and the repeated download-boundary recheck must pass immediately before the first archive-byte request with no intervening action. `RECHECK_CANONICAL_Z0L_AUTHORIZATION_BINDING` must re-read and validate all live GitHub bindings in both positions. In particular, repository/PR scope, exact review-end SHA, exact-head status state/attestation, authenticated status publisher, status timestamp, final-run identity/binding, review-record identity/timestamps, authenticated independent reviewer identity, current non-outdated unresolved material-thread count, REST/wrapper merge-head precondition, canonical-main equality, exact parent order, merge-tree equality, and document-blob equality must all match. Any missing or non-PASS review-binding result leaves Z0L not authorized.
+
+`CANONICAL_POST_MERGE_PROOF=PASS` may be recorded only when the REST/wrapper merge-head precondition matched the exact reviewed candidate, canonical main equals the returned merge commit, parent 1 equals the authorized canonical base, parent 2 equals the exact reviewed candidate, both parents match in the required order, the merge tree equals the reviewed candidate tree, and the merge tree contains the exact reviewed document blob. Any missing or non-PASS result leaves `Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL` and `Z0L=NOT_AUTHORIZED`; only a complete PASS permits `Z0P=CLOSED_CANONICAL` and the bounded Z0L authorization.
+
+The evidence report must contain no secrets and must not embed binary/archive payloads. `Z0L_RELEASE_VERIFICATION_CHECK` must be `PASS` only when the observed GitHub verification state/reason exactly match the pinned values. `Z0L_UPSTREAM_API_DIGEST_MATCH` must be `PASS` only when the observed upstream API digest exactly equals `Z0L_EXPECTED_API_DIGEST` and the upstream checksum binding remains valid.
+
+## 8. Explicitly blocked stages
+
+Neither Z0P closure nor a future Z0L pass authorizes any later stage.
+
+```text
+Z0A=BLOCKED_SEPARATE_AUTHORIZATION_REQUIRED
+Z0S=BLOCKED_SEPARATE_AUTHORIZATION_REQUIRED
+Z0R=BLOCKED_SEPARATE_AUTHORIZATION_REQUIRED
+Z0D=BLOCKED_SEPARATE_AUTHORIZATION_REQUIRED
+H4_COMPLETE=NO
+```
+
+In particular, this slice does not authorize:
+
+- zrok account signup, login, or environment enablement;
+- reserved names or shares;
+- public endpoints;
+- payment methods or paid features;
+- real GitHub App credentials or webhook secrets;
+- GitHub App installation/configuration mutation;
+- real webhook delivery;
+- app source repository mutation;
+- any claim that zrok is selected as the final KODAC ingress path;
+- any claim that H4 is complete.
+
+## 9. Candidate merge effect
+
+Before merge:
+
+```text
+Z0P=PASS_EVIDENCE_COMPLETE_NOT_CANONICAL
+Z0L=NOT_AUTHORIZED
+```
+
+Only after Section 5 exact candidate identity, commit-scoped independent-review attestation, zero current material threads, exact-head repository gates, unchanged canonical main/base, merge-method restriction, exact REST/wrapper head-precondition enforcement, exact merge-tree equality, and post-merge parent/tree/blob verification all pass:
+
+```text
+Z0P=CLOSED_CANONICAL
+Z0L=AUTHORIZED_TO_EXECUTE_LOCAL_ARTIFACT_VALIDATION_ONLY
+Z0A=NOT_AUTHORIZED
+Z0S=NOT_AUTHORIZED
+Z0R=NOT_AUTHORIZED
+Z0D=NOT_AUTHORIZED
+H4_COMPLETE=NO
+PROVIDER_SPEND_USD=0.00
+```
+
+Any head movement or PR-body edit after final review invalidates merge qualification and requires a fresh independent review cycle. The PR qualification and canonical merge action do not themselves execute Z0L; after successful canonical merge and complete post-merge proof, Z0L is authorized only for the bounded local artifact validation defined in Section 6. No force-push, rebase, destructive history rewriting, squash merge, auto-merge, or Z0L execution as part of PR qualification/merge is authorized.
