@@ -12,7 +12,7 @@ This document is the later controlling governance text for PR #160 where either 
 - `KODAC_KDO_H4_R4B_PHASE_B_Z0P_CANONICALIZATION_Z0L_AUTHORIZATION_2026-08-22.md`
 - `KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_ATTESTATION_RECONCILIATION_2026-08-23.md`
 
-It resolves the three material findings from the full CodeRabbit review ending at head `7aad6df549a10d1321eb37cdda28748eb6c970fb` without broadening authority.
+It resolves the material findings from the CodeRabbit review sequence without broadening authority.
 
 This reconciliation does **not** execute Z0L, download or execute zrok, mutate a zrok account/environment/share, create a public endpoint, add a payment method, access real secrets, mutate a GitHub App, activate a webhook, mutate app source, or establish H4 completion.
 
@@ -21,7 +21,7 @@ PROVIDER_SPEND_USD=0.00
 H4_COMPLETE=NO
 ```
 
-If any earlier PR #160 clause can be read to authorize Ready, merge, Z0L execution, or a weaker review/body/atomicity rule contrary to this document, that earlier clause is superseded for PR #160 and must not be used as authority.
+If any earlier PR #160 clause can be read to authorize Ready, merge, Z0L execution, or a weaker review/body/atomicity/canonicalization rule contrary to this document, that earlier clause is superseded for PR #160 and must not be used as authority.
 
 ## 2. Z0P and Z0L state after this reconciliation
 
@@ -79,7 +79,7 @@ Accordingly:
 EXPECTED_HEAD_SHA_ALONE_IS_ATOMIC_AUTHORIZATION=NO
 CLIENT_SIDE_FINAL_RECHECK_PLUS_MERGE_IS_ATOMIC_AUTHORIZATION=NO
 POST_MERGE_PROOF_IS_AUTHORIZATION=NO
-POST_MERGE_PROOF_ROLE=DETECTION_ONLY
+POST_MERGE_PROOF_ROLE=DETECTION_AND_CANONICALIZATION_CLASSIFICATION_ONLY
 PR_160_MERGE_AUTHORITY=NOT_AUTHORIZED
 READY=NO
 MERGE=NO
@@ -144,7 +144,7 @@ The exact reviewed repository commit, tree, and governance-document blobs remain
 
 This Section supersedes all earlier PR #160 normalized-body digest, body-freeze, and release-notes-exemption rules.
 
-## 6. Effect on the three Major findings at head 7aad6df5
+## 6. Effect on the material findings through head ba01bda1
 
 ### Finding A — unauthenticated release-notes exemption
 
@@ -152,11 +152,15 @@ Resolved by removing PR-body normalization and all PR-body bytes from the author
 
 ### Finding B — authorization recheck not atomic with merge
 
-Resolved fail closed, not by claiming a client-side substitute. The canonical server-side atomic gate remains `NOT_PROVEN`, so PR #160 has `READY=NO` and `MERGE=NO`. The post-merge proof remains detection only.
+Resolved fail closed, not by claiming a client-side substitute. The canonical server-side atomic gate remains `NOT_PROVEN`, so PR #160 has `READY=NO` and `MERGE=NO`. The post-merge proof remains non-authorizing.
 
 ### Finding C — authoritative review record inconsistency
 
 Resolved by making the GitHub-authenticated `coderabbitai[bot]` issue-comment record authoritative for reviewer/run/conclusion/scope/end-SHA evidence and making exact-head `CodeRabbit=success` a consistency gate only.
+
+### Finding D — Z0P canonicalization not gated on complete post-merge proof
+
+Resolved by Section 7.1 below. `Z0P=CLOSED_CANONICAL` is a post-merge classification and may be recorded only after the complete returned-merge/main, parent-order, tree-equality, and governance-document-blob proof passes. A merge response or landed commit by itself is insufficient.
 
 ## 7. Future transition requirements
 
@@ -175,9 +179,62 @@ READY_DECISION=SEPARATELY_REQUALIFIED
 MERGE_DECISION=SEPARATELY_REQUALIFIED
 ```
 
-Even after PR #160 is eventually merged under a proven atomic mechanism, its maximum authority is:
+### 7.1 Mandatory post-merge canonicalization proof
+
+Post-merge proof is **not** merge authorization. It is mandatory before any landed PR #160 commit may be classified as canonical Z0P closure.
+
+The exact independently reviewed candidate must bind, before merge, these immutable values from GitHub:
 
 ```text
+PR_160_REVIEWED_HEAD=EXACT_40_HEX_REQUIRED
+PR_160_REVIEWED_TREE=EXACT_40_HEX_REQUIRED
+PR_160_PRIMARY_DOCUMENT_BLOB_SHA=EXACT_40_HEX_REQUIRED
+PR_160_ATTESTATION_RECONCILIATION_BLOB_SHA=EXACT_40_HEX_REQUIRED
+PR_160_SECURITY_RECONCILIATION_BLOB_SHA=EXACT_40_HEX_REQUIRED
+```
+
+After a future authorized merge, read GitHub canonical truth again and require all of:
+
+```text
+PR_160_MERGE_METHOD=merge_REQUIRED
+PR_160_RETURNED_MERGE_COMMIT=EXACT_40_HEX_REQUIRED
+CANONICAL_MAIN_OBSERVED=EXACT_40_HEX_REQUIRED
+CANONICAL_MAIN_EQUALS_RETURNED_MERGE_COMMIT=PASS_REQUIRED
+
+PR_160_MERGE_PARENT_COUNT=2_REQUIRED
+PR_160_MERGE_PARENT_1=8e366e4816efc7c1e056b3361c635bd8dd7d54a2_REQUIRED
+PR_160_MERGE_PARENT_2=PR_160_REVIEWED_HEAD_REQUIRED
+PR_160_MERGE_PARENT_ORDER_MATCH=PASS_REQUIRED
+
+PR_160_MERGE_TREE=EXACT_40_HEX_REQUIRED
+PR_160_MERGE_TREE_EQUALS_REVIEWED_TREE=PASS_REQUIRED
+
+PR_160_MERGE_PRIMARY_DOCUMENT_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
+PR_160_MERGE_ATTESTATION_RECONCILIATION_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
+PR_160_MERGE_SECURITY_RECONCILIATION_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
+
+PR_160_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
+```
+
+The three governance-document blob checks must read each path from the returned canonical merge commit and compare it with the corresponding blob SHA from the exact independently reviewed candidate. Tree equality does not remove the requirement to record these explicit document-blob checks.
+
+If **any** post-merge requirement above is missing or fails, the landed commit must not be classified as canonical Z0P closure:
+
+```text
+PR_160_POST_MERGE_CANONICALIZATION_PROOF=FAIL
+Z0P_CLOSED_CANONICAL=NO
+Z0L=NOT_AUTHORIZED
+Z0A=NOT_AUTHORIZED
+Z0S=NOT_AUTHORIZED
+Z0R=NOT_AUTHORIZED
+Z0D=NOT_AUTHORIZED
+H4_COMPLETE=NO
+```
+
+Only if every pre-merge authorization gate later becomes satisfied **and** every Section 7.1 post-merge proof passes may the maximum post-merge authority be recorded as:
+
+```text
+PR_160_POST_MERGE_CANONICALIZATION_PROOF=PASS
 Z0P=CLOSED_CANONICAL
 Z0L=NOT_AUTHORIZED
 Z0A=NOT_AUTHORIZED
