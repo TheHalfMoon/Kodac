@@ -114,6 +114,7 @@ PR_162_CODERABBIT_STATUS_STATE=success
 PR_162_LIVE_REVIEW_RECORD_ID=5383779002_REQUIRED
 PR_162_LIVE_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug_REQUIRED
 PR_162_LIVE_REVIEW_RECORD_BODY_SHA256=baa0f648e70d57b7e2413fd97c92b6f10637d4daa8d2345b9353db2ef10a6fcd_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION_REQUIRED
 PR_162_LIVE_REVIEW_RECORD_CREATED_AT=2026-08-23T02:22:18Z_REQUIRED
 PR_162_LIVE_REVIEW_RECORD_UPDATED_AT=2026-08-23T02:22:18Z_REQUIRED
 PR_162_LIVE_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
@@ -135,6 +136,14 @@ PR #162 required a provider review-run UUID that its authoritative terminal GitH
 
 When CodeRabbit does not expose a distinct provider-internal review-run UUID in the authoritative terminal GitHub record, the authorization-bearing observable review identity is the authenticated GitHub issue-comment record itself.
 
+All PR #163 review-record body hashes use one shared input rule:
+
+```text
+PR163_REVIEW_RECORD_BODY_HASH_INPUT_RULE=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION
+```
+
+That rule means the SHA-256 input is the exact current GitHub API `body` string encoded as UTF-8 with no Unicode, newline, whitespace, or other normalization.
+
 A qualifying authoritative review record must prove:
 
 ```text
@@ -143,6 +152,7 @@ AUTHORITATIVE_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_ID=EXACT_GITHUB_ISSUE_COMMENT_ID_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_NODE_ID=EXACT_GITHUB_NODE_ID_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
+AUTHORITATIVE_REVIEW_RECORD_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_ID=136622811_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
@@ -155,20 +165,30 @@ REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
 
 The record above proves its own identity/result only. It may **not** substitute for live repository state.
 
-Live state must be independently re-read from GitHub/canonical Git at qualification, immediately before merge, after merge, and at every later authorization-lease checkpoint:
+Live-state identity is phase-specific. The PR head and canonical-main head are never the same logical field after a merge commit is created:
 
 ```text
-LIVE_REPOSITORY_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
-LIVE_REPOSITORY_TREE=EXACT_REVIEWED_TREE_REQUIRED
-LIVE_REPOSITORY_DOCUMENT_BLOB=EXACT_REVIEWED_DOCUMENT_BLOB_REQUIRED
-LIVE_REPOSITORY_CHANGED_PATH_COUNT=1_REQUIRED
-LIVE_REPOSITORY_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
+LIVE_PR_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
+LIVE_PR_TREE=EXACT_REVIEWED_TREE_REQUIRED
+LIVE_PR_DOCUMENT_BLOB=EXACT_REVIEWED_DOCUMENT_BLOB_REQUIRED
+LIVE_PR_CHANGED_PATH_COUNT=1_REQUIRED
+LIVE_PR_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
+
+LIVE_CANONICAL_MAIN_HEAD_PRE_MERGE=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
+LIVE_CANONICAL_MAIN_TREE_PRE_MERGE=97242c91e9408806d32d4d754516bcc63489a2ef_REQUIRED
+LIVE_CANONICAL_MAIN_HEAD_POST_MERGE=EXACT_RECONCILIATION_MERGE_REQUIRED
+LIVE_CANONICAL_MAIN_TREE_POST_MERGE=EXACT_REVIEWED_TREE_REQUIRED
+LIVE_REVIEWED_PR_HEAD_POST_MERGE=EXACT_REVIEWED_HEAD_REQUIRED
+LIVE_REVIEWED_PR_HEAD_POST_MERGE_IDENTITY_SOURCE=RECONCILIATION_MERGE_PARENT_2_REQUIRED
+
 LIVE_EXACT_HEAD_CODERABBIT_STATUS_HEAD_SHA=EXACT_REVIEWED_HEAD_REQUIRED
 LIVE_EXACT_HEAD_CODERABBIT_STATUS_STATE=success_REQUIRED
 LIVE_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
 LIVE_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
 COMMENT_ASSERTION_MAY_SUBSTITUTE_FOR_LIVE_REPOSITORY_STATE=NO
 ```
+
+At qualification and immediately before merge, canonical main must equal the pinned pre-merge base while the PR head must equal the independently reviewed head. After merge and at later lease checkpoints, canonical main must equal the exact reconciliation merge commit; the reviewed PR head remains a separate immutable identity proven as merge parent 2. No post-merge check may require canonical main to equal the reviewed PR head.
 
 A provider-specific review-run ID remains required when it is actually exposed. A GitHub issue-comment ID may never be relabeled as a provider run ID.
 
@@ -192,6 +212,7 @@ QUALIFICATION_CYCLE_BASE_TREE_EQUALS_CANONICAL_BASE_TREE=YES_REQUIRED
 FRESH_REVIEW_REQUEST_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
 FRESH_REVIEW_REQUEST_RECORD_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
 FRESH_REVIEW_REQUEST_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
+FRESH_REVIEW_REQUEST_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION_REQUIRED
 FRESH_REVIEW_REQUEST_CREATED_AT=EXACT_IMMUTABLE_GITHUB_CREATED_AT_REQUIRED
 FRESH_REVIEW_REQUEST_UPDATED_AT=EXACT_GITHUB_UPDATED_AT_REQUIRED
 FRESH_REVIEW_REQUEST_REVISION_BODY_SHA256_MATCH=YES_REQUIRED
@@ -206,6 +227,7 @@ FRESH_REVIEW_REQUEST_CREATED_AFTER_CANDIDATE_HEAD=YES_REQUIRED
 FRESH_REVIEW_ACK_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
 FRESH_REVIEW_ACK_RECORD_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
 FRESH_REVIEW_ACK_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
+FRESH_REVIEW_ACK_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION_REQUIRED
 FRESH_REVIEW_ACK_CREATED_AT=EXACT_IMMUTABLE_GITHUB_CREATED_AT_REQUIRED
 FRESH_REVIEW_ACK_UPDATED_AT=EXACT_GITHUB_UPDATED_AT_REQUIRED
 FRESH_REVIEW_ACK_REVISION_BODY_SHA256_MATCH=YES_REQUIRED
@@ -252,12 +274,13 @@ FRESH_REVIEW_PROCESSING_RANGE_START_SHA=9079673a574815db8ae5986cb997c46e3164283f
 FRESH_REVIEW_PROCESSING_RANGE_START_TREE=97242c91e9408806d32d4d754516bcc63489a2ef_REQUIRED
 FRESH_REVIEW_PROCESSING_RANGE_END_SHA=EXACT_REVIEWED_HEAD_REQUIRED
 FRESH_REVIEW_PROCESSING_RUN_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
-FRESH_REVIEW_PROCESSING_COMPLETED_AT=EXACT_AUTHENTICATED_COMPLETION_TIMESTAMP_REQUIRED
+FRESH_REVIEW_PROCESSING_COMPLETED_AT=EXACT_PROVIDER_AUTHENTICATED_COMPLETION_TIMESTAMP_REQUIRED
 FRESH_REVIEW_PROCESSING_COMPLETION_REVISION=EXACT_HEAD_AND_RANGE_BINDING_REQUIRED
 
 TERMINAL_CYCLE_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
 TERMINAL_CYCLE_RECORD_ID=EXACT_AUTHORITATIVE_REVIEW_RECORD_ID_REQUIRED
 TERMINAL_CYCLE_RECORD_BODY_SHA256=EXACT_AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256_REQUIRED
+TERMINAL_CYCLE_RECORD_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION_REQUIRED
 TERMINAL_CYCLE_RECORD_CREATED_AT=EXACT_IMMUTABLE_GITHUB_CREATED_AT_REQUIRED
 TERMINAL_CYCLE_RECORD_UPDATED_AT=EXACT_GITHUB_UPDATED_AT_REQUIRED
 TERMINAL_CYCLE_RECORD_REVISION_BODY_SHA256_MATCH=YES_REQUIRED
@@ -295,7 +318,7 @@ FRESH_REVIEW_EVENT_ORDER_AMBIGUITY=FAIL_CLOSED
 
 A qualification cycle is invalid if it is incremental-only, partial, skipped, failed, limitation-affected, ambiguous, stale, reused, timestamp-incomplete, non-monotonic, revision-mismatched, or not demonstrably a successful provider-authenticated full review of the complete canonical-base-to-head delta. A clean result or `CodeRabbit=success` for only a subset of changes does not qualify.
 
-The request, acknowledgement, processing evidence, terminal cycle record, and authoritative review record must all agree on canonical base SHA/tree, repository, PR, exact head, and cycle ID. Request and acknowledgement bodies must remain hash-identical to their pinned snapshots. The acknowledgement must remain GitHub-authenticated as `coderabbitai[bot]` ID `136622811`. The provider-authenticated processing evidence must prove the exact canonical base SHA/tree and exact end SHA. The terminal cycle record and authoritative review record are one immutable terminal review-result identity, not two interchangeable records. Their authenticated timestamps must prove the strict event order `REQUEST_ACK_PROCESSING_TERMINAL`; any unavailable timestamp, non-monotonic order, stale body revision, or identity mismatch fails closed.
+The request, acknowledgement, processing evidence, terminal cycle record, and authoritative review record must all agree on canonical base SHA/tree, repository, PR, exact head, and cycle ID. Every request, acknowledgement, authoritative terminal, and terminal-cycle body hash must use `UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION`. Request and acknowledgement bodies must remain hash-identical to their pinned snapshots. The acknowledgement must remain GitHub-authenticated as `coderabbitai[bot]` ID `136622811`. The provider-authenticated processing evidence must prove the exact canonical base SHA/tree and exact end SHA. The terminal cycle record and authoritative review record are one immutable terminal review-result identity, not two interchangeable records. Their authenticated timestamps must prove the strict event order `REQUEST_ACK_PROCESSING_TERMINAL`; any unavailable timestamp, non-monotonic order, stale body revision, hash-input mismatch, or identity mismatch fails closed.
 
 ## 5. PR #162 procedure preservation
 
@@ -342,8 +365,8 @@ RECONCILIATION_CHANGED_FILE_COUNT=1_REQUIRED
 RECONCILIATION_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md_REQUIRED
 RECONCILIATION_DOCS_ONLY=YES_REQUIRED
 
-CANONICAL_MAIN=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
-CANONICAL_MAIN_TREE=97242c91e9408806d32d4d754516bcc63489a2ef_REQUIRED
+LIVE_CANONICAL_MAIN_HEAD_PRE_MERGE=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
+LIVE_CANONICAL_MAIN_TREE_PRE_MERGE=97242c91e9408806d32d4d754516bcc63489a2ef_REQUIRED
 RECONCILIATION_PR_HEAD=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 RECONCILIATION_PR_TREE=EXACT_INDEPENDENTLY_REVIEWED_TREE_REQUIRED
 RECONCILIATION_DOCUMENT_BLOB=EXACT_INDEPENDENTLY_REVIEWED_BLOB_REQUIRED
@@ -354,6 +377,7 @@ EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
 PREDECESSOR_PR162_IMMUTABLE_REVIEW_IDENTITY_BINDING=PASS_REQUIRED
 PREDECESSOR_PR162_LIVE_REVIEW_IDENTITY_RECHECK=PASS_REQUIRED
 UNIQUE_QUALIFICATION_CYCLE_ID_BINDING=PASS_REQUIRED
+PR163_REVIEW_RECORD_BODY_HASH_INPUT_RULE_BINDING=PASS_REQUIRED
 FRESH_REVIEW_CANONICAL_BASE_SHA_TREE_BINDING=PASS_REQUIRED
 FRESH_REVIEW_PROCESSING_CANONICAL_BASE_SHA_TREE_EQUALITY=PASS_REQUIRED
 FRESH_REVIEW_PROVIDER_AUTHENTICATED_EXACT_CANONICAL_BASE_TO_HEAD_RANGE=PASS_REQUIRED
@@ -367,6 +391,9 @@ TERMINAL_REVIEW_RESULT_ID_EQUALS_AUTHORITATIVE_REVIEW_RECORD_ID=PASS_REQUIRED
 TERMINAL_REVIEW_RECORD_BODY_SHA256_PINNED=PASS_REQUIRED
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
 
+LIVE_PR_HEAD_EQUALS_REVIEWED_HEAD=PASS_REQUIRED
+LIVE_PR_TREE_EQUALS_REVIEWED_TREE=PASS_REQUIRED
+LIVE_PR_DOCUMENT_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
 LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
 EXACT_HEAD_CODERABBIT_STATUS_HEAD_SHA=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 EXACT_HEAD_CODERABBIT_STATUS_STATE=success_REQUIRED
@@ -389,13 +416,37 @@ AUTO_MERGE=FORBIDDEN
 RECONCILIATION_MERGE_EXPECTED_HEAD_SHA=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 ```
 
-Immediately before merge, independently re-read and require unchanged: canonical main SHA/tree, PR base SHA/tree and their equality to canonical main/tree, PR state/head, reviewed tree, reviewed document blob, exact one-path delta, exact-head CI, the literal PR #162 predecessor terminal-comment ID/node/body SHA-256/timestamps/bot identity/GitHub App identity/end SHA/result and their live GitHub equality, unique full-review cycle evidence, cycle/request/ack/processing/terminal canonical-base SHA/tree equality, provider-authenticated exact base-to-head processing range, request/ack body hashes and authenticated ack identity, strict `REQUEST_ACK_PROCESSING_TERMINAL` timestamps and revision bindings, terminal review identity/body hash, terminal-result identity equality, CodeRabbit status bound to the exact head, zero current material threads, zero current material risks, and mergeability.
+Immediately before merge, independently re-read and require unchanged:
+
+- canonical main head/tree equal the pinned pre-merge base `9079673a...` / `97242c91...`;
+- PR base SHA/tree equal that canonical main head/tree;
+- PR state/Ready/mergeability and exact reviewed PR head/tree/blob;
+- exact one-path docs-only delta;
+- exact-head CI;
+- literal PR #162 predecessor terminal-comment ID/node/body SHA-256/hash-input/timestamps/bot identity/GitHub App identity/end SHA/result and their live GitHub equality;
+- shared PR #163 raw-body hashing rule and exact request/ack hashes under that rule;
+- unique full-review cycle evidence;
+- cycle/request/ack/processing/terminal canonical-base SHA/tree equality;
+- provider-authenticated exact base-to-head processing range;
+- strict `REQUEST_ACK_PROCESSING_TERMINAL` timestamps and revision bindings;
+- terminal review identity/body hash/hash-input and terminal-result identity equality;
+- CodeRabbit status bound to the exact reviewed PR head;
+- zero current material threads and zero current material risks; and
+- `Z0L=NOT_AUTHORIZED`.
+
+No pre-merge check treats the future merge commit as already existing.
 
 ## 8. Mandatory post-merge proof
 
-No Z0L action may begin until live GitHub proves:
+No Z0L action may begin until live GitHub proves the phase-specific post-merge identities:
 
 ```text
+LIVE_CANONICAL_MAIN_HEAD_POST_MERGE=EXACT_RETURNED_RECONCILIATION_MERGE_REQUIRED
+LIVE_CANONICAL_MAIN_TREE_POST_MERGE=EXACT_REVIEWED_TREE_REQUIRED
+LIVE_REVIEWED_PR_HEAD_POST_MERGE=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
+LIVE_REVIEWED_PR_HEAD_POST_MERGE_IDENTITY_SOURCE=RECONCILIATION_MERGE_PARENT_2_REQUIRED
+CANONICAL_MAIN_MUST_EQUAL_REVIEWED_PR_HEAD_POST_MERGE=NO_REQUIRED
+
 CANONICAL_MAIN_EQUALS_RETURNED_RECONCILIATION_MERGE=PASS_REQUIRED
 RECONCILIATION_MERGE_PARENT_COUNT=2_REQUIRED
 RECONCILIATION_MERGE_PARENT_1=9079673a574815db8ae5986cb997c46e3164283f_REQUIRED
@@ -412,8 +463,10 @@ RECONCILIATION_PROVIDER_AUTHENTICATED_EXACT_CANONICAL_BASE_TO_HEAD_RANGE_STILL_M
 RECONCILIATION_TERMINAL_BASE_SHA_TREE_EQUALITY_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_AUTHORITATIVE_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256_STILL_MATCHES=PASS_REQUIRED
+RECONCILIATION_AUTHORITATIVE_REVIEW_RECORD_BODY_HASH_INPUT_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_UNIQUE_QUALIFICATION_CYCLE_BINDING_STILL_MATCHES=PASS_REQUIRED
-RECONCILIATION_REQUEST_ACK_BODY_HASHES_AND_ACK_AUTHENTICATION_STILL_MATCH=PASS_REQUIRED
+RECONCILIATION_REQUEST_ACK_BODY_HASHES_AND_HASH_INPUT_RULE_STILL_MATCH=PASS_REQUIRED
+RECONCILIATION_REQUEST_ACK_AUTHENTICATION_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_EVENT_ORDER_TIMESTAMPS_AND_REVISIONS_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_FULL_REVIEW_MODE_COMPLETE_CANONICAL_BASE_TO_HEAD_SCOPE_AND_SUCCESSFUL_COMPLETION_STILL_MATCH=PASS_REQUIRED
 RECONCILIATION_TERMINAL_REVIEW_RESULT_ID_STILL_EQUALS_AUTHORITATIVE_REVIEW_RECORD_ID=PASS_REQUIRED
@@ -426,6 +479,7 @@ RECONCILIATION_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_ID=5383779002_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_BODY_SHA256=baa0f648e70d57b7e2413fd97c92b6f10637d4daa8d2345b9353db2ef10a6fcd_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_CREATED_AT=2026-08-23T02:22:18Z_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_UPDATED_AT=2026-08-23T02:22:18Z_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
@@ -442,9 +496,9 @@ RECONCILIATION_PREDECESSOR_PR162_LIVE_STATE_CROSSCHECK=PASS_REQUIRED
 RECONCILIATION_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
 ```
 
-Any failed post-merge check leaves `Z0L=NOT_AUTHORIZED`.
+The post-merge proof intentionally compares canonical main to the returned merge commit, while preserving the independently reviewed PR head as merge parent 2. Those are separate identities. Any failed post-merge check leaves `Z0L=NOT_AUTHORIZED`.
 
-## 9. Maximum canonical effect
+## 9. Maximum canonical effect and authorization lease
 
 Only after every Section 8 gate passes may the controlling state become:
 
@@ -471,7 +525,7 @@ PROVIDER_SPEND_USD=0.00
 
 This state authorizes only a **later, separately initiated** bounded Z0L local-artifact-validation run under the unchanged PR #162 procedure plus this reconciled review-identity model. It does not execute Z0L or prove Z0L PASS.
 
-The authorization lease must bind canonical main to the reconciliation merge and both canonical review records. If canonical main later moves away, or either review binding stops validating, Z0L authority expires, the next action is denied, and no further action may proceed until a new canonical authorization is established and all required live bindings validate again.
+The authorization lease must bind canonical main to the exact reconciliation merge and bind the independently reviewed PR head separately as that merge commit's parent 2. It must also keep both canonical review records valid under the shared raw-body hashing rule. If canonical main later moves away from the reconciliation merge, the reviewed-parent identity changes, or either review binding stops validating, Z0L authority expires, the next action is denied, and no further action may proceed until a new canonical authorization is established and all required live bindings validate again.
 
 ## 10. Explicit non-effects
 
