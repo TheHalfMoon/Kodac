@@ -94,15 +94,40 @@ PR_162_REVIEW_PROVIDER=CodeRabbit
 PR_162_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
 PR_162_REVIEW_RECORD_ID=5383779002
 PR_162_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug
+PR_162_REVIEW_RECORD_BODY_SHA256=baa0f648e70d57b7e2413fd97c92b6f10637d4daa8d2345b9353db2ef10a6fcd
+PR_162_REVIEW_RECORD_BODY_HASH_INPUT=UTF8_RAW_GITHUB_BODY_NO_NORMALIZATION
+PR_162_REVIEW_RECORD_CREATED_AT=2026-08-23T02:22:18Z
+PR_162_REVIEW_RECORD_UPDATED_AT=2026-08-23T02:22:18Z
 PR_162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
 PR_162_REVIEW_RECORD_AUTHOR_ID=136622811
+PR_162_REVIEW_RECORD_AUTHOR_TYPE=Bot
+PR_162_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES
+PR_162_REVIEW_RECORD_GITHUB_APP_ID=347564
+PR_162_REVIEW_RECORD_GITHUB_APP_SLUG=coderabbitai
 PR_162_REVIEW_REPOSITORY=TheHalfMoon/Kodac
 PR_162_REVIEW_PR=162
 PR_162_REVIEW_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
 PR_162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
 PR_162_CODERABBIT_STATUS_HEAD_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
 PR_162_CODERABBIT_STATUS_STATE=success
+
+PR_162_LIVE_REVIEW_RECORD_ID=5383779002_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_BODY_SHA256=baa0f648e70d57b7e2413fd97c92b6f10637d4daa8d2345b9353db2ef10a6fcd_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_CREATED_AT=2026-08-23T02:22:18Z_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_UPDATED_AT=2026-08-23T02:22:18Z_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_AUTHOR_ID=136622811_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_AUTHOR_TYPE=Bot_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_GITHUB_APP_ID=347564_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_GITHUB_APP_SLUG=coderabbitai_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
+PR_162_LIVE_REVIEW_RECORD_IDENTITY_MATCH=PASS_REQUIRED
 ```
+
+The PR #162 terminal review-record body hash is the SHA-256 of the current raw GitHub API `body` string encoded as UTF-8 without normalization. The literal comment ID, node ID, body hash, creation/update timestamps, bot login/ID/type, and CodeRabbit GitHub App ID/slug are immutable predecessor pins. They must be re-read from GitHub and match exactly at PR #163 qualification, immediately before merge, after merge, and every later authorization-lease checkpoint. An aggregate predecessor flag cannot substitute for these field-level live rechecks.
 
 PR #162 required a provider review-run UUID that its authoritative terminal GitHub record did not expose. That unproven field remains an observability gap; it must not be guessed, inferred, or relabeled from the GitHub issue-comment ID. Therefore PR #162 alone remains fail-closed for Z0L execution authority until this reconciliation becomes canonical and passes its own post-merge proof.
 
@@ -326,6 +351,8 @@ RECONCILIATION_DOCUMENT_BLOB=EXACT_INDEPENDENTLY_REVIEWED_BLOB_REQUIRED
 EXACT_HEAD_GOVERNANCE=PASS_REQUIRED
 EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
 
+PREDECESSOR_PR162_IMMUTABLE_REVIEW_IDENTITY_BINDING=PASS_REQUIRED
+PREDECESSOR_PR162_LIVE_REVIEW_IDENTITY_RECHECK=PASS_REQUIRED
 UNIQUE_QUALIFICATION_CYCLE_ID_BINDING=PASS_REQUIRED
 FRESH_REVIEW_CANONICAL_BASE_SHA_TREE_BINDING=PASS_REQUIRED
 FRESH_REVIEW_PROCESSING_CANONICAL_BASE_SHA_TREE_EQUALITY=PASS_REQUIRED
@@ -362,7 +389,7 @@ AUTO_MERGE=FORBIDDEN
 RECONCILIATION_MERGE_EXPECTED_HEAD_SHA=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 ```
 
-Immediately before merge, independently re-read and require unchanged: canonical main SHA/tree, PR base SHA/tree and their equality to canonical main/tree, PR state/head, reviewed tree, reviewed document blob, exact one-path delta, exact-head CI, unique full-review cycle evidence, cycle/request/ack/processing/terminal canonical-base SHA/tree equality, provider-authenticated exact base-to-head processing range, request/ack body hashes and authenticated ack identity, strict `REQUEST_ACK_PROCESSING_TERMINAL` timestamps and revision bindings, terminal review identity/body hash, terminal-result identity equality, CodeRabbit status bound to the exact head, zero current material threads, zero current material risks, and mergeability.
+Immediately before merge, independently re-read and require unchanged: canonical main SHA/tree, PR base SHA/tree and their equality to canonical main/tree, PR state/head, reviewed tree, reviewed document blob, exact one-path delta, exact-head CI, the literal PR #162 predecessor terminal-comment ID/node/body SHA-256/timestamps/bot identity/GitHub App identity/end SHA/result and their live GitHub equality, unique full-review cycle evidence, cycle/request/ack/processing/terminal canonical-base SHA/tree equality, provider-authenticated exact base-to-head processing range, request/ack body hashes and authenticated ack identity, strict `REQUEST_ACK_PROCESSING_TERMINAL` timestamps and revision bindings, terminal review identity/body hash, terminal-result identity equality, CodeRabbit status bound to the exact head, zero current material threads, zero current material risks, and mergeability.
 
 ## 8. Mandatory post-merge proof
 
@@ -396,6 +423,20 @@ RECONCILIATION_EXACT_HEAD_CODERABBIT_STATUS_STILL_SUCCESS=PASS_REQUIRED
 RECONCILIATION_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
 RECONCILIATION_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
 
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_ID=5383779002_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_BODY_SHA256=baa0f648e70d57b7e2413fd97c92b6f10637d4daa8d2345b9353db2ef10a6fcd_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_CREATED_AT=2026-08-23T02:22:18Z_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_UPDATED_AT=2026-08-23T02:22:18Z_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_AUTHOR_ID=136622811_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_AUTHOR_TYPE=Bot_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_GITHUB_APP_ID=347564_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_GITHUB_APP_SLUG=coderabbitai_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_REVIEW_IDENTITY_FIELD_LEVEL_LIVE_RECHECK=PASS_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_LIVE_STATE_CROSSCHECK=PASS_REQUIRED
 RECONCILIATION_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
@@ -430,7 +471,7 @@ PROVIDER_SPEND_USD=0.00
 
 This state authorizes only a **later, separately initiated** bounded Z0L local-artifact-validation run under the unchanged PR #162 procedure plus this reconciled review-identity model. It does not execute Z0L or prove Z0L PASS.
 
-The authorization lease must bind canonical main to the reconciliation merge and both canonical review records. If canonical main later moves away, or either review binding stops validating, Z0L authority expires fail-closed before the next action.
+The authorization lease must bind canonical main to the reconciliation merge and both canonical review records. If canonical main later moves away, or either review binding stops validating, Z0L authority expires, the next action is denied, and no further action may proceed until a new canonical authorization is established and all required live bindings validate again.
 
 ## 10. Explicit non-effects
 
