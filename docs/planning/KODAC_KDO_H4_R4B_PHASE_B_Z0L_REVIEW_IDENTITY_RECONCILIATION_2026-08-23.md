@@ -117,7 +117,6 @@ PR_162_PRIOR_MODERATE_MERGE_RISK=RECONCILED_ON_REVIEWED_HEAD
 ```
 
 The following PR #162 post-merge checks are already proven:
-
 ```text
 PR_162_MAIN_EQUALS_RETURNED_MERGE=PASS
 PR_162_MERGE_PARENT_COUNT=2_PASS
@@ -138,7 +137,7 @@ The PR #162 authorization document required:
 Z0L_AUTH_REVIEW_RUN_ID=EXACT_FINAL_RUN_ID_REQUIRED
 ```
 
-The terminal exact-head CodeRabbit issue comment `5383779002` proves the provider identity, authenticated GitHub author, repository, PR, reviewed end SHA, reviewed tree, reviewed document blob, terminal result, and current thread state. It does not expose a distinct provider review-run UUID.
+The terminal exact-head CodeRabbit issue comment `5383779002` proves only its GitHub-authenticated record identity, the reviewed end SHA and terminal result that its body explicitly records, and any other values as historical assertions inside that record. It does **not** by itself prove current repository state. Current tree, document blob, changed-path set, exact-head status, and unresolved non-outdated material-thread state must be independently re-read from GitHub/canonical Git and cross-checked against the reviewed identities. The comment does not expose a distinct provider review-run UUID.
 
 No distinct provider review-run UUID is exposed in that authoritative terminal GitHub record, and no separate public run-ID attestation has been proven. The GitHub issue-comment ID must not be relabeled or guessed to be a provider run UUID.
 
@@ -160,12 +159,14 @@ This is an evidence-observability mismatch, not permission to infer or fabricate
 
 For Z0L authorization governance, the authorization-bearing review identity is the GitHub-authenticated issue-comment record itself, not an unobservable provider-internal run UUID.
 
-A qualifying terminal independent-review record must prove all of:
+A qualifying terminal independent-review record must prove its **record identity and recorded result** independently from live repository state:
 
 ```text
 AUTHORITATIVE_REVIEW_RECORD_PROVIDER=CodeRabbit_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_ID=EXACT_GITHUB_ISSUE_COMMENT_ID_REQUIRED
+AUTHORITATIVE_REVIEW_RECORD_NODE_ID=EXACT_GITHUB_NODE_ID_REQUIRED
+AUTHORITATIVE_REVIEW_RECORD_BODY_SHA256=EXACT_CURRENT_BODY_SHA256_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_ID=136622811_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_REPOSITORY=TheHalfMoon/Kodac_REQUIRED
@@ -174,9 +175,41 @@ AUTHORITATIVE_REVIEW_RECORD_END_SHA=EXACT_REVIEWED_HEAD_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_RESULT=NO_ACTIONABLE_COMMENTS_REQUIRED
 AUTHORITATIVE_REVIEW_RECORD_AUTHOR_AUTHENTICATED_BY_GITHUB=YES_REQUIRED
 REVIEWER_INDEPENDENT_FROM_PR_AUTHOR=YES_REQUIRED
-EXACT_HEAD_CODERABBIT_STATUS=success_REQUIRED
-CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
+COMMENT_ASSERTION_MAY_SUBSTITUTE_FOR_LIVE_REPOSITORY_STATE=NO
 ```
+
+The following values are separate live GitHub/canonical-Git observations and must be re-read at qualification, immediately before merge, after merge, and at every later authorization-lease check:
+
+```text
+LIVE_REPOSITORY_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
+LIVE_REPOSITORY_TREE=EXACT_REVIEWED_TREE_REQUIRED
+LIVE_REPOSITORY_DOCUMENT_BLOB=EXACT_REVIEWED_DOCUMENT_BLOB_REQUIRED
+LIVE_REPOSITORY_CHANGED_PATH_COUNT=EXACT_EXPECTED_COUNT_REQUIRED
+LIVE_REPOSITORY_CHANGED_PATH_SET=EXACT_EXPECTED_SET_REQUIRED
+LIVE_EXACT_HEAD_CODERABBIT_STATUS=success_REQUIRED
+LIVE_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
+LIVE_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
+```
+
+A terminal record also qualifies only when it is the result of a **fresh review cycle initiated for the current candidate head**. Freshness must be observable and cycle-bound:
+
+```text
+FRESH_REVIEW_REQUEST_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
+FRESH_REVIEW_REQUEST_RECORD_ID=EXACT_USER_REQUEST_COMMENT_ID_REQUIRED
+FRESH_REVIEW_REQUEST_TARGET_HEAD=EXACT_REVIEWED_HEAD_REQUIRED
+FRESH_REVIEW_REQUEST_CREATED_AFTER_CANDIDATE_HEAD=YES_REQUIRED
+FRESH_REVIEW_TRIGGER_ACK_RECORD_TYPE=GITHUB_ISSUE_COMMENT_REQUIRED
+FRESH_REVIEW_TRIGGER_ACK_RECORD_ID=EXACT_CODERABBIT_ACK_COMMENT_ID_REQUIRED
+FRESH_REVIEW_TRIGGER_INVOCATION_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
+FRESH_REVIEW_PROCESSING_RUN_ID=EXACT_VALUE_IF_EXPOSED_REQUIRED
+FRESH_REVIEW_PROCESSING_RANGE_END_SHA=EXACT_REVIEWED_HEAD_REQUIRED
+TERMINAL_REVIEW_RECORD_MUST_BIND_FRESH_REQUEST_OR_ACK_OR_RUN=YES_REQUIRED
+TERMINAL_REVIEW_RECORD_MUST_BE_TERMINAL_FOR_FRESH_CYCLE=YES_REQUIRED
+STALE_TERMINAL_RECORD_FOR_SAME_SHA_MAY_QUALIFY=NO
+INDEPENDENT_EXACT_HEAD_REVIEW=PASS_ONLY_AFTER_FRESH_CYCLE_TERMINAL_RESULT
+```
+
+If CodeRabbit exposes an invocation ID or processing run ID for the fresh cycle, that exact value becomes mandatory cycle evidence. If it does not expose one, the fresh request record, authenticated CodeRabbit acknowledgement, exact target head, and terminal record must still form an unambiguous observable chain; ambiguity fails closed.
 
 Provider-specific review-run metadata is handled as follows:
 
@@ -188,12 +221,11 @@ GITHUB_ISSUE_COMMENT_ID_MAY_BE_RELABELED_AS_PROVIDER_RUN_ID=NO
 INVENTED_OR_INFERRED_PROVIDER_RUN_ID=FORBIDDEN
 ```
 
-The absence of an unexposed provider-internal run UUID is non-fatal only when the complete GitHub issue-comment binding above is present and the exact-head `CodeRabbit=success` status agrees. A missing terminal issue comment, wrong bot identity, stale end SHA, non-clean terminal result, missing exact-head success status, or current material review thread remains fatal.
+The absence of an unexposed provider-internal run UUID is non-fatal only when the complete GitHub issue-comment identity/result binding, fresh-cycle binding, and separate live repository-state checks above all pass. A missing terminal issue comment, wrong bot identity, changed terminal-comment body, stale end SHA, stale review cycle, non-clean terminal result, mismatched live tree/blob/path set, missing exact-head success status, current material review thread, or unreconciled material risk remains fatal.
 
-The exact-head status remains a consistency gate only. It cannot replace the terminal issue-comment record.
+The exact-head status remains a consistency gate only. It cannot replace the terminal issue-comment record, fresh-cycle proof, or independent live repository-state verification.
 
 ## 5. Precedence and preserved PR #162 procedure
-
 This reconciliation supersedes PR #162 only for:
 
 1. the requirement for a distinct provider review-run UUID when that UUID is not exposed in the authoritative terminal GitHub record; and
@@ -260,7 +292,10 @@ RECONCILIATION_DOCUMENT_BLOB=EXACT_INDEPENDENTLY_REVIEWED_BLOB_REQUIRED
 RECONCILIATION_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
 EXACT_HEAD_GOVERNANCE=PASS_REQUIRED
 EXACT_HEAD_K2_RUNTIME=PASS_REQUIRED
+FRESH_REVIEW_CYCLE_BINDING=PASS_REQUIRED
+TERMINAL_REVIEW_RECORD_BODY_SHA256_PINNED=PASS_REQUIRED
 INDEPENDENT_EXACT_HEAD_REVIEW=PASS_REQUIRED
+LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
 EXACT_HEAD_CODERABBIT_STATUS=success_REQUIRED
 CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
 CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
@@ -268,7 +303,7 @@ RECONCILIATION_PR_MERGEABLE=YES_REQUIRED
 Z0L=NOT_AUTHORIZED_REQUIRED
 ```
 
-For this reconciliation PR itself, the independent-review record must satisfy Section 4. A provider-specific run UUID is recorded if exposed, but its absence is not a failure when the complete GitHub issue-comment identity is proven.
+For this reconciliation PR itself, the independent-review record must satisfy Section 4, including the fresh-cycle chain, terminal-record body SHA-256 pin, and separate live tree/blob/path/status/thread/risk checks. A provider-specific run UUID is recorded if exposed, but its absence is not a failure only when the remaining fresh-cycle chain is unambiguous and every live-state gate passes.
 
 Any candidate-head movement invalidates all prior CI and independent-review qualification evidence for merge.
 
@@ -284,7 +319,7 @@ AUTO_MERGE=FORBIDDEN
 RECONCILIATION_MERGE_EXPECTED_HEAD_SHA=EXACT_INDEPENDENTLY_REVIEWED_HEAD_REQUIRED
 ```
 
-Immediately before merge, canonical main, base, head, tree, document blob, exact single-path delta, CI, authoritative terminal issue-comment record, exact-head status, material-risk state, thread state, and mergeability must all be re-read and remain valid.
+Immediately before merge, canonical main, base, head, tree, document blob, exact single-path delta, CI, fresh-review-cycle chain, authoritative terminal issue-comment record and body SHA-256, exact-head status, material-risk state, thread state, and mergeability must all be independently re-read and remain valid. Assertions inside the terminal comment may not substitute for these live checks.
 
 After merge, no Z0L action may begin until live GitHub proves:
 
@@ -298,9 +333,14 @@ RECONCILIATION_MERGE_TREE_EQUALS_REVIEWED_TREE=PASS_REQUIRED
 RECONCILIATION_CANONICAL_DOCUMENT_BLOB_EQUALS_REVIEWED_BLOB=PASS_REQUIRED
 RECONCILIATION_CHANGED_PATH_SET_EQUALS_EXACT_SINGLE_PATH=PASS_REQUIRED
 RECONCILIATION_TERMINAL_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
+RECONCILIATION_TERMINAL_REVIEW_RECORD_BODY_SHA256_STILL_MATCHES=PASS_REQUIRED
+RECONCILIATION_FRESH_REVIEW_CYCLE_BINDING_STILL_MATCHES=PASS_REQUIRED
+RECONCILIATION_LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
 RECONCILIATION_EXACT_HEAD_CODERABBIT_STATUS_STILL_SUCCESS=PASS_REQUIRED
 RECONCILIATION_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
+RECONCILIATION_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
 RECONCILIATION_PREDECESSOR_PR162_REVIEW_RECORD_STILL_MATCHES=PASS_REQUIRED
+RECONCILIATION_PREDECESSOR_PR162_LIVE_STATE_CROSSCHECK=PASS_REQUIRED
 RECONCILIATION_POST_MERGE_CANONICALIZATION_PROOF=PASS_REQUIRED
 ```
 
@@ -341,19 +381,32 @@ The PR #162 evidence fields are preserved except for the run-ID observability re
 
 ### 10.1 PR #162 predecessor review binding
 
+The terminal comment identifies the historical review result; the tree/blob/path/status/thread values below must be independently re-read from GitHub/canonical Git and may not be inferred from comment prose.
+
 ```text
 Z0L_PR162_REVIEW_PROVIDER=CodeRabbit
 Z0L_PR162_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
 Z0L_PR162_REVIEW_RECORD_ID=5383779002
+Z0L_PR162_REVIEW_RECORD_NODE_ID=IC_kwDOTVTeS88AAAABQOXyug
+Z0L_PR162_REVIEW_RECORD_BODY_SHA256=EXACT_CANONICAL_SNAPSHOT_SHA256_REQUIRED
 Z0L_PR162_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
 Z0L_PR162_REVIEW_RECORD_AUTHOR_ID=136622811
 Z0L_PR162_REVIEW_REPOSITORY=TheHalfMoon/Kodac
 Z0L_PR162_REVIEW_PR=162
 Z0L_PR162_REVIEW_END_SHA=9ebb4c6e5e9e1d4a63bb980200f861b52cbb5247
 Z0L_PR162_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
+Z0L_PR162_REVIEWED_TREE=97242c91e9408806d32d4d754516bcc63489a2ef
+Z0L_PR162_REVIEWED_DOCUMENT_BLOB=31c593f38ed9e1d95cd135b4baa8ab0c88af4622
+Z0L_PR162_CHANGED_PATH_COUNT=1
+Z0L_PR162_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_SEPARATE_AUTHORIZATION_2026-08-23.md
 Z0L_PR162_CODERABBIT_STATUS_STATE=success
+Z0L_PR162_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
+Z0L_PR162_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
+Z0L_PR162_LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
 Z0L_PR162_PROVIDER_RUN_ID=NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
 ```
+
+PR #162 is a closed canonical predecessor, so its historical terminal record does not replace the fresh review required for PR #163. Its record body SHA-256 and independently observed Git identities become a frozen predecessor snapshot at PR #163 canonicalization and must continue to match at every later authorization-lease check.
 
 ### 10.2 PR #163 reconciliation review binding
 
@@ -361,22 +414,39 @@ Z0L_PR162_PROVIDER_RUN_ID=NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
 Z0L_PR163_REVIEW_PROVIDER=CodeRabbit
 Z0L_PR163_REVIEW_RECORD_TYPE=GITHUB_ISSUE_COMMENT
 Z0L_PR163_REVIEW_RECORD_ID=EXACT_CANONICAL_RECONCILIATION_TERMINAL_COMMENT_ID
+Z0L_PR163_REVIEW_RECORD_NODE_ID=EXACT_CANONICAL_RECONCILIATION_TERMINAL_NODE_ID
+Z0L_PR163_REVIEW_RECORD_BODY_SHA256=EXACT_CANONICAL_TERMINAL_BODY_SHA256
 Z0L_PR163_REVIEW_RECORD_AUTHOR_LOGIN=coderabbitai[bot]
 Z0L_PR163_REVIEW_RECORD_AUTHOR_ID=136622811
 Z0L_PR163_REVIEW_REPOSITORY=TheHalfMoon/Kodac
 Z0L_PR163_REVIEW_PR=163
 Z0L_PR163_REVIEW_END_SHA=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
 Z0L_PR163_REVIEW_RESULT=NO_ACTIONABLE_COMMENTS
+Z0L_PR163_REVIEWED_TREE=EXACT_CANONICAL_RECONCILIATION_REVIEWED_TREE
+Z0L_PR163_REVIEWED_DOCUMENT_BLOB=EXACT_CANONICAL_RECONCILIATION_DOCUMENT_BLOB
+Z0L_PR163_CHANGED_PATH_COUNT=1
+Z0L_PR163_CHANGED_PATH=docs/planning/KODAC_KDO_H4_R4B_PHASE_B_Z0L_REVIEW_IDENTITY_RECONCILIATION_2026-08-23.md
+Z0L_PR163_FRESH_REVIEW_REQUEST_COMMENT_ID=EXACT_CANONICAL_REQUEST_COMMENT_ID
+Z0L_PR163_FRESH_REVIEW_ACK_COMMENT_ID=EXACT_CANONICAL_CODERABBIT_ACK_COMMENT_ID
+Z0L_PR163_FRESH_REVIEW_INVOCATION_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED
+Z0L_PR163_FRESH_REVIEW_PROCESSING_RUN_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED
+Z0L_PR163_FRESH_REVIEW_RANGE_END_SHA=EXACT_CANONICAL_RECONCILIATION_REVIEWED_HEAD
+Z0L_PR163_TERMINAL_RECORD_BOUND_TO_FRESH_CYCLE=PASS_REQUIRED
 Z0L_PR163_CODERABBIT_STATUS_STATE=success
+Z0L_PR163_CURRENT_UNRESOLVED_NON_OUTDATED_MATERIAL_REVIEW_THREADS=0_REQUIRED
+Z0L_PR163_CURRENT_UNRECONCILED_MATERIAL_REVIEW_RISKS=0_REQUIRED
+Z0L_PR163_LIVE_TREE_BLOB_PATH_CROSSCHECK=PASS_REQUIRED
 Z0L_PR163_PROVIDER_RUN_ID=VALUE_IF_EXPOSED_OTHERWISE_NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD
 ```
 
 ```text
 Z0L_BOTH_REVIEW_BINDINGS_PRESENT=PASS_REQUIRED
 Z0L_BOTH_REVIEW_BINDINGS_CURRENT=PASS_REQUIRED
+Z0L_BOTH_REVIEW_RECORD_BODY_SHA256_VALUES_MATCH_CANONICAL_SNAPSHOTS=PASS_REQUIRED
+Z0L_BOTH_LIVE_STATE_CROSSCHECKS=PASS_REQUIRED
 ```
 
-For either review layer, `NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD` may be used only when the terminal GitHub record itself exposes no distinct provider run identifier. It may not excuse a missing terminal record, a stale SHA, a non-clean result, or a failed exact-head status.
+For either review layer, `NOT_EXPOSED_IN_AUTHORITATIVE_TERMINAL_RECORD` may be used only when the terminal GitHub record itself exposes no distinct provider run identifier. It may not excuse a missing or revised terminal record, a stale SHA or review cycle, a non-clean result, a mismatched tree/blob/path set, a current material thread or risk, or a failed exact-head status.
 
 ## 11. Explicit non-effects
 
