@@ -1,10 +1,10 @@
 import { createHash, randomUUID } from "node:crypto"
-import { mkdir, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path"
+import { isAbsolute, join, relative, resolve, sep } from "node:path"
 import { pathToFileURL } from "node:url"
 import { runCli, type CliIO } from "./cli.ts"
 import { parsePatch } from "./edit/patch.ts"
+import { writePrivateUtf8File } from "./evidence/store.ts"
 import { OpenAICompatibleProvider } from "./model/openai-compatible.ts"
 import { OpenAIResponsesProvider } from "./model/openai.ts"
 import {
@@ -106,7 +106,14 @@ function parseArgs(argv: string[], cwd: string): LiveSolveArgs {
   const rawWritePaths: string[] = []
   const passthrough: string[] = []
 
-  const valuedPassthrough = new Set(["--verify-command", "--max-turns", "--max-tool-calls", "--max-elapsed-ms", "--max-failures"])
+  const valuedPassthrough = new Set([
+    "--evidence-retention-days",
+    "--verify-command",
+    "--max-turns",
+    "--max-tool-calls",
+    "--max-elapsed-ms",
+    "--max-failures",
+  ])
   for (let index = 1; index < argv.length; index++) {
     const token = argv[index]
     if (token === "--json") {
@@ -211,8 +218,7 @@ function providerForRun(args: LiveSolveArgs, env: NodeJS.ProcessEnv, injected?: 
 }
 
 async function writeSecureJson(path: string, value: unknown): Promise<void> {
-  await mkdir(dirname(path), { recursive: true })
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, { encoding: "utf8", mode: 0o600 })
+  await writePrivateUtf8File(path, `${JSON.stringify(value, null, 2)}\n`)
 }
 
 function authorizationArtifact(

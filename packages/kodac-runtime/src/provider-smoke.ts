@@ -1,8 +1,12 @@
 import { randomUUID } from "node:crypto"
-import { mkdir } from "node:fs/promises"
 import { homedir } from "node:os"
-import { dirname, join, resolve } from "node:path"
+import { join, resolve } from "node:path"
 import { pathToFileURL } from "node:url"
+import {
+  DEFAULT_EVIDENCE_RETENTION_DAYS,
+  prepareEvidenceSession,
+  validateEvidenceRetentionDays,
+} from "./evidence/store.ts"
 import { OpenAICompatibleProvider } from "./model/openai-compatible.ts"
 import { OpenAIResponsesProvider } from "./model/openai.ts"
 import { ProviderRegistry, type ModelProvider } from "./model/provider.ts"
@@ -12,18 +16,26 @@ import { RuntimeOrchestrator } from "./runtime/orchestrator.ts"
 import { RuntimeSession } from "./session/session.ts"
 import { ToolRegistry } from "./tools/registry.ts"
 
-interface SmokeArgs { provider: "openai" | "openai-compatible"; model: string; prompt: string; evidenceDir?: string; json: boolean }
+interface SmokeArgs {
+  provider: "openai" | "openai-compatible"
+  model: string
+  prompt: string
+  evidenceDir?: string
+  evidenceRetentionDays: number
+  json: boolean
+}
 
 function parse(argv: string[]): SmokeArgs {
   let provider: SmokeArgs["provider"] = "openai"
   let model = ""
   let prompt = "Reply with exactly KODAC_PROVIDER_OK."
   let evidenceDir: string | undefined
+  let evidenceRetentionDays = DEFAULT_EVIDENCE_RETENTION_DAYS
   let json = false
   for (let index = 0; index < argv.length; index++) {
     const token = argv[index]
     if (token === "--json") { json = true; continue }
-    if (token === "--provider" || token === "--model" || token === "--prompt" || token === "--evidence-dir") {
+    if (token === "--provider" || token === "--model" || token === "--prompt" || token === "--evidence-dir" || token === "--evidence-retention-days") {
       const value = argv[++index]
       if (!value) throw new Error(`Missing value for ${token}`)
       if (token === "--provider") {
@@ -31,13 +43,14 @@ function parse(argv: string[]): SmokeArgs {
         provider = value
       } else if (token === "--model") model = value
       else if (token === "--prompt") prompt = value
-      else evidenceDir = resolve(value)
+      else if (token === "--evidence-dir") evidenceDir = resolve(value)
+      else evidenceRetentionDays = validateEvidenceRetentionDays(Number(value))
       continue
     }
     throw new Error(`Unknown provider-smoke option: ${token}`)
   }
-  if (!model.trim()) throw new Error("Usage: kodac provider-smoke --model <model-id> [--provider openai|openai-compatible] [--prompt <text>] [--evidence-dir <dir>] [--json]")
-  return { provider, model, prompt, evidenceDir, json }
+  if (!model.trim()) throw new Error("Usage: kodac provider-smoke --model <model-id> [--provider openai|openai-compatible] [--prompt <text>] [--evidence-dir <dir>] [--evidence-retention-days <n>] [--json]")
+  return { provider, model, prompt, evidenceDir, evidenceRetentionDays, json }
 }
 
 function providerFromEnv(name: SmokeArgs["provider"], env: NodeJS.ProcessEnv): ModelProvider {
@@ -49,8 +62,8 @@ export async function runProviderSmoke(argv: string[], env: NodeJS.ProcessEnv = 
   const args = parse(argv)
   const sessionId = randomUUID()
   const root = args.evidenceDir ?? join(homedir(), ".kodac", "provider-smoke")
-  const eventPath = join(root, sessionId, "events.jsonl")
-  await mkdir(dirname(eventPath), { recursive: true })
+  const { sessionDir } = await prepareEvidenceSession({ root, sessionId, retentionDays: args.evidenceRetentionDays })
+  const eventPath = join(sessionDir, "events.jsonl")
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   const tools = new ToolRegistry()
   const orchestrator = new RuntimeOrchestrator(tools, session)

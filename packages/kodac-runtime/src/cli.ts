@@ -1,11 +1,17 @@
 import { createHash, randomUUID } from "node:crypto"
-import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { readFile } from "node:fs/promises"
 import { homedir } from "node:os"
-import { dirname, join, resolve } from "node:path"
+import { join, resolve } from "node:path"
 import { pathToFileURL } from "node:url"
 import { BoundedAgentLoop, DEFAULT_AGENT_LOOP_LIMITS, type AgentLoopLimits } from "./agent/loop.ts"
 import { NodeWorkspaceFileSystem } from "./edit/filesystem.ts"
 import { JsonlReceiptLedger, readReceiptLedger } from "./evidence/ledger.ts"
+import {
+  DEFAULT_EVIDENCE_RETENTION_DAYS,
+  MAX_EVIDENCE_RETENTION_DAYS,
+  prepareEvidenceSession,
+  writePrivateUtf8File,
+} from "./evidence/store.ts"
 import { ExecutionGateway } from "./execution/gateway.ts"
 import { FixtureModelProvider } from "./model/fixture.ts"
 import { ProviderRegistry, type ModelProvider } from "./model/provider.ts"
@@ -35,6 +41,7 @@ export interface CliRuntimeOptions {
 interface CommonArgs {
   workspace: string
   evidenceDir?: string
+  evidenceRetentionDays: number
   json: boolean
 }
 
@@ -102,14 +109,21 @@ function parseCommonOptions(argv: string[], startIndex: number, cwd: string, tar
       continue
     }
     if (
-      token === "--workspace" || token === "--evidence-dir" || token === "--provider" || token === "--model" ||
+      token === "--workspace" || token === "--evidence-dir" || token === "--evidence-retention-days" ||
+      token === "--provider" || token === "--model" ||
       token === "--max-turns" || token === "--max-tool-calls" || token === "--max-elapsed-ms" || token === "--max-failures"
     ) {
       const value = argv[++index]
       if (!value) throw new Error(`Missing value for ${token}`)
       if (token === "--workspace") target.workspace = resolve(cwd, value)
       else if (token === "--evidence-dir") target.evidenceDir = resolve(cwd, value)
-      else if (token === "--provider") target.provider = value
+      else if (token === "--evidence-retention-days") {
+        const days = parsePositiveInteger(token, value)
+        if (days > MAX_EVIDENCE_RETENTION_DAYS) {
+          throw new Error(`--evidence-retention-days must not exceed ${MAX_EVIDENCE_RETENTION_DAYS}`)
+        }
+        target.evidenceRetentionDays = days
+      } else if (token === "--provider") target.provider = value
       else if (token === "--model") target.model = value
       else if (token === "--max-turns") target.maxTurns = parsePositiveInteger(token, value)
       else if (token === "--max-tool-calls") target.maxToolCalls = parsePositiveInteger(token, value)
@@ -132,6 +146,7 @@ function parseCliArgs(argv: string[], cwd: string): CliArgs {
       command: "apply-patch",
       patchFile: resolve(cwd, argv[1]),
       workspace: resolve(cwd),
+      evidenceRetentionDays: DEFAULT_EVIDENCE_RETENTION_DAYS,
       json: false,
     }
     parseCommonOptions(argv, 2, cwd, result as ApplyPatchArgs & Record<string, unknown>)
@@ -146,6 +161,7 @@ function parseCliArgs(argv: string[], cwd: string): CliArgs {
       command: "ask",
       prompt: argv[1],
       workspace: resolve(cwd),
+      evidenceRetentionDays: DEFAULT_EVIDENCE_RETENTION_DAYS,
       provider: "fixture",
       model: "fixture/deterministic-v1",
       json: false,
@@ -168,10 +184,12 @@ function parseCliArgs(argv: string[], cwd: string): CliArgs {
       maxToolCalls: number
       maxElapsedMs: number
       maxFailures: number
+      evidenceRetentionDays: number
     } = {
       command: "solve",
       prompt: argv[1],
       workspace: resolve(cwd),
+      evidenceRetentionDays: DEFAULT_EVIDENCE_RETENTION_DAYS,
       provider: "fixture",
       model: "fixture/deterministic-v1",
       json: false,
@@ -194,6 +212,7 @@ function parseCliArgs(argv: string[], cwd: string): CliArgs {
       prompt: mutable.prompt,
       workspace: mutable.workspace,
       evidenceDir: mutable.evidenceDir as string | undefined,
+      evidenceRetentionDays: mutable.evidenceRetentionDays,
       provider: mutable.provider,
       model: mutable.model,
       json: mutable.json,
@@ -211,11 +230,11 @@ function parseCliArgs(argv: string[], cwd: string): CliArgs {
   }
 
   throw new Error(
-    "Usage: kodac apply-patch <patch-file> [--workspace <dir>] [--evidence-dir <dir>] [--json]\n" +
-      "   or: kodac ask <prompt> [--provider fixture] [--model <id>] [--workspace <dir>] [--evidence-dir <dir>] [--json]\n" +
+    "Usage: kodac apply-patch <patch-file> [--workspace <dir>] [--evidence-dir <dir>] [--evidence-retention-days <n>] [--json]\n" +
+      "   or: kodac ask <prompt> [--provider fixture] [--model <id>] [--workspace <dir>] [--evidence-dir <dir>] [--evidence-retention-days <n>] [--json]\n" +
       "   or: kodac solve <task> [--provider fixture] [--model <id>] [--approve-writes] [--approve-verification] " +
       "[--verify-command <json>] [--max-turns <n>] [--max-tool-calls <n>] [--max-elapsed-ms <n>] [--max-failures <n>] " +
-      "[--workspace <dir>] [--evidence-dir <dir>] [--json]",
+      "[--workspace <dir>] [--evidence-dir <dir>] [--evidence-retention-days <n>] [--json]",
   )
 }
 
@@ -226,14 +245,18 @@ function defaultIO(): CliIO {
   }
 }
 
-function sessionPaths(args: CommonArgs, sessionId: string): {
+async function sessionPaths(args: CommonArgs, sessionId: string): Promise<{
   eventPath: string
   receiptPath: string
   planPath: string
   proofPath: string
-} {
+}> {
   const evidenceRoot = args.evidenceDir ?? defaultEvidenceRoot(args.workspace)
-  const sessionEvidenceDir = join(evidenceRoot, sessionId)
+  const { sessionDir: sessionEvidenceDir } = await prepareEvidenceSession({
+    root: evidenceRoot,
+    sessionId,
+    retentionDays: args.evidenceRetentionDays,
+  })
   return {
     eventPath: join(sessionEvidenceDir, "events.jsonl"),
     receiptPath: join(sessionEvidenceDir, "receipts.jsonl"),
@@ -243,8 +266,7 @@ function sessionPaths(args: CommonArgs, sessionId: string): {
 }
 
 async function writePlanArtifact(path: string, plan: VerificationPlan): Promise<void> {
-  await mkdir(dirname(path), { recursive: true })
-  await writeFile(path, `${JSON.stringify(plan, null, 2)}\n`, "utf8")
+  await writePrivateUtf8File(path, `${JSON.stringify(plan, null, 2)}\n`)
 }
 
 async function writeProofArtifact(
@@ -253,8 +275,7 @@ async function writeProofArtifact(
   report: VerificationReport,
   gate: DoneGateResult,
 ): Promise<void> {
-  await mkdir(dirname(path), { recursive: true })
-  await writeFile(
+  await writePrivateUtf8File(
     path,
     `${JSON.stringify({
       protocol: "kodac.proof",
@@ -264,7 +285,6 @@ async function writeProofArtifact(
       verification: report,
       doneGate: gate,
     }, null, 2)}\n`,
-    "utf8",
   )
 }
 
@@ -316,7 +336,7 @@ function modelRuntime(
 async function runApplyPatch(args: ApplyPatchArgs, io: CliIO, activateSession: ActivateSession): Promise<number> {
   const patchText = await readFile(args.patchFile, "utf8")
   const sessionId = randomUUID()
-  const { eventPath, receiptPath } = sessionPaths(args, sessionId)
+  const { eventPath, receiptPath } = await sessionPaths(args, sessionId)
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   activateSession(session)
   const receipts = new JsonlReceiptLedger(receiptPath)
@@ -358,7 +378,7 @@ async function runAsk(
   runtimeOptions: CliRuntimeOptions,
 ): Promise<number> {
   const sessionId = randomUUID()
-  const { eventPath, receiptPath } = sessionPaths(args, sessionId)
+  const { eventPath, receiptPath } = await sessionPaths(args, sessionId)
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   activateSession(session)
   const { runner } = modelRuntime(session, {
@@ -400,7 +420,7 @@ async function runSolve(
   runtimeOptions: CliRuntimeOptions,
 ): Promise<number> {
   const sessionId = randomUUID()
-  const { eventPath, receiptPath, planPath, proofPath } = sessionPaths(args, sessionId)
+  const { eventPath, receiptPath, planPath, proofPath } = await sessionPaths(args, sessionId)
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   activateSession(session)
   const { runner } = modelRuntime(session, {
