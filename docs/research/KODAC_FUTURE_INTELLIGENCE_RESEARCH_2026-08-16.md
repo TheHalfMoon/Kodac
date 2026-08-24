@@ -14,11 +14,11 @@ requirement or an authority-bearing plan.
 The verification is pinned to these exact arXiv versions so later revisions do
 not silently change the source snapshot:
 
-- `2608.13331v1` — <https://arxiv.org/abs/2608.13331v1>
-- `2602.06052v4` — <https://arxiv.org/abs/2602.06052v4>
-- `2504.01990v2` — <https://arxiv.org/abs/2504.01990v2>
-- `2512.24880v2` — <https://arxiv.org/abs/2512.24880v2>
-- `2603.19312v3` — <https://arxiv.org/abs/2603.19312v3>
+- `2608.13331v1` — [abstract](https://arxiv.org/abs/2608.13331v1) · [PDF](https://arxiv.org/pdf/2608.13331v1)
+- `2602.06052v4` — [abstract](https://arxiv.org/abs/2602.06052v4) · [PDF](https://arxiv.org/pdf/2602.06052v4)
+- `2504.01990v2` — [abstract](https://arxiv.org/abs/2504.01990v2) · [PDF](https://arxiv.org/pdf/2504.01990v2)
+- `2512.24880v2` — [abstract](https://arxiv.org/abs/2512.24880v2) · [PDF](https://arxiv.org/pdf/2512.24880v2)
+- `2603.19312v3` — [abstract](https://arxiv.org/abs/2603.19312v3) · [PDF](https://arxiv.org/pdf/2603.19312v3)
 
 The Inherent research index and linked Faraday article were accessed on
 2026-08-24; unlike the arXiv records above, that web page is not an immutable
@@ -90,8 +90,8 @@ CodeRabbit, Qodo, Cubic, Greptile, Graphite, Semgrep, CodeQL, Sonar, Snyk, and s
 
 Primary references:
 
-- https://arxiv.org/abs/2608.13331
-- https://arxiv.org/pdf/2608.13331
+- https://arxiv.org/abs/2608.13331v1
+- https://arxiv.org/pdf/2608.13331v1
 - https://www.alphaxiv.org/pdf/2608.13331v1
 - https://inherentlabs.ai/research/training-to-replicate
 
@@ -144,7 +144,7 @@ The strategic concept to preserve is **a learned engineer above coding agents**,
 
 Primary reference:
 
-- https://arxiv.org/abs/2602.06052
+- https://arxiv.org/abs/2602.06052v4
 
 Preserve the architectural interpretation that agent memory is not merely RAG or a vector database. Long-term Kodac memory should distinguish at least:
 
@@ -201,7 +201,7 @@ Long-term research should also evaluate **learned memory policies**: what to sto
 
 Primary reference:
 
-- https://arxiv.org/pdf/2504.01990
+- https://arxiv.org/pdf/2504.01990v2
 
 Preserve this as a broad architectural checklist around:
 
@@ -273,7 +273,7 @@ Self-improvement remains subordinate to explicit trust, provenance, evidence, an
 
 Primary reference:
 
-- https://arxiv.org/pdf/2512.24880
+- https://arxiv.org/pdf/2512.24880v2
 
 This work is relevant primarily if Kodac eventually trains its own foundation or specialist models. Do not cargo-cult neural-network architectural ideas into agent orchestration.
 
@@ -296,8 +296,8 @@ Benchmark evidence, not aesthetic similarity, should decide adoption.
 
 Primary references:
 
-- https://arxiv.org/abs/2603.19312
-- https://arxiv.org/pdf/2603.19312
+- https://arxiv.org/abs/2603.19312v3
+- https://arxiv.org/pdf/2603.19312v3
 
 Paper: **LeWorldModel: Stable End-to-End Joint-Embedding Predictive Architecture from Pixels**.
 
