@@ -52,7 +52,7 @@ K3-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
-K3-R6: IMPLEMENTATION AUTHORIZED FOR THE EXACT BOUNDED SNAPSHOT RELATION-GRAPH SLICE / NOT YET CANONICAL
+K3-R6: IMPLEMENTATION AND NARROW REVIEW-HARDENING EXTENSION AUTHORIZED FOR THE EXACT BOUNDED SNAPSHOT RELATION-GRAPH SLICE / NOT YET CANONICAL
 K3-R7+: NOT AUTHORIZED
 K3: NOT CLOSED
 ```
@@ -62,6 +62,8 @@ Canonical K3 progress includes accepted evidence for repository gold fixtures, e
 K3 remains open. K3-R6 is now exactly scoped to deterministic snapshot-bound relation evidence, impact traversal, and related-file retrieval; it does not authorize parsers, source crawling, runtime tracing, persistence, models, or execution authority.
 
 The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
+
+The exact review-hardening extension admits only `node:util` `types.isProxy`, fail-closed structural validation, an ephemeral per-query adjacency index, and serialized graph-entity seed normalization. It is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
 
 ### Remaining K3 closeout direction
 
@@ -86,7 +88,7 @@ The authorized K3-R6 slice is intended to supply bounded blast-radius/related-fi
 
 K3 does not select a permanent graph/index/storage backend by implication.
 
-Vector/embedding infrastructure, expansion beyond the exact K3-R6 gate, and K3-R7+ remain unauthorized.
+Vector/embedding infrastructure, expansion beyond the exact K3-R6 gate plus its narrow review-hardening extension, and K3-R7+ remain unauthorized.
 
 ## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
@@ -133,7 +135,7 @@ The following remain roadmap directions only and have no implementation authorit
 ```text
 K3: IN PROGRESS / NOT CLOSED
 K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
-K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION PLUS REVIEW-HARDENING EXTENSION AUTHORIZED / NOT YET CANONICAL
 K3-R7+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -158,7 +160,7 @@ KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```text
 KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
-K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION: NOT AUTHORIZED
+K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
 K3-R7+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED

@@ -14,7 +14,7 @@ Engineering milestones do not themselves authorize public release, package publi
 | --- | --- | --- | --- |
 | **K0/K1** | Architecture, governance, provenance, donor-selection foundation | **CLOSED** | Complete historical milestone |
 | **K2** | Trusted Runtime Spine | **CLOSED** | Complete canonical milestone |
-| **K3** | Evidence-Backed Repository Intelligence & Context Engine | **IN PROGRESS — K3-R1 THROUGH K3-R5 CANONICAL; K3-R6 AUTHORIZED / NOT YET CANONICAL; K3 NOT CLOSED** | **K3-R6 LIMITED TO THE EXACT SNAPSHOT RELATION-GRAPH AUTHORIZATION; K3-R7+ NOT AUTHORIZED** |
+| **K3** | Evidence-Backed Repository Intelligence & Context Engine | **IN PROGRESS — K3-R1 THROUGH K3-R5 CANONICAL; K3-R6 AUTHORIZED / NOT YET CANONICAL; K3 NOT CLOSED** | **K3-R6 LIMITED TO THE EXACT SNAPSHOT RELATION-GRAPH AUTHORIZATION PLUS ITS REVIEW-HARDENING EXTENSION; K3-R7+ NOT AUTHORIZED** |
 | **KRI-P0** | Reviewer Intelligence authorization & planning gate | **CANONICAL PLANNING AUTHORITY** | Planning/contract design only; no implementation authority from KRI-P0 alone |
 | **KRI-R1 through KRI-R4** | Bounded Reviewer Intelligence evidence, contracts, provider-neutral execution, and qualification | **CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED SCOPES** | **KRI-R1 THROUGH KRI-R4 ONLY AS CANONICALLY ADOPTED; KRI-R5+ NOT AUTHORIZED** |
 | **K4** | Ecosystem Compatibility & Capability Registry | **PROPOSED** | Not authorized |
@@ -56,7 +56,7 @@ K3-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
-K3-R6: IMPLEMENTATION AUTHORIZED FOR THE EXACT BOUNDED SNAPSHOT RELATION-GRAPH SLICE / NOT YET CANONICAL
+K3-R6: IMPLEMENTATION PLUS NARROW REVIEW-HARDENING EXTENSION AUTHORIZED FOR THE EXACT BOUNDED SNAPSHOT RELATION-GRAPH SLICE / NOT YET CANONICAL
 K3-R7+: NOT AUTHORIZED
 ```
 
@@ -78,6 +78,8 @@ Canonical contract direction now includes already-adopted work for:
 K3-R1 through K3-R5 are canonical only for their separately authorized scopes. K3-R6 is authorized only for a pure, immutable, in-memory relation graph bound to one exact current/complete K3-R2 snapshot, plus bounded impact and related-file queries over caller-materialized relation evidence. It is not canonical until a conforming implementation merges. K3 remains open, and K3-R7+ is not authorized.
 
 The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
+
+The exact review-hardening extension admits only `node:util` `types.isProxy`, fail-closed structural validation, an ephemeral per-query adjacency index, and serialized graph-entity seed normalization. It is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
 
 No permanent storage engine is selected by this roadmap. No vector or embedding infrastructure is selected.
 
@@ -151,7 +153,7 @@ K7 does not itself authorize distribution or public release.
 
 1. `Defined`, `authorized for planning`, `implementation authorized`, `implemented`, `canonical`, `closed`, and `released` are distinct states.
 2. A roadmap entry never grants source-intake or implementation authority by implication.
-3. K3-R1 through K3-R5 are canonical only for their already-authorized scopes; K3-R6 is implementation-authorized only for its exact bounded gate and remains non-canonical until merge; K3-R7+ remains unauthorized.
+3. K3-R1 through K3-R5 are canonical only for their already-authorized scopes; K3-R6 is implementation-authorized only for its exact bounded gate plus its narrow review-hardening extension and remains non-canonical until merge; K3-R7+ remains unauthorized.
 4. KRI-P0 grants planning/contract-design authority only; KRI-R1 through KRI-R4 are canonical only for their separately authorized bounded scopes, while KRI-R5+ and K5 implementation remain unauthorized.
 5. Storage engines, donors, models, protocols, and implementation tactics remain replaceable behind accepted Kodac boundaries unless separately ratified.
 6. Superiority claims require reproducible benchmark evidence.
@@ -163,7 +165,7 @@ K7 does not itself authorize distribution or public release.
 K0/K1: CLOSED
 K2: CLOSED
 K3: IN PROGRESS — K3-R1 THROUGH K3-R5 CANONICAL; K3 NOT CLOSED
-K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION PLUS REVIEW-HARDENING EXTENSION AUTHORIZED / NOT YET CANONICAL
 K3-R7+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -190,7 +192,7 @@ KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```text
 KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
-K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION: NOT AUTHORIZED
+K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
 K3-R7+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
