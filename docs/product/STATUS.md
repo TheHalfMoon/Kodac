@@ -13,12 +13,13 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Current authority boundaries are reconciled to the already-canonical K3-R1 through K3-R5 and bounded KRI-R1 through KRI-R4 states:
+Current authority boundaries are reconciled to the already-canonical K3-R1 through K3-R5, the authorized but not-yet-canonical bounded K3-R6 slice, and the bounded KRI-R1 through KRI-R4 states:
 
 ```text
 K3: IN PROGRESS / NOT CLOSED
 K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
-K3-R6+: NOT AUTHORIZED
+K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K3-R7+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -51,7 +52,8 @@ K7: PROPOSED / NOT AUTHORIZED
 ```text
 KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
-K3-R6+: NOT AUTHORIZED
+K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION: NOT AUTHORIZED
+K3-R7+: NOT AUTHORIZED
 PROVEN_READY AUTHORITY FROM KRI-P0 OR KRI-R1 THROUGH KRI-R4: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
@@ -88,3 +90,5 @@ This documentation gate does not modify `code_import_authorized` and admits no e
 The bounded KRI slices are a deterministic offline gold corpus (R1), finding/adjudication contracts plus a read-only runtime (R2), provider-neutral execution with a caller-injected interface (R3), and pure/in-memory historical-claim-disposition qualification (R4). They do not establish general reviewer trust, finding truth, default routing authority, or production readiness.
 
 The reconciliation basis and exact canonical merge identities are recorded in `docs/planning/KODAC_KRI_R1_R4_ROADMAP_TRUTH_RECONCILIATION_2026-08-24.md`.
+
+The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.

@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document records current engineering milestone status after canonical adoption of K3-R1 through K3-R5, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
+This document records current engineering milestone status after canonical adoption of K3-R1 through K3-R5, authorization of the bounded K3-R6 snapshot relation-graph slice, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
 
 ## K0/K1 — CLOSED
 
@@ -52,13 +52,16 @@ K3-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
-K3-R6+: NOT AUTHORIZED
+K3-R6: IMPLEMENTATION AUTHORIZED FOR THE EXACT BOUNDED SNAPSHOT RELATION-GRAPH SLICE / NOT YET CANONICAL
+K3-R7+: NOT AUTHORIZED
 K3: NOT CLOSED
 ```
 
 Canonical K3 progress includes accepted evidence for repository gold fixtures, exact snapshot/freshness semantics, bounded external-adapter benchmarking, a bounded ast-grep CLI structural-search adapter, and a bounded deterministic Context Engine / Context Bundle.
 
-K3 remains open. This document does not invent or authorize K3-R6 scope.
+K3 remains open. K3-R6 is now exactly scoped to deterministic snapshot-bound relation evidence, impact traversal, and related-file retrieval; it does not authorize parsers, source crawling, runtime tracing, persistence, models, or execution authority.
+
+The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
 
 ### Remaining K3 closeout direction
 
@@ -77,13 +80,13 @@ A future K3 closeout remains a separate founder-reviewed gate. Applicable closur
 - determined and satisfied platform requirements;
 - dedicated K3 closeout evidence.
 
-Items not already demonstrated by canonical K3-R1 through K3-R5 remain future requirements only if separately authorized.
+The authorized K3-R6 slice is intended to supply bounded blast-radius/related-file evidence. Its implementation does not itself close K3; closeout remains a separate evidence gate after canonical implementation.
 
 ### K3 non-decisions
 
 K3 does not select a permanent graph/index/storage backend by implication.
 
-Vector/embedding infrastructure and K3-R6+ remain unauthorized.
+Vector/embedding infrastructure, expansion beyond the exact K3-R6 gate, and K3-R7+ remain unauthorized.
 
 ## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
@@ -130,7 +133,8 @@ The following remain roadmap directions only and have no implementation authorit
 ```text
 K3: IN PROGRESS / NOT CLOSED
 K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
-K3-R6+: NOT AUTHORIZED
+K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K3-R7+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -154,7 +158,8 @@ KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```text
 KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
-K3-R6+: NOT AUTHORIZED
+K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION: NOT AUTHORIZED
+K3-R7+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
 CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
