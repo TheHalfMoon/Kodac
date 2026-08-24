@@ -222,6 +222,13 @@
     },
     "unboundEvidence": {
       "unevaluatedProperties": false,
+      "not": {
+        "anyOf": [
+          { "required": ["bindingIdentity"] },
+          { "required": ["disposition"] },
+          { "required": ["normalizedCapabilityIds"] }
+        ]
+      },
       "allOf": [
         { "$ref": "#/$defs/evidenceBaseProperties" },
         {
@@ -240,6 +247,12 @@
     },
     "staleEvidence": {
       "unevaluatedProperties": false,
+      "not": {
+        "anyOf": [
+          { "required": ["disposition"] },
+          { "required": ["normalizedCapabilityIds"] }
+        ]
+      },
       "allOf": [
         { "$ref": "#/$defs/evidenceBaseProperties" },
         {
