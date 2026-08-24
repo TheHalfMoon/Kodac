@@ -16,7 +16,8 @@ K2    — trusted runtime spine
 K3    — evidence-backed repository intelligence & context engine
 KRI-P0 — Reviewer Intelligence planning / contract design authority
 KRI-R1 through KRI-R4 — separately authorized bounded Reviewer Intelligence slices
-K4+   — later milestones only when separately defined/authorized
+K4    — ecosystem compatibility & capability registry; exact R1 gate only when separately authorized
+K5+   — later milestones only when separately defined/authorized
 ```
 
 Current state:
@@ -31,7 +32,10 @@ Current state:
 | KRI-P0 | CANONICAL PLANNING AUTHORITY |
 | KRI-R1 through KRI-R4 | CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES |
 | KRI-R5+ | NOT AUTHORIZED |
-| K4-K7 | PROPOSED / NOT AUTHORIZED |
+| K4 | DEFINED / IN PROGRESS / NOT CLOSED |
+| K4-R1 | EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL |
+| K4-R2+ | NOT AUTHORIZED |
+| K5-K7 | PROPOSED / NOT AUTHORIZED |
 
 Engineering milestone closure does not itself establish a distributable product version.
 
@@ -84,6 +88,14 @@ K3 closed for that accepted engineering surface
 != complete semantic repository intelligence
 != a permanent graph/index/storage backend
 
+K4 defined
+K4-R1 exact data-only normalization implementation authorized
+!= K4-R1 canonical
+!= K4 closed
+!= K4-R2+ authorized
+!= MCP / ACP / Agent Skills execution authority
+!= skill allowed-tools approved by Kodac
+
 KRI-P0 canonical planning authority
 KRI-R1 through KRI-R4 canonical for separately authorized bounded scopes
 != KRI-R5+ authorized
@@ -118,6 +130,10 @@ This list is planning direction only. It does not authorize release work or esta
 K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
 K3-R1 THROUGH K3-R6: CANONICAL FOR THEIR AUTHORIZED SCOPES
 K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
+
+K4: DEFINED / IN PROGRESS / NOT CLOSED
+K4-R1: EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R2+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -156,6 +172,8 @@ KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
 K3-R7+: NOT AUTHORIZED
+K4-R1 SCOPE EXPANSION BEYOND THE DATA-ONLY NORMALIZATION AUTHORIZATION: NOT AUTHORIZED
+K4-R2+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
 CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
@@ -195,3 +213,5 @@ The exact K3-R6 scope and implementation allowlist are defined in `docs/planning
 The narrow `node:util` Proxy-rejection, structural-input, adjacency-index, and serialized-seed review-hardening extension is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
 
 The bounded K3 closure evidence, canonical implementation ledger, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.
+
+The K4 definition, current official standard pins, exact K4-R1 implementation allowlist, and non-executable normalization boundaries are recorded in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
