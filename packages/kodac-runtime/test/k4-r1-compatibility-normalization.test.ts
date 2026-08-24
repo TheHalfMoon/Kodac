@@ -199,6 +199,9 @@ test("hostile objects, malformed digests, unknown fields, and external-name boun
   assert.throws(() => createExternalCapabilityBinding(bindingInput({ standardPinIdentity: "0".repeat(64) })), /unknown compatibility/)
   assert.throws(() => createExternalCapabilityBinding({ ...bindingInput(), unexpectedAuthority: true } as never), /unknown field/)
   assert.throws(() => createExternalCapabilityBinding(new Proxy(bindingInput(), {})), /Proxy/)
+  const oversizedSparse = bindingInput() as unknown as Record<string, unknown>
+  oversizedSparse.normalizedCapabilityIds = new Array(K4_R1_LIMITS.maxCanonicalNodes + 1)
+  assert.throws(() => createExternalCapabilityBinding(oversizedSparse as never), /pre-validation array bound/)
 
   let getterCalls = 0
   const withAccessor = { ...bindingInput() } as Record<string, unknown>

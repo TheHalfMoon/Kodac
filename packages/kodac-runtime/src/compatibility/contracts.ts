@@ -131,14 +131,17 @@ function copyDataTree(
   state.depth += 1
   try {
     if (Object.getOwnPropertySymbols(value).length !== 0) throw new TypeError(`${label} must not contain symbol fields`)
-    const descriptors = Object.getOwnPropertyDescriptors(value)
     if (Array.isArray(value)) {
       if (Object.getPrototypeOf(value) !== Array.prototype) throw new TypeError(`${label} must be a plain array`)
-      const lengthDescriptor = descriptors.length
+      const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
       if (lengthDescriptor === undefined || !("value" in lengthDescriptor) || !Number.isSafeInteger(lengthDescriptor.value) || lengthDescriptor.value < 0) {
         throw new TypeError(`${label}.length is invalid`)
       }
       const length = lengthDescriptor.value as number
+      if (length > K4_R1_LIMITS.maxCanonicalNodes) {
+        throw new RangeError(`${label} exceeds the pre-validation array bound`)
+      }
+      const descriptors = Object.getOwnPropertyDescriptors(value)
       const allowed = new Set(["length", ...Array.from({ length }, (_, index) => String(index))])
       for (const [key, descriptor] of Object.entries(descriptors)) {
         if (!allowed.has(key)) throw new TypeError(`${label} contains unexpected array field: ${key}`)
@@ -156,6 +159,10 @@ function copyDataTree(
     }
     const prototype = Object.getPrototypeOf(value)
     if (prototype !== Object.prototype && prototype !== null) throw new TypeError(`${label} must be a plain object`)
+    if (Reflect.ownKeys(value).length > K4_R1_LIMITS.maxCanonicalNodes) {
+      throw new RangeError(`${label} exceeds the pre-validation object-field bound`)
+    }
+    const descriptors = Object.getOwnPropertyDescriptors(value)
     const result = Object.create(null) as UnknownRecord
     for (const [key, descriptor] of Object.entries(descriptors)) {
       if (!("value" in descriptor) || !descriptor.enumerable) throw new TypeError(`${label}.${key} must be an enumerable data property`)
@@ -452,7 +459,7 @@ function cloneBinding(binding: ExternalCapabilityBinding): ExternalCapabilityBin
   return Object.freeze({ ...binding, normalizedCapabilityIds: Object.freeze([...binding.normalizedCapabilityIds]) })
 }
 
-export function compareCompatibilityBindings(left: ExternalCapabilityBinding, right: ExternalCapabilityBinding): number {
+function compareCompatibilityBindings(left: ExternalCapabilityBinding, right: ExternalCapabilityBinding): number {
   const leftKey = [
     left.standardPinIdentity, left.objectKind, left.externalName, left.extensionId,
     left.descriptorIdentity, left.bindingIdentity,
