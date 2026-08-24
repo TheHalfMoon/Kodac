@@ -1,0 +1,154 @@
+name: k3-r6-relation-graph
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k3-r6-relation-graph.yml"
+      - "schema/k3-r6-relation-graph.schema.json"
+      - "packages/kodac-runtime/src/relation-graph/contracts.ts"
+      - "packages/kodac-runtime/src/relation-graph/relation-graph.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k3-r6-relation-graph.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  relation-graph:
+    name: k3-r6-relation-graph
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      K3_R6_IMPLEMENTATION_BASELINE_SHA: "d2ab2e452be4d74179b8e590582855b0055b72c9"
+      K3_R6_IMPLEMENTATION_BRANCH: "codex/k3-r6-snapshot-relation-graph"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Attest exact PR head and implementation-gate scope
+        shell: bash
+        env:
+          K3_R6_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K3_R6_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K3_R6_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K3_R6_PR_HEAD_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k3-r6-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k3-r6-diff-before"
+          test ! -s "$RUNNER_TEMP/k3-r6-status-before"
+          test ! -s "$RUNNER_TEMP/k3-r6-diff-before"
+
+          # One-time certification for the canonically authorized K3-R6 implementation PR.
+          # Later PRs retain this reusable regression gate without the historical-base pin.
+          if [[ "$K3_R6_PR_HEAD_REF" = "$K3_R6_IMPLEMENTATION_BRANCH" ]]; then
+            test "$K3_R6_PR_BASE_SHA" = "$K3_R6_IMPLEMENTATION_BASELINE_SHA"
+            git fetch --no-tags --depth=1 origin "$K3_R6_IMPLEMENTATION_BASELINE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K3_R6_IMPLEMENTATION_BASELINE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K3_R6_IMPLEMENTATION_BASELINE_SHA" HEAD | LC_ALL=C sort)
+            test "${#changed[@]}" -eq 6
+            for path in "${changed[@]}"; do
+              case "$path" in
+                .github/workflows/k3-r6-relation-graph.yml|\
+                schema/k3-r6-relation-graph.schema.json|\
+                packages/kodac-runtime/src/relation-graph/contracts.ts|\
+                packages/kodac-runtime/src/relation-graph/relation-graph.ts|\
+                packages/kodac-runtime/src/index.ts|\
+                packages/kodac-runtime/test/k3-r6-relation-graph.test.ts)
+                  ;;
+                *)
+                  printf 'Unauthorized K3-R6 implementation path: %s\n' "$path" >&2
+                  exit 1
+                  ;;
+              esac
+            done
+          fi
+
+      - name: Prove bounded pure deterministic relation-graph surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="packages/kodac-runtime/src/relation-graph"
+          test -d "$root"
+
+          if grep -R -nE \
+            'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|WorkspaceFileSystem|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile' \
+            "$root"; then
+            echo "K3-R6 relation-graph purity/determinism boundary violation" >&2
+            exit 1
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync, readdirSync } from "node:fs"
+          const root = "packages/kodac-runtime/src/relation-graph"
+          const expectedFiles = ["contracts.ts", "relation-graph.ts"]
+          const actualFiles = readdirSync(root).filter((name) => name.endsWith(".ts")).sort()
+          if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) {
+            throw new Error(`Unexpected K3-R6 production files: ${actualFiles.join(", ")}`)
+          }
+          const allowedSpecifiers = new Set([
+            "node:crypto",
+            "node:util",
+            "../repository/contracts.ts",
+            "./contracts.ts",
+          ])
+          for (const name of actualFiles) {
+            const source = readFileSync(`${root}/${name}`, "utf8")
+            const specifiers = [
+              ...source.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+              ...source.matchAll(/\bimport\s+["']([^"']+)["']/g),
+            ].map((match) => match[1])
+            if (/\bimport\s*\(/.test(source)) {
+              throw new Error(`Dynamic import is prohibited in ${name}`)
+            }
+            for (const specifier of specifiers) {
+              if (!allowedSpecifiers.has(specifier)) {
+                throw new Error(`Unauthorized K3-R6 import in ${name}: ${specifier}`)
+              }
+            }
+            const utilImport = /import\s+\{\s*types\s+as\s+utilTypes\s*\}\s+from\s+["']node:util["']/g
+            const utilImports = [...source.matchAll(utilImport)]
+            const utilMembers = [...source.matchAll(/\butilTypes\.([A-Za-z_$][A-Za-z0-9_$]*)/g)]
+            const utilReferences = [...source.matchAll(/\butilTypes\b/g)]
+            if (source.includes("node:util") && (
+              name !== "relation-graph.ts"
+              || utilImports.length !== 1
+              || utilMembers.length === 0
+              || utilMembers.some((match) => match[1] !== "isProxy")
+              || utilReferences.length !== utilMembers.length + 1
+            )) {
+              throw new Error(`K3-R6 node:util use is limited to utilTypes.isProxy in relation-graph.ts`)
+            }
+          }
+          JSON.parse(readFileSync("schema/k3-r6-relation-graph.schema.json", "utf8"))
+          NODE
+
+      - name: Run full runtime tests including K3-R6 relation graph
+        working-directory: packages/kodac-runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f test/k3-r6-relation-graph.test.ts
+          node --experimental-strip-types --test test/*.test.ts
+
+      - name: Attest checkout unchanged after relation-graph tests
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k3-r6-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k3-r6-diff-after"
+          cmp "$RUNNER_TEMP/k3-r6-status-before" "$RUNNER_TEMP/k3-r6-status-after"
+          cmp "$RUNNER_TEMP/k3-r6-diff-before" "$RUNNER_TEMP/k3-r6-diff-after"
+          test ! -s "$RUNNER_TEMP/k3-r6-status-after"
+          test ! -s "$RUNNER_TEMP/k3-r6-diff-after"
