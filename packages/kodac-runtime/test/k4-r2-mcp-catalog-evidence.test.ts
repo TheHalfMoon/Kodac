@@ -553,5 +553,5 @@ test("K4-R2 production is pure and imports only deterministic K4-R1 support", ()
 
 test("package root exports the K4-R2 contract exactly once", () => {
   const index = source("../src/index.ts")
-  assert.equal(index.split("\n").filter((line) => line === 'export * from "./compatibility/mcp-catalog.ts"').length, 1)
+  assert.equal(index.split(/\r?\n/).filter((line) => line === 'export * from "./compatibility/mcp-catalog.ts"').length, 1)
 })
