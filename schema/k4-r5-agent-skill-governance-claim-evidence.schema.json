@@ -277,6 +277,50 @@
         "evidenceByteLength": { "type": "integer", "minimum": 1, "maximum": 16777216 }
       }
     },
+    "uniqueRequirementKinds": {
+      "allOf": [
+        {
+          "not": {
+            "contains": {
+              "type": "object",
+              "required": ["requirementKind"],
+              "properties": { "requirementKind": { "const": "FILESYSTEM" } }
+            },
+            "minContains": 2
+          }
+        },
+        {
+          "not": {
+            "contains": {
+              "type": "object",
+              "required": ["requirementKind"],
+              "properties": { "requirementKind": { "const": "NETWORK" } }
+            },
+            "minContains": 2
+          }
+        },
+        {
+          "not": {
+            "contains": {
+              "type": "object",
+              "required": ["requirementKind"],
+              "properties": { "requirementKind": { "const": "PROCESS" } }
+            },
+            "minContains": 2
+          }
+        },
+        {
+          "not": {
+            "contains": {
+              "type": "object",
+              "required": ["requirementKind"],
+              "properties": { "requirementKind": { "const": "SECRET" } }
+            },
+            "minContains": 2
+          }
+        }
+      ]
+    },
     "evaluationClaimInput": {
       "type": "object",
       "additionalProperties": false,
@@ -310,6 +354,7 @@
         "requirementClaims": {
           "type": "array",
           "maxItems": 4,
+          "allOf": [{ "$ref": "#/$defs/uniqueRequirementKinds" }],
           "items": { "$ref": "#/$defs/requirementClaimInput" }
         },
         "compatibilityClaimEvidence": {
@@ -437,6 +482,7 @@
         "requirementClaims": {
           "type": "array",
           "maxItems": 4,
+          "allOf": [{ "$ref": "#/$defs/uniqueRequirementKinds" }],
           "items": { "$ref": "#/$defs/requirementClaim" }
         },
         "compatibilityClaimEvidence": {
