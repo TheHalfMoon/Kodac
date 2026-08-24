@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/kdo-evidence-session.schema.json",
+  "title": "Kodac Evidence Session Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "sessionId",
+    "createdAt",
+    "expiresAt",
+    "retentionDays",
+    "mayContainLosslessModelRequestSnapshots",
+    "accessControlAtCreation"
+  ],
+  "properties": {
+    "protocol": { "const": "kodac.evidence-session" },
+    "version": { "const": 1 },
+    "sessionId": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89aAbB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$"
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "expiresAt": { "type": "string", "format": "date-time" },
+    "retentionDays": { "type": "integer", "minimum": 1, "maximum": 3650 },
+    "mayContainLosslessModelRequestSnapshots": { "const": true },
+    "accessControlAtCreation": {
+      "enum": ["POSIX_OWNER_ONLY", "WINDOWS_INHERITED_ACL_UNVERIFIED"]
+    }
+  }
+}

@@ -1,6 +1,5 @@
-import { appendFile, mkdir, readFile } from "node:fs/promises"
-import { dirname } from "node:path"
 import type { ExecutionReceipt } from "./receipt.ts"
+import { appendPrivateUtf8File, readPrivateUtf8File } from "./store.ts"
 
 export interface ReceiptLedger {
   append(receipt: ExecutionReceipt): Promise<void> | void
@@ -22,15 +21,14 @@ export class JsonlReceiptLedger implements ReceiptLedger {
   }
 
   async append(receipt: ExecutionReceipt): Promise<void> {
-    await mkdir(dirname(this.filePath), { recursive: true })
-    await appendFile(this.filePath, `${JSON.stringify(receipt)}\n`, "utf8")
+    await appendPrivateUtf8File(this.filePath, `${JSON.stringify(receipt)}\n`)
   }
 }
 
 export async function readReceiptLedger(filePath: string): Promise<ExecutionReceipt[]> {
   let raw: string
   try {
-    raw = await readFile(filePath, "utf8")
+    raw = await readPrivateUtf8File(filePath)
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return []
     throw error
