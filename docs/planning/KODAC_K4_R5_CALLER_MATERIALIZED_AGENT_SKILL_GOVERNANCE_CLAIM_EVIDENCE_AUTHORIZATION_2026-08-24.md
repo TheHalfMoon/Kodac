@@ -152,7 +152,7 @@ Canonical JSON follows the existing K4 rules:
 
 - object keys sort by ascending ordinal string comparison;
 - arrays retain only their declared canonical order;
-- set-valued inputs are validated, deduplicated, and sorted before hashing;
+- set-valued inputs are validated as duplicate-free, rejected if any duplicate is present, and sorted only after uniqueness validation and before hashing;
 - `undefined`, non-finite numbers, accessors, symbols, proxies, cycles, sparse arrays, custom prototypes, and all non-JSON values fail closed;
 - no locale-sensitive comparison, time, randomness, environment, global state, or mutable cache participates.
 

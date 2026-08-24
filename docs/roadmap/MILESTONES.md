@@ -134,7 +134,7 @@ K4-R4 is limited to validating caller-materialized portable metadata and redacte
 
 The exact K4-R4 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
-K4-R5 is limited to binding bounded caller assertions about package version, requested semantic capabilities, filesystem/network/process/secret requirements, compatibility requirements, and evaluation artifacts to one already-valid K4-R4 evidence identity. It emits fixed `CALLER_ASSERTED`, `UNASSESSED`, and `NONE` states and cannot verify a claim, reproduce an evaluation, qualify trust, approve a capability, grant an effect, or install, activate, route, or execute a skill. Its exact contract and five-path implementation allowlist are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
+K4-R5 is limited to binding bounded caller assertions about package version, requested semantic capabilities, filesystem/network/process/secret requirements, compatibility requirements, and evaluation artifacts to one already-valid K4-R4 evidence identity. It emits fixed `claimStatus: CALLER_ASSERTED`, `trustStatus: UNASSESSED`, and `authorityState: NONE` states and cannot verify a claim, reproduce an evaluation, qualify trust, approve a capability, grant an effect, or install, activate, route, or execute a skill. Its exact contract and five-path implementation allowlist are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
 ## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
