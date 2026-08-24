@@ -13,7 +13,7 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, canonical K4-R1 compatibility normalization, canonical K4-R2 caller-materialized MCP catalog evidence and its K4-R3 prerequisite workflow hardening, canonical K4-R3 pinned data-only ACP v2 method-catalog evidence, canonical K4-R4 caller-materialized data-only Agent Skill package evidence, and the bounded K4-R5 Agent Skill governance-claim evidence authorization lifecycle:
+Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, canonical K4-R1 compatibility normalization, canonical K4-R2 caller-materialized MCP catalog evidence and its K4-R3 prerequisite workflow hardening, canonical K4-R3 pinned data-only ACP v2 method-catalog evidence, canonical K4-R4 caller-materialized data-only Agent Skill package evidence, and canonical K4-R5 caller-materialized data-only Agent Skill governance-claim evidence:
 
 ```text
 K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -27,7 +27,7 @@ K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS A
 K4-R2 CANONICAL-REGRESSION WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH PREREQUISITE SCOPE
 K4-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED PINNED DATA-ONLY ACP V2 METHOD-CATALOG EVIDENCE SCOPE
 K4-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL PACKAGE EVIDENCE SCOPE
-K4-R5: CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE SCOPE
 K4-R6+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -47,7 +47,7 @@ BRAND LAUNCH: NOT AUTHORIZED
 KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```
 
-The K4-R5 current-state line above is adopted only if the exact K4-R5 authorization merge gate passes; until then K4-R5 remains unauthorized. After that gate passes, this current repository-wide boundary supersedes—but does not rewrite—the earlier K4-R4 records' historical, point-in-time `K4-R5+: NOT AUTHORIZED` boundary.
+The K4-R5 current-state line above is adopted only if the exact K4-R5 canonical-evidence merge gate passes. That gate does not rewrite the earlier K4-R4 records' historical, point-in-time `K4-R5+: NOT AUTHORIZED` boundary or the K4-R5 authorization record's preimplementation state.
 
 Later engineering milestones remain:
 
@@ -59,7 +59,7 @@ K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS A
 K4-R2 CANONICAL-REGRESSION WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH PREREQUISITE SCOPE
 K4-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED PINNED DATA-ONLY ACP V2 METHOD-CATALOG EVIDENCE SCOPE
 K4-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL PACKAGE EVIDENCE SCOPE
-K4-R5: CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE SCOPE
 K4-R6+: NOT AUTHORIZED
 K5: PROPOSED / NOT AUTHORIZED
 K6: PROPOSED / NOT AUTHORIZED
@@ -143,3 +143,5 @@ The exact K4-R4 caller-materialized portable metadata and redacted content/prove
 The exact K4-R4 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact K4-R5 caller-materialized governance-claim evidence contract, K4-R4 dependency basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
+
+The exact K4-R5 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
