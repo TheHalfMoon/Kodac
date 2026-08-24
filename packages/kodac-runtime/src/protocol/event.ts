@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto"
-import { appendFile, mkdir } from "node:fs/promises"
-import { dirname } from "node:path"
+import { appendPrivateUtf8File } from "../evidence/store.ts"
 
 export const KODAC_EVENT_PROTOCOL = "kodac.event" as const
 export const KODAC_EVENT_VERSION = 1 as const
@@ -78,8 +77,7 @@ export class JsonlEventSink implements EventSink {
   }
 
   async append(event: KodacEvent): Promise<void> {
-    await mkdir(dirname(this.filePath), { recursive: true })
-    await appendFile(this.filePath, `${JSON.stringify(event)}\n`, "utf8")
+    await appendPrivateUtf8File(this.filePath, `${JSON.stringify(event)}\n`)
   }
 }
 

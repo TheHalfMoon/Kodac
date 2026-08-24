@@ -1,11 +1,16 @@
 import { createHash, randomUUID } from "node:crypto"
-import { mkdir, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path"
+import { isAbsolute, join, relative, resolve, sep } from "node:path"
 import { pathToFileURL } from "node:url"
 import { BoundedAgentLoop, type AgentLoopResult } from "./agent/loop.ts"
 import { NodeWorkspaceFileSystem } from "./edit/filesystem.ts"
 import { JsonlReceiptLedger } from "./evidence/ledger.ts"
+import {
+  DEFAULT_EVIDENCE_RETENTION_DAYS,
+  prepareEvidenceSession,
+  validateEvidenceRetentionDays,
+  writePrivateUtf8File,
+} from "./evidence/store.ts"
 import { ExecutionGateway } from "./execution/gateway.ts"
 import { OpenAICompatibleProvider } from "./model/openai-compatible.ts"
 import { OpenAIResponsesProvider } from "./model/openai.ts"
@@ -63,6 +68,7 @@ interface QualificationArgs {
   model: string
   workspace: string
   evidenceDir?: string
+  evidenceRetentionDays: number
   json: boolean
 }
 
@@ -120,6 +126,7 @@ function parseArgs(argv: string[], cwd: string): QualificationArgs {
   let model = ""
   let workspace = resolve(cwd)
   let evidenceDir: string | undefined
+  let evidenceRetentionDays = DEFAULT_EVIDENCE_RETENTION_DAYS
   let json = false
 
   for (let index = 0; index < argv.length; index++) {
@@ -128,7 +135,7 @@ function parseArgs(argv: string[], cwd: string): QualificationArgs {
       json = true
       continue
     }
-    if (token === "--provider" || token === "--model" || token === "--workspace" || token === "--evidence-dir") {
+    if (token === "--provider" || token === "--model" || token === "--workspace" || token === "--evidence-dir" || token === "--evidence-retention-days") {
       const value = argv[++index]
       if (!value) throw new Error(`Missing value for ${token}`)
       if (token === "--provider") {
@@ -138,7 +145,8 @@ function parseArgs(argv: string[], cwd: string): QualificationArgs {
         provider = value
       } else if (token === "--model") model = value
       else if (token === "--workspace") workspace = resolve(cwd, value)
-      else evidenceDir = resolve(cwd, value)
+      else if (token === "--evidence-dir") evidenceDir = resolve(cwd, value)
+      else evidenceRetentionDays = validateEvidenceRetentionDays(Number(value))
       continue
     }
     throw new Error(`Unknown provider-qualify option: ${token}`)
@@ -147,10 +155,10 @@ function parseArgs(argv: string[], cwd: string): QualificationArgs {
   if (!model.trim()) {
     throw new Error(
       "Usage: kodac provider-qualify --model <model-id> [--provider openai|openai-compatible] " +
-        "[--workspace <dir>] [--evidence-dir <dir>] [--json]",
+        "[--workspace <dir>] [--evidence-dir <dir>] [--evidence-retention-days <n>] [--json]",
     )
   }
-  return { provider, model, workspace, evidenceDir, json }
+  return { provider, model, workspace, evidenceDir, evidenceRetentionDays, json }
 }
 
 function pathIsInside(parent: string, candidate: string): boolean {
@@ -268,8 +276,7 @@ async function writeReport(
 ): Promise<ProviderQualificationReport> {
   const reportDigest = sha256(stableJson(report))
   const complete = { ...report, reportDigest }
-  await mkdir(dirname(reportPath), { recursive: true })
-  await writeFile(reportPath, `${JSON.stringify(complete, null, 2)}\n`, { encoding: "utf8", mode: 0o600 })
+  await writePrivateUtf8File(reportPath, `${JSON.stringify(complete, null, 2)}\n`)
   return complete
 }
 
@@ -369,6 +376,7 @@ export async function runProviderQualification(
   runtimeOptions: ProviderQualificationRuntimeOptions = {},
 ): Promise<number> {
   let session: RuntimeSession | undefined
+  let releaseEvidenceLease: (() => Promise<void>) | undefined
   try {
     const args = parseArgs(argv, cwd)
     const evidenceRoot = args.evidenceDir ?? join(homedir(), ".kodac", "provider-qualification")
@@ -377,7 +385,13 @@ export async function runProviderQualification(
     }
 
     const sessionId = randomUUID()
-    const sessionDir = join(evidenceRoot, sessionId)
+    const prepared = await prepareEvidenceSession({
+      root: evidenceRoot,
+      sessionId,
+      retentionDays: args.evidenceRetentionDays,
+    })
+    releaseEvidenceLease = prepared.release
+    const sessionDir = prepared.sessionDir
     const eventPath = join(sessionDir, "events.jsonl")
     const receiptPath = join(sessionDir, "receipts.jsonl")
     const reportPath = join(sessionDir, "qualification-report.json")
@@ -668,6 +682,14 @@ export async function runProviderQualification(
     }
     io.stderr(error instanceof Error ? error.message : String(error))
     return 1
+  } finally {
+    if (releaseEvidenceLease) {
+      try {
+        await releaseEvidenceLease()
+      } catch {
+        // A retained lease fails cleanup conservative; it must not replace the qualification outcome.
+      }
+    }
   }
 }
 

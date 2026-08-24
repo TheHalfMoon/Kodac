@@ -1,10 +1,15 @@
 import { createHash, randomUUID } from "node:crypto"
-import { mkdir, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
-import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path"
+import { isAbsolute, join, relative, resolve, sep } from "node:path"
 import { pathToFileURL } from "node:url"
 import { runCli, type CliIO } from "./cli.ts"
 import { parsePatch } from "./edit/patch.ts"
+import {
+  DEFAULT_EVIDENCE_RETENTION_DAYS,
+  prepareEvidenceSession,
+  validateEvidenceRetentionDays,
+  writePrivateUtf8File,
+} from "./evidence/store.ts"
 import { OpenAICompatibleProvider } from "./model/openai-compatible.ts"
 import { OpenAIResponsesProvider } from "./model/openai.ts"
 import {
@@ -22,6 +27,7 @@ interface LiveSolveArgs {
   workspace: string
   qualificationReport: string
   evidenceDir?: string
+  evidenceRetentionDays: number
   json: boolean
   approveWrites: boolean
   approveVerification: boolean
@@ -100,13 +106,21 @@ function parseArgs(argv: string[], cwd: string): LiveSolveArgs {
   let workspace = resolve(cwd)
   let qualificationReport = ""
   let evidenceDir: string | undefined
+  let evidenceRetentionDays = DEFAULT_EVIDENCE_RETENTION_DAYS
   let json = false
   let approveWrites = false
   let approveVerification = false
   const rawWritePaths: string[] = []
   const passthrough: string[] = []
 
-  const valuedPassthrough = new Set(["--verify-command", "--max-turns", "--max-tool-calls", "--max-elapsed-ms", "--max-failures"])
+  const valuedPassthrough = new Set([
+    "--evidence-retention-days",
+    "--verify-command",
+    "--max-turns",
+    "--max-tool-calls",
+    "--max-elapsed-ms",
+    "--max-failures",
+  ])
   for (let index = 1; index < argv.length; index++) {
     const token = argv[index]
     if (token === "--json") {
@@ -132,7 +146,10 @@ function parseArgs(argv: string[], cwd: string): LiveSolveArgs {
       else if (token === "--qualification-report") qualificationReport = resolve(cwd, value)
       else if (token === "--evidence-dir") evidenceDir = resolve(cwd, value)
       else if (token === "--allow-write-path") rawWritePaths.push(value)
-      else passthrough.push(token, value)
+      else {
+        if (token === "--evidence-retention-days") evidenceRetentionDays = validateEvidenceRetentionDays(Number(value))
+        passthrough.push(token, value)
+      }
       continue
     }
     throw new Error(`Unknown live-solve option: ${token}`)
@@ -148,7 +165,7 @@ function parseArgs(argv: string[], cwd: string): LiveSolveArgs {
   }
 
   const allowedWritePaths = [...new Set(rawWritePaths.map((value) => normalizeWriteScopePath(workspace, value)))].sort()
-  return { task, provider, model, workspace, qualificationReport, evidenceDir, json, approveWrites, approveVerification, allowedWritePaths, passthrough }
+  return { task, provider, model, workspace, qualificationReport, evidenceDir, evidenceRetentionDays, json, approveWrites, approveVerification, allowedWritePaths, passthrough }
 }
 
 function providerFromEnv(name: LiveSolveArgs["provider"], env: NodeJS.ProcessEnv): ModelProvider {
@@ -211,8 +228,7 @@ function providerForRun(args: LiveSolveArgs, env: NodeJS.ProcessEnv, injected?: 
 }
 
 async function writeSecureJson(path: string, value: unknown): Promise<void> {
-  await mkdir(dirname(path), { recursive: true })
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, { encoding: "utf8", mode: 0o600 })
+  await writePrivateUtf8File(path, `${JSON.stringify(value, null, 2)}\n`)
 }
 
 function authorizationArtifact(
@@ -261,6 +277,7 @@ export async function runControlledLiveSolve(
   cwd = process.cwd(),
   runtimeOptions: ControlledLiveSolveRuntimeOptions = {},
 ): Promise<number> {
+  let releaseEvidenceLease: (() => Promise<void>) | undefined
   try {
     const args = parseArgs(argv, cwd)
     const nowMs = runtimeOptions.now?.() ?? Date.now()
@@ -275,7 +292,14 @@ export async function runControlledLiveSolve(
 
     const authorizationId = randomUUID()
     const root = args.evidenceDir ?? join(homedir(), ".kodac", "live-solve")
-    const authorizationDir = join(root, "authorizations", authorizationId)
+    const prepared = await prepareEvidenceSession({
+      root,
+      sessionId: authorizationId,
+      retentionDays: args.evidenceRetentionDays,
+      now: new Date(nowMs),
+    })
+    releaseEvidenceLease = prepared.release
+    const authorizationDir = prepared.sessionDir
     const authorizationPath = join(authorizationDir, "authorization.json")
     const controlledReportPath = join(authorizationDir, "controlled-live-solve-report.json")
     const authorizedAt = new Date(nowMs).toISOString()
@@ -371,6 +395,14 @@ export async function runControlledLiveSolve(
   } catch (error) {
     io.stderr(error instanceof Error ? error.message : String(error))
     return 1
+  } finally {
+    if (releaseEvidenceLease) {
+      try {
+        await releaseEvidenceLease()
+      } catch {
+        // A retained lease fails cleanup conservative; it must not replace the controlled-run outcome.
+      }
+    }
   }
 }
 
