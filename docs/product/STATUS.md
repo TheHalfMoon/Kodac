@@ -13,13 +13,12 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Current authority boundaries are reconciled to the already-canonical K3-R1 through K3-R5, the authorized but not-yet-canonical bounded K3-R6 slice, and the bounded KRI-R1 through KRI-R4 states:
+Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone and the bounded KRI-R1 through KRI-R4 states:
 
 ```text
-K3: IN PROGRESS / NOT CLOSED
-K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
-K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION PLUS REVIEW-HARDENING EXTENSION AUTHORIZED / NOT YET CANONICAL
-K3-R7+: NOT AUTHORIZED
+K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
+K3-R1 THROUGH K3-R6: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
+K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -94,3 +93,5 @@ The reconciliation basis and exact canonical merge identities are recorded in `d
 The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
 
 The narrow `node:util` Proxy-rejection, structural-input, adjacency-index, and serialized-seed review-hardening extension is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
+
+The bounded K3 closure evidence, canonical implementation ledger, platform applicability, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.
