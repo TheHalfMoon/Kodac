@@ -165,7 +165,7 @@ Final exact-head evidence on `0618457af5a7656503b885f4974c404a94c53166`:
 | CodeRabbit terminal review | PASS — completed against terminal head; one contradicted finding adjudicated with exact-run evidence; remaining notes non-blocking |
 | review threads | PASS — zero unresolved actionable threads |
 | implementation scope | PASS — exactly five authorized paths, 2,235 additions, no deletions, four strict fast-forward commits from the authorization base |
-| hosted runtime | PASS — 921 tests; 916 passed; 4 intentionally skipped; 0 failed |
+| hosted runtime | PASS — 921 tests; 917 passed; 4 intentionally skipped; 0 failed |
 | local runtime | PASS — 920 tests; 818 passed; 102 intentionally skipped; 0 failed |
 | Python | PASS — 395 passed |
 | Ruff / strict TypeScript / provenance / schema / diff | PASS |
