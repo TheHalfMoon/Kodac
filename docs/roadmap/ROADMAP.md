@@ -17,7 +17,7 @@ Engineering milestones do not themselves authorize public release, package publi
 | **K3** | Evidence-Backed Repository Intelligence & Context Engine | **CLOSED — K3-R1 THROUGH K3-R6 CANONICAL FOR THEIR BOUNDED AUTHORIZED SCOPES** | Complete canonical milestone; K3-R7+ is not required for closeout and remains unauthorized |
 | **KRI-P0** | Reviewer Intelligence authorization & planning gate | **CANONICAL PLANNING AUTHORITY** | Planning/contract design only; no implementation authority from KRI-P0 alone |
 | **KRI-R1 through KRI-R4** | Bounded Reviewer Intelligence evidence, contracts, provider-neutral execution, and qualification | **CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED SCOPES** | **KRI-R1 THROUGH KRI-R4 ONLY AS CANONICALLY ADOPTED; KRI-R5+ NOT AUTHORIZED** |
-| **K4** | Ecosystem Compatibility & Capability Registry | **DEFINED / IN PROGRESS — K4-R1/R2/R3/R4 CANONICAL; K4-R5 AUTHORIZED / NOT YET CANONICAL** | K4-R1/R2/R3/R4 as canonically adopted for their exact bounded scopes; bounded K4-R5 governance-claim evidence authorized; K4-R6+ not authorized |
+| **K4** | Ecosystem Compatibility & Capability Registry | **DEFINED / IN PROGRESS — K4-R1/R2/R3/R4 CANONICAL; K4-R5 IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL** | K4-R1/R2/R3/R4 as canonically adopted for their exact bounded scopes; bounded K4-R5 governance-claim evidence implementation authorized; K4-R6+ not authorized |
 | **K5** | Proof Review & Judge | **PROPOSED** | Not authorized |
 | **K6** | Evidence Router & Outcome Learning | **PROPOSED** | Not authorized |
 | **K7** | Kodac Bench & Distribution Hardening | **PROPOSED** | Not authorized |
