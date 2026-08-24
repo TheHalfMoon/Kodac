@@ -102,6 +102,8 @@ test("evidence writers refuse symbolic-link and hard-link artifact replacement",
     await link(target, eventPath)
     await assert.rejects(() => new JsonlEventSink(eventPath).append(event))
     assert.equal(await readFile(target, "utf8"), "unchanged\n")
+    await assert.rejects(() => writePrivateUtf8File(eventPath, "replacement\n"))
+    assert.equal(await readFile(target, "utf8"), "unchanged\n")
   } finally {
     await rm(root, { recursive: true, force: true })
   }

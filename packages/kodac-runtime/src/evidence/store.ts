@@ -80,8 +80,21 @@ async function validatePrivateFile(handle: Awaited<ReturnType<typeof open>>, pat
   if (isPosix()) await handle.chmod(0o600)
 }
 
+async function rejectExistingLinkedArtifact(path: string): Promise<void> {
+  try {
+    const observed = await lstat(path)
+    if (observed.isSymbolicLink()) throw new Error(`Evidence artifact must not be a symbolic link: ${path}`)
+    if (observed.isFile() && observed.nlink !== 1) {
+      throw new Error(`Evidence artifact must have exactly one filesystem link: ${path}`)
+    }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error
+  }
+}
+
 export async function appendPrivateUtf8File(path: string, value: string): Promise<void> {
   await ensurePrivateDirectory(dirname(path))
+  await rejectExistingLinkedArtifact(path)
   const handle = await open(
     path,
     constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollowFlag(),
@@ -101,14 +114,15 @@ export async function writePrivateUtf8File(
   options: { exclusive?: boolean } = {},
 ): Promise<void> {
   await ensurePrivateDirectory(dirname(path))
-  const creationFlag = options.exclusive ? constants.O_EXCL : constants.O_TRUNC
+  await rejectExistingLinkedArtifact(path)
   const handle = await open(
     path,
-    constants.O_WRONLY | constants.O_CREAT | creationFlag | noFollowFlag(),
+    constants.O_WRONLY | constants.O_CREAT | (options.exclusive ? constants.O_EXCL : 0) | noFollowFlag(),
     0o600,
   )
   try {
     await validatePrivateFile(handle, path)
+    if (!options.exclusive) await handle.truncate(0)
     await handle.writeFile(value, "utf8")
   } finally {
     await handle.close()
@@ -116,6 +130,7 @@ export async function writePrivateUtf8File(
 }
 
 export async function readPrivateUtf8File(path: string): Promise<string> {
+  await rejectExistingLinkedArtifact(path)
   const handle = await open(path, constants.O_RDONLY | noFollowFlag())
   try {
     await validatePrivateFile(handle, path)
