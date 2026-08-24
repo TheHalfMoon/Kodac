@@ -1,0 +1,244 @@
+name: k4-r1-compatibility-normalization
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k4-r1-compatibility-normalization.yml"
+      - "schema/k4-r1-compatibility-normalization.schema.json"
+      - "packages/kodac-runtime/src/compatibility/contracts.ts"
+      - "packages/kodac-runtime/src/compatibility/registry.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k4-r1-compatibility-normalization.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  compatibility-normalization:
+    name: k4-r1-compatibility-normalization
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      K4_R1_IMPLEMENTATION_BASELINE_SHA: "f64a5f1ddbe57970d214c2f7b042fa421a0562fa"
+      K4_R1_IMPLEMENTATION_BRANCH: "codex/k4-r1-compatibility-normalization"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: false
+
+      - name: Sync the locked schema validator outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv sync --frozen --no-dev
+
+      - name: Attest exact PR head and implementation-gate scope
+        shell: bash
+        env:
+          K4_R1_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K4_R1_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K4_R1_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K4_R1_PR_HEAD_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r1-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r1-diff-before"
+          test ! -s "$RUNNER_TEMP/k4-r1-status-before"
+          test ! -s "$RUNNER_TEMP/k4-r1-diff-before"
+
+          test "$K4_R1_PR_HEAD_REF" = "$K4_R1_IMPLEMENTATION_BRANCH"
+          test "$K4_R1_PR_BASE_SHA" = "$K4_R1_IMPLEMENTATION_BASELINE_SHA"
+          git fetch --no-tags --depth=1 origin "$K4_R1_IMPLEMENTATION_BASELINE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_IMPLEMENTATION_BASELINE_SHA"
+          mapfile -t changed < <(git diff --name-only "$K4_R1_IMPLEMENTATION_BASELINE_SHA" HEAD | LC_ALL=C sort)
+          test "${#changed[@]}" -eq 6
+          for path in "${changed[@]}"; do
+            case "$path" in
+              .github/workflows/k4-r1-compatibility-normalization.yml|\
+              schema/k4-r1-compatibility-normalization.schema.json|\
+              packages/kodac-runtime/src/compatibility/contracts.ts|\
+              packages/kodac-runtime/src/compatibility/registry.ts|\
+              packages/kodac-runtime/src/index.ts|\
+              packages/kodac-runtime/test/k4-r1-compatibility-normalization.test.ts)
+                ;;
+              *)
+                printf 'Unauthorized K4-R1 implementation path: %s\n' "$path" >&2
+                exit 1
+                ;;
+            esac
+          done
+
+      - name: Prove data-only deterministic compatibility surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="packages/kodac-runtime/src/compatibility"
+          test -d "$root"
+
+          if grep -R -nE \
+            'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function' \
+            "$root"; then
+            echo "K4-R1 compatibility purity/determinism boundary violation" >&2
+            exit 1
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync, readdirSync } from "node:fs"
+          const root = "packages/kodac-runtime/src/compatibility"
+          const expectedFiles = ["contracts.ts", "registry.ts"]
+          const actualFiles = readdirSync(root).filter((name) => name.endsWith(".ts")).sort()
+          if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) {
+            throw new Error(`Unexpected K4-R1 production files: ${actualFiles.join(", ")}`)
+          }
+          const allowedSpecifiers = new Set([
+            "node:crypto",
+            "node:util",
+            "../extensions/contracts.ts",
+            "../extensions/registry.ts",
+            "./contracts.ts",
+          ])
+          const allowedBuiltinImports = new Map([
+            ["contracts.ts", [
+              'import { createHash } from "node:crypto"',
+              'import { types as utilTypes } from "node:util"',
+            ]],
+            ["registry.ts", [
+              'import { types as utilTypes } from "node:util"',
+            ]],
+          ])
+          function validateProductionSource(name, source) {
+            const specifiers = [
+              ...source.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+              ...source.matchAll(/\bimport\s+["']([^"']+)["']/g),
+            ].map((match) => match[1])
+            if (/\bimport\s*\(/.test(source)) throw new Error(`Dynamic import is prohibited in ${name}`)
+            if (/\b(?:fetch|globalThis|global|self)\b/.test(source)) {
+              throw new Error(`Network/global escape identifier is prohibited in ${name}`)
+            }
+            for (const specifier of specifiers) {
+              if (!allowedSpecifiers.has(specifier)) throw new Error(`Unauthorized K4-R1 import in ${name}: ${specifier}`)
+            }
+            const builtinImports = source.split(/\r?\n/).filter((line) => /\bfrom\s+["']node:/.test(line))
+            const expectedBuiltinImports = allowedBuiltinImports.get(name) ?? []
+            if (JSON.stringify(builtinImports) !== JSON.stringify(expectedBuiltinImports)) {
+              throw new Error(`Unauthorized K4-R1 builtin API import in ${name}: ${builtinImports.join(", ")}`)
+            }
+            let sourceWithoutBuiltinImports = source
+            for (const line of expectedBuiltinImports) sourceWithoutBuiltinImports = sourceWithoutBuiltinImports.replace(`${line}\n`, "")
+            if (/\bcrypto\b/.test(sourceWithoutBuiltinImports)) throw new Error(`Global crypto access is prohibited in ${name}`)
+            if (/\butilTypes\s*\[/.test(source) || [...source.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].some((match) => match[1] !== "isProxy")) {
+              throw new Error(`Unauthorized node:util API access in ${name}`)
+            }
+          }
+          const productionSources = new Map(actualFiles.map((name) => [name, readFileSync(`${root}/${name}`, "utf8")]))
+          for (const [name, source] of productionSources) validateProductionSource(name, source)
+          function assertRejected(name, source, label) {
+            try {
+              validateProductionSource(name, source)
+            } catch {
+              return
+            }
+            throw new Error(`K4-R1 source scanner accepted prohibited fixture: ${label}`)
+          }
+          assertRejected(
+            "contracts.ts",
+            productionSources.get("contracts.ts").replace(
+              'import { createHash } from "node:crypto"',
+              'import { randomBytes } from "node:crypto"',
+            ),
+            "disallowed node:crypto API",
+          )
+          assertRejected(
+            "registry.ts",
+            `${productionSources.get("registry.ts")}\nglobalThis["fetch"]("https://invalid.example")\n`,
+            "indirect global fetch",
+          )
+          JSON.parse(readFileSync("schema/k4-r1-compatibility-normalization.schema.json", "utf8"))
+          NODE
+
+      - name: Validate the Draft 2020-12 schema and representative instances
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k4-r1-compatibility-normalization.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+
+          valid_binding = {
+              "version": "k4-r1-compatibility-normalization-v1",
+              "standardPinIdentity": "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a",
+              "objectKind": "MCP_TOOL",
+              "externalName": "repo.search",
+              "externalMetadataSha256": "a" * 64,
+              "extensionId": "kodac/compatibility-adapter",
+              "descriptorIdentity": "b" * 64,
+              "disposition": "SINGLE",
+              "normalizedCapabilityIds": ["compat/read"],
+              "bindingIdentity": "c" * 64,
+          }
+          validator.validate(valid_binding)
+
+          invalid_kind = copy.deepcopy(valid_binding)
+          invalid_kind["objectKind"] = "AGENT_SKILL"
+          if not list(validator.iter_errors(invalid_kind)):
+              raise SystemExit("schema accepted a cross-standard object kind")
+
+          invalid_cardinality = copy.deepcopy(valid_binding)
+          invalid_cardinality["normalizedCapabilityIds"] = []
+          if not list(validator.iter_errors(invalid_cardinality)):
+              raise SystemExit("schema accepted invalid SINGLE cardinality")
+
+          valid_receipt = {
+              "version": "k4-r1-compatibility-registration-v1",
+              "bindingIdentity": "c" * 64,
+              "extensionId": "kodac/compatibility-adapter",
+              "descriptorIdentity": "b" * 64,
+              "registrationSerial": 1,
+          }
+          validator.validate(valid_receipt)
+          invalid_receipt = {**valid_receipt, "registrationSerial": 0}
+          if not list(validator.iter_errors(invalid_receipt)):
+              raise SystemExit("schema accepted an invalid registration serial")
+          PY
+
+      - name: Run full runtime tests including K4-R1 compatibility normalization
+        working-directory: packages/kodac-runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f test/k4-r1-compatibility-normalization.test.ts
+          node --experimental-strip-types --test test/*.test.ts
+
+      - name: Attest checkout unchanged after compatibility tests
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r1-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r1-diff-after"
+          cmp "$RUNNER_TEMP/k4-r1-status-before" "$RUNNER_TEMP/k4-r1-status-after"
+          cmp "$RUNNER_TEMP/k4-r1-diff-before" "$RUNNER_TEMP/k4-r1-diff-after"
+          test ! -s "$RUNNER_TEMP/k4-r1-status-after"
+          test ! -s "$RUNNER_TEMP/k4-r1-diff-after"

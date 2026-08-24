@@ -1,0 +1,193 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k4-r1-compatibility-normalization.schema.json",
+  "title": "Kodac K4-R1 Compatibility Normalization Contracts",
+  "$comment": "Runtime validation is authoritative for UTF-8 byte bounds, hostile JavaScript object rejection, exact upstream-pin equality, derived identity recomputation, H1 PROVIDER-role checks, registry conflicts, capacity, serial preservation, and ownership-safe disposal.",
+  "oneOf": [
+    { "$ref": "#/$defs/standardPin" },
+    { "$ref": "#/$defs/externalCapabilityBinding" },
+    { "$ref": "#/$defs/bindingSnapshot" },
+    { "$ref": "#/$defs/registrationReceipt" }
+  ],
+  "$defs": {
+    "gitSha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "standardPinIdentity": {
+      "enum": [
+        "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a",
+        "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec",
+        "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819"
+      ]
+    },
+    "extensionId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9_-]*(?:[./:][a-z][a-z0-9_-]*)+$"
+    },
+    "licenseEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "blob"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "blob": { "$ref": "#/$defs/gitSha1" }
+      }
+    },
+    "standardPin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "standard",
+        "repository",
+        "sourceCommit",
+        "sourceTree",
+        "specificationRevision",
+        "specificationPath",
+        "specificationBlob",
+        "licenseEvidence",
+        "standardPinIdentity"
+      ],
+      "properties": {
+        "version": { "const": "k4-r1-compatibility-normalization-v1" },
+        "standard": { "enum": ["MCP", "ACP", "AGENT_SKILLS"] },
+        "repository": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "sourceCommit": { "$ref": "#/$defs/gitSha1" },
+        "sourceTree": { "$ref": "#/$defs/gitSha1" },
+        "specificationRevision": {
+          "oneOf": [
+            { "type": "string", "minLength": 1, "maxLength": 96 },
+            { "type": "null" }
+          ]
+        },
+        "specificationPath": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "specificationBlob": { "$ref": "#/$defs/gitSha1" },
+        "licenseEvidence": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/licenseEvidence" }
+        },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" }
+      }
+    },
+    "externalCapabilityBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "standardPinIdentity",
+        "objectKind",
+        "externalName",
+        "externalMetadataSha256",
+        "extensionId",
+        "descriptorIdentity",
+        "disposition",
+        "normalizedCapabilityIds",
+        "bindingIdentity"
+      ],
+      "properties": {
+        "version": { "const": "k4-r1-compatibility-normalization-v1" },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "objectKind": {
+          "enum": [
+            "MCP_TOOL",
+            "MCP_RESOURCE",
+            "MCP_PROMPT",
+            "ACP_AGENT_METHOD",
+            "ACP_CLIENT_METHOD",
+            "ACP_NOTIFICATION",
+            "AGENT_SKILL"
+          ]
+        },
+        "externalName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^[^\\u0000]+$",
+          "$comment": "Runtime additionally enforces the 512-byte UTF-8 maximum."
+        },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "disposition": { "enum": ["UNRESOLVED", "SINGLE", "COMPOSITE"] },
+        "normalizedCapabilityIds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/capabilityId" }
+        },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "disposition": { "const": "UNRESOLVED" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "disposition": { "const": "SINGLE" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "minItems": 1, "maxItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "disposition": { "const": "COMPOSITE" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "minItems": 2, "maxItems": 16 } } }
+        },
+        {
+          "if": {
+            "properties": { "standardPinIdentity": { "const": "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a" } },
+            "required": ["standardPinIdentity"]
+          },
+          "then": { "properties": { "objectKind": { "enum": ["MCP_TOOL", "MCP_RESOURCE", "MCP_PROMPT"] } } }
+        },
+        {
+          "if": {
+            "properties": { "standardPinIdentity": { "const": "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec" } },
+            "required": ["standardPinIdentity"]
+          },
+          "then": { "properties": { "objectKind": { "enum": ["ACP_AGENT_METHOD", "ACP_CLIENT_METHOD", "ACP_NOTIFICATION"] } } }
+        },
+        {
+          "if": {
+            "properties": { "standardPinIdentity": { "const": "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819" } },
+            "required": ["standardPinIdentity"]
+          },
+          "then": { "properties": { "objectKind": { "enum": ["AGENT_SKILL"] } } }
+        }
+      ]
+    },
+    "bindingSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "bindings", "snapshotIdentity"],
+      "properties": {
+        "version": { "const": "k4-r1-compatibility-binding-snapshot-v1" },
+        "bindings": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/externalCapabilityBinding" }
+        },
+        "snapshotIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "registrationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "bindingIdentity", "extensionId", "descriptorIdentity", "registrationSerial"],
+      "properties": {
+        "version": { "const": "k4-r1-compatibility-registration-v1" },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "registrationSerial": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+      }
+    }
+  }
+}
