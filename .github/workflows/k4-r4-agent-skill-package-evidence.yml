@@ -22,13 +22,17 @@ jobs:
     env:
       K4_R4_IMPLEMENTATION_BASE_SHA: "8aac41ec871446f138f8502b1224e947aa67ed95"
       K4_R4_IMPLEMENTATION_BASE_TREE: "e054cc4249549739b9be6b2e35078edb56c2c0a8"
-      K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA: "8f5109ace2f8f2348dd64acaff97c1b583181d8b"
-      K4_R4_IMPLEMENTATION_ADMISSION_PARENT_TREE: "065e86f8622e67f1f9bb1c4050aa0f146a06012c"
+      K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA: "51e5fc15ab276c08672709ede24d052009ffa8df"
+      K4_R4_IMPLEMENTATION_ADMISSION_PARENT_TREE: "66347593eb9db103a4aa28a00fd0a5134dcc90a0"
+      K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA: "4156090cc469aaf055fba9bd6ff63ff6c85128f5"
+      K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE: "8e4d12eb2d92c2f221330737863aea5903d42e41"
+      K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA: "8f5109ace2f8f2348dd64acaff97c1b583181d8b"
+      K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE: "065e86f8622e67f1f9bb1c4050aa0f146a06012c"
       K4_R4_IMPLEMENTATION_BRANCH: "codex/k4-r4-agent-skill-package-evidence"
       K4_R4_IMPLEMENTATION_PULL_REQUEST: "183"
-      K4_R4_CANONICAL_ARTIFACT_SHA: "8f5109ace2f8f2348dd64acaff97c1b583181d8b"
-      K4_R4_CANONICAL_ARTIFACT_TREE: "065e86f8622e67f1f9bb1c4050aa0f146a06012c"
-      K4_R4_CANONICAL_SCHEMA_BLOB: "c8706b25e53a4eb18919ceae0df3412ec94fc15d"
+      K4_R4_CANONICAL_ARTIFACT_SHA: "51e5fc15ab276c08672709ede24d052009ffa8df"
+      K4_R4_CANONICAL_ARTIFACT_TREE: "66347593eb9db103a4aa28a00fd0a5134dcc90a0"
+      K4_R4_CANONICAL_SCHEMA_BLOB: "fc591ca005c049205965315c9cef01d4e37c0cbd"
       K4_R4_CANONICAL_SOURCE_BLOB: "c5f5952514db9a9ce51904652456134f2ca00672"
       K4_R4_CANONICAL_TEST_BLOB: "f2aaf5dbe8a9fe7681cdf32519279fd6685db593"
       K4_R4_AUTHORIZATION_DOCUMENT_BLOB: "401fbf9a75675e4e2c96fc0b65199728fc08a0a6"
@@ -75,7 +79,21 @@ jobs:
             git fetch --no-tags --depth=1 origin "$K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA"
             test "$(git rev-parse "$K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA^{tree}")" = "$K4_R4_IMPLEMENTATION_ADMISSION_PARENT_TREE"
-            mapfile -t candidate_parents < <(git cat-file -p "$K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
+            mapfile -t parent_parents < <(git cat-file -p "$K4_R4_IMPLEMENTATION_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
+            test "${#parent_parents[@]}" -eq 1
+            test "${parent_parents[0]}" = "$K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse "$K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA^{tree}")" = "$K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE"
+            mapfile -t grandparent_parents < <(git cat-file -p "$K4_R4_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA" | sed -n 's/^parent //p')
+            test "${#grandparent_parents[@]}" -eq 1
+            test "${grandparent_parents[0]}" = "$K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "$(git rev-parse "$K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA^{tree}")" = "$K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE"
+            mapfile -t candidate_parents < <(git cat-file -p "$K4_R4_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA" | sed -n 's/^parent //p')
             test "${#candidate_parents[@]}" -eq 1
             test "${candidate_parents[0]}" = "$K4_R4_IMPLEMENTATION_BASE_SHA"
 
@@ -350,22 +368,28 @@ jobs:
           mutations = []
           raw_leak = copy.deepcopy(values["evidence"])
           raw_leak["description"] = "untrusted text"
-          mutations.append(raw_leak)
+          mutations.append(("raw text leak", raw_leak))
           wrong_kind = copy.deepcopy(values["evidence"])
           wrong_kind["objectKind"] = "MCP_TOOL"
-          mutations.append(wrong_kind)
+          mutations.append(("wrong object kind", wrong_kind))
           unbound_leak = copy.deepcopy(values["evidence"])
           unbound_leak["normalizedCapabilityIds"] = ["skills/read"]
-          mutations.append(unbound_leak)
+          mutations.append(("UNBOUND capability leak", unbound_leak))
+          unbound_binding_leak = copy.deepcopy(values["evidence"])
+          unbound_binding_leak["bindingIdentity"] = "a" * 64
+          mutations.append(("UNBOUND binding leak", unbound_binding_leak))
+          unbound_disposition_leak = copy.deepcopy(values["evidence"])
+          unbound_disposition_leak["disposition"] = "UNRESOLVED"
+          mutations.append(("UNBOUND disposition leak", unbound_disposition_leak))
           wrong_source = copy.deepcopy(values["evidence"])
           wrong_source["sourceEvidence"]["sourceCommit"] = "0" * 40
-          mutations.append(wrong_source)
+          mutations.append(("wrong source", wrong_source))
           raw_tools = copy.deepcopy(values["input"])
           raw_tools["allowedTools"] = "Read"
-          mutations.append(raw_tools)
-          for candidate in mutations:
+          mutations.append(("raw allowed-tools", raw_tools))
+          for name, candidate in mutations:
               if not list(validator.iter_errors(candidate)):
-                  raise SystemExit("schema accepted a hostile K4-R4 mutation")
+                  raise SystemExit(f"schema accepted hostile K4-R4 mutation: {name}")
           PY
 
       - name: Install locked TypeScript validation tooling
