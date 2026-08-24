@@ -125,6 +125,7 @@ K4-R1: DATA-ONLY STANDARD PINS + EXTERNAL-CAPABILITY NORMALIZATION
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
 K4-R2: CALLER-MATERIALIZED DATA-ONLY MCP CATALOG EVIDENCE
 K4-R2 IMPLEMENTATION: AUTHORIZED / NOT YET CANONICAL
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
 K4-R3+: NOT AUTHORIZED
 ```
 
@@ -139,6 +140,8 @@ The canonical implementation ledger, qualified identity, review evidence, proof 
 K4-R2 may correlate already-materialized MCP `tools/list`, `resources/list`, or `prompts/list` page digests with one exact immutable K4-R1 binding snapshot and derive only `UNBOUND`, `CURRENT`, or `STALE` evidence. It cannot send or parse JSON-RPC, contact a server, traverse a cursor, assemble pages, cache, read a resource, retrieve a prompt, invoke a tool, interpret raw metadata, or grant authority.
 
 The exact K4-R2 primary-source basis, caller-materialized contract, five-path implementation allowlist, required proofs, and preserved non-grants are defined in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
+
+The shared `src/index.ts` trigger inherited from the one-time K4-R1 implementation gate requires one exact workflow-only hardening before K4-R2 source begins. `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md` authorizes a continuing K4-R1 canonical-regression gate while leaving the K4-R2 five-path implementation allowlist unchanged.
 
 ## K5 — Proposed: Proof Review & Judge
 
@@ -178,7 +181,7 @@ K7 does not itself authorize distribution or public release.
 1. `Defined`, `authorized for planning`, `implementation authorized`, `implemented`, `canonical`, `closed`, and `released` are distinct states.
 2. A roadmap entry never grants source-intake or implementation authority by implication.
 3. K3-R1 through K3-R6 are canonical only for their already-authorized bounded scopes; K3 closure does not authorize K3-R7+ or expand any accepted K3 contract.
-4. K4 is defined and K4-R1 is canonical only for its exact data-only scope; K4-R2 is authorized only for caller-materialized data-only MCP catalog evidence, K4-R3+ remains unauthorized, and no external standard name, declaration, metadata, digest, cache hint, or registry membership is executable authority.
+4. K4 is defined and K4-R1 is canonical only for its exact data-only scope; K4-R2 is authorized only for caller-materialized data-only MCP catalog evidence after its exact preimplementation workflow-hardening prerequisite, K4-R3+ remains unauthorized, and no external standard name, declaration, metadata, digest, cache hint, or registry membership is executable authority.
 5. KRI-P0 grants planning/contract-design authority only; KRI-R1 through KRI-R4 are canonical only for their separately authorized bounded scopes, while KRI-R5+ and K5 implementation remain unauthorized.
 6. Storage engines, donors, models, protocols, and implementation tactics remain replaceable behind accepted Kodac boundaries unless separately ratified.
 7. Superiority claims require reproducible benchmark evidence.
@@ -196,6 +199,7 @@ K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 K4: DEFINED / IN PROGRESS
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
 K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
 K4-R3+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -226,6 +230,7 @@ K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENS
 K3-R7+: NOT AUTHORIZED
 K4-R1 SCOPE EXPANSION BEYOND THE DATA-ONLY NORMALIZATION AUTHORIZATION: NOT AUTHORIZED
 K4-R2 SCOPE EXPANSION BEYOND THE CALLER-MATERIALIZED MCP CATALOG-EVIDENCE AUTHORIZATION: NOT AUTHORIZED
+K4-R2 SOURCE PR BEFORE CANONICAL K4-R1 WORKFLOW HARDENING: NOT AUTHORIZED
 K4-R3+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
