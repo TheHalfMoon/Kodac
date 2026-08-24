@@ -18,17 +18,17 @@
 
 ## Decision
 
-Canonically adopt the exact bounded K4-R2 implementation and its prerequisite K4-R1 canonical-regression workflow hardening after both passed their authorized implementation, qualification, review, merge, and post-merge gates:
+Conditionally adopt the exact bounded K4-R2 implementation only if this evidence candidate passes the exact merge gate below. Its prerequisite K4-R1 canonical-regression workflow hardening is already canonical under the separate self-canonicalizing rule in `KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md` after PR #175 passed its own authorized implementation, qualification, review, merge, and post-merge gates:
 
 ```text
 K4: DEFINED / IN PROGRESS / NOT CLOSED
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE SCOPE
+K4-R2: CANONICAL / COMPLETE IFF THIS EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE
 K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
 K4-R3+: NOT AUTHORIZED
 ```
 
-This decision makes only the inert, caller-materialized MCP catalog-evidence surface canonical. It does not close K4, authorize K4-R3, create an MCP client or server, perform discovery or invocation, or turn an external declaration, metadata digest, cache hint, normalized binding, or registry membership into authority.
+Only after every condition in the merge gate passes does this decision make the inert, caller-materialized MCP catalog-evidence surface canonical. It does not close K4, authorize K4-R3, create an MCP client or server, perform discovery or invocation, or turn an external declaration, metadata digest, cache hint, normalized binding, or registry membership into authority.
 
 ## Canonical implementation ledger
 
@@ -107,7 +107,7 @@ These are read-only evidence pins. They admit no upstream source, generated sche
 
 The qualified implementation head incorporated every verified actionable finding:
 
-- the workflow PR identity is bound to PR #176;
+- the K4-R1 canonical-regression workflow PR identity is bound to PR #175;
 - the package-export assertion accepts both LF and CRLF checkouts while preserving exact export text;
 - exact binding correlation is linear rather than declaration-by-binding quadratic and is tested at the exact 4,096-by-4,096 maximum;
 - the one-time branch/base/scope admission remains fail-closed as required by the controlling authorization;
@@ -216,5 +216,7 @@ This evidence becomes canonical and K4-R2 becomes complete for its bounded autho
 - normal included review is terminal with zero current material findings and zero unresolved actionable threads;
 - merge uses exact expected-head semantics and preserves the intended five-path tree;
 - post-merge canonical proof re-verifies the merge parent order and tree equality.
+
+Until every condition above passes, this record is a canonicalization candidate and K4-R2 remains implemented and qualified but not canonically adopted.
 
 Canonical adoption does not close K4 or authorize K4-R3, a protected operation, provider spend, Z0-family action, trust-root establishment, public release, or PR #163 work.
