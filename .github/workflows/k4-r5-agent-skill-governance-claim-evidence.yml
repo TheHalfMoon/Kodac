@@ -1,0 +1,615 @@
+name: k4-r5-agent-skill-governance-claim-evidence
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k4-r5-agent-skill-governance-claim-evidence.yml"
+      - "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
+      - "packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k4-r5-agent-skill-governance-claim-evidence.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  agent-skill-governance-claim-evidence:
+    name: k4-r5-agent-skill-governance-claim-evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K4_R5_IMPLEMENTATION_BASE_SHA: "f52085bf5de47887d05e3349bde23a2822cd41a5"
+      K4_R5_IMPLEMENTATION_BASE_TREE: "1474695ee2141d6f61e180ca6f5701ef66aafd31"
+      K4_R5_IMPLEMENTATION_ARTIFACT_SHA: "fea2d274d651e1149cdce73d0eeea270d53e8e17"
+      K4_R5_IMPLEMENTATION_ARTIFACT_TREE: "ae7ea7aee3ea320ef57336b19f44f2925c9ad7bd"
+      K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA: "c88021706b7209798bdeea50595b1330025ec956"
+      K4_R5_IMPLEMENTATION_EARLY_ADMISSION_TREE: "7c466cca9ae5c1b7bebe28a2f46e3c5629766f28"
+      K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA: "07aaa31d739a26cd9cb29920cef9d53efa4c98f3"
+      K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_TREE: "749390f32d52be29fe6728e081ab76148655633b"
+      K4_R5_IMPLEMENTATION_BRANCH: "codex/k4-r5-agent-skill-governance-claim-evidence"
+      K4_R5_IMPLEMENTATION_PULL_REQUEST: "186"
+      K4_R5_SCHEMA_BLOB: "3dc1890d0807ce3c9ad00e69b7df5fb3862f3273"
+      K4_R5_SOURCE_BLOB: "5fdeba6fe02d859c13e3d876352857e3e301b1f4"
+      K4_R5_TEST_BLOB: "1d2da8002b1732c81e56438903e6a76d58900ca7"
+      K4_R5_INDEX_BLOB: "df9a319db12b11b7f973eb397069eef194cf7780"
+      K4_R5_AUTHORIZATION_DOCUMENT_BLOB: "cbdf179fbcd3c83483268fa84edddaf98e8045f4"
+      K4_R5_AUTHORIZATION_FIRST_PARENT_SHA: "7ec38dba8232084dbc1a35ead2faec70cf413403"
+      K4_R5_AUTHORIZATION_HEAD_SHA: "616918be317917015e5eda0e8b68fd265689bc7d"
+      K4_R4_ARTIFACT_SHA: "056cc4c5ab93f4b6df3e685cc032541d3306b7ea"
+      K4_R4_ARTIFACT_TREE: "17591439397f68e088abcd797133f396155a5d56"
+      K4_R4_FINAL_HEAD_SHA: "e85d07131c71f05ff39ab9aa4337a3ea5639f02d"
+      K4_R4_FINAL_HEAD_TREE: "a63cbf605a12a312aea8789058599ee8c1f90461"
+      K4_R4_SCHEMA_BLOB: "fc591ca005c049205965315c9cef01d4e37c0cbd"
+      K4_R4_SOURCE_BLOB: "7484c94b1cc79e5bb14e15718576a910a7c270f2"
+      K4_R4_TEST_BLOB: "8ec2722d8c76d12306ef7a70dd5f27f5d3f13241"
+      K4_R4_WORKFLOW_BLOB: "521b3718a9e25c5bf703dfcaab9afbb0ae80b1e0"
+      K4_R4_INDEX_BLOB: "3410e6b415f758aa3597087f78e1a6ff850e0d2c"
+      K4_R4_AUTHORIZATION_DOCUMENT_BLOB: "401fbf9a75675e4e2c96fc0b65199728fc08a0a6"
+      K4_R4_IMPLEMENTATION_MERGE_SHA: "21cb4478c00089fd0c9500a437fb46d5bae5d588"
+      K4_R4_IMPLEMENTATION_MERGE_TREE: "a63cbf605a12a312aea8789058599ee8c1f90461"
+      K4_R4_AUTHORIZATION_MERGE_SHA: "8aac41ec871446f138f8502b1224e947aa67ed95"
+      K4_R4_EVIDENCE_HEAD_SHA: "be4e27d8ee0bff7ae07e4de64e32197b0881d1cd"
+      K4_R4_EVIDENCE_MERGE_SHA: "7ec38dba8232084dbc1a35ead2faec70cf413403"
+      K4_R4_EVIDENCE_MERGE_TREE: "e0227ab699847cdbcb70134037215b668be264a0"
+      K4_R4_EVIDENCE_DOCUMENT_BLOB: "5157bd9bd0d3dc780024490d0632ecd8bd639d98"
+      AGENT_SKILLS_STANDARD_PIN_IDENTITY: "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819"
+      K4_R1_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
+      K4_R1_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact PR head, authorization, admission chain, and closed gate mode
+        shell: bash
+        env:
+          K4_R5_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K4_R5_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K4_R5_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K4_R5_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K4_R5_PR_NUMBER: ${{ github.event.pull_request.number }}
+          K4_R5_PR_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K4_R5_PR_HEAD_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r5-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r5-diff-before"
+          test ! -s "$RUNNER_TEMP/k4-r5-status-before"
+          test ! -s "$RUNNER_TEMP/k4-r5-diff-before"
+
+          workflow=".github/workflows/k4-r5-agent-skill-governance-claim-evidence.yml"
+          if test "$K4_R5_PR_HEAD_REF" = "$K4_R5_IMPLEMENTATION_BRANCH"; then
+            test "$K4_R5_PR_HEAD_REPOSITORY" = "$K4_R5_PR_REPOSITORY"
+            test "$K4_R5_PR_NUMBER" = "$K4_R5_IMPLEMENTATION_PULL_REQUEST"
+            test "$K4_R5_PR_BASE_SHA" = "$K4_R5_IMPLEMENTATION_BASE_SHA"
+
+            mapfile -t head_parents < <(git cat-file -p HEAD | sed -n 's/^parent //p')
+            test "${#head_parents[@]}" -eq 1
+            test "${head_parents[0]}" = "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_ARTIFACT_TREE"
+            mapfile -t artifact_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA" | sed -n 's/^parent //p')
+            test "${#artifact_parents[@]}" -eq 1
+            test "${artifact_parents[0]}" = "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_TREE"
+            mapfile -t early_admission_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA" | sed -n 's/^parent //p')
+            test "${#early_admission_parents[@]}" -eq 1
+            test "${early_admission_parents[0]}" = "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_TREE"
+            mapfile -t initial_artifact_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA" | sed -n 's/^parent //p')
+            test "${#initial_artifact_parents[@]}" -eq 1
+            test "${initial_artifact_parents[0]}" = "$K4_R5_IMPLEMENTATION_BASE_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_BASE_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_BASE_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_BASE_TREE"
+            mapfile -t authorization_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_BASE_SHA" | sed -n 's/^parent //p')
+            test "${#authorization_parents[@]}" -eq 2
+            test "${authorization_parents[0]}" = "$K4_R5_AUTHORIZATION_FIRST_PARENT_SHA"
+            test "${authorization_parents[1]}" = "$K4_R5_AUTHORIZATION_HEAD_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_BASE_SHA:docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md")" = "$K4_R5_AUTHORIZATION_DOCUMENT_BLOB"
+
+            mapfile -t initial_artifact_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_BASE_SHA" "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA" | LC_ALL=C sort)
+            expected_artifacts=(
+              "packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
+              "packages/kodac-runtime/src/index.ts"
+              "packages/kodac-runtime/test/k4-r5-agent-skill-governance-claim-evidence.test.ts"
+              "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
+            )
+            test "${#initial_artifact_delta[@]}" -eq "${#expected_artifacts[@]}"
+            for index in "${!expected_artifacts[@]}"; do
+              test "${initial_artifact_delta[$index]}" = "${expected_artifacts[$index]}"
+            done
+
+            mapfile -t early_admission_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA" "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA")
+            test "${#early_admission_delta[@]}" -eq 1
+            test "${early_admission_delta[0]}" = "$workflow"
+
+            mapfile -t review_fix_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA" "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA")
+            test "${#review_fix_delta[@]}" -eq 1
+            test "${review_fix_delta[0]}" = "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
+
+            mapfile -t changed < <(git diff --name-only "$K4_R5_IMPLEMENTATION_BASE_SHA" HEAD | LC_ALL=C sort)
+            expected=(
+              ".github/workflows/k4-r5-agent-skill-governance-claim-evidence.yml"
+              "packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
+              "packages/kodac-runtime/src/index.ts"
+              "packages/kodac-runtime/test/k4-r5-agent-skill-governance-claim-evidence.test.ts"
+              "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
+            )
+            test "${#changed[@]}" -eq "${#expected[@]}"
+            for index in "${!expected[@]}"; do
+              test "${changed[$index]}" = "${expected[$index]}"
+            done
+
+            mapfile -t admission_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA" HEAD)
+            test "${#admission_delta[@]}" -eq 1
+            test "${admission_delta[0]}" = "$workflow"
+
+            artifact_blobs=(
+              "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json:$K4_R5_SCHEMA_BLOB"
+              "packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts:$K4_R5_SOURCE_BLOB"
+              "packages/kodac-runtime/test/k4-r5-agent-skill-governance-claim-evidence.test.ts:$K4_R5_TEST_BLOB"
+              "packages/kodac-runtime/src/index.ts:$K4_R5_INDEX_BLOB"
+            )
+            for entry in "${artifact_blobs[@]}"; do
+              artifact_path="${entry%%:*}"
+              expected_blob="${entry##*:}"
+              test "$(git rev-parse "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA:$artifact_path")" = "$expected_blob"
+              test "$(git rev-parse "HEAD:$artifact_path")" = "$expected_blob"
+            done
+          else
+            git fetch --no-tags --depth=1 origin "$K4_R5_PR_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_PR_BASE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K4_R5_PR_BASE_SHA" HEAD | LC_ALL=C sort)
+            for changed_path in "${changed[@]}"; do
+              test "$changed_path" != "$workflow"
+            done
+          fi
+
+          action_key="u""ses"
+          mapfile -t actual_action_lines < <(
+            grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" "$workflow" | cut -d: -f2-
+          )
+          expected_action_lines=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#actual_action_lines[@]}" -eq "${#expected_action_lines[@]}"
+          for index in "${!expected_action_lines[@]}"; do
+            test "${actual_action_lines[$index]}" = "${expected_action_lines[$index]}"
+          done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: false
+
+      - name: Sync the locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r5-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Structurally attest every immutable Action reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r5-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          from pathlib import Path
+
+          import yaml
+
+          workflow = Path(".github/workflows/k4-r5-agent-skill-governance-claim-evidence.yml")
+          document = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+          action_key = "u" + "ses"
+          expected = [
+              (
+                  ("jobs", "agent-skill-governance-claim-evidence", "steps", 0, action_key),
+                  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              ),
+              (
+                  ("jobs", "agent-skill-governance-claim-evidence", "steps", 2, action_key),
+                  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              ),
+              (
+                  ("jobs", "agent-skill-governance-claim-evidence", "steps", 3, action_key),
+                  "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e",
+              ),
+          ]
+
+          def action_references(value, path=(), active=None):
+              if active is None:
+                  active = set()
+              if isinstance(value, (dict, list)):
+                  identity = id(value)
+                  if identity in active:
+                      raise ValueError("YAML alias cycle is prohibited")
+                  active.add(identity)
+                  try:
+                      if isinstance(value, dict):
+                          for key, nested in value.items():
+                              nested_path = (*path, key)
+                              if key == action_key:
+                                  yield nested_path, nested
+                              yield from action_references(nested, nested_path, active)
+                      else:
+                          for index, nested in enumerate(value):
+                              yield from action_references(nested, (*path, index), active)
+                  finally:
+                      active.remove(identity)
+
+          def validate(candidate):
+              if not isinstance(candidate, dict):
+                  raise ValueError("workflow must be a mapping")
+              jobs = candidate.get("jobs")
+              if not isinstance(jobs, dict) or set(jobs) != {"agent-skill-governance-claim-evidence"}:
+                  raise ValueError("workflow must contain exactly the canonical K4-R5 validation job")
+              actual = list(action_references(candidate))
+              if actual != expected:
+                  raise ValueError(f"unexpected Action or reusable-workflow references: {actual!r}")
+
+          validate(document)
+          hidden_job = copy.deepcopy(document)
+          hidden_job["jobs"]["unapproved"] = {
+              action_key: "example/unapproved/.github/workflows/check.yml@deadbeef"
+          }
+          extra_step = copy.deepcopy(document)
+          extra_step["jobs"]["agent-skill-governance-claim-evidence"]["steps"].append(
+              {action_key: "example/unapproved@deadbeef"}
+          )
+          for candidate in (hidden_job, extra_step):
+              try:
+                  validate(candidate)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit("structural validator accepted an unapproved Action reference")
+          PY
+
+      - name: Prove canonical K4-R4 dependencies, implementation, and evidence lineage
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$K4_R4_FINAL_HEAD_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_FINAL_HEAD_SHA"
+          test "$(git rev-parse "$K4_R4_FINAL_HEAD_SHA^{tree}")" = "$K4_R4_FINAL_HEAD_TREE"
+          mapfile -t final_head_parents < <(git cat-file -p "$K4_R4_FINAL_HEAD_SHA" | sed -n 's/^parent //p')
+          test "${#final_head_parents[@]}" -eq 1
+          test "${final_head_parents[0]}" = "$K4_R4_ARTIFACT_SHA"
+
+          git fetch --no-tags --depth=1 origin "$K4_R4_ARTIFACT_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_ARTIFACT_SHA"
+          test "$(git rev-parse "$K4_R4_ARTIFACT_SHA^{tree}")" = "$K4_R4_ARTIFACT_TREE"
+
+          canonical_artifacts=(
+            "schema/k4-r4-agent-skill-package-evidence.schema.json:$K4_R4_SCHEMA_BLOB"
+            "packages/kodac-runtime/src/compatibility/agent-skill-package-evidence.ts:$K4_R4_SOURCE_BLOB"
+            "packages/kodac-runtime/test/k4-r4-agent-skill-package-evidence.test.ts:$K4_R4_TEST_BLOB"
+            "packages/kodac-runtime/src/index.ts:$K4_R4_INDEX_BLOB"
+          )
+          for entry in "${canonical_artifacts[@]}"; do
+            canonical_path="${entry%%:*}"
+            expected_blob="${entry##*:}"
+            test "$(git rev-parse "$K4_R4_ARTIFACT_SHA:$canonical_path")" = "$expected_blob"
+          done
+          test "$(git rev-parse "$K4_R4_FINAL_HEAD_SHA:.github/workflows/k4-r4-agent-skill-package-evidence.yml")" = "$K4_R4_WORKFLOW_BLOB"
+          test "$(git rev-parse "HEAD:schema/k4-r4-agent-skill-package-evidence.schema.json")" = "$K4_R4_SCHEMA_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/agent-skill-package-evidence.ts")" = "$K4_R4_SOURCE_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/test/k4-r4-agent-skill-package-evidence.test.ts")" = "$K4_R4_TEST_BLOB"
+          test "$(git rev-parse "HEAD:.github/workflows/k4-r4-agent-skill-package-evidence.yml")" = "$K4_R4_WORKFLOW_BLOB"
+          test "$(git rev-parse "HEAD:docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_AUTHORIZATION_2026-08-24.md")" = "$K4_R4_AUTHORIZATION_DOCUMENT_BLOB"
+
+          git fetch --no-tags --depth=1 origin "$K4_R4_IMPLEMENTATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_IMPLEMENTATION_MERGE_SHA"
+          test "$(git rev-parse "$K4_R4_IMPLEMENTATION_MERGE_SHA^{tree}")" = "$K4_R4_IMPLEMENTATION_MERGE_TREE"
+          mapfile -t implementation_parents < <(git cat-file -p "$K4_R4_IMPLEMENTATION_MERGE_SHA" | sed -n 's/^parent //p')
+          test "${#implementation_parents[@]}" -eq 2
+          test "${implementation_parents[0]}" = "$K4_R4_AUTHORIZATION_MERGE_SHA"
+          test "${implementation_parents[1]}" = "$K4_R4_FINAL_HEAD_SHA"
+
+          git fetch --no-tags --depth=1 origin "$K4_R4_EVIDENCE_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R4_EVIDENCE_MERGE_SHA"
+          test "$(git rev-parse "$K4_R4_EVIDENCE_MERGE_SHA^{tree}")" = "$K4_R4_EVIDENCE_MERGE_TREE"
+          mapfile -t evidence_parents < <(git cat-file -p "$K4_R4_EVIDENCE_MERGE_SHA" | sed -n 's/^parent //p')
+          test "${#evidence_parents[@]}" -eq 2
+          test "${evidence_parents[0]}" = "$K4_R4_IMPLEMENTATION_MERGE_SHA"
+          test "${evidence_parents[1]}" = "$K4_R4_EVIDENCE_HEAD_SHA"
+          test "$(git rev-parse "$K4_R4_EVIDENCE_MERGE_SHA:docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md")" = "$K4_R4_EVIDENCE_DOCUMENT_BLOB"
+
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/contracts.ts")" = "$K4_R1_CONTRACTS_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/registry.ts")" = "$K4_R1_REGISTRY_BLOB"
+          index_path="packages/kodac-runtime/src/index.ts"
+          test "$(grep -Fxc 'export * from "./compatibility/contracts.ts"' "$index_path")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/registry.ts"' "$index_path")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/agent-skill-package-evidence.ts"' "$index_path")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/agent-skill-governance-claim-evidence.ts"' "$index_path")" -eq 1
+
+      - name: Prove the bounded deterministic K4-R5 production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_path="packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
+          schema_path="schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
+          test -f "$source_path"
+          test -f "$schema_path"
+
+          pattern='node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os|path|vm)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|fetch[[:space:]]*\(|eval[[:space:]]*\(|new[[:space:]]+Function|\.register[[:space:]]*\(|\.dispose[[:space:]]*\('
+          if grep -nE "$pattern" "$source_path"; then
+            echo "K4-R5 Agent Skill governance-claim evidence purity/determinism boundary violation" >&2
+            exit 1
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const sourcePath = "packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
+          const source = readFileSync(sourcePath, "utf8")
+          const specifiers = [
+            ...source.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+            ...source.matchAll(/\bimport\s+["']([^"']+)["']/g),
+          ].map((match) => match[1])
+          const expected = [
+            "node:crypto",
+            "node:util",
+            "./agent-skill-package-evidence.ts",
+            "./contracts.ts",
+          ]
+          if (JSON.stringify(specifiers) !== JSON.stringify(expected)) {
+            throw new Error(`K4-R5 import surface mismatch: ${specifiers.join(", ")}`)
+          }
+          if (/\bimport\s*\(/.test(source)) throw new Error("Dynamic import is prohibited in K4-R5")
+          const utilMembers = [...source.matchAll(/\butilTypes\.([A-Za-z_$][A-Za-z0-9_$]*)/g)]
+          if (utilMembers.length === 0 || utilMembers.some((match) => match[1] !== "isProxy")) {
+            throw new Error("K4-R5 node:util use is limited to utilTypes.isProxy")
+          }
+          const cryptoImports = source.split(/\r?\n/).filter((line) => /from\s+["']node:crypto["']/.test(line))
+          if (JSON.stringify(cryptoImports) !== JSON.stringify(['import { createHash } from "node:crypto"'])) {
+            throw new Error("K4-R5 node:crypto use is limited to createHash")
+          }
+          JSON.parse(readFileSync("schema/k4-r5-agent-skill-governance-claim-evidence.schema.json", "utf8"))
+          NODE
+
+      - name: Validate Draft 2020-12 schema against actual K4-R5 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --input-type=module <<'NODE' > "$RUNNER_TEMP/k4-r5-values.json"
+          import { createHash } from "node:crypto"
+          import {
+            K4_R4_AGENT_SKILLS_STANDARD_PIN_IDENTITY,
+            materializeAgentSkillPackageEvidence,
+          } from "./packages/kodac-runtime/src/compatibility/agent-skill-package-evidence.ts"
+          import {
+            K4_R5_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_VERSION,
+            materializeAgentSkillGovernanceClaimEvidence,
+          } from "./packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
+          import { CompatibilityBindingRegistry } from "./packages/kodac-runtime/src/compatibility/registry.ts"
+          import { createExtensionDescriptor } from "./packages/kodac-runtime/src/extensions/contracts.ts"
+          import { ExtensionDescriptorRegistry } from "./packages/kodac-runtime/src/extensions/registry.ts"
+
+          const digest = (text) => createHash("sha256").update(text, "utf8").digest("hex")
+          const descriptor = createExtensionDescriptor({
+            extensionId: "kodac/agent-skill-adapter",
+            extensionVersion: "1.0.0",
+            provenance: {
+              sourceType: "EXTERNAL_DECLARATION",
+              sourceId: "kodac/k4-r5-schema-check",
+              sourceRevision: "1.0.0",
+              license: "Apache-2.0",
+              intakeMode: "DECLARATION",
+            },
+            capabilities: [{ capabilityId: "skills/read", roles: ["PROVIDER"] }],
+          })
+          const extensions = new ExtensionDescriptorRegistry()
+          extensions.register(descriptor)
+          const registry = new CompatibilityBindingRegistry(extensions)
+          const packageEvidence = materializeAgentSkillPackageEvidence({
+            standardPinIdentity: K4_R4_AGENT_SKILLS_STANDARD_PIN_IDENTITY,
+            extensionId: descriptor.extensionId,
+            descriptorIdentity: descriptor.descriptorIdentity,
+            directoryName: "release-notes",
+            name: "release-notes",
+            description: "Prepare release notes.",
+            license: null,
+            compatibility: null,
+            metadataEntries: [],
+            allowedToolsEvidence: null,
+            instructionBodyEvidence: { sha256: digest(""), byteLength: 0 },
+            skillFileEvidence: { sha256: digest("skill"), byteLength: 5 },
+            packageManifestEvidence: { sha256: digest("manifest"), fileCount: 1, totalByteLength: 5 },
+            sourceProvenanceIdentity: digest("caller-provenance"),
+          }, registry)
+          const input = {
+            version: K4_R5_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_VERSION,
+            packageEvidence,
+            packageVersionEvidence: { sha256: digest("1.0.0"), byteLength: 5 },
+            governanceRevisionIdentity: digest("governance-revision"),
+            requestedCapabilityClaims: [{ capabilityId: "skills/read" }],
+            requirementClaims: [{
+              requirementKind: "NETWORK",
+              evidenceSha256: digest("network-requirement"),
+              evidenceByteLength: 19,
+            }],
+            compatibilityClaimEvidence: null,
+            evaluationClaims: [{
+              evaluatorIdentity: digest("evaluator"),
+              artifactIdentity: digest("artifact"),
+              artifactByteLength: 8,
+              assertedOutcome: "PASS",
+            }],
+          }
+          process.stdout.write(JSON.stringify({
+            input,
+            evidence: materializeAgentSkillGovernanceClaimEvidence(input),
+          }))
+          NODE
+
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r5-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          import os
+          from pathlib import Path
+
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k4-r5-agent-skill-governance-claim-evidence.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          values = json.loads(Path(os.environ["RUNNER_TEMP"], "k4-r5-values.json").read_text(encoding="utf-8"))
+          validator.validate(values["input"])
+          validator.validate(values["evidence"])
+
+          mutations = []
+          raw_status = copy.deepcopy(values["input"])
+          raw_status["claimStatus"] = "CALLER_ASSERTED"
+          mutations.append(("caller-supplied claim status", raw_status))
+          raw_version = copy.deepcopy(values["input"])
+          raw_version["versionText"] = "1.0.0"
+          mutations.append(("raw version", raw_version))
+          package_leak = copy.deepcopy(values["evidence"])
+          package_leak["packageEvidence"] = values["input"]["packageEvidence"]
+          mutations.append(("complete package evidence leak", package_leak))
+          wrong_claim = copy.deepcopy(values["evidence"])
+          wrong_claim["requestedCapabilityClaims"][0]["claimStatus"] = "VERIFIED"
+          mutations.append(("wrong claim state", wrong_claim))
+          wrong_trust = copy.deepcopy(values["evidence"])
+          wrong_trust["trustStatus"] = "TRUSTED"
+          mutations.append(("wrong trust state", wrong_trust))
+          wrong_authority = copy.deepcopy(values["evidence"])
+          wrong_authority["authorityState"] = "GRANTED"
+          mutations.append(("wrong authority state", wrong_authority))
+          wrong_binding = copy.deepcopy(values["evidence"])
+          wrong_binding["bindingState"] = "TRUSTED"
+          mutations.append(("wrong K4-R4 binding state", wrong_binding))
+          duplicate_input_kind = copy.deepcopy(values["input"])
+          duplicate_input_kind["requirementClaims"].append(
+              copy.deepcopy(duplicate_input_kind["requirementClaims"][0])
+          )
+          mutations.append(("duplicate input requirement kind", duplicate_input_kind))
+          duplicate_output_kind = copy.deepcopy(values["evidence"])
+          duplicate_output_kind["requirementClaims"].append(
+              copy.deepcopy(duplicate_output_kind["requirementClaims"][0])
+          )
+          mutations.append(("duplicate output requirement kind", duplicate_output_kind))
+          for name, candidate in mutations:
+              if not list(validator.iter_errors(candidate)):
+                  raise SystemExit(f"schema accepted hostile K4-R5 mutation: {name}")
+          PY
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k4-r5-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {
+            "name": "k4-r5-typescript-validation",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@types/node": "24.3.0",
+              "typescript": "5.9.3"
+            }
+          }
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name": "k4-r5-typescript-validation",
+            "version": "1.0.0",
+            "lockfileVersion": 3,
+            "requires": true,
+            "packages": {
+              "": {
+                "name": "k4-r5-typescript-validation",
+                "version": "1.0.0",
+                "dependencies": {
+                  "@types/node": "24.3.0",
+                  "typescript": "5.9.3"
+                }
+              },
+              "node_modules/@types/node": {
+                "version": "24.3.0",
+                "resolved": "https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz",
+                "integrity": "sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==",
+                "dependencies": {
+                  "undici-types": "~7.10.0"
+                }
+              },
+              "node_modules/typescript": {
+                "version": "5.9.3",
+                "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz",
+                "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+                "bin": {
+                  "tsc": "bin/tsc",
+                  "tsserver": "bin/tsserver"
+                },
+                "engines": {
+                  "node": ">=14.17"
+                }
+              },
+              "node_modules/undici-types": {
+                "version": "7.10.0",
+                "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz",
+                "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
+              }
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, Python, Ruff, provenance, focused, and full runtime gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k4-r5-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k4-r5-typescript/node_modules/@types"
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r5-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+          node --experimental-strip-types --check packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k4-r5-agent-skill-governance-claim-evidence.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k4-r5-typescript"
+
+      - name: Attest checkout unchanged after K4-R5 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r5-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r5-diff-after"
+          cmp "$RUNNER_TEMP/k4-r5-status-before" "$RUNNER_TEMP/k4-r5-status-after"
+          cmp "$RUNNER_TEMP/k4-r5-diff-before" "$RUNNER_TEMP/k4-r5-diff-after"
+          test ! -s "$RUNNER_TEMP/k4-r5-status-after"
+          test ! -s "$RUNNER_TEMP/k4-r5-diff-after"
