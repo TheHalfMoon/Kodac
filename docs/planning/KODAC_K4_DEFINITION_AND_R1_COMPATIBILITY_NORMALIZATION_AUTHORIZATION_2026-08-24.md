@@ -62,7 +62,7 @@ KDO-H1 already provides:
 
 K4-R1 must reuse that boundary. It must not create a competing executable registry or modify the H1 descriptor/registry implementation.
 
-The canonical Agent Skills audit supplies read-only architecture, security, provenance, qualification, and materialization evidence. No donor source, dependency, script, hook, workflow, or binary is admitted by this record.
+The canonical Agent Skills audit supplies read-only architecture, security, provenance, qualification, and materialization evidence. No donor source, dependency, script, hook, workflow, or binary is admitted by this record. The one allowlisted `.github/workflows/k4-r1-compatibility-normalization.yml` file may be authored locally solely to validate K4-R1; it may not be copied or derived from a donor workflow or used for any other purpose.
 
 ## Primary-standard baseline pins
 
@@ -102,6 +102,31 @@ The runtime contract may expose the three exact primary-standard pins above as i
 
 No default branch or floating version is accepted at runtime.
 
+### Canonical identities and ordering
+
+K4-R1 must use the same closed canonical-JSON algorithm as H1 for every derived identity:
+
+- values are serialized as JSON with object keys ordered by ascending ordinal string comparison;
+- arrays retain their declared order only after every set-valued input has been sorted by that same comparison;
+- `undefined`, non-finite numbers, non-JSON values, accessors, proxies, and unknown fields fail closed before serialization;
+- the canonical JSON text is encoded as UTF-8 and hashed with SHA-256;
+- identities are the resulting 64-character lowercase hexadecimal digest, without a prefix.
+
+A standard-pin identity hashes exactly the complete validated pin record excluding its derived identity. A binding identity hashes exactly the complete validated binding record excluding its derived identity, with normalized capability identifiers first sorted in ascending ordinal order.
+
+Every `list` or filtered discovery operation must return an immutable snapshot record containing the selected immutable bindings and a `snapshotIdentity`. Bindings in every snapshot use this single ascending tuple sort key:
+
+```text
+standardPinIdentity
+-> objectKind
+-> externalName
+-> extensionId
+-> descriptorIdentity
+-> bindingIdentity
+```
+
+Tuple components are compared by the same ordinal string comparison. The snapshot identity hashes exactly the canonical snapshot record excluding `snapshotIdentity`; therefore empty and filtered snapshots are also deterministic and content-addressed.
+
 ### External object vocabulary
 
 The first closed external-object vocabulary is:
@@ -129,6 +154,8 @@ An external-capability binding may contain only bounded data fields that establi
 - one explicit normalization disposition;
 - a canonical sorted set of zero or more H1-format semantic capability identifiers;
 - a deterministic binding identity.
+
+The opaque external name must be non-empty, NUL-free, no more than 512 Unicode code points in schema validation, and no more than 512 bytes when encoded as UTF-8 in authoritative runtime validation. The metadata digest must be exactly 64 lowercase hexadecimal SHA-256 characters. A violation fails closed before identity construction or registry mutation.
 
 The exact disposition vocabulary is:
 
@@ -160,6 +187,10 @@ The K4-R1 registry may:
 - remove only the exact registration named by an ownership-safe receipt;
 - remain ephemeral and in-memory.
 
+The registry may contain at most 4,096 active bindings. Registration at capacity fails closed before serial allocation or any mutation. A failed validation, conflict, or capacity check must leave registry content, size, next registration serial, and all previously returned snapshots unchanged.
+
+The ownership-safe receipt is an H1-compatible data-only registration receipt. It may identify only the K4-R1 contract version, binding identity, adapter `extensionId`, adapter `descriptorIdentity`, and a positive safe-integer registration serial. It is not an execution, verification, approval, or authority receipt.
+
 Registration does not install, load, connect to, invoke, authorize, approve, or trust an external object or adapter.
 
 ## Exact implementation allowlist
@@ -182,16 +213,16 @@ Production compatibility source may import only deterministic `node:crypto`, the
 The implementation must prove at least:
 
 1. every standard repository, commit, tree, specification path/blob, revision label, and licensing-evidence blob is exact;
-2. standard-pin and binding identities are deterministic and order-independent where the contract declares sets;
-3. unknown standards, object kinds, dispositions, fields, malformed digests, duplicate capabilities, and bound violations fail closed;
+2. standard-pin, binding, and snapshot identities follow the exact canonical JSON, UTF-8, SHA-256, set-ordering, and snapshot tuple-order rules and are order-independent where the contract declares sets;
+3. unknown standards, object kinds, dispositions, fields, malformed digests, duplicate capabilities, over-512-byte or over-512-code-point external names, and all other bound violations fail closed before identity construction or mutation;
 4. `UNRESOLVED`, `SINGLE`, and `COMPOSITE` cardinality rules are exact;
 5. opaque external names and metadata digests remain evidence and do not become authority;
 6. Agent Skills `allowed-tools` cannot become a normalized capability grant by implication;
 7. referenced H1 adapter descriptors must be registered, identity-exact, and declare every mapped capability as `PROVIDER`;
-8. duplicate/conflicting binding registration fails closed;
-9. registry discovery and disposal are deterministic, immutable, ownership-safe, and idempotent;
-10. schema vocabulary, bounds, and conditional disposition rules match runtime behavior;
-11. production code contains no transport, HTTP, network, filesystem, process, dynamic import, code loader, skill parser, YAML/Markdown parser, secret, ExecutionGateway, Trust Kernel, tool registry, provider registry, receipt, verification, or Done-Gate surface;
+8. duplicate/conflicting binding registration and registration beyond 4,096 active bindings fail closed without consuming a serial or mutating prior state;
+9. registry discovery and disposal are deterministic, immutable, ownership-safe, and idempotent, including exact tuple ordering and content-addressed empty and filtered snapshots;
+10. schema vocabulary, 512-code-point external-name bound, runtime 512-byte external-name bound, 4,096-binding registry bound, digest bounds, and conditional disposition rules match runtime behavior;
+11. production code contains no transport, HTTP, network, filesystem, process, dynamic import, code loader, skill parser, YAML/Markdown parser, secret, ExecutionGateway, Trust Kernel, tool registry, provider registry, execution receipt, verification receipt, or Done-Gate surface; H1-compatible data-only registration receipts are permitted only for ownership-safe disposal;
 12. full runtime, strict TypeScript, Python, Ruff, scope, purity, provenance, and checkout-unchanged gates are green.
 
 ## Explicit non-grants
