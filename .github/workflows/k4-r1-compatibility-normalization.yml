@@ -19,10 +19,19 @@ jobs:
   compatibility-normalization:
     name: k4-r1-compatibility-normalization
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
-      K4_R1_IMPLEMENTATION_BASELINE_SHA: "f64a5f1ddbe57970d214c2f7b042fa421a0562fa"
-      K4_R1_IMPLEMENTATION_BRANCH: "codex/k4-r1-compatibility-normalization"
+      K4_R1_CANONICAL_IMPLEMENTATION_SHA: "034da7bfeee9439828ea0f639c7ce63ee0b3b9da"
+      K4_R1_CANONICAL_IMPLEMENTATION_TREE: "490e057252bda42243471a6b755bfc7bb79966cd"
+      K4_R1_CANONICAL_SCHEMA_BLOB: "e0a8756d0b508467e37a191612358336a673b0f9"
+      K4_R1_CANONICAL_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
+      K4_R1_CANONICAL_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
+      K4_R1_CANONICAL_TEST_BLOB: "4b4d2ee782417fe56c2b3823ab0bdbd8df6057fc"
+      K4_R1_CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      K4_R1_HARDENING_BASELINE_SHA: "8f7e7f6faf6478edb08dfbf4ade97cc71b6e35d2"
+      K4_R1_HARDENING_BRANCH: "codex/k4-r1-canonical-regression-hardening"
+      K4_R1_HARDENING_PULL_REQUEST: "175"
+      PYTHONDONTWRITEBYTECODE: "1"
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -30,27 +39,15 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "24"
-
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          enable-cache: false
-
-      - name: Sync the locked schema validator outside the checkout
-        shell: bash
-        run: |
-          set -euo pipefail
-          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
-          uv sync --frozen --no-dev
-
-      - name: Attest exact PR head and implementation-gate scope
+      - name: Attest exact PR head and closed gate mode
         shell: bash
         env:
           K4_R1_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           K4_R1_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           K4_R1_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K4_R1_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K4_R1_PR_NUMBER: ${{ github.event.pull_request.number }}
+          K4_R1_PR_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$K4_R1_PR_HEAD_SHA"
@@ -60,50 +57,183 @@ jobs:
           test ! -s "$RUNNER_TEMP/k4-r1-status-before"
           test ! -s "$RUNNER_TEMP/k4-r1-diff-before"
 
-          test "$K4_R1_PR_HEAD_REF" = "$K4_R1_IMPLEMENTATION_BRANCH"
-          test "$K4_R1_PR_BASE_SHA" = "$K4_R1_IMPLEMENTATION_BASELINE_SHA"
-          git fetch --no-tags --depth=1 origin "$K4_R1_IMPLEMENTATION_BASELINE_SHA"
-          test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_IMPLEMENTATION_BASELINE_SHA"
-          mapfile -t changed < <(git diff --name-only "$K4_R1_IMPLEMENTATION_BASELINE_SHA" HEAD | LC_ALL=C sort)
-          test "${#changed[@]}" -eq 6
-          for path in "${changed[@]}"; do
-            case "$path" in
-              .github/workflows/k4-r1-compatibility-normalization.yml|\
-              schema/k4-r1-compatibility-normalization.schema.json|\
-              packages/kodac-runtime/src/compatibility/contracts.ts|\
-              packages/kodac-runtime/src/compatibility/registry.ts|\
-              packages/kodac-runtime/src/index.ts|\
-              packages/kodac-runtime/test/k4-r1-compatibility-normalization.test.ts)
-                ;;
-              *)
-                printf 'Unauthorized K4-R1 implementation path: %s\n' "$path" >&2
-                exit 1
-                ;;
-            esac
+          workflow=".github/workflows/k4-r1-compatibility-normalization.yml"
+          if test "$K4_R1_PR_HEAD_REF" = "$K4_R1_HARDENING_BRANCH"; then
+            test "$K4_R1_PR_HEAD_REPOSITORY" = "$K4_R1_PR_REPOSITORY"
+            test "$K4_R1_PR_NUMBER" = "$K4_R1_HARDENING_PULL_REQUEST"
+            test "$K4_R1_PR_BASE_SHA" = "$K4_R1_HARDENING_BASELINE_SHA"
+            git fetch --no-tags --depth=1 origin "$K4_R1_HARDENING_BASELINE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_HARDENING_BASELINE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K4_R1_HARDENING_BASELINE_SHA" HEAD | LC_ALL=C sort)
+            test "${#changed[@]}" -eq 1
+            test "${changed[0]}" = "$workflow"
+          else
+            git fetch --no-tags --depth=1 origin "$K4_R1_PR_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_PR_BASE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K4_R1_PR_BASE_SHA" HEAD | LC_ALL=C sort)
+            for path in "${changed[@]}"; do
+              test "$path" != "$workflow"
+            done
+          fi
+
+          action_key="u""ses"
+          mapfile -t actual_action_lines < <(
+            grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" "$workflow" | cut -d: -f2-
+          )
+          expected_action_lines=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#actual_action_lines[@]}" -eq "${#expected_action_lines[@]}"
+          for index in "${!expected_action_lines[@]}"; do
+            test "${actual_action_lines[$index]}" = "${expected_action_lines[$index]}"
           done
 
-      - name: Prove data-only deterministic compatibility surface
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: false
+
+      - name: Sync the locked validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Structurally attest every immutable Action reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          from pathlib import Path
+
+          import yaml
+
+          workflow = Path(".github/workflows/k4-r1-compatibility-normalization.yml")
+          document = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+          action_key = "u" + "ses"
+          expected = [
+              (
+                  ("jobs", "compatibility-normalization", "steps", 0, action_key),
+                  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              ),
+              (
+                  ("jobs", "compatibility-normalization", "steps", 2, action_key),
+                  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              ),
+              (
+                  ("jobs", "compatibility-normalization", "steps", 3, action_key),
+                  "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e",
+              ),
+          ]
+
+          def action_references(value, path=(), active=None):
+              if active is None:
+                  active = set()
+              if isinstance(value, (dict, list)):
+                  identity = id(value)
+                  if identity in active:
+                      raise ValueError("YAML alias cycle is prohibited")
+                  active.add(identity)
+                  try:
+                      if isinstance(value, dict):
+                          for key, nested in value.items():
+                              nested_path = (*path, key)
+                              if key == action_key:
+                                  yield nested_path, nested
+                              yield from action_references(nested, nested_path, active)
+                      else:
+                          for index, nested in enumerate(value):
+                              yield from action_references(nested, (*path, index), active)
+                  finally:
+                      active.remove(identity)
+
+          def validate(candidate):
+              if not isinstance(candidate, dict):
+                  raise ValueError("workflow must be a mapping")
+              jobs = candidate.get("jobs")
+              if not isinstance(jobs, dict) or set(jobs) != {"compatibility-normalization"}:
+                  raise ValueError("workflow must contain exactly the canonical validation job")
+              actual = list(action_references(candidate))
+              if actual != expected:
+                  raise ValueError(f"unexpected Action or reusable-workflow references: {actual!r}")
+
+          validate(document)
+
+          hidden_job = copy.deepcopy(document)
+          hidden_job["jobs"]["unapproved"] = {
+              action_key: "example/unapproved/.github/workflows/check.yml@deadbeef"
+          }
+          try:
+              validate(hidden_job)
+          except ValueError:
+              pass
+          else:
+              raise SystemExit("structural validator accepted an unapproved reusable workflow")
+
+          extra_step = copy.deepcopy(document)
+          extra_step["jobs"]["compatibility-normalization"]["steps"].append(
+              {action_key: "example/unapproved@deadbeef"}
+          )
+          try:
+              validate(extra_step)
+          except ValueError:
+              pass
+          else:
+              raise SystemExit("structural validator accepted an unapproved step Action")
+          PY
+
+      - name: Prove canonical K4-R1 artifacts and shared exports unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$K4_R1_CANONICAL_IMPLEMENTATION_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_CANONICAL_IMPLEMENTATION_SHA"
+          test "$(git rev-parse "$K4_R1_CANONICAL_IMPLEMENTATION_SHA^{tree}")" = "$K4_R1_CANONICAL_IMPLEMENTATION_TREE"
+
+          canonical_paths=(
+            "schema/k4-r1-compatibility-normalization.schema.json:$K4_R1_CANONICAL_SCHEMA_BLOB"
+            "packages/kodac-runtime/src/compatibility/contracts.ts:$K4_R1_CANONICAL_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/compatibility/registry.ts:$K4_R1_CANONICAL_REGISTRY_BLOB"
+            "packages/kodac-runtime/test/k4-r1-compatibility-normalization.test.ts:$K4_R1_CANONICAL_TEST_BLOB"
+          )
+          for entry in "${canonical_paths[@]}"; do
+            path="${entry%%:*}"
+            expected_blob="${entry##*:}"
+            test "$(git rev-parse "$K4_R1_CANONICAL_IMPLEMENTATION_SHA:$path")" = "$expected_blob"
+            test "$(git rev-parse "HEAD:$path")" = "$expected_blob"
+          done
+
+          index="packages/kodac-runtime/src/index.ts"
+          test "$(grep -Fxc 'export * from "./compatibility/contracts.ts"' "$index")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/registry.ts"' "$index")" -eq 1
+
+      - name: Prove canonical K4-R1 deterministic production surface
         shell: bash
         run: |
           set -euo pipefail
           root="packages/kodac-runtime/src/compatibility"
           test -d "$root"
+          canonical_sources=("$root/contracts.ts" "$root/registry.ts")
 
-          if grep -R -nE \
+          if grep -nE \
             'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function' \
-            "$root"; then
+            "${canonical_sources[@]}"; then
             echo "K4-R1 compatibility purity/determinism boundary violation" >&2
             exit 1
           fi
 
           node --input-type=module <<'NODE'
-          import { readFileSync, readdirSync } from "node:fs"
+          import { readFileSync } from "node:fs"
           const root = "packages/kodac-runtime/src/compatibility"
           const expectedFiles = ["contracts.ts", "registry.ts"]
-          const actualFiles = readdirSync(root).filter((name) => name.endsWith(".ts")).sort()
-          if (JSON.stringify(actualFiles) !== JSON.stringify(expectedFiles)) {
-            throw new Error(`Unexpected K4-R1 production files: ${actualFiles.join(", ")}`)
-          }
           const allowedSpecifiers = new Set([
             "node:crypto",
             "node:util",
@@ -144,8 +274,19 @@ jobs:
               throw new Error(`Unauthorized node:util API access in ${name}`)
             }
           }
-          const productionSources = new Map(actualFiles.map((name) => [name, readFileSync(`${root}/${name}`, "utf8")]))
-          for (const [name, source] of productionSources) validateProductionSource(name, source)
+          function validateCanonicalSources(sources) {
+            for (const name of expectedFiles) {
+              const source = sources.get(name)
+              if (source === undefined) throw new Error(`Missing canonical K4-R1 source: ${name}`)
+              validateProductionSource(name, source)
+            }
+          }
+          const productionSources = new Map(expectedFiles.map((name) => [name, readFileSync(`${root}/${name}`, "utf8")]))
+          validateCanonicalSources(productionSources)
+          validateCanonicalSources(new Map([
+            ...productionSources,
+            ["separately-authorized-sibling.ts", "export const sibling = true\n"],
+          ]))
           function assertRejected(name, source, label) {
             try {
               validateProductionSource(name, source)
@@ -166,6 +307,11 @@ jobs:
             "registry.ts",
             `${productionSources.get("registry.ts")}\nglobalThis["fetch"]("https://invalid.example")\n`,
             "indirect global fetch",
+          )
+          assertRejected(
+            "registry.ts",
+            `${productionSources.get("registry.ts")}\nvoid import("./untrusted.ts")\n`,
+            "dynamic import expression",
           )
           JSON.parse(readFileSync("schema/k4-r1-compatibility-normalization.schema.json", "utf8"))
           NODE
@@ -222,6 +368,16 @@ jobs:
           if not list(validator.iter_errors(invalid_receipt)):
               raise SystemExit("schema accepted an invalid registration serial")
           PY
+
+      - name: Run repository Python Ruff and provenance regression gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$K4_R1_CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
 
       - name: Run full runtime tests including K4-R1 compatibility normalization
         working-directory: packages/kodac-runtime
