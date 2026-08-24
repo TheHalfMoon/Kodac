@@ -22,10 +22,12 @@ jobs:
     env:
       K4_R3_IMPLEMENTATION_BASE_SHA: "073505d8dce35439f9cf9d7d402c98eec34ac682"
       K4_R3_IMPLEMENTATION_BASE_TREE: "f05de1ec77ceb042fc829f81e51443a33c759177"
-      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA: "fa5356ec8300d09011b5b0f772a92ab2aedabd05"
-      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_TREE: "80651754d206c7bec7d334501ec6edbb85d7fd0e"
-      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA: "3755a653dbb66bd77ee18fa9084f3e06a7e9821d"
-      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE: "c3435b193f11934fb3ca05f892c377d77c0010aa"
+      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA: "b51f2e88fb1426ed72127100bd84566724bbd925"
+      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_TREE: "407f3f0ed89d7539493a49b45fe98c6e791df77b"
+      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA: "fa5356ec8300d09011b5b0f772a92ab2aedabd05"
+      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE: "80651754d206c7bec7d334501ec6edbb85d7fd0e"
+      K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA: "3755a653dbb66bd77ee18fa9084f3e06a7e9821d"
+      K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_TREE: "c3435b193f11934fb3ca05f892c377d77c0010aa"
       K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA: "9a48306feb010211ae1a4e1eaacaa1bfa5ba2949"
       K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE: "aee74370aba27d5b201ceb65afb542f0b74cfb5e"
       K4_R3_IMPLEMENTATION_BRANCH: "codex/k4-r3-acp-method-catalog-evidence"
@@ -87,7 +89,14 @@ jobs:
             test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE"
             mapfile -t grandparent_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA" | sed -n 's/^parent //p')
             test "${#grandparent_parents[@]}" -eq 1
-            test "${grandparent_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "${grandparent_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_TREE"
+            mapfile -t previous_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA" | sed -n 's/^parent //p')
+            test "${#previous_parents[@]}" -eq 1
+            test "${previous_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
 
             git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
@@ -264,7 +273,8 @@ jobs:
           test -f "$source_path"
           test -f "$schema_path"
 
-          if grep -nE +            'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|\.register[[:space:]]*\(|\.dispose[[:space:]]*\(' +            "$source_path"; then
+          pattern='node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|\.register[[:space:]]*\(|\.dispose[[:space:]]*\('
+          if grep -nE "$pattern" "$source_path"; then
             echo "K4-R3 ACP method catalog purity/determinism boundary violation" >&2
             exit 1
           fi
