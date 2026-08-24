@@ -25,9 +25,9 @@ Current state:
 | --- | --- |
 | K0/K1 | CLOSED |
 | K2 | CLOSED |
-| K3 | IN PROGRESS; K3-R1 THROUGH K3-R5 CANONICAL FOR THEIR AUTHORIZED SCOPES; K3 NOT CLOSED |
-| K3-R6 | EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION PLUS REVIEW-HARDENING EXTENSION AUTHORIZED; NOT YET CANONICAL |
-| K3-R7+ | NOT AUTHORIZED |
+| K3 | CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE |
+| K3-R1 through K3-R6 | CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES |
+| K3-R7+ | NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED |
 | KRI-P0 | CANONICAL PLANNING AUTHORITY |
 | KRI-R1 through KRI-R4 | CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES |
 | KRI-R5+ | NOT AUTHORIZED |
@@ -78,11 +78,11 @@ engineering milestone closed
 Likewise:
 
 ```text
-K3-R1 through K3-R5 canonical
-K3-R6 bounded implementation plus review-hardening extension authorized
-!= K3-R6 canonical
-!= K3 closed
+K3-R1 through K3-R6 canonical for their bounded authorized scopes
+K3 closed for that accepted engineering surface
 != K3-R7+ authorized
+!= complete semantic repository intelligence
+!= a permanent graph/index/storage backend
 
 KRI-P0 canonical planning authority
 KRI-R1 through KRI-R4 canonical for separately authorized bounded scopes
@@ -115,10 +115,9 @@ This list is planning direction only. It does not authorize release work or esta
 ## Current authority boundary
 
 ```text
-K3: IN PROGRESS / NOT CLOSED
-K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
-K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION PLUS REVIEW-HARDENING EXTENSION AUTHORIZED / NOT YET CANONICAL
-K3-R7+: NOT AUTHORIZED
+K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
+K3-R1 THROUGH K3-R6: CANONICAL FOR THEIR AUTHORIZED SCOPES
+K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -194,3 +193,5 @@ The reconciliation basis and exact canonical merge identities are recorded in `d
 The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
 
 The narrow `node:util` Proxy-rejection, structural-input, adjacency-index, and serialized-seed review-hardening extension is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
+
+The bounded K3 closure evidence, canonical implementation ledger, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.

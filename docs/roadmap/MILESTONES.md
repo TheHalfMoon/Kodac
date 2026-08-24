@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document records current engineering milestone status after canonical adoption of K3-R1 through K3-R5, authorization of the bounded K3-R6 snapshot relation-graph slice, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
+This document records current engineering milestone status after canonical adoption and bounded closeout of K3-R1 through K3-R6, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
 
 ## K0/K1 — CLOSED
 
@@ -36,7 +36,7 @@ CLOSED
 
 Canonical outcome includes bounded agent execution, provider qualification, policy-gated side effects, exact write scope, receipts/evidence, independent verification, Done Gate proof, protected main integration, and post-merge K2 runtime verification.
 
-## K3 — IN PROGRESS / NOT CLOSED
+## K3 — CLOSED
 
 Theme:
 
@@ -52,22 +52,22 @@ K3-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
 K3-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED SCOPE
-K3-R6: IMPLEMENTATION AND NARROW REVIEW-HARDENING EXTENSION AUTHORIZED FOR THE EXACT BOUNDED SNAPSHOT RELATION-GRAPH SLICE / NOT YET CANONICAL
-K3-R7+: NOT AUTHORIZED
-K3: NOT CLOSED
+K3-R6: CANONICAL / COMPLETE FOR ITS AUTHORIZED BOUNDED SNAPSHOT RELATION-GRAPH SCOPE
+K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
+K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
 ```
 
-Canonical K3 progress includes accepted evidence for repository gold fixtures, exact snapshot/freshness semantics, bounded external-adapter benchmarking, a bounded ast-grep CLI structural-search adapter, and a bounded deterministic Context Engine / Context Bundle.
+Canonical K3 outcomes include repository gold fixtures, exact snapshot/freshness semantics, bounded external-adapter benchmarking, a bounded ast-grep CLI structural-search adapter, a bounded deterministic Context Engine / Context Bundle, and an immutable snapshot-bound relation graph with deterministic impact and related-file queries.
 
-K3 remains open. K3-R6 is now exactly scoped to deterministic snapshot-bound relation evidence, impact traversal, and related-file retrieval; it does not authorize parsers, source crawling, runtime tracing, persistence, models, or execution authority.
+K3-R6 remains exactly scoped to deterministic snapshot-bound relation evidence, impact traversal, and related-file retrieval; it does not authorize parsers, source crawling, runtime tracing, persistence, models, or execution authority.
 
 The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
 
 The exact review-hardening extension admits only `node:util` `types.isProxy`, fail-closed structural validation, an ephemeral per-query adjacency index, and serialized graph-entity seed normalization. It is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
 
-### Remaining K3 closeout direction
+### K3 closeout evidence
 
-A future K3 closeout remains a separate founder-reviewed gate. Applicable closure evidence may include:
+The dedicated closeout gate establishes:
 
 - canonical repository-intelligence/query contracts for the final authorized K3 scope;
 - freshness identity proof;
@@ -82,7 +82,7 @@ A future K3 closeout remains a separate founder-reviewed gate. Applicable closur
 - determined and satisfied platform requirements;
 - dedicated K3 closeout evidence.
 
-The authorized K3-R6 slice is intended to supply bounded blast-radius/related-file evidence. Its implementation does not itself close K3; closeout remains a separate evidence gate after canonical implementation.
+The accepted blast-radius path is the bounded K3-R6 `impact` query; no production `related_tests` claim is made. The canonical ledger, exact exit-evidence matrix, platform applicability, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.
 
 ### K3 non-decisions
 
@@ -133,10 +133,9 @@ The following remain roadmap directions only and have no implementation authorit
 ## Current gate
 
 ```text
-K3: IN PROGRESS / NOT CLOSED
-K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
-K3-R6: EXACT BOUNDED SNAPSHOT RELATION-GRAPH IMPLEMENTATION PLUS REVIEW-HARDENING EXTENSION AUTHORIZED / NOT YET CANONICAL
-K3-R7+: NOT AUTHORIZED
+K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
+K3-R1 THROUGH K3-R6: CANONICAL FOR THEIR AUTHORIZED SCOPES
+K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
