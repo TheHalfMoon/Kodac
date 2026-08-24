@@ -11,6 +11,19 @@ against their primary sources on 2026-08-24 and remain materially accurate.
 This verification does not promote any research idea into an implementation
 requirement or an authority-bearing plan.
 
+The verification is pinned to these exact arXiv versions so later revisions do
+not silently change the source snapshot:
+
+- `2608.13331v1` — <https://arxiv.org/abs/2608.13331v1>
+- `2602.06052v4` — <https://arxiv.org/abs/2602.06052v4>
+- `2504.01990v2` — <https://arxiv.org/abs/2504.01990v2>
+- `2512.24880v2` — <https://arxiv.org/abs/2512.24880v2>
+- `2603.19312v3` — <https://arxiv.org/abs/2603.19312v3>
+
+The Inherent research index and linked Faraday article were accessed on
+2026-08-24; unlike the arXiv records above, that web page is not an immutable
+versioned source.
+
 The references below to the "active H4 sequence" and the direction to finish
 that work first describe the 2026-08-16 sequencing context. PR #102 subsequently
 merged at `adab893d8e122320f441ec9a85a77527d92fbd02`. At reconciliation time,
