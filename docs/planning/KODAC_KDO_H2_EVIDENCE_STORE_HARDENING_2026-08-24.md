@@ -40,6 +40,8 @@ Lossless request snapshot content, ordering, serialization, and `requestIdentity
 8. Final artifact opens use no-follow behavior on POSIX and validate the opened descriptor as a single-link regular file.
 9. Windows metadata honestly records inherited ACL status as unverified; no owner-only mode claim is made.
 10. Main CLI, provider smoke, provider qualification, and controlled live-solve evidence writers share the hardening primitives.
+11. Active sessions hold a PID-bound, fail-conservative cross-process lease so expiry maintenance cannot delete evidence from a command that is still writing.
+12. Controlled live-solve authorization and report artifacts are members of a metadata-bearing UUID session and expire under the requested retention policy.
 
 ## Threat boundary
 

@@ -62,18 +62,19 @@ export async function runProviderSmoke(argv: string[], env: NodeJS.ProcessEnv = 
   const args = parse(argv)
   const sessionId = randomUUID()
   const root = args.evidenceDir ?? join(homedir(), ".kodac", "provider-smoke")
-  const { sessionDir } = await prepareEvidenceSession({ root, sessionId, retentionDays: args.evidenceRetentionDays })
-  const eventPath = join(sessionDir, "events.jsonl")
-  const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
-  const tools = new ToolRegistry()
-  const orchestrator = new RuntimeOrchestrator(tools, session)
-  const providers = new ProviderRegistry()
-  providers.register(providerFromEnv(args.provider, env))
-  const runner = new AgentTurnRunner(providers, tools, orchestrator, session)
-  let streamed = false
-
-  await session.start({ workspace: process.cwd(), command: "provider-smoke", runtimeSlice: "k2-s8b" })
+  const prepared = await prepareEvidenceSession({ root, sessionId, retentionDays: args.evidenceRetentionDays })
+  let session: RuntimeSession | undefined
   try {
+    const eventPath = join(prepared.sessionDir, "events.jsonl")
+    session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
+    const tools = new ToolRegistry()
+    const orchestrator = new RuntimeOrchestrator(tools, session)
+    const providers = new ProviderRegistry()
+    providers.register(providerFromEnv(args.provider, env))
+    const runner = new AgentTurnRunner(providers, tools, orchestrator, session)
+    let streamed = false
+
+    await session.start({ workspace: process.cwd(), command: "provider-smoke", runtimeSlice: "k2-s8b" })
     const result = await runner.run({ provider: args.provider, model: args.model, messages: [{ role: "user", content: args.prompt }] }, {
       onStreamEvent(event) {
         if (!args.json && event.type === "text_delta") { streamed = true; process.stdout.write(event.text) }
@@ -89,8 +90,14 @@ export async function runProviderSmoke(argv: string[], env: NodeJS.ProcessEnv = 
     }
     return 0
   } catch (error) {
-    await session.fail(error instanceof Error ? error : new Error(String(error)))
+    if (session) await session.fail(error instanceof Error ? error : new Error(String(error)))
     throw error
+  } finally {
+    try {
+      await prepared.release()
+    } catch {
+      // A retained lease fails cleanup conservative; it must not replace the provider result.
+    }
   }
 }
 

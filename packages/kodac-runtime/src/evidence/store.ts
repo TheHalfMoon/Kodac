@@ -9,6 +9,9 @@ const DAY_MS = 24 * 60 * 60 * 1_000
 const MAX_ROOT_ENTRIES_PER_MAINTENANCE = 10_000
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const SESSION_ARTIFACTS = new Set([
+  "active-session.json",
+  "authorization.json",
+  "controlled-live-solve-report.json",
   "events.jsonl",
   "proof.json",
   "qualification-report.json",
@@ -31,6 +34,7 @@ export interface EvidenceSessionMetadata {
 }
 
 export interface EvidenceMaintenanceResult {
+  activeExpiredSessionsRetained: number
   expiredSessionsRemoved: number
   legacySessionsHardened: number
   retainedUnsafeOrInvalidSessions: number
@@ -43,6 +47,15 @@ export interface PreparedEvidenceSession {
   metadataPath: string
   metadata: EvidenceSessionMetadata
   maintenance: EvidenceMaintenanceResult
+  release(): Promise<void>
+}
+
+interface EvidenceSessionLease {
+  protocol: "kodac.evidence-session-active"
+  version: 1
+  sessionId: string
+  pid: number
+  createdAt: string
 }
 
 function isPosix(): boolean {
@@ -77,6 +90,10 @@ async function validatePrivateFile(handle: Awaited<ReturnType<typeof open>>, pat
   const observed = await handle.stat()
   if (!observed.isFile()) throw new Error(`Evidence artifact is not a regular file: ${path}`)
   if (observed.nlink !== 1) throw new Error(`Evidence artifact must have exactly one filesystem link: ${path}`)
+  const current = await lstat(path)
+  if (current.isSymbolicLink() || !current.isFile() || current.dev !== observed.dev || current.ino !== observed.ino) {
+    throw new Error(`Evidence artifact path changed while it was being opened: ${path}`)
+  }
   if (isPosix()) await handle.chmod(0o600)
 }
 
@@ -178,6 +195,45 @@ function parseMetadata(raw: string, directorySessionId: string): EvidenceSession
   return metadata as unknown as EvidenceSessionMetadata
 }
 
+function parseLease(raw: string, directorySessionId: string): EvidenceSessionLease | undefined {
+  let value: unknown
+  try {
+    value = JSON.parse(raw) as unknown
+  } catch {
+    return undefined
+  }
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined
+  const lease = value as Record<string, unknown>
+  const expectedKeys = ["createdAt", "pid", "protocol", "sessionId", "version"]
+  if (Object.keys(lease).sort().join("\n") !== expectedKeys.join("\n")) return undefined
+  if (lease.protocol !== "kodac.evidence-session-active" || lease.version !== 1) return undefined
+  if (lease.sessionId !== directorySessionId || !Number.isSafeInteger(lease.pid) || (lease.pid as number) <= 0) return undefined
+  if (typeof lease.createdAt !== "string") return undefined
+  const createdMs = Date.parse(lease.createdAt)
+  if (!Number.isFinite(createdMs) || new Date(createdMs).toISOString() !== lease.createdAt) return undefined
+  return lease as unknown as EvidenceSessionLease
+}
+
+async function activeLeaseState(path: string, sessionId: string): Promise<"absent" | "active" | "stale" | "unsafe"> {
+  let raw: string
+  try {
+    raw = await readPrivateUtf8File(path)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return "absent"
+    return "unsafe"
+  }
+  const lease = parseLease(raw, sessionId)
+  if (!lease) return "unsafe"
+  try {
+    process.kill(lease.pid, 0)
+    return "active"
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code
+    if (code === "ESRCH") return "stale"
+    return code === "EPERM" ? "active" : "unsafe"
+  }
+}
+
 async function hardenKnownArtifacts(sessionDir: string): Promise<void> {
   if (!isPosix()) return
   for (const name of SESSION_ARTIFACTS) {
@@ -215,6 +271,7 @@ async function removeExpiredSession(sessionDir: string, entries: readonly string
 export async function maintainEvidenceRoot(root: string, now = new Date()): Promise<EvidenceMaintenanceResult> {
   await ensurePrivateDirectory(root)
   const result: EvidenceMaintenanceResult = {
+    activeExpiredSessionsRetained: 0,
     expiredSessionsRemoved: 0,
     legacySessionsHardened: 0,
     retainedUnsafeOrInvalidSessions: 0,
@@ -256,6 +313,26 @@ export async function maintainEvidenceRoot(root: string, now = new Date()): Prom
       continue
     }
     if (Date.parse(metadata.expiresAt) > now.getTime()) continue
+    const leasePath = join(sessionDir, "active-session.json")
+    const leaseState = await activeLeaseState(leasePath, entry.name)
+    if (leaseState === "active") {
+      result.activeExpiredSessionsRetained += 1
+      continue
+    }
+    if (leaseState === "unsafe") {
+      result.retainedUnsafeOrInvalidSessions += 1
+      continue
+    }
+    if (leaseState === "stale") {
+      try {
+        await unlink(leasePath)
+        const leaseIndex = entries.indexOf("active-session.json")
+        if (leaseIndex >= 0) entries.splice(leaseIndex, 1)
+      } catch {
+        result.retainedUnsafeOrInvalidSessions += 1
+        continue
+      }
+    }
     try {
       if (await removeExpiredSession(sessionDir, entries)) result.expiredSessionsRemoved += 1
       else result.retainedUnsafeOrInvalidSessions += 1
@@ -292,5 +369,31 @@ export async function prepareEvidenceSession(input: {
   }
   const metadataPath = join(sessionDir, "session.json")
   await writePrivateUtf8File(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, { exclusive: true })
-  return { root: input.root, sessionDir, metadataPath, metadata, maintenance }
+  const leasePath = join(sessionDir, "active-session.json")
+  const lease: EvidenceSessionLease = {
+    protocol: "kodac.evidence-session-active",
+    version: 1,
+    sessionId: input.sessionId,
+    pid: process.pid,
+    createdAt: now.toISOString(),
+  }
+  await writePrivateUtf8File(leasePath, `${JSON.stringify(lease, null, 2)}\n`, { exclusive: true })
+  let released = false
+  return {
+    root: input.root,
+    sessionDir,
+    metadataPath,
+    metadata,
+    maintenance,
+    async release(): Promise<void> {
+      if (released) return
+      await rejectExistingLinkedArtifact(leasePath)
+      try {
+        await unlink(leasePath)
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error
+      }
+      released = true
+    },
+  }
 }

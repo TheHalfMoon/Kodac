@@ -71,6 +71,7 @@ interface SolveArgs extends CommonArgs {
 type CliArgs = ApplyPatchArgs | AskArgs | SolveArgs
 
 type ActivateSession = (session: RuntimeSession) => void
+type ActivateEvidenceLease = (release: () => Promise<void>) => void
 
 function workspaceKey(workspace: string): string {
   return createHash("sha256").update(resolve(workspace), "utf8").digest("hex").slice(0, 16)
@@ -245,18 +246,20 @@ function defaultIO(): CliIO {
   }
 }
 
-async function sessionPaths(args: CommonArgs, sessionId: string): Promise<{
+async function sessionPaths(args: CommonArgs, sessionId: string, activateEvidenceLease: ActivateEvidenceLease): Promise<{
   eventPath: string
   receiptPath: string
   planPath: string
   proofPath: string
 }> {
   const evidenceRoot = args.evidenceDir ?? defaultEvidenceRoot(args.workspace)
-  const { sessionDir: sessionEvidenceDir } = await prepareEvidenceSession({
+  const prepared = await prepareEvidenceSession({
     root: evidenceRoot,
     sessionId,
     retentionDays: args.evidenceRetentionDays,
   })
+  activateEvidenceLease(prepared.release)
+  const sessionEvidenceDir = prepared.sessionDir
   return {
     eventPath: join(sessionEvidenceDir, "events.jsonl"),
     receiptPath: join(sessionEvidenceDir, "receipts.jsonl"),
@@ -333,10 +336,10 @@ function modelRuntime(
   return { tools, orchestrator, providers, runner: new AgentTurnRunner(providers, tools, orchestrator, session) }
 }
 
-async function runApplyPatch(args: ApplyPatchArgs, io: CliIO, activateSession: ActivateSession): Promise<number> {
+async function runApplyPatch(args: ApplyPatchArgs, io: CliIO, activateSession: ActivateSession, activateEvidenceLease: ActivateEvidenceLease): Promise<number> {
   const patchText = await readFile(args.patchFile, "utf8")
   const sessionId = randomUUID()
-  const { eventPath, receiptPath } = await sessionPaths(args, sessionId)
+  const { eventPath, receiptPath } = await sessionPaths(args, sessionId, activateEvidenceLease)
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   activateSession(session)
   const receipts = new JsonlReceiptLedger(receiptPath)
@@ -375,10 +378,11 @@ async function runAsk(
   args: AskArgs,
   io: CliIO,
   activateSession: ActivateSession,
+  activateEvidenceLease: ActivateEvidenceLease,
   runtimeOptions: CliRuntimeOptions,
 ): Promise<number> {
   const sessionId = randomUUID()
-  const { eventPath, receiptPath } = await sessionPaths(args, sessionId)
+  const { eventPath, receiptPath } = await sessionPaths(args, sessionId, activateEvidenceLease)
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   activateSession(session)
   const { runner } = modelRuntime(session, {
@@ -417,10 +421,11 @@ async function runSolve(
   args: SolveArgs,
   io: CliIO,
   activateSession: ActivateSession,
+  activateEvidenceLease: ActivateEvidenceLease,
   runtimeOptions: CliRuntimeOptions,
 ): Promise<number> {
   const sessionId = randomUUID()
-  const { eventPath, receiptPath, planPath, proofPath } = await sessionPaths(args, sessionId)
+  const { eventPath, receiptPath, planPath, proofPath } = await sessionPaths(args, sessionId, activateEvidenceLease)
   const session = new RuntimeSession(new JsonlEventSink(eventPath), sessionId)
   activateSession(session)
   const { runner } = modelRuntime(session, {
@@ -542,15 +547,19 @@ export async function runCli(
   runtimeOptions: CliRuntimeOptions = {},
 ): Promise<number> {
   let session: RuntimeSession | undefined
+  let releaseEvidenceLease: (() => Promise<void>) | undefined
   const activateSession: ActivateSession = (created) => {
     session = created
+  }
+  const activateEvidenceLease: ActivateEvidenceLease = (release) => {
+    releaseEvidenceLease = release
   }
 
   try {
     const args = parseCliArgs(argv, cwd)
-    if (args.command === "apply-patch") return await runApplyPatch(args, io, activateSession)
-    if (args.command === "ask") return await runAsk(args, io, activateSession, runtimeOptions)
-    return await runSolve(args, io, activateSession, runtimeOptions)
+    if (args.command === "apply-patch") return await runApplyPatch(args, io, activateSession, activateEvidenceLease)
+    if (args.command === "ask") return await runAsk(args, io, activateSession, activateEvidenceLease, runtimeOptions)
+    return await runSolve(args, io, activateSession, activateEvidenceLease, runtimeOptions)
   } catch (error) {
     if (session) {
       try {
@@ -561,6 +570,14 @@ export async function runCli(
     }
     io.stderr(error instanceof Error ? error.message : String(error))
     return 1
+  } finally {
+    if (releaseEvidenceLease) {
+      try {
+        await releaseEvidenceLease()
+      } catch {
+        // A retained lease fails cleanup conservative; it must not replace the command's authoritative outcome.
+      }
+    }
   }
 }
 

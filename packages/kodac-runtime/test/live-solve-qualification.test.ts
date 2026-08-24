@@ -2,8 +2,9 @@ import assert from "node:assert/strict"
 import { createHash } from "node:crypto"
 import { access, readFile, mkdir, mkdtemp, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
-import { join, resolve } from "node:path"
+import { dirname, join, resolve } from "node:path"
 import test from "node:test"
+import { maintainEvidenceRoot } from "../src/evidence/store.ts"
 import type { ModelProvider, ModelProviderRequest, ModelProviderResponse } from "../src/model/provider.ts"
 import {
   computeProviderQualificationReportDigest,
@@ -196,6 +197,7 @@ test("controlled live solve verifies qualification and records exact write scope
       "--allow-write-path", "README.md",
       "--approve-writes",
       "--approve-verification",
+      "--evidence-retention-days", "1",
       "--max-failures", "1",
       "--json",
     ],
@@ -221,6 +223,13 @@ test("controlled live solve verifies qualification and records exact write scope
   assert.equal(controlled.protocol, "kodac.controlled-live-solve")
   assert.deepEqual(controlled.writeScope, { mode: "exact_paths", paths: ["README.md"] })
   assert.equal(controlled.exitCode, 2)
+  const authorizationDir = dirname(authorizationPath as string)
+  const metadata = JSON.parse(await readFile(join(authorizationDir, "session.json"), "utf8")) as Record<string, unknown>
+  assert.equal(metadata.retentionDays, 1)
+  await assert.rejects(() => access(join(authorizationDir, "active-session.json")), { code: "ENOENT" })
+  const maintenance = await maintainEvidenceRoot(evidence, new Date(NOW + 2 * 24 * 60 * 60 * 1_000))
+  assert.equal(maintenance.expiredSessionsRemoved, 1)
+  await assert.rejects(() => access(authorizationDir), { code: "ENOENT" })
 })
 
 test("controlled live solve rejects an out-of-scope patch before workspace mutation", async () => {

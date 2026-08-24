@@ -376,6 +376,7 @@ export async function runProviderQualification(
   runtimeOptions: ProviderQualificationRuntimeOptions = {},
 ): Promise<number> {
   let session: RuntimeSession | undefined
+  let releaseEvidenceLease: (() => Promise<void>) | undefined
   try {
     const args = parseArgs(argv, cwd)
     const evidenceRoot = args.evidenceDir ?? join(homedir(), ".kodac", "provider-qualification")
@@ -384,11 +385,13 @@ export async function runProviderQualification(
     }
 
     const sessionId = randomUUID()
-    const { sessionDir } = await prepareEvidenceSession({
+    const prepared = await prepareEvidenceSession({
       root: evidenceRoot,
       sessionId,
       retentionDays: args.evidenceRetentionDays,
     })
+    releaseEvidenceLease = prepared.release
+    const sessionDir = prepared.sessionDir
     const eventPath = join(sessionDir, "events.jsonl")
     const receiptPath = join(sessionDir, "receipts.jsonl")
     const reportPath = join(sessionDir, "qualification-report.json")
@@ -679,6 +682,14 @@ export async function runProviderQualification(
     }
     io.stderr(error instanceof Error ? error.message : String(error))
     return 1
+  } finally {
+    if (releaseEvidenceLease) {
+      try {
+        await releaseEvidenceLease()
+      } catch {
+        // A retained lease fails cleanup conservative; it must not replace the qualification outcome.
+      }
+    }
   }
 }
 

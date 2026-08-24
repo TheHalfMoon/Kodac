@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { mkdtemp, readFile, readdir } from "node:fs/promises"
+import { access, mkdtemp, readFile, readdir } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { dirname, join } from "node:path"
 import test from "node:test"
@@ -34,6 +34,7 @@ test("kodac ask persists the exact model-visible request snapshot and keeps resp
   assert.equal(metadata.protocol, "kodac.evidence-session")
   assert.equal(metadata.retentionDays, 7)
   assert.equal(metadata.mayContainLosslessModelRequestSnapshots, true)
+  await assert.rejects(() => access(join(dirname(payload.evidence.events), "active-session.json")), { code: "ENOENT" })
 
   const eventsText = await readFile(payload.evidence.events, "utf8")
   const events = eventsText.trim().split("\n").map((line) => JSON.parse(line)) as Array<{
