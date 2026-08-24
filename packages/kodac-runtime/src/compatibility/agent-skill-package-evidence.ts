@@ -285,9 +285,14 @@ function boundedText(
   maximumBytes: number,
 ): string {
   if (typeof value !== "string") throw new TypeError(`${label} must be a string`)
-  const codePoints = [...value].length
-  const bytes = Buffer.byteLength(value, "utf8")
+  if (value.length > maximumCodePoints * 2) throw new RangeError(`${label} exceeds its code-point bound`)
   if (value.includes("\0")) throw new TypeError(`${label} must not contain NUL`)
+  const bytes = Buffer.byteLength(value, "utf8")
+  let codePoints = 0
+  for (const _codePoint of value) {
+    codePoints += 1
+    if (codePoints > maximumCodePoints) throw new RangeError(`${label} exceeds its code-point bound`)
+  }
   if (codePoints < minimumCodePoints || codePoints > maximumCodePoints || bytes > maximumBytes) {
     throw new RangeError(`${label} exceeds its UTF-8 or code-point bound`)
   }

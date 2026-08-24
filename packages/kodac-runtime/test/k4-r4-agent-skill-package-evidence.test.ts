@@ -286,6 +286,7 @@ test("K4-R4 input validation closes the shape, canonicalizes metadata, and enfor
   assert.throws(() => validateAgentSkillPackageEvidenceInput({ ...valid, name: "Release-Notes" }))
   assert.throws(() => validateAgentSkillPackageEvidenceInput({ ...valid, directoryName: "other-name" }))
   assert.throws(() => validateAgentSkillPackageEvidenceInput({ ...valid, description: "" }))
+  assert.throws(() => validateAgentSkillPackageEvidenceInput({ ...valid, description: "x".repeat(1_000_000) }))
   assert.throws(() => validateAgentSkillPackageEvidenceInput({ ...valid, compatibility: "x".repeat(501) }))
   assert.throws(() => validateAgentSkillPackageEvidenceInput({ ...valid, metadataEntries: [
     { key: "duplicate", value: "a" },
@@ -441,6 +442,7 @@ test("K4-R4 schema and shared export are present while production remains data-o
     1,
   )
   const production = source("../src/compatibility/agent-skill-package-evidence.ts")
+  assert.equal(production.includes("[...value].length"), false)
   assert.deepEqual(
     [...production.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1]),
     ["node:crypto", "node:util", "./contracts.ts", "./registry.ts"],
