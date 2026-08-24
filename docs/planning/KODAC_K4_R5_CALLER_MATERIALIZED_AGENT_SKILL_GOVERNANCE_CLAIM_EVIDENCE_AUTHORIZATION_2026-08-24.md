@@ -31,6 +31,8 @@ K4-R5 may bind bounded caller assertions about package version, requested semant
 
 K4-R5 does not inspect a package or artifact, parse metadata or instructions, verify any caller-supplied digest, decide whether a claim is true, qualify trust, approve a capability, grant an effect, activate or route a skill, or execute anything.
 
+The `K4-R5+: NOT AUTHORIZED` statements in the earlier K4-R4 authorization and canonical-evidence records remain correct as historical, base-scoped gate decisions. They do not prospectively prohibit a later separately reviewed authorization. This record supersedes that current boundary only if its own exact authorization merge gate passes; before then K4-R5 remains unauthorized. The earlier records remain immutable evidence of what their gates did and did not authorize.
+
 ## Derivation from accepted architecture
 
 ADR-0007 says Agent Skills governance metadata may include:
