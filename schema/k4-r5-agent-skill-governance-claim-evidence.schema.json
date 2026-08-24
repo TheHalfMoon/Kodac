@@ -1,0 +1,459 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k4-r5-agent-skill-governance-claim-evidence.schema.json",
+  "title": "Kodac K4-R5 Caller-Materialized Agent Skill Governance-Claim Evidence",
+  "$comment": "Runtime validation is authoritative for hostile JavaScript values, exact K4-R4 lineage validation, tuple uniqueness, canonical ordering, identity recomputation, and deep immutability.",
+  "oneOf": [
+    { "$ref": "#/$defs/input" },
+    { "$ref": "#/$defs/evidence" }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "standardPinIdentity": {
+      "const": "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819"
+    },
+    "extensionId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9_-]*(?:[./:][a-z][a-z0-9_-]*)+$"
+    },
+    "skillName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "digestEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byteLength": { "type": "integer", "minimum": 1, "maximum": 16777216 }
+      }
+    },
+    "packageVersionEvidence": {
+      "allOf": [
+        { "$ref": "#/$defs/digestEvidence" },
+        { "properties": { "byteLength": { "maximum": 4096 } } }
+      ]
+    },
+    "compatibilityClaimDigest": {
+      "allOf": [
+        { "$ref": "#/$defs/digestEvidence" },
+        { "properties": { "byteLength": { "maximum": 65536 } } }
+      ]
+    },
+    "k4r4DigestEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byteLength": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+      }
+    },
+    "k4r4NonEmptyDigestEvidence": {
+      "allOf": [
+        { "$ref": "#/$defs/k4r4DigestEvidence" },
+        { "properties": { "byteLength": { "minimum": 1 } } }
+      ]
+    },
+    "packageManifestEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "fileCount", "totalByteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileCount": { "type": "integer", "minimum": 1, "maximum": 65536 },
+        "totalByteLength": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+      }
+    },
+    "metadataEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "entryCount", "totalByteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "entryCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "totalByteLength": { "type": "integer", "minimum": 0, "maximum": 65536 }
+      }
+    },
+    "sourceEvidence": {
+      "const": {
+        "repository": "agentskills/agentskills",
+        "sourceCommit": "69ef37e9424c0a7ea9dd2293b559e43ec8176379",
+        "sourceTree": "65e11c9faad14a022055ce0ff3ebf99f2b55142f",
+        "specificationRevision": null,
+        "standardPinIdentity": "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819",
+        "sources": [
+          { "path": "docs/specification.mdx", "blob": "d9a2db099d905da8b879a5c6f996728073985279" },
+          { "path": "LICENSE", "blob": "a20f4476df158a57a68409015ea607c738856f57" },
+          { "path": "docs/LICENSE", "blob": "4ea99c213c5c0c005ae4e80df8e52169d06896ec" },
+          { "path": "README.md", "blob": "247e4a18e908d3bf27092f886f25c2515d84ecbc" }
+        ]
+      }
+    },
+    "k4r4BaseProperties": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "k4-r4-agent-skill-package-evidence-v1" },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "sourceEvidence": { "$ref": "#/$defs/sourceEvidence" },
+        "objectKind": { "const": "AGENT_SKILL" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "bindingSnapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "directoryName": { "$ref": "#/$defs/skillName" },
+        "name": { "$ref": "#/$defs/skillName" },
+        "descriptionEvidence": {
+          "allOf": [
+            { "$ref": "#/$defs/k4r4NonEmptyDigestEvidence" },
+            { "properties": { "byteLength": { "maximum": 4096 } } }
+          ]
+        },
+        "licenseEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/k4r4NonEmptyDigestEvidence" },
+                { "properties": { "byteLength": { "maximum": 4096 } } }
+              ]
+            }
+          ]
+        },
+        "compatibilityEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/k4r4NonEmptyDigestEvidence" },
+                { "properties": { "byteLength": { "maximum": 2000 } } }
+              ]
+            }
+          ]
+        },
+        "metadataEvidence": { "$ref": "#/$defs/metadataEvidence" },
+        "allowedToolsEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/k4r4NonEmptyDigestEvidence" },
+                { "properties": { "byteLength": { "maximum": 16384 } } }
+              ]
+            }
+          ]
+        },
+        "instructionBodyEvidence": { "$ref": "#/$defs/k4r4DigestEvidence" },
+        "skillFileEvidence": { "$ref": "#/$defs/k4r4NonEmptyDigestEvidence" },
+        "packageManifestEvidence": { "$ref": "#/$defs/packageManifestEvidence" },
+        "sourceProvenanceIdentity": { "$ref": "#/$defs/sha256" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "enum": ["UNBOUND", "CURRENT", "STALE"] },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "disposition": { "enum": ["UNRESOLVED", "SINGLE", "COMPOSITE"] },
+        "normalizedCapabilityIds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/capabilityId" }
+        },
+        "evidenceIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "k4r4UnboundEvidence": {
+      "unevaluatedProperties": false,
+      "not": {
+        "anyOf": [
+          { "required": ["bindingIdentity"] },
+          { "required": ["disposition"] },
+          { "required": ["normalizedCapabilityIds"] }
+        ]
+      },
+      "allOf": [
+        { "$ref": "#/$defs/k4r4BaseProperties" },
+        {
+          "required": [
+            "version", "standardPinIdentity", "sourceEvidence", "objectKind", "extensionId",
+            "descriptorIdentity", "bindingSnapshotIdentity", "directoryName", "name",
+            "descriptionEvidence", "licenseEvidence", "compatibilityEvidence", "metadataEvidence",
+            "allowedToolsEvidence", "instructionBodyEvidence", "skillFileEvidence",
+            "packageManifestEvidence", "sourceProvenanceIdentity", "externalMetadataSha256",
+            "bindingState", "evidenceIdentity"
+          ],
+          "properties": { "bindingState": { "const": "UNBOUND" } }
+        }
+      ]
+    },
+    "k4r4StaleEvidence": {
+      "unevaluatedProperties": false,
+      "not": {
+        "anyOf": [
+          { "required": ["disposition"] },
+          { "required": ["normalizedCapabilityIds"] }
+        ]
+      },
+      "allOf": [
+        { "$ref": "#/$defs/k4r4BaseProperties" },
+        {
+          "required": [
+            "version", "standardPinIdentity", "sourceEvidence", "objectKind", "extensionId",
+            "descriptorIdentity", "bindingSnapshotIdentity", "directoryName", "name",
+            "descriptionEvidence", "licenseEvidence", "compatibilityEvidence", "metadataEvidence",
+            "allowedToolsEvidence", "instructionBodyEvidence", "skillFileEvidence",
+            "packageManifestEvidence", "sourceProvenanceIdentity", "externalMetadataSha256",
+            "bindingState", "bindingIdentity", "evidenceIdentity"
+          ],
+          "properties": { "bindingState": { "const": "STALE" } }
+        }
+      ]
+    },
+    "k4r4CurrentEvidence": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        { "$ref": "#/$defs/k4r4BaseProperties" },
+        {
+          "required": [
+            "version", "standardPinIdentity", "sourceEvidence", "objectKind", "extensionId",
+            "descriptorIdentity", "bindingSnapshotIdentity", "directoryName", "name",
+            "descriptionEvidence", "licenseEvidence", "compatibilityEvidence", "metadataEvidence",
+            "allowedToolsEvidence", "instructionBodyEvidence", "skillFileEvidence",
+            "packageManifestEvidence", "sourceProvenanceIdentity", "externalMetadataSha256",
+            "bindingState", "bindingIdentity", "disposition", "normalizedCapabilityIds",
+            "evidenceIdentity"
+          ],
+          "properties": { "bindingState": { "const": "CURRENT" } },
+          "allOf": [
+            {
+              "if": { "properties": { "disposition": { "const": "UNRESOLVED" } }, "required": ["disposition"] },
+              "then": { "properties": { "normalizedCapabilityIds": { "maxItems": 0 } } }
+            },
+            {
+              "if": { "properties": { "disposition": { "const": "SINGLE" } }, "required": ["disposition"] },
+              "then": { "properties": { "normalizedCapabilityIds": { "minItems": 1, "maxItems": 1 } } }
+            },
+            {
+              "if": { "properties": { "disposition": { "const": "COMPOSITE" } }, "required": ["disposition"] },
+              "then": { "properties": { "normalizedCapabilityIds": { "minItems": 2, "maxItems": 16 } } }
+            }
+          ]
+        }
+      ]
+    },
+    "k4r4PackageEvidence": {
+      "oneOf": [
+        { "$ref": "#/$defs/k4r4UnboundEvidence" },
+        { "$ref": "#/$defs/k4r4CurrentEvidence" },
+        { "$ref": "#/$defs/k4r4StaleEvidence" }
+      ]
+    },
+    "requestedCapabilityClaimInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilityId"],
+      "properties": {
+        "capabilityId": { "$ref": "#/$defs/capabilityId" }
+      }
+    },
+    "requirementClaimInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementKind", "evidenceSha256", "evidenceByteLength"],
+      "properties": {
+        "requirementKind": { "enum": ["FILESYSTEM", "NETWORK", "PROCESS", "SECRET"] },
+        "evidenceSha256": { "$ref": "#/$defs/sha256" },
+        "evidenceByteLength": { "type": "integer", "minimum": 1, "maximum": 16777216 }
+      }
+    },
+    "evaluationClaimInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evaluatorIdentity", "artifactIdentity", "artifactByteLength", "assertedOutcome"],
+      "properties": {
+        "evaluatorIdentity": { "$ref": "#/$defs/sha256" },
+        "artifactIdentity": { "$ref": "#/$defs/sha256" },
+        "artifactByteLength": { "type": "integer", "minimum": 1, "maximum": 16777216 },
+        "assertedOutcome": { "enum": ["PASS", "FAIL", "INCONCLUSIVE"] }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version", "packageEvidence", "packageVersionEvidence", "governanceRevisionIdentity",
+        "requestedCapabilityClaims", "requirementClaims", "compatibilityClaimEvidence",
+        "evaluationClaims"
+      ],
+      "properties": {
+        "version": { "const": "k4-r5-agent-skill-governance-claim-evidence-v1" },
+        "packageEvidence": { "$ref": "#/$defs/k4r4PackageEvidence" },
+        "packageVersionEvidence": { "$ref": "#/$defs/packageVersionEvidence" },
+        "governanceRevisionIdentity": { "$ref": "#/$defs/sha256" },
+        "requestedCapabilityClaims": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/requestedCapabilityClaimInput" }
+        },
+        "requirementClaims": {
+          "type": "array",
+          "maxItems": 4,
+          "items": { "$ref": "#/$defs/requirementClaimInput" }
+        },
+        "compatibilityClaimEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/compatibilityClaimDigest" }
+          ]
+        },
+        "evaluationClaims": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/evaluationClaimInput" }
+        }
+      }
+    },
+    "requestedCapabilityClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capabilityId", "claimStatus"],
+      "properties": {
+        "capabilityId": { "$ref": "#/$defs/capabilityId" },
+        "claimStatus": { "const": "CALLER_ASSERTED" }
+      }
+    },
+    "requirementClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirementKind", "evidenceSha256", "evidenceByteLength", "claimStatus"],
+      "properties": {
+        "requirementKind": { "enum": ["FILESYSTEM", "NETWORK", "PROCESS", "SECRET"] },
+        "evidenceSha256": { "$ref": "#/$defs/sha256" },
+        "evidenceByteLength": { "type": "integer", "minimum": 1, "maximum": 16777216 },
+        "claimStatus": { "const": "CALLER_ASSERTED" }
+      }
+    },
+    "compatibilityClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength", "claimStatus"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byteLength": { "type": "integer", "minimum": 1, "maximum": 65536 },
+        "claimStatus": { "const": "CALLER_ASSERTED" }
+      }
+    },
+    "evaluationClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evaluatorIdentity", "artifactIdentity", "artifactByteLength", "assertedOutcome", "claimStatus"
+      ],
+      "properties": {
+        "evaluatorIdentity": { "$ref": "#/$defs/sha256" },
+        "artifactIdentity": { "$ref": "#/$defs/sha256" },
+        "artifactByteLength": { "type": "integer", "minimum": 1, "maximum": 16777216 },
+        "assertedOutcome": { "enum": ["PASS", "FAIL", "INCONCLUSIVE"] },
+        "claimStatus": { "const": "CALLER_ASSERTED" }
+      }
+    },
+    "selectedK4r4DigestEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byteLength": { "type": "integer", "minimum": 1, "maximum": 4096 }
+      }
+    },
+    "selectedK4r4CompatibilityEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byteLength": { "type": "integer", "minimum": 1, "maximum": 2000 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version", "packageEvidenceIdentity", "packageEvidenceVersion", "standardPinIdentity",
+        "objectKind", "extensionId", "descriptorIdentity", "bindingSnapshotIdentity", "bindingState",
+        "directoryName", "name", "externalMetadataSha256", "sourceProvenanceIdentity",
+        "packageManifestEvidence", "licenseEvidence", "compatibilityEvidence", "packageVersionEvidence",
+        "governanceRevisionIdentity", "requestedCapabilityClaims", "requirementClaims",
+        "compatibilityClaimEvidence", "evaluationClaims", "trustStatus", "authorityState",
+        "governanceEvidenceIdentity"
+      ],
+      "properties": {
+        "version": { "const": "k4-r5-agent-skill-governance-claim-evidence-v1" },
+        "packageEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "packageEvidenceVersion": { "const": "k4-r4-agent-skill-package-evidence-v1" },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "objectKind": { "const": "AGENT_SKILL" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "bindingSnapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "enum": ["UNBOUND", "CURRENT", "STALE"] },
+        "directoryName": { "$ref": "#/$defs/skillName" },
+        "name": { "$ref": "#/$defs/skillName" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "sourceProvenanceIdentity": { "$ref": "#/$defs/sha256" },
+        "packageManifestEvidence": { "$ref": "#/$defs/packageManifestEvidence" },
+        "licenseEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/selectedK4r4DigestEvidence" }
+          ]
+        },
+        "compatibilityEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/selectedK4r4CompatibilityEvidence" }
+          ]
+        },
+        "packageVersionEvidence": { "$ref": "#/$defs/packageVersionEvidence" },
+        "governanceRevisionIdentity": { "$ref": "#/$defs/sha256" },
+        "requestedCapabilityClaims": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/requestedCapabilityClaim" }
+        },
+        "requirementClaims": {
+          "type": "array",
+          "maxItems": 4,
+          "items": { "$ref": "#/$defs/requirementClaim" }
+        },
+        "compatibilityClaimEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/compatibilityClaim" }
+          ]
+        },
+        "evaluationClaims": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/evaluationClaim" }
+        },
+        "trustStatus": { "const": "UNASSESSED" },
+        "authorityState": { "const": "NONE" },
+        "governanceEvidenceIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}
