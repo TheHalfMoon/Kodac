@@ -314,20 +314,24 @@ function entryWithIdentity(base: EntryWithoutIdentity): McpCatalogEvidenceEntry 
   return Object.freeze({ ...frozen, entryIdentity: sha256(frozen) })
 }
 
-function exactBinding(
+function exactBindingIndex(
   snapshot: CompatibilityBindingSnapshot,
   input: McpCatalogEvidenceInput,
-  declaration: McpCatalogDeclarationObservation,
-): ExternalCapabilityBinding | undefined {
-  const matches = snapshot.bindings.filter((binding) => (
-    binding.standardPinIdentity === input.standardPinIdentity
-    && binding.objectKind === input.objectKind
-    && binding.externalName === declaration.externalName
-    && binding.extensionId === input.extensionId
-    && binding.descriptorIdentity === input.descriptorIdentity
-  ))
-  if (matches.length > 1) throw new TypeError("binding snapshot contains a conflicting exact MCP tuple")
-  return matches[0]
+): ReadonlyMap<string, ExternalCapabilityBinding> {
+  const bindingsByExternalName = new Map<string, ExternalCapabilityBinding>()
+  for (const binding of snapshot.bindings) {
+    if (
+      binding.standardPinIdentity !== input.standardPinIdentity
+      || binding.objectKind !== input.objectKind
+      || binding.extensionId !== input.extensionId
+      || binding.descriptorIdentity !== input.descriptorIdentity
+    ) continue
+    if (bindingsByExternalName.has(binding.externalName)) {
+      throw new TypeError("binding snapshot contains a conflicting exact MCP tuple")
+    }
+    bindingsByExternalName.set(binding.externalName, binding)
+  }
+  return bindingsByExternalName
 }
 
 function derivedEntry(
@@ -378,9 +382,10 @@ export function materializeMcpCatalogEvidence(
 ): McpCatalogEvidencePage {
   const input = validateMcpCatalogEvidenceInput(value)
   const snapshot = captureBindingSnapshot(registry)
+  const bindingsByExternalName = exactBindingIndex(snapshot, input)
   const entries = Object.freeze(input.declarations.map((declaration) => derivedEntry(
     declaration,
-    exactBinding(snapshot, input, declaration),
+    bindingsByExternalName.get(declaration.externalName),
   )))
   const base = Object.freeze({
     version: K4_R2_MCP_CATALOG_EVIDENCE_VERSION,

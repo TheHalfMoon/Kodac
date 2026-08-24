@@ -239,6 +239,25 @@ test("object kind adapter descriptor and case are all exact correlation dimensio
   }), registry).entries[0]?.bindingState, "UNBOUND")
 })
 
+test("exact-maximum correlation indexes the binding snapshot once", () => {
+  const descriptor = adapter()
+  const registry = registryFor(descriptor)
+  const declarations = Array.from({ length: K4_R2_LIMITS.maxDeclarations }, (_, index) => ({
+    externalName: `tool-${String(index).padStart(4, "0")}`,
+    externalMetadataSha256: digest(String(index)),
+  }))
+  for (const declaration of declarations) {
+    registry.register(createExternalCapabilityBinding(bindingInput(descriptor, declaration)))
+  }
+  const page = materializeMcpCatalogEvidence(input(descriptor, { declarations }), registry)
+  assert.equal(page.entries.length, K4_R2_LIMITS.maxDeclarations)
+  assert.equal(page.entries.every((entry) => entry.bindingState === "CURRENT"), true)
+
+  const production = source("../src/compatibility/mcp-catalog.ts")
+  assert.equal((production.match(/for \(const binding of snapshot\.bindings\)/g) ?? []).length, 1)
+  assert.doesNotMatch(production, /snapshot\.bindings\.filter/)
+})
+
 test("cursor digests preserve absent versus empty opaque cursor evidence and derive page shape exactly", () => {
   const descriptor = adapter()
   const registry = registryFor(descriptor)
