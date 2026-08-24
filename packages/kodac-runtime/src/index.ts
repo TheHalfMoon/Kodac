@@ -11,6 +11,72 @@ export * from "./edit/patch.ts"
 export * from "./evidence/ledger.ts"
 export * from "./evidence/receipt.ts"
 export * from "./execution/gateway.ts"
+export * from "./execution/gateway-gvisor-network.ts"
+export {
+  GvisorOutputExecutionGateway,
+  KDO_H4_R3G_E_ATTACH_MEDIA_TYPE,
+  KDO_H4_R3G_E_ATTACH_PATH_SUFFIX,
+  KDO_H4_R3G_E_DOCKER_TRANSPORT_VERSION,
+  KDO_H4_R3G_E_FAILURE_COMMIT_VERSION,
+  KDO_H4_R3G_E_FAILURE_VERSION,
+  KDO_H4_R3G_E_PREPARED_VERSION,
+  KDO_H4_R3G_E_RESERVATION_VERSION,
+  KDO_H4_R3G_E_RUNTIME_LIMITS,
+  KDO_H4_R3G_E_RUNTIME_VERSION,
+  createGvisorOutputFailureCommit,
+  createGvisorOutputFailureRecord,
+  createGvisorOutputPreparedOperation,
+  createGvisorOutputReservation,
+  validateGvisorOutputFailureCommit,
+  validateGvisorOutputFailureRecord,
+  validateGvisorOutputPreparedOperation,
+  validateGvisorOutputReservation,
+  validateGvisorOutputRuntimeConfig,
+  type GvisorOutputEnforcementResult,
+  type GvisorOutputExecutionGatewayConfig,
+  type GvisorOutputFailureCommit,
+  type GvisorOutputFailureReason,
+  type GvisorOutputFailureRecord,
+  type GvisorOutputPreparedOperation,
+  type GvisorOutputReservation,
+  type GvisorOutputRuntimeConfig,
+} from "./execution/gateway-gvisor-output-runtime.ts"
+export {
+  GvisorPhysicalProofExecutionGateway,
+  KDO_H4_R3G_F_RUNTIME_VERSION,
+  type GvisorPhysicalProofExecutionResult,
+} from "./execution/gateway-gvisor-physical-proof-runtime.ts"
+export * from "./execution/gateway-gvisor-ttl-runtime.ts"
+export {
+  KDO_H4_R4B_A_RUNTIME_VERSION,
+  SandboxAdmissionApprovalBlockedError,
+  SandboxAdmissionApprovalGateway,
+  SandboxAdmissionApprovalUnprovenError,
+  type SandboxAdmissionApprovalResult,
+} from "./execution/sandbox-admission-approval-runtime.ts"
+export {
+  GvisorDockerDormantCreateGateway,
+  KDO_H4_R4B_B1_RUNTIME_LIMITS,
+  KDO_H4_R4B_B1_RUNTIME_VERSION,
+  SandboxDormantCreateBlockedError,
+  SandboxDormantCreateIndeterminateError,
+  SandboxDormantCreateRejectedError,
+  SandboxDormantCreateUnprovenError,
+  type GvisorDockerDormantCreateResult,
+} from "./execution/gateway-gvisor-docker-dormant-create-runtime.ts"
+export {
+  GvisorDockerPrestartOutputGateway,
+  KDO_H4_R4B_B2A_PRESTART_READY_VERSION,
+  KDO_H4_R4B_B2A_RUNTIME_LIMITS,
+  KDO_H4_R4B_B2A_RUNTIME_VERSION,
+  SandboxPrestartBlockedError,
+  SandboxPrestartIndeterminateError,
+  SandboxPrestartTerminalError,
+  type SandboxPrestartOwnerUnavailableResult,
+  type SandboxPrestartPreparationResult,
+  type SandboxPrestartReadyCapability,
+  type SandboxPrestartReadyResult,
+} from "./execution/gateway-gvisor-docker-prestart-output-runtime.ts"
 export * from "./extensions/contracts.ts"
 export * from "./extensions/registry.ts"
 export * from "./model/capabilities.ts"
@@ -41,11 +107,91 @@ export * from "./trust/approval.ts"
 export * from "./trust/confinement-linux-landlock.ts"
 export * from "./trust/confinement-runtime.ts"
 export * from "./trust/confinement.ts"
+export {
+  KDO_H4_R4B_A_ADMISSION_ATTEMPT_LIMIT,
+  KDO_H4_R4B_A_CONSUMPTION_RESERVATION_VERSION,
+  KDO_H4_R4B_A_PERMIT_COMMIT_VERSION,
+  KDO_H4_R4B_A_VERSION,
+  validateSandboxAdmissionPermit,
+  validateSandboxAdmissionPermitCommit,
+  type SandboxAdmissionConsumptionReservation,
+  type SandboxAdmissionPermit,
+  type SandboxAdmissionPermitCommit,
+} from "./trust/sandbox-admission-permit.ts"
+export {
+  KDO_H4_R4B_B1_CREATED_ADMISSION_COMMIT_VERSION,
+  KDO_H4_R4B_B1_CREATED_ADMISSION_VERSION,
+  KDO_H4_R4B_B1_CREATE_PREPARED_COMMIT_VERSION,
+  KDO_H4_R4B_B1_CREATE_PREPARED_VERSION,
+  KDO_H4_R4B_B1_DOCKER_API_VERSION,
+  KDO_H4_R4B_B1_DOCKER_OBSERVATION_VERSION,
+  KDO_H4_R4B_B1_DURABILITY,
+  KDO_H4_R4B_B1_LABELS,
+  KDO_H4_R4B_B1_NETWORK_MODE,
+  KDO_H4_R4B_B1_RESERVATION_COMMIT_VERSION,
+  KDO_H4_R4B_B1_RUNTIME_NAME,
+  KDO_H4_R4B_B1_VERSION,
+  validateSandboxAdmissionConsumptionReservationCommit,
+  validateSandboxDormantCreatePrepared,
+  validateSandboxDormantCreatePreparedCommit,
+  validateSandboxDormantCreatedAdmission,
+  validateSandboxDormantCreatedAdmissionCommit,
+  validateSandboxDormantDockerObservation,
+  type SandboxAdmissionConsumptionReservationCommit,
+  type SandboxDormantCommitDisposition,
+  type SandboxDormantCreateLabels,
+  type SandboxDormantCreatePrepared,
+  type SandboxDormantCreatePreparedCommit,
+  type SandboxDormantCreatedAdmission,
+  type SandboxDormantCreatedAdmissionCommit,
+  type SandboxDormantDockerObservation,
+} from "./trust/sandbox-admission-dormant-create.ts"
+export {
+  KDO_H4_R4B_B2A_DURABILITY,
+  KDO_H4_R4B_B2A_FAILURE_CODES,
+  KDO_H4_R4B_B2A_FAILURE_COMMIT_VERSION,
+  KDO_H4_R4B_B2A_FAILURE_PHASES,
+  KDO_H4_R4B_B2A_FAILURE_VERSION,
+  KDO_H4_R4B_B2A_OWNERSHIP_CLAIM_COMMIT_VERSION,
+  KDO_H4_R4B_B2A_OWNERSHIP_CLAIM_VERSION,
+  KDO_H4_R4B_B2A_PREPARED_COMMIT_VERSION,
+  KDO_H4_R4B_B2A_PREPARED_VERSION,
+  KDO_H4_R4B_B2A_STATE_FENCE_VERSION,
+  KDO_H4_R4B_B2A_VERSION,
+  validateSandboxPrestartFailure,
+  validateSandboxPrestartFailureCommit,
+  validateSandboxPrestartOwnershipClaim,
+  validateSandboxPrestartOwnershipClaimCommit,
+  validateSandboxPrestartPrepared,
+  validateSandboxPrestartPreparedCommit,
+  validateSandboxPrestartStateFence,
+  type SandboxPrestartFailure,
+  type SandboxPrestartFailureCode,
+  type SandboxPrestartFailureCommit,
+  type SandboxPrestartFailurePhase,
+  type SandboxPrestartOwnershipClaim,
+  type SandboxPrestartOwnershipClaimCommit,
+  type SandboxPrestartPrepared,
+  type SandboxPrestartPreparedCommit,
+  type SandboxPrestartState,
+  type SandboxPrestartStateFence,
+} from "./trust/sandbox-admission-prestart-output.ts"
 export * from "./trust/sandbox-backend-evidence.ts"
+export * from "./trust/sandbox-execution-approval-binding.ts"
+export * from "./trust/sandbox-lifecycle-gvisor-ttl.ts"
+export * from "./trust/sandbox-output-gvisor.ts"
 export * from "./trust/sandbox-observer-docker-control-plane.ts"
 export * from "./trust/sandbox-observer-gvisor-cgroup-v2.ts"
+export * from "./trust/sandbox-observer-gvisor-network.ts"
+export * from "./trust/sandbox-observer-gvisor-network-runtime.ts"
 export * from "./trust/sandbox-observer-gvisor-runtime.ts"
 export * from "./trust/sandbox-observer-gvisor.ts"
+export {
+  KDO_H4_R3G_F_CAPABILITY,
+  KDO_H4_R3G_F_EVIDENCE_CLASS,
+  KDO_H4_R3G_F_PROVIDER_ID,
+  KDO_H4_R3G_F_VERSION,
+} from "./trust/sandbox-physical-conjunction-gvisor.ts"
 export * from "./trust/sandbox-workload.ts"
 export * from "./trust/policy.ts"
 export * from "./verification/commands.ts"

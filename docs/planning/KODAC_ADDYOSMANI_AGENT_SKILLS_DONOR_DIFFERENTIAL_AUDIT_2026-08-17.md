@@ -1,16 +1,20 @@
 # Kodac — Addy Osmani `agent-skills` Donor Differential Audit
 
-Status: **DRAFT / DOCS-ONLY DONOR STUDY — NO IMPORT AUTHORITY**
+Status: **RECONCILED CANDIDATE / DOCS-ONLY DONOR STUDY — NO IMPORT AUTHORITY**
 
 Date: 2026-08-17
+Reconciled against canonical `main`: 2026-08-24
 
 ## 1. Record identity
 
 ```text
 Program: KDO-P0
 Audit: ADDYOSMANI_AGENT_SKILLS_DONOR_DIFFERENTIAL_AUDIT
-Canonical Kodac base: 61ffbfe4613a4dd05685909999c395a92a581df6
-Canonical Kodac base tree: 1ccc3a6b282caa1e2a2689822745bdcf6e15e29a
+Original audit base: 61ffbfe4613a4dd05685909999c395a92a581df6
+Original audit base tree: 1ccc3a6b282caa1e2a2689822745bdcf6e15e29a
+Current reconciliation base: 9079673a574815db8ae5986cb997c46e3164283f
+Current reconciliation base tree: 97242c91e9408806d32d4d754516bcc63489a2ef
+Pull request: 114
 Upstream repository: addyosmani/agent-skills
 Upstream default branch observed: main
 Pinned upstream commit: df1edb2e05487d0aa6d93c747141e0aed1187f25
@@ -20,6 +24,12 @@ Observed repository license: MIT
 Production donor-code import authority from this audit: NONE
 Donor execution authority from this audit: NONE
 ```
+
+PR #114 is the later, narrower reconciliation candidate for this donor. It
+absorbs the still-valid review requirements raised on the overlapping draft PR
+#113. PR #113 remains non-canonical and must not be merged independently or in
+parallel with this candidate. Canonical adoption of at most one audit record is
+required to avoid duplicate donor authority or contradictory follow-on gates.
 
 This audit is governed by:
 
@@ -41,7 +51,7 @@ DONOR AUTHORITY IS NEVER INHERITED.
 
 ## 2. Executive decision
 
-`addyosmani/agent-skills` is a **high-value donor for the future Kodac/Times skill fabric**, but it is not a candidate for wholesale repository adoption.
+`addyosmani/agent-skills` is a **high-value donor for a future Kodac skill fabric**, but it is not a candidate for wholesale repository adoption.
 
 The strongest transferable ideas are:
 
@@ -82,7 +92,7 @@ Execution Receipts
         +
 outcome history
         =
-KODAC / TIMES SKILL FABRIC
+KODAC SKILL FABRIC
 ```
 
 ## 3. Upstream scope observed at the pin
@@ -179,7 +189,7 @@ Kodac should retain portable compatibility while adding governance metadata outs
 
 ### Required Kodac extension
 
-A future Kodac/Times skill record should be able to bind at least:
+A future Kodac skill record should be able to bind at least:
 
 ```text
 skillIdentity
@@ -269,7 +279,21 @@ unsupported harness metadata
 
 ### Upstream pattern
 
-The donor implements a deterministic CI-safe routing approximation using stemmed TF-IDF over skill names/descriptions. Positive prompts must rank the intended skill within a configured `top_k`; negative prompts can identify a competing owner; catalog descriptions are checked for pairwise similarity collisions. The current documentation records a rank-1 metric and collision warning/error thresholds.
+The donor implements a deterministic CI-safe routing approximation using stemmed TF-IDF over skill names/descriptions. Positive prompts must rank the intended skill within a configured `top_k`; negative prompts can identify a competing owner; catalog descriptions are checked for pairwise similarity collisions.
+
+The pinned `evals/README.md` records these donor observations:
+
+```text
+SOURCE=addyosmani/agent-skills@df1edb2e05487d0aa6d93c747141e0aed1187f25:evals/README.md
+DONOR_TIER2_CI_MIN_RANK1_PERCENT=80
+DONOR_TIER2_CHECKED_IN_RANK1_BASELINE_PERCENT=86
+DONOR_COLLISION_WARNING_PERCENT=50
+DONOR_COLLISION_ERROR_PERCENT=75
+```
+
+These are reproducible donor baselines, not Kodac policy or canonical Kodac
+thresholds. Any future Kodac target must be selected through separate bounded
+benchmark evidence.
 
 ### What is valuable
 
@@ -337,6 +361,33 @@ expectation-level verdicts
 cost / token / latency data
 Execution Receipt identity
 ```
+
+Before any qualification trace or outcome record is persisted or transferred,
+the separately authorized record contract must also bind:
+
+```text
+tenant / repository scope identity
+record access-policy digest
+redaction-policy digest
+redaction-before-persistence verdict
+persisted-record manifest and digest
+retention class and explicit expiry
+deletion procedure identity and deletion evidence
+provider-transfer policy digest and allowed destination set
+Execution Receipt identity
+```
+
+Access must be deny-by-default and tenant-scoped. Cross-tenant reads, ambient
+operator access, and indefinite retention are forbidden. Redaction and data
+minimization must occur before persistence or provider transfer; secrets and
+credentials may not enter persisted qualification or outcome records. Any
+digest derived from a raw trace remains sensitive evidence and must inherit the
+same access scope. Retention expiry and deletion must be observable and
+auditable. Historical production outcomes remain distinct from synthetic
+scores and may not silently overwrite either evidence class.
+
+This audit authorizes no persistent qualification storage, outcome learning,
+provider transfer, or new data-retention system.
 
 No behavioral runner may bypass K2 merely because an upstream runner grants broad tool access.
 
@@ -416,7 +467,7 @@ The donor recommends independent specialist personas working concurrently on the
 
 ### Kodac assessment
 
-The independence principle is directly relevant to Kodac Reviewer Intelligence and future Times reviewer swarms.
+The independence principle is directly relevant to Kodac Reviewer Intelligence and future Kodac reviewer swarms.
 
 Primary disposition:
 
@@ -435,7 +486,7 @@ Preserve:
 
 Do **not** adopt as a universal Kodac rule the donor's stronger claim that the user or slash command must always be the only orchestrator.
 
-Kodac/Times is expected to support safe machine orchestration, dynamic routing, multiple interchangeable models, parallel workers, distributed execution, and future learned scheduling. Those capabilities can coexist with explicit human authority checkpoints.
+Kodac may later support safe machine orchestration, dynamic routing, multiple interchangeable models, parallel workers, distributed execution, and learned scheduling only through separately authorized gates. Those capabilities can coexist with explicit human authority checkpoints.
 
 The stronger Kodac invariant is:
 
@@ -454,7 +505,7 @@ The donor prefers a user-driven DEFINE -> PLAN -> BUILD -> VERIFY -> REVIEW -> S
 
 ### Kodac assessment
 
-The failure-mode analysis is valuable, but the implementation policy is too restrictive to become a universal Times invariant.
+The failure-mode analysis is valuable, but the implementation policy is too restrictive to become a universal Kodac invariant.
 
 Primary disposition:
 
@@ -462,13 +513,13 @@ Primary disposition:
 REFERENCE_ONLY
 ```
 
-Times may automate safe, reversible, bounded, and fully evidenced transitions. Human approval remains required where canonical policy demands it, not merely because an upstream workflow chooses manual command invocation.
+Kodac may automate safe, reversible, bounded, and fully evidenced transitions only within separately granted authority. Human approval remains required where canonical policy demands it, not merely because an upstream workflow chooses manual command invocation.
 
 ## 14. Competing-hypothesis investigation
 
 The donor distinguishes independent fan-out used for verdicts from collaboration/debate used to investigate competing hypotheses.
 
-This is highly relevant to future Times debugging, security analysis, incident investigation, and review adjudication.
+This is highly relevant to future Kodac debugging, security analysis, incident investigation, and review adjudication.
 
 Primary disposition:
 
@@ -476,7 +527,7 @@ Primary disposition:
 REFERENCE_ONLY / FUTURE BENCHMARK CANDIDATE
 ```
 
-Times should benchmark whether debate actually improves calibrated correctness versus independent sampling + adjudication for a given task. More agents must not be assumed to mean better results.
+Kodac should benchmark whether debate actually improves calibrated correctness versus independent sampling + adjudication for a given task. More agents must not be assumed to mean better results.
 
 ## 15. Individual engineering skills
 
@@ -536,7 +587,7 @@ Primary disposition:
 REFERENCE_ONLY — DO NOT COPY THIS PACKAGING WEAKNESS
 ```
 
-Preferred Times direction:
+Preferred Kodac direction:
 
 ```text
 self-contained skill bundle
@@ -545,6 +596,13 @@ explicit pack manifest with digest-addressed dependencies
 ```
 
 Every referenced asset should resolve through the package manifest and be included in the package/evaluation digest.
+
+The manifest must enumerate the complete reference closure, including every
+resolved supporting asset with its normalized package path and content digest.
+Packaging must fail closed on a missing, duplicate, escaping, undeclared, or
+digest-mismatched reference. Qualification must evaluate the fully rendered
+per-harness package and its resolved asset closure, not only the canonical
+source directory.
 
 ## 18. Shell hooks and session scripts
 
@@ -604,12 +662,12 @@ PORT / ADAPT CANDIDATE
 
 This is strategically aligned with ADR-0007: Kodac should meet developers in existing ecosystems without making any external harness its internal canonical model.
 
-Times should eventually be able to materialize a qualified capability into compatible surfaces for supported environments while preserving one Kodac-owned identity and policy record.
+Kodac may eventually materialize a qualified capability into compatible surfaces for supported environments while preserving one Kodac-owned identity and policy record.
 
 Conceptually:
 
 ```text
-Qualified Times Skill
+Qualified Kodac Skill
         |
         +--> Agent Skills-compatible package
         +--> Claude-compatible surface
@@ -619,26 +677,48 @@ Qualified Times Skill
         +--> future adapters
 ```
 
-Materialization must not change the capability grant.
+Every materialized surface must carry and verify:
+
+```text
+source packageDigest
+source qualification-record identity
+adapter identity and version
+resolved reference-closure manifest digest
+output manifest with normalized paths and per-file digests
+materialized output digest
+normalized requested-capability set
+effective policy-metadata digest
+```
+
+Materialization must fail closed on any missing reference, manifest mismatch,
+digest mismatch, unknown output, capability widening, or policy-metadata drift.
+The structural and security qualification stages must rerun against each
+rendered per-harness output after every transformation. A materializer may
+preserve or narrow a capability grant; it may never broaden one.
 
 ## 21. Comparison with current Kodac architecture
 
-Kodac already has architectural pieces that should make a future skill system materially stronger than the donor repository alone:
+Kodac already has implemented architectural pieces that should make a future
+skill system materially stronger than the donor repository alone:
 
-```text
-Agent Skills compatibility boundary
-Extension/capability registry
-semantic capability identifiers
-ExecutionGateway
-Trust Kernel policy
-confinement / sandbox evidence
-provider-neutral model contracts
-reviewer qualification
-benchmark/evidence protocol
-Execution Receipts
-provenance import records
-repository/context intelligence
-```
+| Implemented boundary | Canonical source |
+|---|---|
+| Agent Skills compatibility boundary | `docs/adr/ADR-0007-native-mcp-acp-agent-skills-compatibility.md` |
+| Extension/capability contracts and registry | `packages/kodac-runtime/src/extensions/contracts.ts`, `packages/kodac-runtime/src/extensions/registry.ts` |
+| Semantic capability identifiers | `packages/kodac-runtime/src/semantic/contracts.ts` |
+| Execution gateway | `packages/kodac-runtime/src/execution/gateway.ts` |
+| Trust policy | `packages/kodac-runtime/src/trust/policy.ts` |
+| Confinement and sandbox evidence | `packages/kodac-runtime/src/trust/confinement.ts`, `packages/kodac-runtime/src/trust/sandbox-backend-evidence.ts` |
+| Provider-neutral model contracts | `packages/kodac-runtime/src/model/provider.ts`, `packages/kodac-runtime/src/model/capabilities.ts` |
+| Reviewer qualification | `packages/kodac-runtime/src/reviewer-intelligence/qualification-contracts.ts`, `packages/kodac-runtime/src/reviewer-intelligence/qualification.ts` |
+| Benchmark/evidence protocol | `docs/planning/KODAC_K3_BENCHMARK_AND_EVIDENCE_PROTOCOL_2026-08-12.md` |
+| Execution Receipts | `packages/kodac-runtime/src/evidence/receipt.ts` |
+| Provenance import records | `schema/provenance-import-record.schema.json`, `provenance/imports/` |
+| Repository/context intelligence | `packages/kodac-runtime/src/repository/snapshot.ts`, `packages/kodac-runtime/src/context-engine/context-engine.ts` |
+
+The proposed skill package, qualification, materialization, outcome, and
+reviewer-swarm components remain planning concepts only. This inventory does
+not claim that they are implemented or authorized.
 
 Therefore the correct strategy is not:
 
@@ -652,7 +732,7 @@ It is:
 use agent-skills as one donor for a qualified, evidence-producing, provider-neutral skill fabric
 ```
 
-## 22. Proposed Times Skill Qualification Stack
+## 22. Proposed Kodac Skill Qualification Stack
 
 A future qualification pipeline should be staged and fail closed:
 
@@ -675,6 +755,14 @@ S14 outcome learning / regression monitoring
 ```
 
 No stage should silently convert qualification into authority.
+
+Any future S7 behavioral sandbox must use disposable non-production identities,
+repositories, workspaces, credentials, and external-service targets. Network
+egress and secret access must be deny-by-default and may be narrowed only by an
+exact separately authorized test policy. Its evidence must bind the sandbox
+identity, confinement policy, network/secret policy, observed side effects,
+cleanup state, and Execution Receipt. These qualification controls are
+additional to, and never a substitute for, K2 execution authorization.
 
 ## 23. Proposed routing metrics beyond the donor
 
@@ -699,11 +787,13 @@ human correction rate
 post-task outcome utility
 ```
 
-Historical production outcomes should be kept separate from synthetic evaluation scores but may inform later routing policy.
+Historical production outcomes should be kept separate from synthetic
+evaluation scores but may inform later routing policy only under a separately
+authorized privacy, retention, access-control, and outcome-learning contract.
 
 ## 24. Proposed reviewer-swarm application
 
-The donor's parallel-review pattern maps naturally into Times, but Times should make every reviewer output attributable and adjudicable.
+The donor's parallel-review pattern maps naturally into Kodac, but Kodac should make every reviewer output attributable and adjudicable.
 
 ```text
 PR / patch / repository state
@@ -734,7 +824,7 @@ The scheduler may choose fewer or more lanes based on evidence, task risk, provi
 
 Nothing in this donor audit authorizes product-imposed daily, PR, file, or agent quotas.
 
-A future Times skill/reviewer fabric should support:
+A future Kodac skill/reviewer fabric may support:
 
 - local-first execution;
 - self-hosting;
@@ -751,6 +841,13 @@ A future Times skill/reviewer fabric should support:
 
 Qualification may limit unsafe capability scope. It must not become an artificial commercial review-exhaustion mechanism.
 
+Avoiding arbitrary product or vendor quotas does not waive real safety and
+authority bounds. Every future run must enforce explicit user policy,
+separately authorized cost and compute budgets, cancellation and timeouts,
+concurrency limits, memory/output limits, and trace privacy/safety controls.
+Provider capacity or user budget exhaustion must fail closed or degrade without
+silently spending, widening authority, dropping evidence, or bypassing policy.
+
 ## 26. Donor disposition matrix
 
 | Donor surface | Primary disposition | Rationale | Separate production/import gate required? |
@@ -766,7 +863,7 @@ Qualification may limit unsafe capability scope. It must not become an artificia
 | Headless-Claude executor/grader | `BEHAVIORAL_REIMPLEMENTATION` | Provider-specific and permission-model-specific | Yes |
 | Specialist personas | `BEHAVIORAL_REIMPLEMENTATION` | Useful lens definitions; must enter reviewer qualification | Yes |
 | Parallel fan-out + merge | `REFERENCE_ONLY` | Valuable orchestration pattern, not universal architecture law | Yes for runtime orchestration feature |
-| User-only sequential orchestration rule | `STUDY_ONLY` | Too restrictive for Times automation/swarm goals | N/A |
+| User-only sequential orchestration rule | `STUDY_ONLY` | Too restrictive for separately authorized Kodac automation/swarm goals | N/A |
 | Shared checklists | `REFERENCE_ONLY` | Useful eval corpus; not completion authority | Yes if copied/distributed |
 | Root shared-reference packaging | `STUDY_ONLY` | Known per-skill portability weakness | N/A |
 | Cross-harness packaging | `PORT` | Strategically useful compatibility/materialization pattern | Yes |
@@ -822,13 +919,23 @@ G. KDO Reviewer-Swarm Skill Adapter
 H. KDO Skill Outcome / Regression Ledger
 ```
 
-These should be sequenced behind active H4 work rather than disrupting the current R3G-B proof.
+These remain unstarted and must be sequenced behind the active H4-R4B Phase-B
+lane unless a later canonical authorization explicitly establishes an
+independent non-colliding lane. PR #163's external-review block does not grant
+skill-fabric implementation authority.
 
 ## 29. Benchmark requirement before a canonical winner claim
 
 This audit does not claim that the donor's skill system is the best available implementation.
 
-Before Kodac calls any routing/evaluation/materialization implementation a winner, benchmark it against relevant alternatives under ADR-0010 with exact pins, equal model/provider conditions where feasible, controlled tool permissions, cost/latency reporting, and raw artifacts.
+Before Kodac calls any routing/evaluation/materialization implementation a
+winner, benchmark it against relevant alternatives under ADR-0010 with exact
+pins and equal model, provider/version, prompts, fixtures, tool permissions,
+capability scope, authorized cost/compute budgets, and cost/latency measurement
+conditions. When any load-bearing condition cannot be equalized, the result
+must be marked `NON_COMPARABLE`, and no canonical winner disposition may be
+assigned from that comparison. Raw benchmark artifacts and every inequality
+must remain explicit evidence.
 
 Candidate comparison families may include other Agent Skills implementations, harness-native skill systems, internal Kodac-native baselines, and future community standards after separate source pinning.
 
@@ -862,10 +969,11 @@ REJECT DIRECT AUTHORITY ADOPTION:
 - installed skill == permission
 - headless-Claude permission model as Kodac runtime authority
 - executable hooks without explicit K2 qualification
-- user-only orchestration as universal Times invariant
+- user-only orchestration as a universal Kodac invariant
 
 NEXT STEP:
 PRESERVE THIS AS DONOR EVIDENCE ONLY.
 DO NOT IMPORT OR EXECUTE DONOR CODE UNDER THIS AUDIT.
-FINISH THE ACTIVE H4-R3G-B GATE BEFORE ANY SKILL-FABRIC IMPLEMENTATION TRACK.
+KEEP THE ACTIVE H4-R4B PHASE-B LANE FAIL-CLOSED.
+DO NOT START ANY SKILL-FABRIC IMPLEMENTATION TRACK WITHOUT A SEPARATE CANONICAL AUTHORIZATION.
 ```
