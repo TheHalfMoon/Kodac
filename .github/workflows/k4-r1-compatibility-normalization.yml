@@ -27,6 +27,7 @@ jobs:
       K4_R1_CANONICAL_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
       K4_R1_CANONICAL_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
       K4_R1_CANONICAL_TEST_BLOB: "4b4d2ee782417fe56c2b3823ab0bdbd8df6057fc"
+      K4_R1_CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
       K4_R1_HARDENING_BASELINE_SHA: "8f7e7f6faf6478edb08dfbf4ade97cc71b6e35d2"
       K4_R1_HARDENING_BRANCH: "codex/k4-r1-canonical-regression-hardening"
       K4_R1_HARDENING_PULL_REQUEST: "175"
@@ -37,21 +38,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "24"
-
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
-        with:
-          enable-cache: false
-
-      - name: Sync the locked validation environment outside the checkout
-        shell: bash
-        run: |
-          set -euo pipefail
-          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
-          uv sync --frozen --dev
 
       - name: Attest exact PR head and closed gate mode
         shell: bash
@@ -90,16 +76,119 @@ jobs:
             done
           fi
 
-          mapfile -t actual_actions < <(sed -nE 's/^[[:space:]]*- uses: ([^[:space:]]+).*/\1/p' "$workflow")
-          expected_actions=(
-            "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
-            "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020"
-            "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e"
+          action_key="u""ses"
+          mapfile -t actual_action_lines < <(
+            grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" "$workflow" | cut -d: -f2-
           )
-          test "${#actual_actions[@]}" -eq "${#expected_actions[@]}"
-          for index in "${!expected_actions[@]}"; do
-            test "${actual_actions[$index]}" = "${expected_actions[$index]}"
+          expected_action_lines=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#actual_action_lines[@]}" -eq "${#expected_action_lines[@]}"
+          for index in "${!expected_action_lines[@]}"; do
+            test "${actual_action_lines[$index]}" = "${expected_action_lines[$index]}"
           done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: false
+
+      - name: Sync the locked validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Structurally attest every immutable Action reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          from pathlib import Path
+
+          import yaml
+
+          workflow = Path(".github/workflows/k4-r1-compatibility-normalization.yml")
+          document = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+          action_key = "u" + "ses"
+          expected = [
+              (
+                  ("jobs", "compatibility-normalization", "steps", 0, action_key),
+                  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              ),
+              (
+                  ("jobs", "compatibility-normalization", "steps", 2, action_key),
+                  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              ),
+              (
+                  ("jobs", "compatibility-normalization", "steps", 3, action_key),
+                  "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e",
+              ),
+          ]
+
+          def action_references(value, path=(), active=None):
+              if active is None:
+                  active = set()
+              if isinstance(value, (dict, list)):
+                  identity = id(value)
+                  if identity in active:
+                      raise ValueError("YAML alias cycle is prohibited")
+                  active.add(identity)
+                  try:
+                      if isinstance(value, dict):
+                          for key, nested in value.items():
+                              nested_path = (*path, key)
+                              if key == action_key:
+                                  yield nested_path, nested
+                              yield from action_references(nested, nested_path, active)
+                      else:
+                          for index, nested in enumerate(value):
+                              yield from action_references(nested, (*path, index), active)
+                  finally:
+                      active.remove(identity)
+
+          def validate(candidate):
+              if not isinstance(candidate, dict):
+                  raise ValueError("workflow must be a mapping")
+              jobs = candidate.get("jobs")
+              if not isinstance(jobs, dict) or set(jobs) != {"compatibility-normalization"}:
+                  raise ValueError("workflow must contain exactly the canonical validation job")
+              actual = list(action_references(candidate))
+              if actual != expected:
+                  raise ValueError(f"unexpected Action or reusable-workflow references: {actual!r}")
+
+          validate(document)
+
+          hidden_job = copy.deepcopy(document)
+          hidden_job["jobs"]["unapproved"] = {
+              action_key: "example/unapproved/.github/workflows/check.yml@deadbeef"
+          }
+          try:
+              validate(hidden_job)
+          except ValueError:
+              pass
+          else:
+              raise SystemExit("structural validator accepted an unapproved reusable workflow")
+
+          extra_step = copy.deepcopy(document)
+          extra_step["jobs"]["compatibility-normalization"]["steps"].append(
+              {action_key: "example/unapproved@deadbeef"}
+          )
+          try:
+              validate(extra_step)
+          except ValueError:
+              pass
+          else:
+              raise SystemExit("structural validator accepted an unapproved step Action")
+          PY
 
       - name: Prove canonical K4-R1 artifacts and shared exports unchanged
         shell: bash
@@ -287,6 +376,7 @@ jobs:
           export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
           uv run --frozen --no-sync pytest -p no:cacheprovider
           uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$K4_R1_CANONICAL_PROVENANCE_VALIDATOR_BLOB"
           uv run --frozen --no-sync python tools/validate_provenance.py
 
       - name: Run full runtime tests including K4-R1 compatibility normalization
