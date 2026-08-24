@@ -35,7 +35,7 @@ This record is not the implementation and does not itself close K3.
 
 ## Canonical basis and founder reclassification
 
-The founder authorization explicitly grants repo-local future-gate authority for `K3-R6+` and requires previously blocked roadmap items to be re-evaluated rather than left globally idle behind an independent operational lane.
+The founder authorization names `K3-R6+` as a roadmap family eligible for repo-local re-evaluation and future-gate decisions; that family-level re-evaluation grant does not itself authorize implementation of every descendant. This record exercises that authority only for the exact K3-R6 slice below. K3-R7+ implementation remains not authorized.
 
 The canonical PR #131 audit identifies the smallest high-value future K3 graph slice as an immutable, in-memory relation graph bound to one exact K3-R2 snapshot, with deterministic impact/related-file queries and no donor runtime intake. All named prerequisite commits above are ancestors of the canonical base.
 
@@ -124,11 +124,11 @@ No timestamp, random value, absolute path, database ID, machine identity, or ins
 
 ### Impact
 
-`impact` starts from one exact seed entity and traverses resolved edges in reverse dependency direction through an explicit allowed relation set. Results are ordered deterministically by depth, canonical path/entity identity, and evidence-chain identity.
+`impact` starts from one exact seed entity. Its traversable relation allowlist is exactly `imports`, `references`, `calls`, `inherits`, `implements`, and `instantiates`. For each of those relations, the edge source is respectively the importing, referencing, calling, inheriting, implementing, or instantiating dependent and the edge target is the imported, referenced, called, base, implemented, or instantiated dependency. Impact traversal proceeds only from target to source. `contains`, `exports`, and `defines` remain visible graph evidence but are never traversed by `impact`. Results are ordered deterministically by depth, canonical path/entity identity, and evidence-chain identity.
 
 ### Related files
 
-`related_files` traverses resolved relations in both directions, returns file entities only, excludes the seed file, and ranks deterministically by shortest depth followed by canonical path and evidence-chain identity.
+`related_files` traverses every authorized resolved relation kind in both directions, returns file entities only, excludes the seed file, and ranks deterministically by shortest depth followed by canonical path and evidence-chain identity. For a file seed, the seed file is that file entity. For a symbol seed, the seed file is the canonical containing-file path carried by the symbol entity; every file entity with that same path is excluded from results, although traversal may pass through it.
 
 Both queries must:
 
