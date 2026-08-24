@@ -1,0 +1,408 @@
+name: k4-r3-acp-method-catalog-evidence
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k4-r3-acp-method-catalog-evidence.yml"
+      - "schema/k4-r3-acp-method-catalog-evidence.schema.json"
+      - "packages/kodac-runtime/src/compatibility/acp-method-catalog.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k4-r3-acp-method-catalog-evidence.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  acp-method-catalog-evidence:
+    name: k4-r3-acp-method-catalog-evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      K4_R3_IMPLEMENTATION_BASE_SHA: "073505d8dce35439f9cf9d7d402c98eec34ac682"
+      K4_R3_IMPLEMENTATION_BASE_TREE: "f05de1ec77ceb042fc829f81e51443a33c759177"
+      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA: "b51f2e88fb1426ed72127100bd84566724bbd925"
+      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_TREE: "407f3f0ed89d7539493a49b45fe98c6e791df77b"
+      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA: "fa5356ec8300d09011b5b0f772a92ab2aedabd05"
+      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE: "80651754d206c7bec7d334501ec6edbb85d7fd0e"
+      K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA: "3755a653dbb66bd77ee18fa9084f3e06a7e9821d"
+      K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_TREE: "c3435b193f11934fb3ca05f892c377d77c0010aa"
+      K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA: "9a48306feb010211ae1a4e1eaacaa1bfa5ba2949"
+      K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE: "aee74370aba27d5b201ceb65afb542f0b74cfb5e"
+      K4_R3_IMPLEMENTATION_BRANCH: "codex/k4-r3-acp-method-catalog-evidence"
+      K4_R3_IMPLEMENTATION_PULL_REQUEST: "180"
+      K4_R3_CANONICAL_ARTIFACT_SHA: "fa5356ec8300d09011b5b0f772a92ab2aedabd05"
+      K4_R3_CANONICAL_ARTIFACT_TREE: "80651754d206c7bec7d334501ec6edbb85d7fd0e"
+      K4_R3_CANONICAL_SCHEMA_BLOB: "0d33a03fb2bca61c678a6b8e2d09019c67fb3916"
+      K4_R3_CANONICAL_SOURCE_BLOB: "ff8e4572ecb803401ee9f096f6f3ac32a4792baf"
+      K4_R3_CANONICAL_TEST_BLOB: "625bc3eeb305893d0a66f89e0af737594ea752fc"
+      K4_R3_ACP_STANDARD_PIN_IDENTITY: "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec"
+      K4_R3_CANONICAL_K4_R1_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
+      K4_R3_CANONICAL_K4_R1_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
+      K4_R3_CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact PR head and closed gate mode
+        shell: bash
+        env:
+          K4_R3_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K4_R3_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K4_R3_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K4_R3_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K4_R3_PR_NUMBER: ${{ github.event.pull_request.number }}
+          K4_R3_PR_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K4_R3_PR_HEAD_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r3-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r3-diff-before"
+          test ! -s "$RUNNER_TEMP/k4-r3-status-before"
+          test ! -s "$RUNNER_TEMP/k4-r3-diff-before"
+
+          workflow=".github/workflows/k4-r3-acp-method-catalog-evidence.yml"
+          if test "$K4_R3_PR_HEAD_REF" = "$K4_R3_IMPLEMENTATION_BRANCH"; then
+            test "$K4_R3_PR_HEAD_REPOSITORY" = "$K4_R3_PR_REPOSITORY"
+            test "$K4_R3_PR_NUMBER" = "$K4_R3_IMPLEMENTATION_PULL_REQUEST"
+            test "$K4_R3_PR_BASE_SHA" = "$K4_R3_IMPLEMENTATION_BASE_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_TREE"
+            mapfile -t head_parents < <(git cat-file -p HEAD | sed -n 's/^parent //p')
+            test "${#head_parents[@]}" -eq 1
+            test "${head_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA"
+
+            mapfile -t parent_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
+            test "${#parent_parents[@]}" -eq 1
+            test "${parent_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE"
+            mapfile -t grandparent_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA" | sed -n 's/^parent //p')
+            test "${#grandparent_parents[@]}" -eq 1
+            test "${grandparent_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_TREE"
+            mapfile -t previous_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_PREVIOUS_SHA" | sed -n 's/^parent //p')
+            test "${#previous_parents[@]}" -eq 1
+            test "${previous_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE"
+            mapfile -t candidate_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA" | sed -n 's/^parent //p')
+            test "${#candidate_parents[@]}" -eq 1
+            test "${candidate_parents[0]}" = "$K4_R3_IMPLEMENTATION_BASE_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_BASE_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_BASE_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_BASE_TREE"
+            mapfile -t changed < <(git diff --name-only "$K4_R3_IMPLEMENTATION_BASE_SHA" HEAD | LC_ALL=C sort)
+            expected=(
+              ".github/workflows/k4-r3-acp-method-catalog-evidence.yml"
+              "packages/kodac-runtime/src/compatibility/acp-method-catalog.ts"
+              "packages/kodac-runtime/src/index.ts"
+              "packages/kodac-runtime/test/k4-r3-acp-method-catalog-evidence.test.ts"
+              "schema/k4-r3-acp-method-catalog-evidence.schema.json"
+            )
+            test "${#changed[@]}" -eq "${#expected[@]}"
+            for index in "${!expected[@]}"; do
+              test "${changed[$index]}" = "${expected[$index]}"
+            done
+          else
+            git fetch --no-tags --depth=1 origin "$K4_R3_PR_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_PR_BASE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K4_R3_PR_BASE_SHA" HEAD | LC_ALL=C sort)
+            for path in "${changed[@]}"; do
+              test "$path" != "$workflow"
+            done
+          fi
+
+          action_key="u""ses"
+          mapfile -t actual_action_lines < <(
+            grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" "$workflow" | cut -d: -f2-
+          )
+          expected_action_lines=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#actual_action_lines[@]}" -eq "${#expected_action_lines[@]}"
+          for index in "${!expected_action_lines[@]}"; do
+            test "${actual_action_lines[$index]}" = "${expected_action_lines[$index]}"
+          done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: false
+
+      - name: Sync the locked validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r3-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Structurally attest every immutable Action reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r3-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          from pathlib import Path
+
+          import yaml
+
+          workflow = Path(".github/workflows/k4-r3-acp-method-catalog-evidence.yml")
+          document = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+          action_key = "u" + "ses"
+          expected = [
+              (
+                  ("jobs", "acp-method-catalog-evidence", "steps", 0, action_key),
+                  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              ),
+              (
+                  ("jobs", "acp-method-catalog-evidence", "steps", 2, action_key),
+                  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              ),
+              (
+                  ("jobs", "acp-method-catalog-evidence", "steps", 3, action_key),
+                  "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e",
+              ),
+          ]
+
+          def action_references(value, path=(), active=None):
+              if active is None:
+                  active = set()
+              if isinstance(value, (dict, list)):
+                  identity = id(value)
+                  if identity in active:
+                      raise ValueError("YAML alias cycle is prohibited")
+                  active.add(identity)
+                  try:
+                      if isinstance(value, dict):
+                          for key, nested in value.items():
+                              nested_path = (*path, key)
+                              if key == action_key:
+                                  yield nested_path, nested
+                              yield from action_references(nested, nested_path, active)
+                      else:
+                          for index, nested in enumerate(value):
+                              yield from action_references(nested, (*path, index), active)
+                  finally:
+                      active.remove(identity)
+
+          def validate(candidate):
+              if not isinstance(candidate, dict):
+                  raise ValueError("workflow must be a mapping")
+              jobs = candidate.get("jobs")
+              if not isinstance(jobs, dict) or set(jobs) != {"acp-method-catalog-evidence"}:
+                  raise ValueError("workflow must contain exactly the canonical K4-R3 validation job")
+              actual = list(action_references(candidate))
+              if actual != expected:
+                  raise ValueError(f"unexpected Action or reusable-workflow references: {actual!r}")
+
+          validate(document)
+          hidden_job = copy.deepcopy(document)
+          hidden_job["jobs"]["unapproved"] = {
+              action_key: "example/unapproved/.github/workflows/check.yml@deadbeef"
+          }
+          extra_step = copy.deepcopy(document)
+          extra_step["jobs"]["acp-method-catalog-evidence"]["steps"].append(
+              {action_key: "example/unapproved@deadbeef"}
+          )
+          for candidate in (hidden_job, extra_step):
+              try:
+                  validate(candidate)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit("structural validator accepted an unapproved Action reference")
+          PY
+
+      - name: Prove canonical K4-R1 and K4-R3 artifacts and required shared exports
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$K4_R3_CANONICAL_ARTIFACT_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_CANONICAL_ARTIFACT_SHA"
+          test "$(git rev-parse "$K4_R3_CANONICAL_ARTIFACT_SHA^{tree}")" = "$K4_R3_CANONICAL_ARTIFACT_TREE"
+
+          canonical_paths=(
+            "schema/k4-r3-acp-method-catalog-evidence.schema.json:$K4_R3_CANONICAL_SCHEMA_BLOB"
+            "packages/kodac-runtime/src/compatibility/acp-method-catalog.ts:$K4_R3_CANONICAL_SOURCE_BLOB"
+            "packages/kodac-runtime/test/k4-r3-acp-method-catalog-evidence.test.ts:$K4_R3_CANONICAL_TEST_BLOB"
+          )
+          for entry in "${canonical_paths[@]}"; do
+            path="${entry%%:*}"
+            expected_blob="${entry##*:}"
+            test "$(git rev-parse "$K4_R3_CANONICAL_ARTIFACT_SHA:$path")" = "$expected_blob"
+            test "$(git rev-parse "HEAD:$path")" = "$expected_blob"
+          done
+
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/contracts.ts")" = "$K4_R3_CANONICAL_K4_R1_CONTRACTS_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/registry.ts")" = "$K4_R3_CANONICAL_K4_R1_REGISTRY_BLOB"
+          index="packages/kodac-runtime/src/index.ts"
+          test "$(grep -Fxc 'export * from "./compatibility/contracts.ts"' "$index")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/registry.ts"' "$index")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/mcp-catalog.ts"' "$index")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/acp-method-catalog.ts"' "$index")" -eq 1
+
+      - name: Prove the bounded deterministic K4-R3 production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_path="packages/kodac-runtime/src/compatibility/acp-method-catalog.ts"
+          schema_path="schema/k4-r3-acp-method-catalog-evidence.schema.json"
+          test -f "$source_path"
+          test -f "$schema_path"
+
+          pattern='node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|\.register[[:space:]]*\(|\.dispose[[:space:]]*\('
+          if grep -nE "$pattern" "$source_path"; then
+            echo "K4-R3 ACP method catalog purity/determinism boundary violation" >&2
+            exit 1
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const sourcePath = "packages/kodac-runtime/src/compatibility/acp-method-catalog.ts"
+          const source = readFileSync(sourcePath, "utf8")
+          const specifiers = [
+            ...source.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+            ...source.matchAll(/\bimport\s+["']([^"']+)["']/g),
+          ].map((match) => match[1])
+          const expected = ["node:crypto", "node:util", "./contracts.ts", "./registry.ts"]
+          if (JSON.stringify(specifiers) !== JSON.stringify(expected)) {
+            throw new Error(`K4-R3 import surface mismatch: ${specifiers.join(", ")}`)
+          }
+          if (/\bimport\s*\(/.test(source)) throw new Error("Dynamic import is prohibited in K4-R3")
+          const utilImports = [...source.matchAll(/import\s+\{\s*types\s+as\s+utilTypes\s*\}\s+from\s+["']node:util["']/g)]
+          const utilMembers = [...source.matchAll(/\butilTypes\.([A-Za-z_$][A-Za-z0-9_$]*)/g)]
+          const utilReferences = [...source.matchAll(/\butilTypes\b/g)]
+          if (
+            utilImports.length !== 1
+            || utilMembers.length === 0
+            || utilMembers.some((match) => match[1] !== "isProxy")
+            || utilReferences.length !== utilMembers.length + 1
+          ) throw new Error("K4-R3 node:util use is limited to utilTypes.isProxy")
+          const cryptoImports = source.split(/\r?\n/).filter((line) => /from\s+["']node:crypto["']/.test(line))
+          if (JSON.stringify(cryptoImports) !== JSON.stringify(['import { createHash } from "node:crypto"'])) {
+            throw new Error("K4-R3 node:crypto use is limited to createHash")
+          }
+          JSON.parse(readFileSync("schema/k4-r3-acp-method-catalog-evidence.schema.json", "utf8"))
+          NODE
+
+      - name: Validate Draft 2020-12 schema against actual K4-R3 evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --input-type=module <<'NODE' > "$RUNNER_TEMP/k4-r3-catalog.json"
+          import {
+            K4_R3_ACP_STANDARD_PIN_IDENTITY,
+            materializeAcpMethodCatalogEvidence,
+          } from "./packages/kodac-runtime/src/compatibility/acp-method-catalog.ts"
+          import { CompatibilityBindingRegistry } from "./packages/kodac-runtime/src/compatibility/registry.ts"
+          import { createExtensionDescriptor } from "./packages/kodac-runtime/src/extensions/contracts.ts"
+          import { ExtensionDescriptorRegistry } from "./packages/kodac-runtime/src/extensions/registry.ts"
+
+          const descriptor = createExtensionDescriptor({
+            extensionId: "kodac/acp-method-adapter",
+            extensionVersion: "1.0.0",
+            provenance: {
+              sourceType: "EXTERNAL_DECLARATION",
+              sourceId: "kodac/k4-r3-schema-check",
+              sourceRevision: "1.0.0",
+              license: "Apache-2.0",
+              intakeMode: "DECLARATION",
+            },
+            capabilities: [{ capabilityId: "compat/read", roles: ["PROVIDER"] }],
+          })
+          const extensions = new ExtensionDescriptorRegistry()
+          extensions.register(descriptor)
+          const registry = new CompatibilityBindingRegistry(extensions)
+          process.stdout.write(JSON.stringify(materializeAcpMethodCatalogEvidence({
+            standardPinIdentity: K4_R3_ACP_STANDARD_PIN_IDENTITY,
+            extensionId: descriptor.extensionId,
+            descriptorIdentity: descriptor.descriptorIdentity,
+          }, registry)))
+          NODE
+
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r3-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          import os
+          from pathlib import Path
+
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k4-r3-acp-method-catalog-evidence.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          valid_input = {
+              "standardPinIdentity": "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec",
+              "extensionId": "kodac/acp-method-adapter",
+              "descriptorIdentity": "a" * 64,
+          }
+          validator.validate(valid_input)
+          catalog = json.loads(Path(os.environ["RUNNER_TEMP"], "k4-r3-catalog.json").read_text(encoding="utf-8"))
+          validator.validate(catalog)
+
+          mutations = []
+          missing = copy.deepcopy(catalog)
+          missing["entries"].pop()
+          mutations.append(missing)
+          custom = copy.deepcopy(catalog)
+          custom["entries"][0]["externalName"] = "_custom/run"
+          mutations.append(custom)
+          unbound_leak = copy.deepcopy(catalog)
+          unbound_leak["entries"][0]["normalizedCapabilityIds"] = ["compat/read"]
+          mutations.append(unbound_leak)
+          wrong_source = copy.deepcopy(catalog)
+          wrong_source["sourceEvidence"]["sourceCommit"] = "0" * 40
+          mutations.append(wrong_source)
+          for candidate in mutations:
+              if not list(validator.iter_errors(candidate)):
+                  raise SystemExit("schema accepted a hostile K4-R3 mutation")
+          PY
+
+      - name: Run Python Ruff provenance focused and full runtime gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r3-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$K4_R3_CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+          node --experimental-strip-types --check packages/kodac-runtime/src/compatibility/acp-method-catalog.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k4-r3-acp-method-catalog-evidence.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+
+      - name: Attest checkout unchanged after K4-R3 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r3-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r3-diff-after"
+          cmp "$RUNNER_TEMP/k4-r3-status-before" "$RUNNER_TEMP/k4-r3-status-after"
+          cmp "$RUNNER_TEMP/k4-r3-diff-before" "$RUNNER_TEMP/k4-r3-diff-after"
+          test ! -s "$RUNNER_TEMP/k4-r3-status-after"
+          test ! -s "$RUNNER_TEMP/k4-r3-diff-after"
