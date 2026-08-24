@@ -4,6 +4,27 @@
 >
 > This document does **not** authorize implementation, change H4 scope, mint evidence, weaken trust boundaries, or permit merge. Active canonical authorization documents and live GitHub state remain authoritative for execution.
 
+## 0. Reconciliation note — 2026-08-24
+
+The research references and headline paper claims recorded below were checked
+against their primary sources on 2026-08-24 and remain materially accurate.
+This verification does not promote any research idea into an implementation
+requirement or an authority-bearing plan.
+
+The references below to the "active H4 sequence" and the direction to finish
+that work first describe the 2026-08-16 sequencing context. PR #102 subsequently
+merged at `adab893d8e122320f441ec9a85a77527d92fbd02`. At reconciliation time,
+canonical `main` was commit
+`29a20b710edafa520d5eb18b59f7614589229829` with tree
+`3c1b8ce6acff3437309cf71ab5ea0455bf3151dd`.
+
+The founder authorization
+`KODAC-FOUNDER-REPO-LOCAL-CONTINUATION-2026-08-24` now permits safe repo-local
+research, planning, and roadmap re-evaluation. This research record still does
+not independently authorize implementation, external deployment, spending,
+secret use, trust-root changes, or protected-lane work. Live repository state,
+canonical plans, and the latest founder authorization remain controlling.
+
 ## 1. Founder direction preserved
 
 The product name remains **Kodac**. `Times` / `TimesCode` is not the active rename.

@@ -4,6 +4,38 @@
 >
 > **Authority rule:** this is a dated snapshot, not a substitute for live GitHub verification. Before any mutation, re-read repository canonical documents and re-check the live PR/head/checks/reviews. Canonical repository truth outranks this handoff if anything has changed.
 
+## 0. Reconciliation and supersession notice — 2026-08-24
+
+**Status: HISTORICAL SNAPSHOT / OPERATIONAL INSTRUCTIONS SUPERSEDED.**
+
+This document preserves what was known on 2026-08-16. It is not a current
+execution handoff. At reconciliation time, canonical `main` was:
+
+```text
+commit: 29a20b710edafa520d5eb18b59f7614589229829
+tree:   3c1b8ce6acff3437309cf71ab5ea0455bf3151dd
+```
+
+Live GitHub verification on 2026-08-24 established that PR #102 is closed and
+merged. Its final implementation head and merge commit are:
+
+```text
+head:  4d8b2d9847113576250b6e39f1ac9c6fad53a383
+merge: adab893d8e122320f441ec9a85a77527d92fbd02
+```
+
+Therefore, every PR #102-specific operational statement below—including the
+old head identity, CI failure, reserved-ledger absence, exact next action,
+startup protocol, and final `Do not merge` instruction—must be read only as
+historical evidence. Do not execute those instructions.
+
+Current work is governed by live repository state, canonical planning, and the
+founder authorization
+`KODAC-FOUNDER-REPO-LOCAL-CONTINUATION-2026-08-24`. As of this reconciliation,
+PR #163 remains a separate protected lane while
+`INCLUDED_FULL_REVIEW_ADMISSION=UNOBSERVABLE`; do not trigger qualification,
+review, merge, or diagnostic probes for that lane.
+
 ## 1. Repository and founder operating rules
 
 Repository:

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
-import { mkdtemp, readFile, readdir } from "node:fs/promises"
+import { access, mkdtemp, readFile, readdir } from "node:fs/promises"
 import { tmpdir } from "node:os"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
 import test from "node:test"
 import { runCli } from "../src/cli.ts"
 
@@ -11,7 +11,7 @@ test("kodac ask persists the exact model-visible request snapshot and keeps resp
   const stdout: string[] = []
   const stderr: string[] = []
   const code = await runCli(
-    ["ask", "hello kodac", "--workspace", root, "--evidence-dir", evidence, "--json"],
+    ["ask", "hello kodac", "--workspace", root, "--evidence-dir", evidence, "--evidence-retention-days", "7", "--json"],
     { stdout: (line) => stdout.push(line), stderr: (line) => stderr.push(line) },
     root,
   )
@@ -25,6 +25,16 @@ test("kodac ask persists the exact model-visible request snapshot and keeps resp
   }
   assert.equal(payload.status, "COMPLETE")
   assert.equal(payload.assistant, "[fixture:fixture/deterministic-v1] hello kodac")
+
+  const metadata = JSON.parse(await readFile(join(dirname(payload.evidence.events), "session.json"), "utf8")) as {
+    protocol: string
+    retentionDays: number
+    mayContainLosslessModelRequestSnapshots: boolean
+  }
+  assert.equal(metadata.protocol, "kodac.evidence-session")
+  assert.equal(metadata.retentionDays, 7)
+  assert.equal(metadata.mayContainLosslessModelRequestSnapshots, true)
+  await assert.rejects(() => access(join(dirname(payload.evidence.events), "active-session.json")), { code: "ENOENT" })
 
   const eventsText = await readFile(payload.evidence.events, "utf8")
   const events = eventsText.trim().split("\n").map((line) => JSON.parse(line)) as Array<{
