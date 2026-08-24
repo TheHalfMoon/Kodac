@@ -67,16 +67,23 @@ jobs:
           test ! -s "$RUNNER_TEMP/k4-r1-status-before"
           test ! -s "$RUNNER_TEMP/k4-r1-diff-before"
 
+          workflow=".github/workflows/k4-r1-compatibility-normalization.yml"
           if test "$K4_R1_PR_HEAD_REF" = "$K4_R1_HARDENING_BRANCH"; then
             test "$K4_R1_PR_BASE_SHA" = "$K4_R1_HARDENING_BASELINE_SHA"
             git fetch --no-tags --depth=1 origin "$K4_R1_HARDENING_BASELINE_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_HARDENING_BASELINE_SHA"
             mapfile -t changed < <(git diff --name-only "$K4_R1_HARDENING_BASELINE_SHA" HEAD | LC_ALL=C sort)
             test "${#changed[@]}" -eq 1
-            test "${changed[0]}" = ".github/workflows/k4-r1-compatibility-normalization.yml"
+            test "${changed[0]}" = "$workflow"
+          else
+            git fetch --no-tags --depth=1 origin "$K4_R1_PR_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_PR_BASE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K4_R1_PR_BASE_SHA" HEAD | LC_ALL=C sort)
+            for path in "${changed[@]}"; do
+              test "$path" != "$workflow"
+            done
           fi
 
-          workflow=".github/workflows/k4-r1-compatibility-normalization.yml"
           mapfile -t actual_actions < <(sed -nE 's/^[[:space:]]*- uses: ([^[:space:]]+).*/\1/p' "$workflow")
           expected_actions=(
             "actions/checkout@11d5960a326750d5838078e36cf38b85af677262"
