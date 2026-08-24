@@ -23,7 +23,6 @@ jobs:
     env:
       K4_R1_IMPLEMENTATION_BASELINE_SHA: "f64a5f1ddbe57970d214c2f7b042fa421a0562fa"
       K4_R1_IMPLEMENTATION_BRANCH: "codex/k4-r1-compatibility-normalization"
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/k4-r1-schema-venv
 
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -40,7 +39,11 @@ jobs:
           enable-cache: false
 
       - name: Sync the locked schema validator outside the checkout
-        run: uv sync --frozen --no-dev
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
+          uv sync --frozen --no-dev
 
       - name: Attest exact PR head and implementation-gate scope
         shell: bash
@@ -171,6 +174,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r1-schema-venv"
           uv run --frozen --no-sync python <<'PY'
           import copy
           import json
