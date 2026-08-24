@@ -96,6 +96,12 @@ PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH: NOT AUTHORIZED
 
 PR #163, all Z0-family work, zrok, paid review/provider spend, secrets, GitHub Apps, webhooks, and trust-root changes remain outside this record and untouched.
 
+## Review-driven consistency correction
+
+Exact-head review of the first candidate identified that the centralized preserved non-grants were stricter than the repeated non-grant blocks in the four authority surfaces. The `K2 EXECUTION-AUTHORITY EXPANSION` prohibition was already present in every block. The exact `CONCRETE EXTERNAL REVIEWER ADAPTER` and `PROVIDER NETWORK / SECRET HANDLING` prohibitions are now repeated in all four blocks so no authority surface depends on a weaker synonym or an indirect cross-reference.
+
+This correction repeats existing prohibitions. It grants no new authority and changes no KRI behavior or implementation scope.
+
 ## Local validation before candidate commit
 
 The complete repository validation set passed on the five-document candidate working tree:
