@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k3-r6-relation-graph.schema.json",
+  "title": "Kodac K3-R6 Snapshot Relation Graph and Query Result",
+  "oneOf": [
+    { "$ref": "#/$defs/graph" },
+    { "$ref": "#/$defs/queryResult" }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitObjectId": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "producerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Runtime additionally enforces canonical workspace-relative slash paths and a 1024-byte UTF-8 maximum."
+    },
+    "bounded256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "description": "Runtime applies the same bound in UTF-8 bytes."
+    },
+    "bounded1024": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "description": "Runtime applies the same bound in UTF-8 bytes."
+    },
+    "relationKind": {
+      "enum": [
+        "contains",
+        "imports",
+        "exports",
+        "defines",
+        "references",
+        "calls",
+        "inherits",
+        "implements",
+        "instantiates"
+      ]
+    },
+    "evidenceClass": {
+      "enum": [
+        "precise-static",
+        "parser-derived",
+        "git-derived",
+        "heuristic-inference",
+        "model-hypothesis"
+      ]
+    },
+    "resolution": {
+      "enum": ["resolved", "ambiguous"]
+    },
+    "provenanceRefs": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/bounded1024" }
+    },
+    "sourceSpan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "startLine", "startColumn", "endLine", "endColumn"],
+      "properties": {
+        "path": { "$ref": "#/$defs/path" },
+        "startLine": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "startColumn": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "endLine": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+        "endColumn": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "symbol", "qualifiedName", "sourceSpan"],
+      "properties": {
+        "kind": { "enum": ["file", "symbol"] },
+        "path": { "$ref": "#/$defs/path" },
+        "symbol": {
+          "oneOf": [
+            { "$ref": "#/$defs/bounded256" },
+            { "type": "null" }
+          ]
+        },
+        "qualifiedName": {
+          "oneOf": [
+            { "$ref": "#/$defs/bounded1024" },
+            { "type": "null" }
+          ]
+        },
+        "sourceSpan": {
+          "oneOf": [
+            { "$ref": "#/$defs/sourceSpan" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "file" } }, "required": ["kind"] },
+          "then": {
+            "properties": {
+              "symbol": { "type": "null" },
+              "qualifiedName": { "type": "null" },
+              "sourceSpan": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "symbol" } }, "required": ["kind"] },
+          "then": { "properties": { "symbol": { "$ref": "#/$defs/bounded256" } } }
+        }
+      ]
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producerId", "repositoryIdentity", "snapshotIdentity", "contentIdentity", "provenanceRefs"],
+      "properties": {
+        "producerId": { "$ref": "#/$defs/producerId" },
+        "repositoryIdentity": { "$ref": "#/$defs/sha256" },
+        "snapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "contentIdentity": { "$ref": "#/$defs/sha256" },
+        "provenanceRefs": { "$ref": "#/$defs/provenanceRefs" }
+      }
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeIdentity", "producerId", "evidenceClass", "sourceEvidenceIdentity", "provenanceRefs", "entity"],
+      "properties": {
+        "nodeIdentity": { "$ref": "#/$defs/sha256" },
+        "producerId": { "$ref": "#/$defs/producerId" },
+        "evidenceClass": { "$ref": "#/$defs/evidenceClass" },
+        "sourceEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "provenanceRefs": { "$ref": "#/$defs/provenanceRefs" },
+        "entity": { "$ref": "#/$defs/entity" }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edgeIdentity",
+        "producerId",
+        "evidenceClass",
+        "sourceEvidenceIdentity",
+        "provenanceRefs",
+        "relation",
+        "resolution",
+        "sourceNodeIdentity",
+        "targetNodeIdentity",
+        "relationSite"
+      ],
+      "properties": {
+        "edgeIdentity": { "$ref": "#/$defs/sha256" },
+        "producerId": { "$ref": "#/$defs/producerId" },
+        "evidenceClass": { "$ref": "#/$defs/evidenceClass" },
+        "sourceEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "provenanceRefs": { "$ref": "#/$defs/provenanceRefs" },
+        "relation": { "$ref": "#/$defs/relationKind" },
+        "resolution": { "$ref": "#/$defs/resolution" },
+        "sourceNodeIdentity": { "$ref": "#/$defs/sha256" },
+        "targetNodeIdentity": { "$ref": "#/$defs/sha256" },
+        "relationSite": {
+          "oneOf": [
+            { "$ref": "#/$defs/sourceSpan" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "graph": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "graphIdentity",
+        "producerSetIdentity",
+        "repositoryIdentity",
+        "snapshotIdentity",
+        "contentIdentity",
+        "gitHead",
+        "freshness",
+        "producers",
+        "nodes",
+        "edges"
+      ],
+      "properties": {
+        "version": { "const": "k3-r6-relation-graph-v1" },
+        "graphIdentity": { "$ref": "#/$defs/sha256" },
+        "producerSetIdentity": { "$ref": "#/$defs/sha256" },
+        "repositoryIdentity": { "$ref": "#/$defs/sha256" },
+        "snapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "contentIdentity": { "$ref": "#/$defs/sha256" },
+        "gitHead": { "$ref": "#/$defs/gitObjectId" },
+        "freshness": { "const": "current" },
+        "producers": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/producer" }
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/node" }
+        },
+        "edges": {
+          "type": "array",
+          "maxItems": 16384,
+          "items": { "$ref": "#/$defs/edge" }
+        }
+      }
+    },
+    "completenessReason": {
+      "enum": ["ambiguous-edges-excluded", "depth-bound", "result-budget"]
+    },
+    "queryCompleteness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reasons", "omittedAtLeast", "excludedAmbiguousEdgeIdentities"],
+      "properties": {
+        "state": { "enum": ["complete", "incomplete"] },
+        "reasons": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/completenessReason" }
+        },
+        "omittedAtLeast": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "excludedAmbiguousEdgeIdentities": {
+          "type": "array",
+          "maxItems": 16384,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sha256" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "state": { "const": "complete" } }, "required": ["state"] },
+          "then": {
+            "properties": {
+              "reasons": { "maxItems": 0 },
+              "omittedAtLeast": { "const": 0 },
+              "excludedAmbiguousEdgeIdentities": { "maxItems": 0 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "state": { "const": "incomplete" } }, "required": ["state"] },
+          "then": { "properties": { "reasons": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "queryHit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nodeIdentity", "entity", "depth", "chainIdentity", "edgeIdentities"],
+      "properties": {
+        "nodeIdentity": { "$ref": "#/$defs/sha256" },
+        "entity": { "$ref": "#/$defs/entity" },
+        "depth": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "chainIdentity": { "$ref": "#/$defs/sha256" },
+        "edgeIdentities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    "impactRelations": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        { "const": "imports" },
+        { "const": "references" },
+        { "const": "calls" },
+        { "const": "inherits" },
+        { "const": "implements" },
+        { "const": "instantiates" }
+      ],
+      "items": false
+    },
+    "relatedFileRelations": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "prefixItems": [
+        { "const": "contains" },
+        { "const": "imports" },
+        { "const": "exports" },
+        { "const": "defines" },
+        { "const": "references" },
+        { "const": "calls" },
+        { "const": "inherits" },
+        { "const": "implements" },
+        { "const": "instantiates" }
+      ],
+      "items": false
+    },
+    "queryResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "resultIdentity",
+        "queryIdentity",
+        "kind",
+        "graphIdentity",
+        "repositoryIdentity",
+        "snapshotIdentity",
+        "contentIdentity",
+        "seedNodeIdentity",
+        "relations",
+        "maxDepth",
+        "maxResults",
+        "completeness",
+        "hits"
+      ],
+      "properties": {
+        "version": { "const": "k3-r6-relation-result-v1" },
+        "resultIdentity": { "$ref": "#/$defs/sha256" },
+        "queryIdentity": { "$ref": "#/$defs/sha256" },
+        "kind": { "enum": ["impact", "related_files"] },
+        "graphIdentity": { "$ref": "#/$defs/sha256" },
+        "repositoryIdentity": { "$ref": "#/$defs/sha256" },
+        "snapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "contentIdentity": { "$ref": "#/$defs/sha256" },
+        "seedNodeIdentity": { "$ref": "#/$defs/sha256" },
+        "relations": {
+          "type": "array",
+          "maxItems": 9,
+          "items": { "$ref": "#/$defs/relationKind" }
+        },
+        "maxDepth": { "type": "integer", "minimum": 1, "maximum": 16 },
+        "maxResults": { "type": "integer", "minimum": 1, "maximum": 1024 },
+        "completeness": { "$ref": "#/$defs/queryCompleteness" },
+        "hits": {
+          "type": "array",
+          "maxItems": 1024,
+          "items": { "$ref": "#/$defs/queryHit" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "kind": { "const": "impact" } }, "required": ["kind"] },
+          "then": { "properties": { "relations": { "$ref": "#/$defs/impactRelations" } } }
+        },
+        {
+          "if": { "properties": { "kind": { "const": "related_files" } }, "required": ["kind"] },
+          "then": { "properties": { "relations": { "$ref": "#/$defs/relatedFileRelations" } } }
+        }
+      ]
+    }
+  }
+}
