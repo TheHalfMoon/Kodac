@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document records current engineering milestone status after canonical adoption and bounded closeout of K3-R1 through K3-R6, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
+This document records current engineering milestone status after canonical adoption and bounded closeout of K3-R1 through K3-R6, definition of K4 and its exact R1 data-only normalization gate, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
 
 ## K0/K1 — CLOSED
 
@@ -90,6 +90,28 @@ K3 does not select a permanent graph/index/storage backend by implication.
 
 Vector/embedding infrastructure, expansion beyond the exact K3-R6 gate plus its narrow review-hardening extension, and K3-R7+ remain unauthorized.
 
+## K4 — DEFINED / IN PROGRESS
+
+Theme:
+
+```text
+Ecosystem Compatibility & Capability Registry
+```
+
+Current gate:
+
+```text
+K4-R1: EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R2+: NOT AUTHORIZED
+K4: NOT CLOSED
+```
+
+K4-R1 is a non-executable foundation over the canonical H1 extension/capability descriptor registry. It may pin exact MCP, ACP, and Agent Skills specification revisions and record deterministic `UNRESOLVED`, `SINGLE`, or `COMPOSITE` bindings from opaque external object names to existing H1 semantic capability identifiers.
+
+K4-R1 grants no protocol transport, discovery, invocation, session behavior, skill parsing/installation/activation, script execution, network/filesystem/process/secret authority, persistence, external registry, policy change, or K2 authority. Normalization and registry membership are evidence only.
+
+The exact primary-source pins, six-path implementation allowlist, required proofs, and preserved non-grants are defined in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
+
 ## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
 Theme:
@@ -125,7 +147,6 @@ The following remain roadmap directions only and have no implementation authorit
 
 | Milestone | Proposed direction | Status |
 | --- | --- | --- |
-| K4 | Ecosystem Compatibility & Capability Registry | PROPOSED / NOT AUTHORIZED |
 | K5 | Proof Review & Judge | PROPOSED / NOT AUTHORIZED |
 | K6 | Evidence Router & Outcome Learning | PROPOSED / NOT AUTHORIZED |
 | K7 | Kodac Bench & Distribution Hardening | PROPOSED / NOT AUTHORIZED |
@@ -136,6 +157,10 @@ The following remain roadmap directions only and have no implementation authorit
 K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
 K3-R1 THROUGH K3-R6: CANONICAL FOR THEIR AUTHORIZED SCOPES
 K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
+
+K4: DEFINED / IN PROGRESS / NOT CLOSED
+K4-R1: EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R2+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -161,6 +186,8 @@ KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
 K3-R7+: NOT AUTHORIZED
+K4-R1 SCOPE EXPANSION BEYOND THE DATA-ONLY NORMALIZATION AUTHORIZATION: NOT AUTHORIZED
+K4-R2+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
 CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
