@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document is the current Kodac engineering roadmap authority after K2 canonical closeout, canonical adoption and bounded closeout of K3-R1 through K3-R6, canonical adoption of the separately authorized bounded KRI-R1 through KRI-R4 slices, and definition of K4 with canonical adoption of one exact data-only compatibility-normalization implementation gate. KRI-P0 remains the planning/contract-design authority from which those later, narrower implementation gates were separately authorized.
+This document is the current Kodac engineering roadmap authority after K2 canonical closeout, canonical adoption and bounded closeout of K3-R1 through K3-R6, canonical adoption of the separately authorized bounded KRI-R1 through KRI-R4 slices, and definition of K4 with canonical K4-R1 data-only compatibility normalization plus one exact K4-R2 caller-materialized MCP catalog-evidence implementation authorization. KRI-P0 remains the planning/contract-design authority from which those later, narrower implementation gates were separately authorized.
 
 The pre-reconstitution roadmap at canonical base `11227cc8c58e00879e8b40e7ff7948bee396fef7` remains historical evidence and is superseded only as current product/roadmap authority.
 
@@ -17,7 +17,7 @@ Engineering milestones do not themselves authorize public release, package publi
 | **K3** | Evidence-Backed Repository Intelligence & Context Engine | **CLOSED — K3-R1 THROUGH K3-R6 CANONICAL FOR THEIR BOUNDED AUTHORIZED SCOPES** | Complete canonical milestone; K3-R7+ is not required for closeout and remains unauthorized |
 | **KRI-P0** | Reviewer Intelligence authorization & planning gate | **CANONICAL PLANNING AUTHORITY** | Planning/contract design only; no implementation authority from KRI-P0 alone |
 | **KRI-R1 through KRI-R4** | Bounded Reviewer Intelligence evidence, contracts, provider-neutral execution, and qualification | **CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED SCOPES** | **KRI-R1 THROUGH KRI-R4 ONLY AS CANONICALLY ADOPTED; KRI-R5+ NOT AUTHORIZED** |
-| **K4** | Ecosystem Compatibility & Capability Registry | **DEFINED / IN PROGRESS — K4-R1 CANONICAL FOR ITS BOUNDED AUTHORIZED SCOPE** | K4-R1 only: exact data-only standard pins, external-capability normalization contracts, and an ephemeral binding registry; K4-R2+ not authorized |
+| **K4** | Ecosystem Compatibility & Capability Registry | **DEFINED / IN PROGRESS — K4-R1 CANONICAL; EXACT K4-R2 GATE AUTHORIZED / NOT YET CANONICAL** | K4-R2 only: caller-materialized data-only MCP tool/resource/prompt catalog-page evidence correlated to one K4-R1 binding snapshot; K4-R3+ not authorized |
 | **K5** | Proof Review & Judge | **PROPOSED** | Not authorized |
 | **K6** | Evidence Router & Outcome Learning | **PROPOSED** | Not authorized |
 | **K7** | Kodac Bench & Distribution Hardening | **PROPOSED** | Not authorized |
@@ -123,7 +123,9 @@ The first authorized slice is deliberately narrower:
 ```text
 K4-R1: DATA-ONLY STANDARD PINS + EXTERNAL-CAPABILITY NORMALIZATION
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2+: NOT AUTHORIZED
+K4-R2: CALLER-MATERIALIZED DATA-ONLY MCP CATALOG EVIDENCE
+K4-R2 IMPLEMENTATION: AUTHORIZED / NOT YET CANONICAL
+K4-R3+: NOT AUTHORIZED
 ```
 
 K4-R1 canonically pins exact MCP, ACP, and Agent Skills specification revisions and implements immutable bindings from opaque external object names to the existing H1 semantic capability identifiers. It uses only explicit `UNRESOLVED`, `SINGLE`, or `COMPOSITE` dispositions and a pure in-memory registry bound to canonical H1 adapter descriptors.
@@ -133,6 +135,10 @@ K4-R1 does not authorize a protocol transport, MCP client/server, ACP agent/clie
 The exact source pins, implementation allowlist, proofs, and non-grants are defined in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
 
 The canonical implementation ledger, qualified identity, review evidence, proof matrix, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R1_COMPATIBILITY_NORMALIZATION_CANONICAL_EVIDENCE_2026-08-24.md`.
+
+K4-R2 may correlate already-materialized MCP `tools/list`, `resources/list`, or `prompts/list` page digests with one exact immutable K4-R1 binding snapshot and derive only `UNBOUND`, `CURRENT`, or `STALE` evidence. It cannot send or parse JSON-RPC, contact a server, traverse a cursor, assemble pages, cache, read a resource, retrieve a prompt, invoke a tool, interpret raw metadata, or grant authority.
+
+The exact K4-R2 primary-source basis, caller-materialized contract, five-path implementation allowlist, required proofs, and preserved non-grants are defined in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
 ## K5 — Proposed: Proof Review & Judge
 
@@ -172,7 +178,7 @@ K7 does not itself authorize distribution or public release.
 1. `Defined`, `authorized for planning`, `implementation authorized`, `implemented`, `canonical`, `closed`, and `released` are distinct states.
 2. A roadmap entry never grants source-intake or implementation authority by implication.
 3. K3-R1 through K3-R6 are canonical only for their already-authorized bounded scopes; K3 closure does not authorize K3-R7+ or expand any accepted K3 contract.
-4. K4 is defined and K4-R1 is canonical only for its exact data-only scope; K4-R2+ remains unauthorized, and no external standard name, declaration, metadata, or registry membership is executable authority.
+4. K4 is defined and K4-R1 is canonical only for its exact data-only scope; K4-R2 is authorized only for caller-materialized data-only MCP catalog evidence, K4-R3+ remains unauthorized, and no external standard name, declaration, metadata, digest, cache hint, or registry membership is executable authority.
 5. KRI-P0 grants planning/contract-design authority only; KRI-R1 through KRI-R4 are canonical only for their separately authorized bounded scopes, while KRI-R5+ and K5 implementation remain unauthorized.
 6. Storage engines, donors, models, protocols, and implementation tactics remain replaceable behind accepted Kodac boundaries unless separately ratified.
 7. Superiority claims require reproducible benchmark evidence.
@@ -189,7 +195,8 @@ K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 K4: DEFINED / IN PROGRESS
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2+: NOT AUTHORIZED
+K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R3+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -218,7 +225,8 @@ K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
 K3-R7+: NOT AUTHORIZED
 K4-R1 SCOPE EXPANSION BEYOND THE DATA-ONLY NORMALIZATION AUTHORIZATION: NOT AUTHORIZED
-K4-R2+: NOT AUTHORIZED
+K4-R2 SCOPE EXPANSION BEYOND THE CALLER-MATERIALIZED MCP CATALOG-EVIDENCE AUTHORIZATION: NOT AUTHORIZED
+K4-R3+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
 CODERABBIT SOURCE INTAKE: NOT AUTHORIZED

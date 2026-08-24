@@ -16,7 +16,7 @@ K2    — trusted runtime spine
 K3    — evidence-backed repository intelligence & context engine
 KRI-P0 — Reviewer Intelligence planning / contract design authority
 KRI-R1 through KRI-R4 — separately authorized bounded Reviewer Intelligence slices
-K4    — ecosystem compatibility & capability registry; exact R1 gate only when separately authorized
+K4    — ecosystem compatibility & capability registry; canonical R1 plus exact R2 gate only as separately authorized
 K5+   — later milestones only when separately defined/authorized
 ```
 
@@ -34,7 +34,8 @@ Current state:
 | KRI-R5+ | NOT AUTHORIZED |
 | K4 | DEFINED / IN PROGRESS / NOT CLOSED |
 | K4-R1 | CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE |
-| K4-R2+ | NOT AUTHORIZED |
+| K4-R2 | EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL |
+| K4-R3+ | NOT AUTHORIZED |
 | K5-K7 | PROPOSED / NOT AUTHORIZED |
 
 Engineering milestone closure does not itself establish a distributable product version.
@@ -90,8 +91,10 @@ K3 closed for that accepted engineering surface
 
 K4 defined
 K4-R1 canonical for its exact data-only normalization scope
+K4-R2 exact caller-materialized data-only MCP catalog-evidence implementation authorized
 != K4 closed
-!= K4-R2+ authorized
+!= K4-R2 canonical
+!= K4-R3+ authorized
 != MCP / ACP / Agent Skills execution authority
 != skill allowed-tools approved by Kodac
 
@@ -132,7 +135,8 @@ K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 K4: DEFINED / IN PROGRESS / NOT CLOSED
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2+: NOT AUTHORIZED
+K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R3+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
@@ -172,7 +176,8 @@ K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
 K3-R7+: NOT AUTHORIZED
 K4-R1 SCOPE EXPANSION BEYOND THE DATA-ONLY NORMALIZATION AUTHORIZATION: NOT AUTHORIZED
-K4-R2+: NOT AUTHORIZED
+K4-R2 SCOPE EXPANSION BEYOND THE CALLER-MATERIALIZED MCP CATALOG-EVIDENCE AUTHORIZATION: NOT AUTHORIZED
+K4-R3+: NOT AUTHORIZED
 
 CUBIC SOURCE INTAKE: NOT AUTHORIZED
 CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
@@ -216,3 +221,5 @@ The bounded K3 closure evidence, canonical implementation ledger, and preserved 
 The K4 definition, current official standard pins, exact K4-R1 implementation allowlist, and non-executable normalization boundaries are recorded in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
 
 The exact K4-R1 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R1_COMPATIBILITY_NORMALIZATION_CANONICAL_EVIDENCE_2026-08-24.md`.
+
+The exact K4-R2 caller-materialized MCP catalog-evidence contract, primary-source basis, implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
