@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document records current engineering milestone status after canonical adoption of K3-R1 through K3-R5 and the KRI-P0 planning authorization. It does not authorize public release or implementation beyond an explicitly approved gate.
+This document records current engineering milestone status after canonical adoption of K3-R1 through K3-R5, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
 
 ## K0/K1 — CLOSED
 
@@ -85,26 +85,34 @@ K3 does not select a permanent graph/index/storage backend by implication.
 
 Vector/embedding infrastructure and K3-R6+ remain unauthorized.
 
-## KRI-P0 — REVIEWER INTELLIGENCE PLANNING GATE
+## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
 Theme:
 
 ```text
-Kodac Reviewer Intelligence authorization and planning
+Kodac Reviewer Intelligence planning plus separately authorized bounded implementation
 ```
 
 Status:
 
 ```text
-AUTHORIZED FOR PLANNING AND CONTRACT DESIGN ONLY
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-P0: CANONICAL PLANNING AUTHORITY
+KRI-R1 THROUGH KRI-R4: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
+KRI-R5+: NOT AUTHORIZED
 ```
 
-KRI-P0 may define future Reviewer Intelligence contracts, invariants, benchmark families, and gate decomposition.
+The canonical bounded slices are:
 
-It grants no repository mutation, GitHub review/comment, approval, merge, execution, or `PROVEN_READY` authority.
+- KRI-R1: deterministic offline test/evidence-only gold reviewer-evidence corpus;
+- KRI-R2: deterministic finding/adjudication contracts and bounded read-only runtime;
+- KRI-R3: provider-neutral bounded reviewer execution with a caller-injected provider interface;
+- KRI-R4: pure/in-memory historical-claim-disposition qualification machinery.
+
+These slices grant no concrete external adapter, network or secret handling, persistent review storage or learning, production reviewer routing, autofix, repository mutation, GitHub review/comment, approval, merge, K5, or `PROVEN_READY` authority. Qualification is not general reviewer trust, finding truth, default routing authority, or production readiness.
 
 K2 remains the sole trusted side-effect execution authority. K5 remains proposed and not authorized.
+
+The reconciliation basis and exact canonical merge identities are recorded in `docs/planning/KODAC_KRI_R1_R4_ROADMAP_TRUTH_RECONCILIATION_2026-08-24.md`.
 
 ## Proposed later milestones
 
@@ -124,15 +132,16 @@ K3: IN PROGRESS / NOT CLOSED
 K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
 K3-R6+: NOT AUTHORIZED
 
-KRI-P0: AUTHORIZED FOR PLANNING AND CONTRACT DESIGN ONLY
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-P0: CANONICAL PLANNING AUTHORITY
+KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
+KRI-R5+: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 
 CODE IMPORT: NOT AUTHORIZED
 NEW OSS / EXTERNAL REVIEW SERVICE INTAKE: NOT AUTHORIZED
 NEW KODAC DEPENDENCIES: NOT AUTHORIZED
 PERSISTENT REVIEW STORAGE / LEARNING: NOT AUTHORIZED
-WRITE / REVIEW / APPROVAL / MERGE AUTHORITY: NOT AUTHORIZED BY KRI-P0
+WRITE / REVIEW / APPROVAL / MERGE AUTHORITY: NOT AUTHORIZED BY KRI-P0 OR KRI-R1 THROUGH KRI-R4
 
 PUBLIC RELEASE: NOT AUTHORIZED
 PACKAGE PUBLICATION: NOT AUTHORIZED
@@ -140,10 +149,10 @@ BRAND LAUNCH: NOT AUTHORIZED
 KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```
 
-## KRI-P0 explicit non-grants
+## KRI-P0 through KRI-R4 preserved non-grants
 
 ```text
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6+: NOT AUTHORIZED
 
@@ -152,6 +161,8 @@ CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
 CUBIC INTEGRATION: NOT AUTHORIZED
 CODERABBIT INTEGRATION: NOT AUTHORIZED
 EXTERNAL REVIEW SERVICE INTEGRATION: NOT AUTHORIZED
+CONCRETE EXTERNAL REVIEWER ADAPTER: NOT AUTHORIZED
+PROVIDER NETWORK / SECRET HANDLING: NOT AUTHORIZED
 
 NEW KODAC DEPENDENCIES: NOT AUTHORIZED
 CODE IMPORT: NOT AUTHORIZED

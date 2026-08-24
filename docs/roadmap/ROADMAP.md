@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document is the current Kodac engineering roadmap authority after K2 canonical closeout and canonical adoption of K3-R1 through K3-R5. It also records KRI-P0 as a separate Reviewer Intelligence planning/contract-design gate only.
+This document is the current Kodac engineering roadmap authority after K2 canonical closeout, canonical adoption of K3-R1 through K3-R5, and canonical adoption of the separately authorized bounded KRI-R1 through KRI-R4 slices. KRI-P0 remains the planning/contract-design authority from which those later, narrower implementation gates were separately authorized.
 
 The pre-reconstitution roadmap at canonical base `11227cc8c58e00879e8b40e7ff7948bee396fef7` remains historical evidence and is superseded only as current product/roadmap authority.
 
@@ -15,7 +15,8 @@ Engineering milestones do not themselves authorize public release, package publi
 | **K0/K1** | Architecture, governance, provenance, donor-selection foundation | **CLOSED** | Complete historical milestone |
 | **K2** | Trusted Runtime Spine | **CLOSED** | Complete canonical milestone |
 | **K3** | Evidence-Backed Repository Intelligence & Context Engine | **IN PROGRESS — K3-R1 THROUGH K3-R5 CANONICAL; K3 NOT CLOSED** | **K3-R1 THROUGH K3-R5 ONLY AS ALREADY CANONICALLY ADOPTED; K3-R6+ NOT AUTHORIZED** |
-| **KRI-P0** | Reviewer Intelligence authorization & planning gate | **PLANNING / CONTRACT DESIGN AUTHORIZED ONLY** | **KRI IMPLEMENTATION NOT AUTHORIZED** |
+| **KRI-P0** | Reviewer Intelligence authorization & planning gate | **CANONICAL PLANNING AUTHORITY** | Planning/contract design only; no implementation authority from KRI-P0 alone |
+| **KRI-R1 through KRI-R4** | Bounded Reviewer Intelligence evidence, contracts, provider-neutral execution, and qualification | **CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED SCOPES** | **KRI-R1 THROUGH KRI-R4 ONLY AS CANONICALLY ADOPTED; KRI-R5+ NOT AUTHORIZED** |
 | **K4** | Ecosystem Compatibility & Capability Registry | **PROPOSED** | Not authorized |
 | **K5** | Proof Review & Judge | **PROPOSED** | Not authorized |
 | **K6** | Evidence Router & Outcome Learning | **PROPOSED** | Not authorized |
@@ -77,19 +78,27 @@ K3-R1 through K3-R5 are canonical only for their separately authorized scopes. K
 
 No permanent storage engine is selected by this roadmap. No vector or embedding infrastructure is selected.
 
-## KRI-P0 — Reviewer Intelligence planning gate
+## KRI-P0 through KRI-R4 — bounded Reviewer Intelligence
 
 KRI-P0 is an independent cross-cutting planning gate, not K5 implementation.
 
-It authorizes only planning and contract design for future evidence-backed Reviewer Intelligence, including exact-revision review identity, findings, adjudication, risk-aware review, CI/self-bypass awareness, provenance/identity review, non-authoritative suggestions, scoped learning concepts, multi-reviewer independence, and benchmark-first evaluation.
+KRI-P0 itself authorizes only planning and contract design. KRI-R1 through KRI-R4 were later authorized and canonically adopted through separate, bounded implementation gates:
+
+- KRI-R1: deterministic offline test/evidence-only gold reviewer-evidence corpus;
+- KRI-R2: deterministic finding/adjudication contracts and a bounded read-only runtime for materialized claims;
+- KRI-R3: provider-neutral bounded reviewer execution through a caller-injected interface, with no concrete provider adapter;
+- KRI-R4: pure/in-memory historical-claim-disposition qualification machinery whose default policy treats the four-case KRI-R1 corpus as insufficient evidence for broad qualification.
 
 ```text
-KRI-P0: AUTHORIZED FOR PLANNING AND CONTRACT DESIGN ONLY
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-P0: CANONICAL PLANNING AUTHORITY
+KRI-R1 THROUGH KRI-R4: CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED SCOPES
+KRI-R5+: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 ```
 
-Reviewer output is planned as a claim requiring adjudication, not completion truth. K2 remains the sole trusted side-effect execution authority and the existing Done Gate remains the `PROVEN_READY` authority under accepted contracts.
+Reviewer output remains a claim requiring adjudication, not completion truth. Qualification is bounded engineering evidence, not general reviewer trust, finding truth, default routing authority, or production readiness. K2 remains the sole trusted side-effect execution authority and the existing Done Gate remains the `PROVEN_READY` authority under accepted contracts.
+
+The reconciliation basis and exact canonical merge identities are recorded in `docs/planning/KODAC_KRI_R1_R4_ROADMAP_TRUTH_RECONCILIATION_2026-08-24.md`.
 
 ## K4 — Proposed: Ecosystem Compatibility & Capability Registry
 
@@ -112,7 +121,7 @@ Proposed direction only:
 - independent completion judgment;
 - stronger separation between model assertion and completion truth.
 
-KRI-P0 may become a future input or prerequisite, but it does not authorize K5.
+KRI-P0 and the bounded KRI-R1 through KRI-R4 slices may become future inputs or prerequisites, but they do not authorize K5.
 
 ## K6 — Proposed: Evidence Router & Outcome Learning
 
@@ -140,7 +149,7 @@ K7 does not itself authorize distribution or public release.
 1. `Defined`, `authorized for planning`, `implementation authorized`, `implemented`, `canonical`, `closed`, and `released` are distinct states.
 2. A roadmap entry never grants source-intake or implementation authority by implication.
 3. K3-R1 through K3-R5 are canonical only for their already-authorized scopes; K3-R6+ remains unauthorized.
-4. KRI-P0 authorizes planning and contract design only; KRI implementation and K5 implementation remain unauthorized.
+4. KRI-P0 grants planning/contract-design authority only; KRI-R1 through KRI-R4 are canonical only for their separately authorized bounded scopes, while KRI-R5+ and K5 implementation remain unauthorized.
 5. Storage engines, donors, models, protocols, and implementation tactics remain replaceable behind accepted Kodac boundaries unless separately ratified.
 6. Superiority claims require reproducible benchmark evidence.
 7. Public product versions and engineering milestones are separate governance tracks.
@@ -153,15 +162,16 @@ K2: CLOSED
 K3: IN PROGRESS — K3-R1 THROUGH K3-R5 CANONICAL; K3 NOT CLOSED
 K3-R6+: NOT AUTHORIZED
 
-KRI-P0: AUTHORIZED FOR PLANNING AND CONTRACT DESIGN ONLY
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-P0: CANONICAL PLANNING AUTHORITY
+KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
+KRI-R5+: NOT AUTHORIZED
 K5: PROPOSED / NOT AUTHORIZED
 
 CODE IMPORT: NOT AUTHORIZED
 NEW KODAC DEPENDENCIES: NOT AUTHORIZED
 EXTERNAL REVIEW SERVICE INTEGRATION: NOT AUTHORIZED
 PERSISTENT REVIEW STORAGE / LEARNING: NOT AUTHORIZED
-REPOSITORY WRITE / REVIEW / APPROVAL / MERGE AUTHORITY: NOT AUTHORIZED BY KRI-P0
+REPOSITORY WRITE / REVIEW / APPROVAL / MERGE AUTHORITY: NOT AUTHORIZED BY KRI-P0 OR KRI-R1 THROUGH KRI-R4
 
 PERSISTENT STORAGE: NOT AUTHORIZED
 VECTOR / EMBEDDING INFRASTRUCTURE: NOT AUTHORIZED
@@ -171,10 +181,10 @@ BRAND LAUNCH: NOT AUTHORIZED
 KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```
 
-## KRI-P0 explicit non-grants
+## KRI-P0 through KRI-R4 preserved non-grants
 
 ```text
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6+: NOT AUTHORIZED
 
@@ -183,6 +193,8 @@ CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
 CUBIC INTEGRATION: NOT AUTHORIZED
 CODERABBIT INTEGRATION: NOT AUTHORIZED
 EXTERNAL REVIEW SERVICE INTEGRATION: NOT AUTHORIZED
+CONCRETE EXTERNAL REVIEWER ADAPTER: NOT AUTHORIZED
+PROVIDER NETWORK / SECRET HANDLING: NOT AUTHORIZED
 
 NEW KODAC DEPENDENCIES: NOT AUTHORIZED
 CODE IMPORT: NOT AUTHORIZED

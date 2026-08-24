@@ -14,7 +14,8 @@ Engineering milestones describe architectural and technical progress:
 K0/K1 — architecture, governance, provenance, donor-selection foundation
 K2    — trusted runtime spine
 K3    — evidence-backed repository intelligence & context engine
-KRI-P0 — Reviewer Intelligence planning / contract design gate
+KRI-P0 — Reviewer Intelligence planning / contract design authority
+KRI-R1 through KRI-R4 — separately authorized bounded Reviewer Intelligence slices
 K4+   — later milestones only when separately defined/authorized
 ```
 
@@ -26,13 +27,14 @@ Current state:
 | K2 | CLOSED |
 | K3 | IN PROGRESS; K3-R1 THROUGH K3-R5 CANONICAL FOR THEIR AUTHORIZED SCOPES; K3 NOT CLOSED |
 | K3-R6+ | NOT AUTHORIZED |
-| KRI-P0 | AUTHORIZED FOR PLANNING AND CONTRACT DESIGN ONLY |
-| KRI implementation | NOT AUTHORIZED |
+| KRI-P0 | CANONICAL PLANNING AUTHORITY |
+| KRI-R1 through KRI-R4 | CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES |
+| KRI-R5+ | NOT AUTHORIZED |
 | K4-K7 | PROPOSED / NOT AUTHORIZED |
 
 Engineering milestone closure does not itself establish a distributable product version.
 
-KRI-P0 is not a product-version grant and does not authorize K5, reviewer implementation, external review services, writes, approvals, merges, or completion decisions.
+KRI-P0 and KRI-R1 through KRI-R4 are not product-version grants. The bounded implemented slices do not authorize KRI-R5+, K5, a concrete external reviewer adapter, persistent storage or learning, writes, approvals, merges, default production routing, or completion decisions.
 
 ## Public product versions
 
@@ -79,9 +81,11 @@ K3-R1 through K3-R5 canonical
 != K3 closed
 != K3-R6+ authorized
 
-KRI-P0 planning authorized
-!= KRI implementation authorized
+KRI-P0 canonical planning authority
+KRI-R1 through KRI-R4 canonical for separately authorized bounded scopes
+!= KRI-R5+ authorized
 != K5 implementation authorized
+!= general reviewer trust or default routing authority
 != repository write authority
 != PR approval authority
 != merge authority
@@ -112,8 +116,9 @@ K3: IN PROGRESS / NOT CLOSED
 K3-R1 THROUGH K3-R5: CANONICAL FOR THEIR AUTHORIZED SCOPES
 K3-R6+: NOT AUTHORIZED
 
-KRI-P0: AUTHORIZED FOR PLANNING AND CONTRACT DESIGN ONLY
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-P0: CANONICAL PLANNING AUTHORITY
+KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
+KRI-R5+: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 
 CODE IMPORT:
@@ -125,7 +130,7 @@ NOT AUTHORIZED
 EXTERNAL REVIEW SERVICE INTEGRATION:
 NOT AUTHORIZED
 
-WRITE / REVIEW / APPROVAL / MERGE AUTHORITY FROM KRI-P0:
+WRITE / REVIEW / APPROVAL / MERGE AUTHORITY FROM KRI-P0 OR KRI-R1 THROUGH KRI-R4:
 NOT AUTHORIZED
 
 PUBLIC RELEASE:
@@ -141,10 +146,10 @@ KODAC NAME / TRADEMARK CLEARANCE:
 NOT ESTABLISHED
 ```
 
-## KRI-P0 explicit non-grants
+## KRI-P0 through KRI-R4 preserved non-grants
 
 ```text
-KRI IMPLEMENTATION: NOT AUTHORIZED
+KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 K5 IMPLEMENTATION: NOT AUTHORIZED
 K3-R6+: NOT AUTHORIZED
 
@@ -153,6 +158,8 @@ CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
 CUBIC INTEGRATION: NOT AUTHORIZED
 CODERABBIT INTEGRATION: NOT AUTHORIZED
 EXTERNAL REVIEW SERVICE INTEGRATION: NOT AUTHORIZED
+CONCRETE EXTERNAL REVIEWER ADAPTER: NOT AUTHORIZED
+PROVIDER NETWORK / SECRET HANDLING: NOT AUTHORIZED
 
 NEW KODAC DEPENDENCIES: NOT AUTHORIZED
 CODE IMPORT: NOT AUTHORIZED
@@ -176,3 +183,5 @@ BRAND LAUNCH: NOT AUTHORIZED
 ```
 
 This documentation gate does not modify `code_import_authorized` and admits no external source.
+
+The reconciliation basis and exact canonical merge identities are recorded in `docs/planning/KODAC_KRI_R1_R4_ROADMAP_TRUTH_RECONCILIATION_2026-08-24.md`.
