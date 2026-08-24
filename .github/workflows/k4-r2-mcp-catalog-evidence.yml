@@ -27,8 +27,10 @@ jobs:
       K4_R2_CANONICAL_TEST_BLOB: "1e9e3976ef2b000bc398df99c12cf4de76447f3b"
       K4_R2_HARDENING_BASELINE_SHA: "17bbd953d0cd9860a8fdabbe3346b52ca20b359c"
       K4_R2_HARDENING_BASELINE_TREE: "efd84a6ecb0e421065ce04653abd419f047928b2"
-      K4_R2_HARDENING_ADMISSION_PARENT_SHA: "9f3583db92cdbbdd176d454e750b785218e90e2b"
-      K4_R2_HARDENING_ADMISSION_PARENT_TREE: "450928f98fb979326537f464126c5c8457ff9130"
+      K4_R2_HARDENING_ADMISSION_PARENT_SHA: "cd7b2a321e1fd8cde4b9019a47ed1620202779ba"
+      K4_R2_HARDENING_ADMISSION_PARENT_TREE: "7d081ee21669e6a86f3895a334c49988f30ced08"
+      K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA: "9f3583db92cdbbdd176d454e750b785218e90e2b"
+      K4_R2_HARDENING_ADMISSION_GRANDPARENT_TREE: "450928f98fb979326537f464126c5c8457ff9130"
       K4_R2_HARDENING_BRANCH: "codex/k4-r2-canonical-regression-hardening"
       K4_R2_HARDENING_PULL_REQUEST: "179"
       K4_R2_MCP_STANDARD_PIN_IDENTITY: "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a"
@@ -69,8 +71,18 @@ jobs:
             git fetch --no-tags --depth=1 origin "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
             test "$(git rev-parse "$K4_R2_HARDENING_ADMISSION_PARENT_SHA^{tree}")" = "$K4_R2_HARDENING_ADMISSION_PARENT_TREE"
-            test "$(git show -s --format=%P HEAD)" = "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
-            test "$(git show -s --format=%P "$K4_R2_HARDENING_ADMISSION_PARENT_SHA")" = "$K4_R2_HARDENING_BASELINE_SHA"
+            mapfile -t head_parents < <(git cat-file -p HEAD | sed -n 's/^parent //p')
+            test "${#head_parents[@]}" -eq 1
+            test "${head_parents[0]}" = "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
+            mapfile -t parent_parents < <(git cat-file -p "$K4_R2_HARDENING_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
+            test "${#parent_parents[@]}" -eq 1
+            test "${parent_parents[0]}" = "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA"
+            git fetch --no-tags --depth=1 origin "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA^{tree}")" = "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_TREE"
+            mapfile -t grandparent_parents < <(git cat-file -p "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA" | sed -n 's/^parent //p')
+            test "${#grandparent_parents[@]}" -eq 1
+            test "${grandparent_parents[0]}" = "$K4_R2_HARDENING_BASELINE_SHA"
             git fetch --no-tags --depth=1 origin "$K4_R2_HARDENING_BASELINE_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_HARDENING_BASELINE_SHA"
             test "$(git rev-parse "$K4_R2_HARDENING_BASELINE_SHA^{tree}")" = "$K4_R2_HARDENING_BASELINE_TREE"
