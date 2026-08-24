@@ -410,17 +410,73 @@ jobs:
                   raise SystemExit(f"schema accepted hostile K4-R4 mutation: {name}")
           PY
 
-      - name: Install locked TypeScript validation tooling
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
         shell: bash
         run: |
           set -euo pipefail
-          npm install --prefix packages/kodac-runtime --no-save --package-lock=false --ignore-scripts --no-audit --no-fund typescript@5.9.3 @types/node@24.3.0
+          tool_dir="$RUNNER_TEMP/k4-r4-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {
+            "name": "k4-r4-typescript-validation",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@types/node": "24.3.0",
+              "typescript": "5.9.3"
+            }
+          }
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name": "k4-r4-typescript-validation",
+            "version": "1.0.0",
+            "lockfileVersion": 3,
+            "requires": true,
+            "packages": {
+              "": {
+                "name": "k4-r4-typescript-validation",
+                "version": "1.0.0",
+                "dependencies": {
+                  "@types/node": "24.3.0",
+                  "typescript": "5.9.3"
+                }
+              },
+              "node_modules/@types/node": {
+                "version": "24.3.0",
+                "resolved": "https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz",
+                "integrity": "sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==",
+                "dependencies": {
+                  "undici-types": "~7.10.0"
+                }
+              },
+              "node_modules/typescript": {
+                "version": "5.9.3",
+                "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz",
+                "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==",
+                "bin": {
+                  "tsc": "bin/tsc",
+                  "tsserver": "bin/tsserver"
+                },
+                "engines": {
+                  "node": ">=14.17"
+                }
+              },
+              "node_modules/undici-types": {
+                "version": "7.10.0",
+                "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz",
+                "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="
+              }
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
 
       - name: Run strict TypeScript, Python, Ruff, provenance, focused, and full runtime gates
         shell: bash
         run: |
           set -euo pipefail
-          node packages/kodac-runtime/node_modules/typescript/bin/tsc -p packages/kodac-runtime/tsconfig.json --noEmit
+          node "$RUNNER_TEMP/k4-r4-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k4-r4-typescript/node_modules/@types"
           export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r4-schema-venv"
           uv run --frozen --no-sync pytest -p no:cacheprovider
           uv run --frozen --no-sync ruff check --no-cache .
@@ -435,8 +491,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf -- packages/kodac-runtime/node_modules
-          rm -f -- packages/kodac-runtime/package-lock.json
+          rm -rf -- "$RUNNER_TEMP/k4-r4-typescript"
 
       - name: Attest checkout unchanged after K4-R4 validation
         if: ${{ always() }}

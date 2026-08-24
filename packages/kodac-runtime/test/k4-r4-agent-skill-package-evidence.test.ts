@@ -419,7 +419,11 @@ test("K4-R4 rejects registry shadowing and canonical snapshot-method modificatio
   const descriptor = adapter()
   const registry = registryFor(descriptor)
   Object.defineProperty(registry, "list", { value: () => registry.list(), configurable: true })
-  assert.throws(() => materializeAgentSkillPackageEvidence(input(descriptor), registry))
+  assert.throws(
+    () => materializeAgentSkillPackageEvidence(input(descriptor), registry),
+    (error: unknown) => error instanceof TypeError
+      && error.message === "compatibility registry must not shadow canonical snapshot methods",
+  )
   delete (registry as unknown as Record<string, unknown>).list
 
   const prototype = CompatibilityBindingRegistry.prototype
