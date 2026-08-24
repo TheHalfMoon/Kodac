@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k4-r4-agent-skill-package-evidence.schema.json",
+  "title": "Kodac K4-R4 Caller-Materialized Agent Skill Package Evidence",
+  "$comment": "Runtime validation is authoritative for hostile JavaScript values, UTF-8 byte and code-point bounds, canonical metadata ordering, exact digest recomputation, exact K4-R1 tuple correlation, and immutable snapshot capture.",
+  "oneOf": [
+    { "$ref": "#/$defs/input" },
+    { "$ref": "#/$defs/evidence" }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "standardPinIdentity": {
+      "const": "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819"
+    },
+    "extensionId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$"
+    },
+    "skillName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "digestEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "byteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "byteLength": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+      }
+    },
+    "nonEmptyDigestEvidence": {
+      "allOf": [
+        { "$ref": "#/$defs/digestEvidence" },
+        { "properties": { "byteLength": { "minimum": 1 } } }
+      ]
+    },
+    "allowedToolsEvidence": {
+      "allOf": [
+        { "$ref": "#/$defs/nonEmptyDigestEvidence" },
+        { "properties": { "byteLength": { "maximum": 16384 } } }
+      ]
+    },
+    "packageManifestEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "fileCount", "totalByteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "fileCount": { "type": "integer", "minimum": 1, "maximum": 65536 },
+        "totalByteLength": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 }
+      }
+    },
+    "metadataEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "value"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[^\\u0000]+$"
+        },
+        "value": {
+          "type": "string",
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000]*$"
+        }
+      }
+    },
+    "metadataEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sha256", "entryCount", "totalByteLength"],
+      "properties": {
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "entryCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "totalByteLength": { "type": "integer", "minimum": 0, "maximum": 65536 }
+      }
+    },
+    "sourceEvidence": {
+      "const": {
+        "repository": "agentskills/agentskills",
+        "sourceCommit": "69ef37e9424c0a7ea9dd2293b559e43ec8176379",
+        "sourceTree": "65e11c9faad14a022055ce0ff3ebf99f2b55142f",
+        "specificationRevision": null,
+        "standardPinIdentity": "c82752ee60cfa019caaddda9d0230fbeb6f3b9051346135879bbc40563590819",
+        "sources": [
+          { "path": "docs/specification.mdx", "blob": "d9a2db099d905da8b879a5c6f996728073985279" },
+          { "path": "LICENSE", "blob": "a20f4476df158a57a68409015ea607c738856f57" },
+          { "path": "docs/LICENSE", "blob": "4ea99c213c5c0c005ae4e80df8e52169d06896ec" },
+          { "path": "README.md", "blob": "247e4a18e908d3bf27092f886f25c2515d84ecbc" }
+        ]
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standardPinIdentity", "extensionId", "descriptorIdentity", "directoryName", "name",
+        "description", "license", "compatibility", "metadataEntries", "allowedToolsEvidence",
+        "instructionBodyEvidence", "skillFileEvidence", "packageManifestEvidence",
+        "sourceProvenanceIdentity"
+      ],
+      "properties": {
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "directoryName": { "$ref": "#/$defs/skillName" },
+        "name": { "$ref": "#/$defs/skillName" },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000]+$"
+        },
+        "license": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^[^\\u0000]+$" }
+          ]
+        },
+        "compatibility": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "minLength": 1, "maxLength": 500, "pattern": "^[^\\u0000]+$" }
+          ]
+        },
+        "metadataEntries": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/metadataEntry" }
+        },
+        "allowedToolsEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/allowedToolsEvidence" }
+          ]
+        },
+        "instructionBodyEvidence": { "$ref": "#/$defs/digestEvidence" },
+        "skillFileEvidence": { "$ref": "#/$defs/nonEmptyDigestEvidence" },
+        "packageManifestEvidence": { "$ref": "#/$defs/packageManifestEvidence" },
+        "sourceProvenanceIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "evidenceBaseProperties": {
+      "type": "object",
+      "properties": {
+        "version": { "const": "k4-r4-agent-skill-package-evidence-v1" },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "sourceEvidence": { "$ref": "#/$defs/sourceEvidence" },
+        "objectKind": { "const": "AGENT_SKILL" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "bindingSnapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "directoryName": { "$ref": "#/$defs/skillName" },
+        "name": { "$ref": "#/$defs/skillName" },
+        "descriptionEvidence": {
+          "allOf": [
+            { "$ref": "#/$defs/nonEmptyDigestEvidence" },
+            { "properties": { "byteLength": { "maximum": 4096 } } }
+          ]
+        },
+        "licenseEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/nonEmptyDigestEvidence" },
+                { "properties": { "byteLength": { "maximum": 4096 } } }
+              ]
+            }
+          ]
+        },
+        "compatibilityEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "allOf": [
+                { "$ref": "#/$defs/nonEmptyDigestEvidence" },
+                { "properties": { "byteLength": { "maximum": 2000 } } }
+              ]
+            }
+          ]
+        },
+        "metadataEvidence": { "$ref": "#/$defs/metadataEvidence" },
+        "allowedToolsEvidence": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/allowedToolsEvidence" }
+          ]
+        },
+        "instructionBodyEvidence": { "$ref": "#/$defs/digestEvidence" },
+        "skillFileEvidence": { "$ref": "#/$defs/nonEmptyDigestEvidence" },
+        "packageManifestEvidence": { "$ref": "#/$defs/packageManifestEvidence" },
+        "sourceProvenanceIdentity": { "$ref": "#/$defs/sha256" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "enum": ["UNBOUND", "CURRENT", "STALE"] },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "disposition": { "enum": ["UNRESOLVED", "SINGLE", "COMPOSITE"] },
+        "normalizedCapabilityIds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160,
+            "pattern": "^[a-z][a-z0-9_-]*(?:[./:][a-z][a-z0-9_-]*)+$"
+          }
+        },
+        "evidenceIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "unboundEvidence": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        { "$ref": "#/$defs/evidenceBaseProperties" },
+        {
+          "required": [
+            "version", "standardPinIdentity", "sourceEvidence", "objectKind", "extensionId", "descriptorIdentity",
+            "bindingSnapshotIdentity", "directoryName", "name", "descriptionEvidence", "licenseEvidence",
+            "compatibilityEvidence", "metadataEvidence", "allowedToolsEvidence", "instructionBodyEvidence",
+            "skillFileEvidence", "packageManifestEvidence", "sourceProvenanceIdentity",
+            "externalMetadataSha256", "bindingState", "evidenceIdentity"
+          ],
+          "properties": {
+            "bindingState": { "const": "UNBOUND" }
+          }
+        }
+      ]
+    },
+    "staleEvidence": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        { "$ref": "#/$defs/evidenceBaseProperties" },
+        {
+          "required": [
+            "version", "standardPinIdentity", "sourceEvidence", "objectKind", "extensionId", "descriptorIdentity",
+            "bindingSnapshotIdentity", "directoryName", "name", "descriptionEvidence", "licenseEvidence",
+            "compatibilityEvidence", "metadataEvidence", "allowedToolsEvidence", "instructionBodyEvidence",
+            "skillFileEvidence", "packageManifestEvidence", "sourceProvenanceIdentity",
+            "externalMetadataSha256", "bindingState", "bindingIdentity", "evidenceIdentity"
+          ],
+          "properties": {
+            "bindingState": { "const": "STALE" }
+          }
+        }
+      ]
+    },
+    "currentEvidence": {
+      "unevaluatedProperties": false,
+      "allOf": [
+        { "$ref": "#/$defs/evidenceBaseProperties" },
+        {
+          "required": [
+            "version", "standardPinIdentity", "sourceEvidence", "objectKind", "extensionId", "descriptorIdentity",
+            "bindingSnapshotIdentity", "directoryName", "name", "descriptionEvidence", "licenseEvidence",
+            "compatibilityEvidence", "metadataEvidence", "allowedToolsEvidence", "instructionBodyEvidence",
+            "skillFileEvidence", "packageManifestEvidence", "sourceProvenanceIdentity",
+            "externalMetadataSha256", "bindingState", "bindingIdentity", "disposition",
+            "normalizedCapabilityIds", "evidenceIdentity"
+          ],
+          "properties": {
+            "bindingState": { "const": "CURRENT" }
+          },
+          "allOf": [
+            {
+              "if": { "properties": { "disposition": { "const": "UNRESOLVED" } }, "required": ["disposition"] },
+              "then": { "properties": { "normalizedCapabilityIds": { "maxItems": 0 } } }
+            },
+            {
+              "if": { "properties": { "disposition": { "const": "SINGLE" } }, "required": ["disposition"] },
+              "then": { "properties": { "normalizedCapabilityIds": { "minItems": 1, "maxItems": 1 } } }
+            },
+            {
+              "if": { "properties": { "disposition": { "const": "COMPOSITE" } }, "required": ["disposition"] },
+              "then": { "properties": { "normalizedCapabilityIds": { "minItems": 2, "maxItems": 16 } } }
+            }
+          ]
+        }
+      ]
+    },
+    "evidence": {
+      "oneOf": [
+        { "$ref": "#/$defs/unboundEvidence" },
+        { "$ref": "#/$defs/currentEvidence" },
+        { "$ref": "#/$defs/staleEvidence" }
+      ]
+    }
+  }
+}
