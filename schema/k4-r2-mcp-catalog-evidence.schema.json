@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k4-r2-mcp-catalog-evidence.schema.json",
+  "title": "Kodac K4-R2 Caller-Materialized MCP Catalog Evidence",
+  "$comment": "Runtime validation is authoritative for UTF-8 byte bounds, hostile JavaScript objects, canonical order, duplicate external names, exact K4-R1 tuple correlation, snapshot capture, and derived identity recomputation.",
+  "oneOf": [
+    { "$ref": "#/$defs/input" },
+    { "$ref": "#/$defs/page" }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "standardPinIdentity": {
+      "const": "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a"
+    },
+    "extensionId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9_-]*(?:[./:][a-z][a-z0-9_-]*)+$"
+    },
+    "externalName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000]+$",
+      "$comment": "Runtime additionally enforces the 512-byte UTF-8 maximum."
+    },
+    "objectKind": {
+      "enum": ["MCP_TOOL", "MCP_RESOURCE", "MCP_PROMPT"]
+    },
+    "cursorDigest": {
+      "oneOf": [
+        { "$ref": "#/$defs/sha256" },
+        { "type": "null" }
+      ]
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["externalName", "externalMetadataSha256"],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "standardPinIdentity",
+        "extensionId",
+        "descriptorIdentity",
+        "objectKind",
+        "requestCursorSha256",
+        "nextCursorSha256",
+        "ttlMs",
+        "cacheScope",
+        "responseMetadataSha256",
+        "declarations"
+      ],
+      "properties": {
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "objectKind": { "$ref": "#/$defs/objectKind" },
+        "requestCursorSha256": { "$ref": "#/$defs/cursorDigest" },
+        "nextCursorSha256": { "$ref": "#/$defs/cursorDigest" },
+        "ttlMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cacheScope": { "enum": ["public", "private"] },
+        "responseMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "declarations": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/declaration" }
+        }
+      }
+    },
+    "unboundEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["externalName", "externalMetadataSha256", "bindingState", "entryIdentity"],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "const": "UNBOUND" },
+        "entryIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "staleEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["externalName", "externalMetadataSha256", "bindingState", "bindingIdentity", "entryIdentity"],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "const": "STALE" },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "entryIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "currentEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "externalName",
+        "externalMetadataSha256",
+        "bindingState",
+        "bindingIdentity",
+        "disposition",
+        "normalizedCapabilityIds",
+        "entryIdentity"
+      ],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "const": "CURRENT" },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "disposition": { "enum": ["UNRESOLVED", "SINGLE", "COMPOSITE"] },
+        "normalizedCapabilityIds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/capabilityId" }
+        },
+        "entryIdentity": { "$ref": "#/$defs/sha256" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "disposition": { "const": "UNRESOLVED" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "disposition": { "const": "SINGLE" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "minItems": 1, "maxItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "disposition": { "const": "COMPOSITE" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "minItems": 2, "maxItems": 16 } } }
+        }
+      ]
+    },
+    "entry": {
+      "oneOf": [
+        { "$ref": "#/$defs/unboundEntry" },
+        { "$ref": "#/$defs/currentEntry" },
+        { "$ref": "#/$defs/staleEntry" }
+      ]
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "standardPinIdentity",
+        "extensionId",
+        "descriptorIdentity",
+        "objectKind",
+        "requestCursorSha256",
+        "nextCursorSha256",
+        "ttlMs",
+        "cacheScope",
+        "responseMetadataSha256",
+        "pageShape",
+        "bindingSnapshotIdentity",
+        "entries",
+        "pageIdentity"
+      ],
+      "properties": {
+        "version": { "const": "k4-r2-mcp-catalog-evidence-v1" },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "objectKind": { "$ref": "#/$defs/objectKind" },
+        "requestCursorSha256": { "$ref": "#/$defs/cursorDigest" },
+        "nextCursorSha256": { "$ref": "#/$defs/cursorDigest" },
+        "ttlMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "cacheScope": { "enum": ["public", "private"] },
+        "responseMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "pageShape": { "enum": ["SINGLE_PAGE_COMPLETE", "PAGINATED_PAGE"] },
+        "bindingSnapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "entries": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/entry" }
+        },
+        "pageIdentity": { "$ref": "#/$defs/sha256" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "requestCursorSha256": { "type": "null" },
+              "nextCursorSha256": { "type": "null" }
+            },
+            "required": ["requestCursorSha256", "nextCursorSha256"]
+          },
+          "then": { "properties": { "pageShape": { "const": "SINGLE_PAGE_COMPLETE" } } },
+          "else": { "properties": { "pageShape": { "const": "PAGINATED_PAGE" } } }
+        }
+      ]
+    }
+  }
+}
