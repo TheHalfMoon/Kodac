@@ -446,7 +446,7 @@ test("K4-R3 schema and shared export are present while the source remains data-o
   assert.equal(schema.$schema, "https://json-schema.org/draft/2020-12/schema")
   assert.equal(schema.$id, "https://kodac.dev/schema/k4-r3-acp-method-catalog-evidence.schema.json")
   const index = source("../src/index.ts")
-  assert.equal(index.split("\n").filter((line) => line === 'export * from "./compatibility/acp-method-catalog.ts"').length, 1)
+  assert.equal(index.split(/\r?\n/).filter((line) => line === 'export * from "./compatibility/acp-method-catalog.ts"').length, 1)
   const production = source("../src/compatibility/acp-method-catalog.ts")
   assert.deepEqual(
     [...production.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1]),

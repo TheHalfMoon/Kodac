@@ -22,15 +22,19 @@ jobs:
     env:
       K4_R3_IMPLEMENTATION_BASE_SHA: "073505d8dce35439f9cf9d7d402c98eec34ac682"
       K4_R3_IMPLEMENTATION_BASE_TREE: "f05de1ec77ceb042fc829f81e51443a33c759177"
-      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA: "9a48306feb010211ae1a4e1eaacaa1bfa5ba2949"
-      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_TREE: "aee74370aba27d5b201ceb65afb542f0b74cfb5e"
+      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA: "__K4_R3_REPAIR_SHA__"
+      K4_R3_IMPLEMENTATION_ADMISSION_PARENT_TREE: "__K4_R3_REPAIR_TREE__"
+      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA: "3755a653dbb66bd77ee18fa9084f3e06a7e9821d"
+      K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE: "c3435b193f11934fb3ca05f892c377d77c0010aa"
+      K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA: "9a48306feb010211ae1a4e1eaacaa1bfa5ba2949"
+      K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE: "aee74370aba27d5b201ceb65afb542f0b74cfb5e"
       K4_R3_IMPLEMENTATION_BRANCH: "codex/k4-r3-acp-method-catalog-evidence"
       K4_R3_IMPLEMENTATION_PULL_REQUEST: "180"
-      K4_R3_CANONICAL_ARTIFACT_SHA: "9a48306feb010211ae1a4e1eaacaa1bfa5ba2949"
-      K4_R3_CANONICAL_ARTIFACT_TREE: "aee74370aba27d5b201ceb65afb542f0b74cfb5e"
+      K4_R3_CANONICAL_ARTIFACT_SHA: "__K4_R3_REPAIR_SHA__"
+      K4_R3_CANONICAL_ARTIFACT_TREE: "__K4_R3_REPAIR_TREE__"
       K4_R3_CANONICAL_SCHEMA_BLOB: "0d33a03fb2bca61c678a6b8e2d09019c67fb3916"
       K4_R3_CANONICAL_SOURCE_BLOB: "ff8e4572ecb803401ee9f096f6f3ac32a4792baf"
-      K4_R3_CANONICAL_TEST_BLOB: "58fd92c243e086b9574aca5d095f1c11cf0e9731"
+      K4_R3_CANONICAL_TEST_BLOB: "625bc3eeb305893d0a66f89e0af737594ea752fc"
       K4_R3_ACP_STANDARD_PIN_IDENTITY: "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec"
       K4_R3_CANONICAL_K4_R1_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
       K4_R3_CANONICAL_K4_R1_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
@@ -74,11 +78,23 @@ jobs:
             test "${#head_parents[@]}" -eq 1
             test "${head_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA"
 
-            if test "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA" != "$K4_R3_IMPLEMENTATION_BASE_SHA"; then
-              mapfile -t parent_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
-              test "${#parent_parents[@]}" -eq 1
-              test "${parent_parents[0]}" = "$K4_R3_IMPLEMENTATION_BASE_SHA"
-            fi
+            mapfile -t parent_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
+            test "${#parent_parents[@]}" -eq 1
+            test "${parent_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_TREE"
+            mapfile -t grandparent_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_GRANDPARENT_SHA" | sed -n 's/^parent //p')
+            test "${#grandparent_parents[@]}" -eq 1
+            test "${grandparent_parents[0]}" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA"
+            test "$(git rev-parse "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA^{tree}")" = "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_TREE"
+            mapfile -t candidate_parents < <(git cat-file -p "$K4_R3_IMPLEMENTATION_ADMISSION_CANDIDATE_SHA" | sed -n 's/^parent //p')
+            test "${#candidate_parents[@]}" -eq 1
+            test "${candidate_parents[0]}" = "$K4_R3_IMPLEMENTATION_BASE_SHA"
 
             git fetch --no-tags --depth=1 origin "$K4_R3_IMPLEMENTATION_BASE_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R3_IMPLEMENTATION_BASE_SHA"
