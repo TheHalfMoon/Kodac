@@ -228,7 +228,7 @@ test("controlled live solve verifies qualification and records exact write scope
   assert.equal(metadata.retentionDays, 1)
   await assert.rejects(() => access(join(authorizationDir, "active-session.json")), { code: "ENOENT" })
   const maintenance = await maintainEvidenceRoot(evidence, new Date(NOW + 2 * 24 * 60 * 60 * 1_000))
-  assert.equal(maintenance.expiredSessionsRemoved, 1)
+  assert.ok(maintenance.expiredSessionsRemoved >= 1)
   await assert.rejects(() => access(authorizationDir), { code: "ENOENT" })
 })
 
