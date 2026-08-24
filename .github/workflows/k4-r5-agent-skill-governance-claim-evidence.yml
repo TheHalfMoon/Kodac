@@ -22,11 +22,15 @@ jobs:
     env:
       K4_R5_IMPLEMENTATION_BASE_SHA: "f52085bf5de47887d05e3349bde23a2822cd41a5"
       K4_R5_IMPLEMENTATION_BASE_TREE: "1474695ee2141d6f61e180ca6f5701ef66aafd31"
-      K4_R5_IMPLEMENTATION_ARTIFACT_SHA: "07aaa31d739a26cd9cb29920cef9d53efa4c98f3"
-      K4_R5_IMPLEMENTATION_ARTIFACT_TREE: "749390f32d52be29fe6728e081ab76148655633b"
+      K4_R5_IMPLEMENTATION_ARTIFACT_SHA: "fea2d274d651e1149cdce73d0eeea270d53e8e17"
+      K4_R5_IMPLEMENTATION_ARTIFACT_TREE: "ae7ea7aee3ea320ef57336b19f44f2925c9ad7bd"
+      K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA: "c88021706b7209798bdeea50595b1330025ec956"
+      K4_R5_IMPLEMENTATION_EARLY_ADMISSION_TREE: "7c466cca9ae5c1b7bebe28a2f46e3c5629766f28"
+      K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA: "07aaa31d739a26cd9cb29920cef9d53efa4c98f3"
+      K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_TREE: "749390f32d52be29fe6728e081ab76148655633b"
       K4_R5_IMPLEMENTATION_BRANCH: "codex/k4-r5-agent-skill-governance-claim-evidence"
       K4_R5_IMPLEMENTATION_PULL_REQUEST: "186"
-      K4_R5_SCHEMA_BLOB: "abda8c50697ba5e7b15ecf4b939ae57bbf90fe2e"
+      K4_R5_SCHEMA_BLOB: "3dc1890d0807ce3c9ad00e69b7df5fb3862f3273"
       K4_R5_SOURCE_BLOB: "5fdeba6fe02d859c13e3d876352857e3e301b1f4"
       K4_R5_TEST_BLOB: "1d2da8002b1732c81e56438903e6a76d58900ca7"
       K4_R5_INDEX_BLOB: "df9a319db12b11b7f973eb397069eef194cf7780"
@@ -95,7 +99,21 @@ jobs:
             test "$(git rev-parse "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_ARTIFACT_TREE"
             mapfile -t artifact_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA" | sed -n 's/^parent //p')
             test "${#artifact_parents[@]}" -eq 1
-            test "${artifact_parents[0]}" = "$K4_R5_IMPLEMENTATION_BASE_SHA"
+            test "${artifact_parents[0]}" = "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_TREE"
+            mapfile -t early_admission_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA" | sed -n 's/^parent //p')
+            test "${#early_admission_parents[@]}" -eq 1
+            test "${early_admission_parents[0]}" = "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA"
+
+            git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA"
+            test "$(git rev-parse "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA^{tree}")" = "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_TREE"
+            mapfile -t initial_artifact_parents < <(git cat-file -p "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA" | sed -n 's/^parent //p')
+            test "${#initial_artifact_parents[@]}" -eq 1
+            test "${initial_artifact_parents[0]}" = "$K4_R5_IMPLEMENTATION_BASE_SHA"
 
             git fetch --no-tags --depth=1 origin "$K4_R5_IMPLEMENTATION_BASE_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R5_IMPLEMENTATION_BASE_SHA"
@@ -106,17 +124,25 @@ jobs:
             test "${authorization_parents[1]}" = "$K4_R5_AUTHORIZATION_HEAD_SHA"
             test "$(git rev-parse "$K4_R5_IMPLEMENTATION_BASE_SHA:docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md")" = "$K4_R5_AUTHORIZATION_DOCUMENT_BLOB"
 
-            mapfile -t artifact_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_BASE_SHA" "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA" | LC_ALL=C sort)
+            mapfile -t initial_artifact_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_BASE_SHA" "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA" | LC_ALL=C sort)
             expected_artifacts=(
               "packages/kodac-runtime/src/compatibility/agent-skill-governance-claim-evidence.ts"
               "packages/kodac-runtime/src/index.ts"
               "packages/kodac-runtime/test/k4-r5-agent-skill-governance-claim-evidence.test.ts"
               "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
             )
-            test "${#artifact_delta[@]}" -eq "${#expected_artifacts[@]}"
+            test "${#initial_artifact_delta[@]}" -eq "${#expected_artifacts[@]}"
             for index in "${!expected_artifacts[@]}"; do
-              test "${artifact_delta[$index]}" = "${expected_artifacts[$index]}"
+              test "${initial_artifact_delta[$index]}" = "${expected_artifacts[$index]}"
             done
+
+            mapfile -t early_admission_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_INITIAL_ARTIFACT_SHA" "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA")
+            test "${#early_admission_delta[@]}" -eq 1
+            test "${early_admission_delta[0]}" = "$workflow"
+
+            mapfile -t review_fix_delta < <(git diff --name-only "$K4_R5_IMPLEMENTATION_EARLY_ADMISSION_SHA" "$K4_R5_IMPLEMENTATION_ARTIFACT_SHA")
+            test "${#review_fix_delta[@]}" -eq 1
+            test "${review_fix_delta[0]}" = "schema/k4-r5-agent-skill-governance-claim-evidence.schema.json"
 
             mapfile -t changed < <(git diff --name-only "$K4_R5_IMPLEMENTATION_BASE_SHA" HEAD | LC_ALL=C sort)
             expected=(
@@ -478,6 +504,16 @@ jobs:
           wrong_binding = copy.deepcopy(values["evidence"])
           wrong_binding["bindingState"] = "TRUSTED"
           mutations.append(("wrong K4-R4 binding state", wrong_binding))
+          duplicate_input_kind = copy.deepcopy(values["input"])
+          duplicate_input_kind["requirementClaims"].append(
+              copy.deepcopy(duplicate_input_kind["requirementClaims"][0])
+          )
+          mutations.append(("duplicate input requirement kind", duplicate_input_kind))
+          duplicate_output_kind = copy.deepcopy(values["evidence"])
+          duplicate_output_kind["requirementClaims"].append(
+              copy.deepcopy(duplicate_output_kind["requirementClaims"][0])
+          )
+          mutations.append(("duplicate output requirement kind", duplicate_output_kind))
           for name, candidate in mutations:
               if not list(validator.iter_errors(candidate)):
                   raise SystemExit(f"schema accepted hostile K4-R5 mutation: {name}")
