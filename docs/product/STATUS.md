@@ -13,15 +13,15 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, and definition of the first K4 compatibility-normalization gate:
+Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, and canonical adoption of the first K4 compatibility-normalization gate:
 
 ```text
 K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
 K3-R1 THROUGH K3-R6: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
 K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
-K4: DEFINED / IN PROGRESS AFTER CANONICAL ADOPTION OF THE K4 DEFINITION RECORD
-K4-R1: EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4: DEFINED / IN PROGRESS / NOT CLOSED
+K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
 K4-R2+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -44,7 +44,8 @@ KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 Later engineering milestones remain:
 
 ```text
-K4: DEFINED / EXACT K4-R1 IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4: DEFINED / IN PROGRESS / NOT CLOSED
+K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
 K4-R2+: NOT AUTHORIZED
 K5: PROPOSED / NOT AUTHORIZED
 K6: PROPOSED / NOT AUTHORIZED
@@ -104,3 +105,5 @@ The narrow `node:util` Proxy-rejection, structural-input, adjacency-index, and s
 The bounded K3 closure evidence, canonical implementation ledger, platform applicability, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.
 
 The K4 definition, official primary-standard pins, exact K4-R1 implementation allowlist, and non-executable compatibility boundaries are recorded in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
+
+The exact K4-R1 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R1_COMPATIBILITY_NORMALIZATION_CANONICAL_EVIDENCE_2026-08-24.md`.
