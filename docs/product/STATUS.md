@@ -47,6 +47,8 @@ BRAND LAUNCH: NOT AUTHORIZED
 KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```
 
+The K4-R5 current-state line above is adopted only if the exact K4-R5 authorization merge gate passes; until then K4-R5 remains unauthorized. After that gate passes, this current repository-wide boundary supersedes—but does not rewrite—the earlier K4-R4 records' historical, point-in-time `K4-R5+: NOT AUTHORIZED` boundary.
+
 Later engineering milestones remain:
 
 ```text
