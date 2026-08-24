@@ -1,3 +1,5 @@
+import { types as utilTypes } from "node:util"
+
 import type { ExtensionDescriptor } from "../extensions/contracts.ts"
 import { ExtensionDescriptorRegistry } from "../extensions/registry.ts"
 import {
@@ -38,7 +40,9 @@ const RECEIPT_KEYS = ["version", "bindingIdentity", "extensionId", "descriptorId
 const DISPOSITION_SET = new Set<string>(K4_R1_NORMALIZATION_DISPOSITIONS)
 
 function asRecord(value: unknown, label: string): Record<string, unknown> {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) throw new TypeError(`${label} must be an object`)
+  if (value === null || typeof value !== "object" || utilTypes.isProxy(value) || Array.isArray(value)) {
+    throw new TypeError(`${label} must be a non-Proxy plain object`)
+  }
   const prototype = Object.getPrototypeOf(value)
   if (prototype !== Object.prototype && prototype !== null) throw new TypeError(`${label} must be a plain object`)
   if (Object.getOwnPropertySymbols(value).length !== 0) throw new TypeError(`${label} must not contain symbol fields`)
@@ -46,11 +50,6 @@ function asRecord(value: unknown, label: string): Record<string, unknown> {
   for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(value))) {
     if (!("value" in descriptor) || !descriptor.enumerable) throw new TypeError(`${label}.${key} must be an enumerable data property`)
     result[key] = descriptor.value
-  }
-  try {
-    structuredClone(value)
-  } catch {
-    throw new TypeError(`${label} must not be a Proxy or contain uncloneable values`)
   }
   return result
 }

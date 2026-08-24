@@ -84,6 +84,15 @@ function registeredPair(descriptor = adapter()): {
   return { extensionRegistry, registry: new CompatibilityBindingRegistry(extensionRegistry) }
 }
 
+function hostileProxy<T extends object>(value: T, onTrap: () => void): T {
+  return new Proxy(value, {
+    get() { onTrap(); throw new Error("proxy get trap executed") },
+    ownKeys() { onTrap(); throw new Error("proxy ownKeys trap executed") },
+    getOwnPropertyDescriptor() { onTrap(); throw new Error("proxy descriptor trap executed") },
+    getPrototypeOf() { onTrap(); throw new Error("proxy prototype trap executed") },
+  })
+}
+
 test("K4-R1 primary-standard pins preserve every exact official revision and license-evidence blob", () => {
   assert.equal(K4_R1_COMPATIBILITY_VERSION, "k4-r1-compatibility-normalization-v1")
   assert.deepEqual(K4_R1_STANDARD_IDS, ["MCP", "ACP", "AGENT_SKILLS"])
@@ -198,7 +207,14 @@ test("hostile objects, malformed digests, unknown fields, and external-name boun
   assert.throws(() => createExternalCapabilityBinding(bindingInput({ externalMetadataSha256: "A".repeat(64) })), /lowercase SHA-256/)
   assert.throws(() => createExternalCapabilityBinding(bindingInput({ standardPinIdentity: "0".repeat(64) })), /unknown compatibility/)
   assert.throws(() => createExternalCapabilityBinding({ ...bindingInput(), unexpectedAuthority: true } as never), /unknown field/)
-  assert.throws(() => createExternalCapabilityBinding(new Proxy(bindingInput(), {})), /Proxy/)
+  let proxyTrapCalls = 0
+  const onProxyTrap = () => { proxyTrapCalls += 1 }
+  assert.throws(() => createExternalCapabilityBinding(hostileProxy(bindingInput(), onProxyTrap)), /Proxy/)
+  assert.equal(proxyTrapCalls, 0)
+  assert.throws(() => createExternalCapabilityBinding(bindingInput({
+    normalizedCapabilityIds: hostileProxy(["compat/read"], onProxyTrap),
+  })), /Proxy/)
+  assert.equal(proxyTrapCalls, 0)
   const oversizedSparse = bindingInput() as unknown as Record<string, unknown>
   oversizedSparse.normalizedCapabilityIds = new Array(K4_R1_LIMITS.maxCanonicalNodes + 1)
   assert.throws(() => createExternalCapabilityBinding(oversizedSparse as never), /pre-validation array bound/)
@@ -327,6 +343,11 @@ test("data-only registration receipts provide ownership-safe idempotent disposal
   const value = createExternalCapabilityBinding(bindingInput())
   const first = registry.register(value)
   assert.deepEqual(validateCompatibilityBindingRegistrationReceipt({ ...first }), first)
+  let proxyTrapCalls = 0
+  const hostileReceipt = hostileProxy({ ...first }, () => { proxyTrapCalls += 1 })
+  assert.throws(() => validateCompatibilityBindingRegistrationReceipt(hostileReceipt), /Proxy/)
+  assert.throws(() => registry.dispose(hostileReceipt), /Proxy/)
+  assert.equal(proxyTrapCalls, 0)
   assert.equal(registry.dispose(first), true)
   assert.equal(registry.dispose(first), false)
   const replacement = registry.register(value)
@@ -386,8 +407,9 @@ test("published schema mirrors the closed vocabulary, disposition conditions, an
 test("K4-R1 production code is data-only and imports only its exact authorized deterministic surface", () => {
   const contracts = source("../src/compatibility/contracts.ts")
   const registry = source("../src/compatibility/registry.ts")
-  assert.deepEqual([...contracts.matchAll(/^import .* from "([^"]+)"/gm)].map((match) => match[1]), ["node:crypto"])
+  assert.deepEqual([...contracts.matchAll(/^import .* from "([^"]+)"/gm)].map((match) => match[1]), ["node:crypto", "node:util"])
   assert.deepEqual([...registry.matchAll(/from "([^"]+)"/gm)].map((match) => match[1]), [
+    "node:util",
     "../extensions/contracts.ts",
     "../extensions/registry.ts",
     "./contracts.ts",

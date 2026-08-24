@@ -96,6 +96,7 @@ jobs:
           }
           const allowedSpecifiers = new Set([
             "node:crypto",
+            "node:util",
             "../extensions/contracts.ts",
             "../extensions/registry.ts",
             "./contracts.ts",

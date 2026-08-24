@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto"
+import { types as utilTypes } from "node:util"
 
 export const K4_R1_COMPATIBILITY_VERSION = "k4-r1-compatibility-normalization-v1" as const
 export const K4_R1_BINDING_SNAPSHOT_VERSION = "k4-r1-compatibility-binding-snapshot-v1" as const
@@ -104,14 +105,6 @@ function compareStrings(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0
 }
 
-function rejectProxyTree(value: unknown, label: string): void {
-  try {
-    structuredClone(value)
-  } catch {
-    throw new TypeError(`${label} must not contain Proxy or uncloneable values`)
-  }
-}
-
 function copyDataTree(
   value: unknown,
   label: string,
@@ -123,6 +116,7 @@ function copyDataTree(
     return value
   }
   if (typeof value !== "object") throw new TypeError(`${label} must contain only JSON data`)
+  if (utilTypes.isProxy(value)) throw new TypeError(`${label} must not contain Proxy values`)
   if (state.depth >= K4_R1_LIMITS.maxCanonicalDepth) throw new RangeError(`${label} exceeds the canonical depth bound`)
   state.nodes += 1
   if (state.nodes > K4_R1_LIMITS.maxCanonicalNodes) throw new RangeError(`${label} exceeds the canonical node bound`)
@@ -176,9 +170,7 @@ function copyDataTree(
 }
 
 function dataTree(value: unknown, label: string): unknown {
-  const copied = copyDataTree(value, label)
-  rejectProxyTree(value, label)
-  return copied
+  return copyDataTree(value, label)
 }
 
 function canonicalize(value: unknown): string {
