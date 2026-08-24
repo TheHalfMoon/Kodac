@@ -20,10 +20,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      K4_R2_IMPLEMENTATION_BASELINE_SHA: "78d71717e14d51c6efc49b5b0906a564d2459d7a"
-      K4_R2_IMPLEMENTATION_BASELINE_TREE: "7a7f06d7859bf5325568e21260282c39d702fcd8"
-      K4_R2_IMPLEMENTATION_BRANCH: "codex/k4-r2-mcp-catalog-evidence"
-      K4_R2_IMPLEMENTATION_PULL_REQUEST: "176"
+      K4_R2_CANONICAL_IMPLEMENTATION_SHA: "ae68279bbbc5abc545575b4c8cc44928e483eec5"
+      K4_R2_CANONICAL_IMPLEMENTATION_TREE: "efd1f763294cf03da5dec5339a0855af2861263e"
+      K4_R2_CANONICAL_SCHEMA_BLOB: "b2122d8486190ace7816a37caa0c09f6b1351db7"
+      K4_R2_CANONICAL_SOURCE_BLOB: "b56f3de677bf2415eb6505056003ef03de3d3682"
+      K4_R2_CANONICAL_TEST_BLOB: "1e9e3976ef2b000bc398df99c12cf4de76447f3b"
+      K4_R2_HARDENING_BASELINE_SHA: "17bbd953d0cd9860a8fdabbe3346b52ca20b359c"
+      K4_R2_HARDENING_BASELINE_TREE: "efd84a6ecb0e421065ce04653abd419f047928b2"
+      K4_R2_HARDENING_ADMISSION_PARENT_SHA: "cd7b2a321e1fd8cde4b9019a47ed1620202779ba"
+      K4_R2_HARDENING_ADMISSION_PARENT_TREE: "7d081ee21669e6a86f3895a334c49988f30ced08"
+      K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA: "9f3583db92cdbbdd176d454e750b785218e90e2b"
+      K4_R2_HARDENING_ADMISSION_GRANDPARENT_TREE: "450928f98fb979326537f464126c5c8457ff9130"
+      K4_R2_HARDENING_BRANCH: "codex/k4-r2-canonical-regression-hardening"
+      K4_R2_HARDENING_PULL_REQUEST: "179"
       K4_R2_MCP_STANDARD_PIN_IDENTITY: "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a"
       K4_R2_CANONICAL_K4_R1_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
       K4_R2_CANONICAL_K4_R1_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
@@ -36,7 +45,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
 
-      - name: Attest exact PR head and five-path implementation scope
+      - name: Attest exact PR head and closed gate mode
         shell: bash
         env:
           K4_R2_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
@@ -48,33 +57,47 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$K4_R2_PR_HEAD_SHA"
-          test "$K4_R2_PR_HEAD_REPOSITORY" = "$K4_R2_PR_REPOSITORY"
-          test "$K4_R2_PR_NUMBER" = "$K4_R2_IMPLEMENTATION_PULL_REQUEST"
-          test "$K4_R2_PR_HEAD_REF" = "$K4_R2_IMPLEMENTATION_BRANCH"
-          test "$K4_R2_PR_BASE_SHA" = "$K4_R2_IMPLEMENTATION_BASELINE_SHA"
 
           git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r2-status-before"
           git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r2-diff-before"
           test ! -s "$RUNNER_TEMP/k4-r2-status-before"
           test ! -s "$RUNNER_TEMP/k4-r2-diff-before"
 
-          git fetch --no-tags --depth=1 origin "$K4_R2_IMPLEMENTATION_BASELINE_SHA"
-          test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_IMPLEMENTATION_BASELINE_SHA"
-          test "$(git rev-parse "$K4_R2_IMPLEMENTATION_BASELINE_SHA^{tree}")" = "$K4_R2_IMPLEMENTATION_BASELINE_TREE"
-          mapfile -t changed < <(git diff --name-only "$K4_R2_IMPLEMENTATION_BASELINE_SHA" HEAD | LC_ALL=C sort)
-          expected_paths=(
-            ".github/workflows/k4-r2-mcp-catalog-evidence.yml"
-            "packages/kodac-runtime/src/compatibility/mcp-catalog.ts"
-            "packages/kodac-runtime/src/index.ts"
-            "packages/kodac-runtime/test/k4-r2-mcp-catalog-evidence.test.ts"
-            "schema/k4-r2-mcp-catalog-evidence.schema.json"
-          )
-          test "${#changed[@]}" -eq "${#expected_paths[@]}"
-          for index in "${!expected_paths[@]}"; do
-            test "${changed[$index]}" = "${expected_paths[$index]}"
-          done
-
           workflow=".github/workflows/k4-r2-mcp-catalog-evidence.yml"
+          if test "$K4_R2_PR_HEAD_REF" = "$K4_R2_HARDENING_BRANCH"; then
+            test "$K4_R2_PR_HEAD_REPOSITORY" = "$K4_R2_PR_REPOSITORY"
+            test "$K4_R2_PR_NUMBER" = "$K4_R2_HARDENING_PULL_REQUEST"
+            test "$K4_R2_PR_BASE_SHA" = "$K4_R2_HARDENING_BASELINE_SHA"
+            git fetch --no-tags --depth=1 origin "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
+            test "$(git rev-parse "$K4_R2_HARDENING_ADMISSION_PARENT_SHA^{tree}")" = "$K4_R2_HARDENING_ADMISSION_PARENT_TREE"
+            mapfile -t head_parents < <(git cat-file -p HEAD | sed -n 's/^parent //p')
+            test "${#head_parents[@]}" -eq 1
+            test "${head_parents[0]}" = "$K4_R2_HARDENING_ADMISSION_PARENT_SHA"
+            mapfile -t parent_parents < <(git cat-file -p "$K4_R2_HARDENING_ADMISSION_PARENT_SHA" | sed -n 's/^parent //p')
+            test "${#parent_parents[@]}" -eq 1
+            test "${parent_parents[0]}" = "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA"
+            git fetch --no-tags --depth=1 origin "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA"
+            test "$(git rev-parse "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA^{tree}")" = "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_TREE"
+            mapfile -t grandparent_parents < <(git cat-file -p "$K4_R2_HARDENING_ADMISSION_GRANDPARENT_SHA" | sed -n 's/^parent //p')
+            test "${#grandparent_parents[@]}" -eq 1
+            test "${grandparent_parents[0]}" = "$K4_R2_HARDENING_BASELINE_SHA"
+            git fetch --no-tags --depth=1 origin "$K4_R2_HARDENING_BASELINE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_HARDENING_BASELINE_SHA"
+            test "$(git rev-parse "$K4_R2_HARDENING_BASELINE_SHA^{tree}")" = "$K4_R2_HARDENING_BASELINE_TREE"
+            mapfile -t changed < <(git diff --name-only "$K4_R2_HARDENING_BASELINE_SHA" HEAD | LC_ALL=C sort)
+            test "${#changed[@]}" -eq 1
+            test "${changed[0]}" = "$workflow"
+          else
+            git fetch --no-tags --depth=1 origin "$K4_R2_PR_BASE_SHA"
+            test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_PR_BASE_SHA"
+            mapfile -t changed < <(git diff --name-only "$K4_R2_PR_BASE_SHA" HEAD | LC_ALL=C sort)
+            for path in "${changed[@]}"; do
+              test "$path" != "$workflow"
+            done
+          fi
+
           action_key="u""ses"
           mapfile -t actual_action_lines < <(
             grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" "$workflow" | cut -d: -f2-
@@ -182,10 +205,26 @@ jobs:
                   raise SystemExit("structural validator accepted an unapproved Action reference")
           PY
 
-      - name: Prove canonical K4-R1 inputs and exact shared exports
+      - name: Prove canonical K4-R1 and K4-R2 artifacts and required shared exports
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$K4_R2_CANONICAL_IMPLEMENTATION_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_CANONICAL_IMPLEMENTATION_SHA"
+          test "$(git rev-parse "$K4_R2_CANONICAL_IMPLEMENTATION_SHA^{tree}")" = "$K4_R2_CANONICAL_IMPLEMENTATION_TREE"
+
+          canonical_paths=(
+            "schema/k4-r2-mcp-catalog-evidence.schema.json:$K4_R2_CANONICAL_SCHEMA_BLOB"
+            "packages/kodac-runtime/src/compatibility/mcp-catalog.ts:$K4_R2_CANONICAL_SOURCE_BLOB"
+            "packages/kodac-runtime/test/k4-r2-mcp-catalog-evidence.test.ts:$K4_R2_CANONICAL_TEST_BLOB"
+          )
+          for entry in "${canonical_paths[@]}"; do
+            path="${entry%%:*}"
+            expected_blob="${entry##*:}"
+            test "$(git rev-parse "$K4_R2_CANONICAL_IMPLEMENTATION_SHA:$path")" = "$expected_blob"
+            test "$(git rev-parse "HEAD:$path")" = "$expected_blob"
+          done
+
           test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/contracts.ts")" = "$K4_R2_CANONICAL_K4_R1_CONTRACTS_BLOB"
           test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/registry.ts")" = "$K4_R2_CANONICAL_K4_R1_REGISTRY_BLOB"
           index="packages/kodac-runtime/src/index.ts"
