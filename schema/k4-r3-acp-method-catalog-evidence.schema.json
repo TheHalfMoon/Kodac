@@ -1,0 +1,293 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k4-r3-acp-method-catalog-evidence.schema.json",
+  "title": "Kodac K4-R3 Pinned ACP v2 Method Catalog Evidence",
+  "$comment": "Runtime validation is authoritative for hostile JavaScript values, UTF-8 identifier bounds, canonical ordering, deterministic metadata and identity recomputation, exact K4-R1 tuple correlation, and immutable snapshot capture.",
+  "oneOf": [
+    { "$ref": "#/$defs/input" },
+    { "$ref": "#/$defs/catalog" }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "standardPinIdentity": {
+      "const": "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec"
+    },
+    "extensionId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$"
+    },
+    "capabilityId": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 160,
+      "pattern": "^[a-z][a-z0-9_-]*(?:[./:][a-z][a-z0-9_-]*)+$"
+    },
+    "externalName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^\\u0000]+$",
+      "$comment": "Runtime additionally enforces the canonical UTF-8 byte and code-point bounds."
+    },
+    "objectKind": {
+      "enum": ["ACP_AGENT_METHOD", "ACP_CLIENT_METHOD", "ACP_NOTIFICATION"]
+    },
+    "messageKind": {
+      "enum": ["REQUEST", "NOTIFICATION"]
+    },
+    "direction": {
+      "enum": ["CLIENT_TO_AGENT", "AGENT_TO_CLIENT", "BIDIRECTIONAL"]
+    },
+    "sourceEvidence": {
+      "const": {
+        "repository": "agentclientprotocol/agent-client-protocol",
+        "sourceCommit": "62c74ac119ec3296809496482440afca69926ce9",
+        "sourceTree": "130153620c8e8a7d2934b19bd3442566bee7a6ea",
+        "specificationRevision": "v2",
+        "standardPinIdentity": "b75626aa97bed5c4208200c9b4469d5ebc0ca35cb2a9fa1b0a7341ec4dadfdec",
+        "sources": [
+          { "path": "docs/protocol/v2/overview.mdx", "blob": "4d5e4012f9ccd6b9a3e8ad3e2d3dab55cdbe2b44" },
+          { "path": "LICENSE", "blob": "1de02305f81f6dc087b6229a1d86a31774d2fa31" },
+          { "path": "schema/v2/meta.json", "blob": "ad2cfd937a0722893fa577e4ff96df5c79cdc23c" },
+          { "path": "schema/v2/schema.json", "blob": "021d16481f3d833eff017e5128b9fe8927d45b05" },
+          { "path": "docs/protocol/v2/initialization.mdx", "blob": "b124fdfeed5292b98fa2cd16b22624c3bcd67680" },
+          { "path": "docs/protocol/v2/cancellation.mdx", "blob": "00795cbfb29b1bf9407541ed817f2bca392fbb5f" },
+          { "path": "docs/protocol/v2/extensibility.mdx", "blob": "370909fd5ce0d30503ce32451c943ae0aa3e2a9a" }
+        ]
+      }
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["standardPinIdentity", "extensionId", "descriptorIdentity"],
+      "properties": {
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "unboundEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "externalName", "objectKind", "messageKind", "direction", "externalMetadataSha256",
+        "bindingState", "entryIdentity"
+      ],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "objectKind": { "$ref": "#/$defs/objectKind" },
+        "messageKind": { "$ref": "#/$defs/messageKind" },
+        "direction": { "$ref": "#/$defs/direction" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "const": "UNBOUND" },
+        "entryIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "staleEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "externalName", "objectKind", "messageKind", "direction", "externalMetadataSha256",
+        "bindingState", "bindingIdentity", "entryIdentity"
+      ],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "objectKind": { "$ref": "#/$defs/objectKind" },
+        "messageKind": { "$ref": "#/$defs/messageKind" },
+        "direction": { "$ref": "#/$defs/direction" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "const": "STALE" },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "entryIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "currentEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "externalName", "objectKind", "messageKind", "direction", "externalMetadataSha256",
+        "bindingState", "bindingIdentity", "disposition", "normalizedCapabilityIds", "entryIdentity"
+      ],
+      "properties": {
+        "externalName": { "$ref": "#/$defs/externalName" },
+        "objectKind": { "$ref": "#/$defs/objectKind" },
+        "messageKind": { "$ref": "#/$defs/messageKind" },
+        "direction": { "$ref": "#/$defs/direction" },
+        "externalMetadataSha256": { "$ref": "#/$defs/sha256" },
+        "bindingState": { "const": "CURRENT" },
+        "bindingIdentity": { "$ref": "#/$defs/sha256" },
+        "disposition": { "enum": ["UNRESOLVED", "SINGLE", "COMPOSITE"] },
+        "normalizedCapabilityIds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/capabilityId" }
+        },
+        "entryIdentity": { "$ref": "#/$defs/sha256" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "disposition": { "const": "UNRESOLVED" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "maxItems": 0 } } }
+        },
+        {
+          "if": { "properties": { "disposition": { "const": "SINGLE" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "minItems": 1, "maxItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "disposition": { "const": "COMPOSITE" } }, "required": ["disposition"] },
+          "then": { "properties": { "normalizedCapabilityIds": { "minItems": 2, "maxItems": 16 } } }
+        }
+      ]
+    },
+    "entry": {
+      "oneOf": [
+        { "$ref": "#/$defs/unboundEntry" },
+        { "$ref": "#/$defs/currentEntry" },
+        { "$ref": "#/$defs/staleEntry" }
+      ]
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version", "standardPinIdentity", "sourceEvidence", "extensionId", "descriptorIdentity",
+        "bindingSnapshotIdentity", "entries", "catalogIdentity"
+      ],
+      "properties": {
+        "version": { "const": "k4-r3-acp-method-catalog-evidence-v1" },
+        "standardPinIdentity": { "$ref": "#/$defs/standardPinIdentity" },
+        "sourceEvidence": { "$ref": "#/$defs/sourceEvidence" },
+        "extensionId": { "$ref": "#/$defs/extensionId" },
+        "descriptorIdentity": { "$ref": "#/$defs/sha256" },
+        "bindingSnapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "entries": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "prefixItems": [
+            { "$ref": "#/$defs/methodCancelRequest" },
+            { "$ref": "#/$defs/methodAuthLogin" },
+            { "$ref": "#/$defs/methodAuthLogout" },
+            { "$ref": "#/$defs/methodElicitationComplete" },
+            { "$ref": "#/$defs/methodElicitationCreate" },
+            { "$ref": "#/$defs/methodInitialize" },
+            { "$ref": "#/$defs/methodSessionCancel" },
+            { "$ref": "#/$defs/methodSessionClose" },
+            { "$ref": "#/$defs/methodSessionDelete" },
+            { "$ref": "#/$defs/methodSessionList" },
+            { "$ref": "#/$defs/methodSessionNew" },
+            { "$ref": "#/$defs/methodSessionPrompt" },
+            { "$ref": "#/$defs/methodSessionRequestPermission" },
+            { "$ref": "#/$defs/methodSessionResume" },
+            { "$ref": "#/$defs/methodSessionSetConfigOption" },
+            { "$ref": "#/$defs/methodSessionUpdate" }
+          ],
+          "items": false
+        },
+        "catalogIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "methodCancelRequest": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "$/cancel_request" }, "objectKind": { "const": "ACP_NOTIFICATION" }, "messageKind": { "const": "NOTIFICATION" }, "direction": { "const": "BIDIRECTIONAL" }, "externalMetadataSha256": { "const": "444c94977c772fbfea5c4af5ee591f28c713d157f41ab8618da05d1e39a4e936" } } }
+      ]
+    },
+    "methodAuthLogin": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "auth/login" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "a2232f199bf2b4897d1632765d5c9f0c0c9dad1f9f8a91eae26cc67ee73f24d6" } } }
+      ]
+    },
+    "methodAuthLogout": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "auth/logout" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "7a4b991057a20da512285c9dcdfd93f7903eb2c5e18a55b6f348384ac35bfe81" } } }
+      ]
+    },
+    "methodElicitationComplete": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "elicitation/complete" }, "objectKind": { "const": "ACP_NOTIFICATION" }, "messageKind": { "const": "NOTIFICATION" }, "direction": { "const": "AGENT_TO_CLIENT" }, "externalMetadataSha256": { "const": "c952065c659fe7c7875277933abbc25ce8f566eb1c612f65a387c37574df3c09" } } }
+      ]
+    },
+    "methodElicitationCreate": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "elicitation/create" }, "objectKind": { "const": "ACP_CLIENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "AGENT_TO_CLIENT" }, "externalMetadataSha256": { "const": "264f00fa92a4b42e6fce6e7d2a3a56e75ee38ad62313bfbf8e090b091dfea505" } } }
+      ]
+    },
+    "methodInitialize": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "initialize" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "de2c10959eeb01bfe3d07d11e8054b9fff7cae164c23d16f22cbbafdafee41bb" } } }
+      ]
+    },
+    "methodSessionCancel": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/cancel" }, "objectKind": { "const": "ACP_NOTIFICATION" }, "messageKind": { "const": "NOTIFICATION" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "d92103a93b02e55a6dac8da89871e965199714de56716d0d81a34a0c236cdb75" } } }
+      ]
+    },
+    "methodSessionClose": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/close" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "4b9230e1d2728cb485d68b07715fd937542f6b02c20198978c89087d11817c1c" } } }
+      ]
+    },
+    "methodSessionDelete": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/delete" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "797d4efecc21204190d6a308f146aa8ccca924003487c0b72384f43fa7620d0d" } } }
+      ]
+    },
+    "methodSessionList": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/list" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "4c12f036270dc9473f9d116582ecfd8d9e5887eb9e50e4437c399970db2be793" } } }
+      ]
+    },
+    "methodSessionNew": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/new" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "24fac159343b98887387890509afd18f4d467bbb1986afe0effcbd57ab1a59c2" } } }
+      ]
+    },
+    "methodSessionPrompt": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/prompt" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "8fe52bf554b13a8a20f4924347f5a0523899c1e51edb380c708da156da77bdd4" } } }
+      ]
+    },
+    "methodSessionRequestPermission": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/request_permission" }, "objectKind": { "const": "ACP_CLIENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "AGENT_TO_CLIENT" }, "externalMetadataSha256": { "const": "c15f6b31a5939c1d6c46869ce1f6869154713769d3149505e3f4bfc435304d06" } } }
+      ]
+    },
+    "methodSessionResume": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/resume" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "809b6ec7f68efc9dfa3e31188c547e0fa35b407ab5e6d35da24601f840b8121d" } } }
+      ]
+    },
+    "methodSessionSetConfigOption": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/set_config_option" }, "objectKind": { "const": "ACP_AGENT_METHOD" }, "messageKind": { "const": "REQUEST" }, "direction": { "const": "CLIENT_TO_AGENT" }, "externalMetadataSha256": { "const": "8da02bea5228d1c8f45603cfd057b3c8f2b14736bbf67f60b6cb289c468ff978" } } }
+      ]
+    },
+    "methodSessionUpdate": {
+      "allOf": [
+        { "$ref": "#/$defs/entry" },
+        { "properties": { "externalName": { "const": "session/update" }, "objectKind": { "const": "ACP_NOTIFICATION" }, "messageKind": { "const": "NOTIFICATION" }, "direction": { "const": "AGENT_TO_CLIENT" }, "externalMetadataSha256": { "const": "5765d7e8d5a9e6830733dbc8de23248d0d8d578a342013d70a1cbd7e81f3425b" } } }
+      ]
+    }
+  }
+}
