@@ -29,6 +29,7 @@ jobs:
       K4_R1_CANONICAL_TEST_BLOB: "4b4d2ee782417fe56c2b3823ab0bdbd8df6057fc"
       K4_R1_HARDENING_BASELINE_SHA: "8f7e7f6faf6478edb08dfbf4ade97cc71b6e35d2"
       K4_R1_HARDENING_BRANCH: "codex/k4-r1-canonical-regression-hardening"
+      K4_R1_HARDENING_PULL_REQUEST: "175"
       PYTHONDONTWRITEBYTECODE: "1"
 
     steps:
@@ -59,6 +60,7 @@ jobs:
           K4_R1_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           K4_R1_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
           K4_R1_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K4_R1_PR_NUMBER: ${{ github.event.pull_request.number }}
           K4_R1_PR_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
@@ -72,6 +74,7 @@ jobs:
           workflow=".github/workflows/k4-r1-compatibility-normalization.yml"
           if test "$K4_R1_PR_HEAD_REF" = "$K4_R1_HARDENING_BRANCH"; then
             test "$K4_R1_PR_HEAD_REPOSITORY" = "$K4_R1_PR_REPOSITORY"
+            test "$K4_R1_PR_NUMBER" = "$K4_R1_HARDENING_PULL_REQUEST"
             test "$K4_R1_PR_BASE_SHA" = "$K4_R1_HARDENING_BASELINE_SHA"
             git fetch --no-tags --depth=1 origin "$K4_R1_HARDENING_BASELINE_SHA"
             test "$(git rev-parse FETCH_HEAD)" = "$K4_R1_HARDENING_BASELINE_SHA"
