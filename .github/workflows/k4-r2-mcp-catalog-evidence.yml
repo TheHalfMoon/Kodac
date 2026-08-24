@@ -1,0 +1,336 @@
+name: k4-r2-mcp-catalog-evidence
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k4-r2-mcp-catalog-evidence.yml"
+      - "schema/k4-r2-mcp-catalog-evidence.schema.json"
+      - "packages/kodac-runtime/src/compatibility/mcp-catalog.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k4-r2-mcp-catalog-evidence.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  mcp-catalog-evidence:
+    name: k4-r2-mcp-catalog-evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      K4_R2_IMPLEMENTATION_BASELINE_SHA: "78d71717e14d51c6efc49b5b0906a564d2459d7a"
+      K4_R2_IMPLEMENTATION_BASELINE_TREE: "7a7f06d7859bf5325568e21260282c39d702fcd8"
+      K4_R2_IMPLEMENTATION_BRANCH: "codex/k4-r2-mcp-catalog-evidence"
+      K4_R2_IMPLEMENTATION_PULL_REQUEST: "176"
+      K4_R2_MCP_STANDARD_PIN_IDENTITY: "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a"
+      K4_R2_CANONICAL_K4_R1_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
+      K4_R2_CANONICAL_K4_R1_REGISTRY_BLOB: "4b3e6d7247fe02e6ec875e3f599e263afd15be96"
+      K4_R2_CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact PR head and five-path implementation scope
+        shell: bash
+        env:
+          K4_R2_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K4_R2_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K4_R2_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K4_R2_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K4_R2_PR_NUMBER: ${{ github.event.pull_request.number }}
+          K4_R2_PR_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K4_R2_PR_HEAD_SHA"
+          test "$K4_R2_PR_HEAD_REPOSITORY" = "$K4_R2_PR_REPOSITORY"
+          test "$K4_R2_PR_NUMBER" = "$K4_R2_IMPLEMENTATION_PULL_REQUEST"
+          test "$K4_R2_PR_HEAD_REF" = "$K4_R2_IMPLEMENTATION_BRANCH"
+          test "$K4_R2_PR_BASE_SHA" = "$K4_R2_IMPLEMENTATION_BASELINE_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r2-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r2-diff-before"
+          test ! -s "$RUNNER_TEMP/k4-r2-status-before"
+          test ! -s "$RUNNER_TEMP/k4-r2-diff-before"
+
+          git fetch --no-tags --depth=1 origin "$K4_R2_IMPLEMENTATION_BASELINE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K4_R2_IMPLEMENTATION_BASELINE_SHA"
+          test "$(git rev-parse "$K4_R2_IMPLEMENTATION_BASELINE_SHA^{tree}")" = "$K4_R2_IMPLEMENTATION_BASELINE_TREE"
+          mapfile -t changed < <(git diff --name-only "$K4_R2_IMPLEMENTATION_BASELINE_SHA" HEAD | LC_ALL=C sort)
+          expected_paths=(
+            ".github/workflows/k4-r2-mcp-catalog-evidence.yml"
+            "packages/kodac-runtime/src/compatibility/mcp-catalog.ts"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/test/k4-r2-mcp-catalog-evidence.test.ts"
+            "schema/k4-r2-mcp-catalog-evidence.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected_paths[@]}"
+          for index in "${!expected_paths[@]}"; do
+            test "${changed[$index]}" = "${expected_paths[$index]}"
+          done
+
+          workflow=".github/workflows/k4-r2-mcp-catalog-evidence.yml"
+          action_key="u""ses"
+          mapfile -t actual_action_lines < <(
+            grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" "$workflow" | cut -d: -f2-
+          )
+          expected_action_lines=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#actual_action_lines[@]}" -eq "${#expected_action_lines[@]}"
+          for index in "${!expected_action_lines[@]}"; do
+            test "${actual_action_lines[$index]}" = "${expected_action_lines[$index]}"
+          done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          enable-cache: false
+
+      - name: Sync the locked validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r2-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Structurally attest every immutable Action reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r2-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          from pathlib import Path
+
+          import yaml
+
+          workflow = Path(".github/workflows/k4-r2-mcp-catalog-evidence.yml")
+          document = yaml.safe_load(workflow.read_text(encoding="utf-8"))
+          action_key = "u" + "ses"
+          expected = [
+              (
+                  ("jobs", "mcp-catalog-evidence", "steps", 0, action_key),
+                  "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+              ),
+              (
+                  ("jobs", "mcp-catalog-evidence", "steps", 2, action_key),
+                  "actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020",
+              ),
+              (
+                  ("jobs", "mcp-catalog-evidence", "steps", 3, action_key),
+                  "astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e",
+              ),
+          ]
+
+          def action_references(value, path=(), active=None):
+              if active is None:
+                  active = set()
+              if isinstance(value, (dict, list)):
+                  identity = id(value)
+                  if identity in active:
+                      raise ValueError("YAML alias cycle is prohibited")
+                  active.add(identity)
+                  try:
+                      if isinstance(value, dict):
+                          for key, nested in value.items():
+                              nested_path = (*path, key)
+                              if key == action_key:
+                                  yield nested_path, nested
+                              yield from action_references(nested, nested_path, active)
+                      else:
+                          for index, nested in enumerate(value):
+                              yield from action_references(nested, (*path, index), active)
+                  finally:
+                      active.remove(identity)
+
+          def validate(candidate):
+              if not isinstance(candidate, dict):
+                  raise ValueError("workflow must be a mapping")
+              jobs = candidate.get("jobs")
+              if not isinstance(jobs, dict) or set(jobs) != {"mcp-catalog-evidence"}:
+                  raise ValueError("workflow must contain exactly the canonical K4-R2 validation job")
+              actual = list(action_references(candidate))
+              if actual != expected:
+                  raise ValueError(f"unexpected Action or reusable-workflow references: {actual!r}")
+
+          validate(document)
+          hidden_job = copy.deepcopy(document)
+          hidden_job["jobs"]["unapproved"] = {
+              action_key: "example/unapproved/.github/workflows/check.yml@deadbeef"
+          }
+          extra_step = copy.deepcopy(document)
+          extra_step["jobs"]["mcp-catalog-evidence"]["steps"].append(
+              {action_key: "example/unapproved@deadbeef"}
+          )
+          for candidate in (hidden_job, extra_step):
+              try:
+                  validate(candidate)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit("structural validator accepted an unapproved Action reference")
+          PY
+
+      - name: Prove canonical K4-R1 inputs and exact shared exports
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/contracts.ts")" = "$K4_R2_CANONICAL_K4_R1_CONTRACTS_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/compatibility/registry.ts")" = "$K4_R2_CANONICAL_K4_R1_REGISTRY_BLOB"
+          index="packages/kodac-runtime/src/index.ts"
+          test "$(grep -Fxc 'export * from "./compatibility/contracts.ts"' "$index")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/registry.ts"' "$index")" -eq 1
+          test "$(grep -Fxc 'export * from "./compatibility/mcp-catalog.ts"' "$index")" -eq 1
+
+      - name: Prove the bounded deterministic K4-R2 production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_path="packages/kodac-runtime/src/compatibility/mcp-catalog.ts"
+          schema_path="schema/k4-r2-mcp-catalog-evidence.schema.json"
+          test -f "$source_path"
+          test -f "$schema_path"
+
+          if grep -nE \
+            'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|os)|ExecutionGateway|Trust Kernel|WorkspaceFileSystem|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function' \
+            "$source_path"; then
+            echo "K4-R2 MCP catalog purity/determinism boundary violation" >&2
+            exit 1
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const sourcePath = "packages/kodac-runtime/src/compatibility/mcp-catalog.ts"
+          const source = readFileSync(sourcePath, "utf8")
+          const specifiers = [
+            ...source.matchAll(/\bfrom\s+["']([^"']+)["']/g),
+            ...source.matchAll(/\bimport\s+["']([^"']+)["']/g),
+          ].map((match) => match[1])
+          const expected = ["node:crypto", "node:util", "./contracts.ts", "./registry.ts"]
+          if (JSON.stringify(specifiers) !== JSON.stringify(expected)) {
+            throw new Error(`K4-R2 import surface mismatch: ${specifiers.join(", ")}`)
+          }
+          if (/\bimport\s*\(/.test(source)) throw new Error("Dynamic import is prohibited in K4-R2")
+          const utilImports = [...source.matchAll(/import\s+\{\s*types\s+as\s+utilTypes\s*\}\s+from\s+["']node:util["']/g)]
+          const utilMembers = [...source.matchAll(/\butilTypes\.([A-Za-z_$][A-Za-z0-9_$]*)/g)]
+          const utilReferences = [...source.matchAll(/\butilTypes\b/g)]
+          if (
+            utilImports.length !== 1
+            || utilMembers.length === 0
+            || utilMembers.some((match) => match[1] !== "isProxy")
+            || utilReferences.length !== utilMembers.length + 1
+          ) throw new Error("K4-R2 node:util use is limited to utilTypes.isProxy")
+          const cryptoImports = source.split(/\r?\n/).filter((line) => /from\s+["']node:crypto["']/.test(line))
+          if (JSON.stringify(cryptoImports) !== JSON.stringify(['import { createHash } from "node:crypto"'])) {
+            throw new Error("K4-R2 node:crypto use is limited to createHash")
+          }
+          JSON.parse(readFileSync("schema/k4-r2-mcp-catalog-evidence.schema.json", "utf8"))
+          NODE
+
+      - name: Validate Draft 2020-12 schema and state-dependent evidence shapes
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r2-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k4-r2-mcp-catalog-evidence.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          valid_input = {
+              "standardPinIdentity": "b8432ed6198f8e25c5b1d0ef50bab01b06909a77f15f831ff64573a7d4fa312a",
+              "extensionId": "kodac/mcp-catalog-adapter",
+              "descriptorIdentity": "a" * 64,
+              "objectKind": "MCP_TOOL",
+              "requestCursorSha256": None,
+              "nextCursorSha256": None,
+              "ttlMs": 0,
+              "cacheScope": "private",
+              "responseMetadataSha256": "b" * 64,
+              "declarations": [],
+          }
+          validator.validate(valid_input)
+          valid_page = {
+              "version": "k4-r2-mcp-catalog-evidence-v1",
+              **{key: value for key, value in valid_input.items() if key != "declarations"},
+              "pageShape": "SINGLE_PAGE_COMPLETE",
+              "bindingSnapshotIdentity": "c" * 64,
+              "entries": [
+                  {
+                      "externalName": "repo.current",
+                      "externalMetadataSha256": "d" * 64,
+                      "bindingState": "CURRENT",
+                      "bindingIdentity": "e" * 64,
+                      "disposition": "SINGLE",
+                      "normalizedCapabilityIds": ["compat/read"],
+                      "entryIdentity": "f" * 64,
+                  },
+                  {
+                      "externalName": "repo.stale",
+                      "externalMetadataSha256": "1" * 64,
+                      "bindingState": "STALE",
+                      "bindingIdentity": "2" * 64,
+                      "entryIdentity": "3" * 64,
+                  },
+                  {
+                      "externalName": "repo.unbound",
+                      "externalMetadataSha256": "4" * 64,
+                      "bindingState": "UNBOUND",
+                      "entryIdentity": "5" * 64,
+                  },
+              ],
+              "pageIdentity": "6" * 64,
+          }
+          validator.validate(valid_page)
+
+          raw_cursor = {**valid_input, "requestCursor": "opaque"}
+          if not list(validator.iter_errors(raw_cursor)):
+              raise SystemExit("schema accepted a raw cursor")
+          wrong_shape = {**valid_page, "pageShape": "PAGINATED_PAGE"}
+          if not list(validator.iter_errors(wrong_shape)):
+              raise SystemExit("schema accepted a false paginated-page claim")
+          stale_capabilities = copy.deepcopy(valid_page)
+          stale_capabilities["entries"][1]["normalizedCapabilityIds"] = ["compat/read"]
+          if not list(validator.iter_errors(stale_capabilities)):
+              raise SystemExit("schema accepted normalized capabilities on STALE evidence")
+          PY
+
+      - name: Run Python Ruff canonical provenance and full runtime gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k4-r2-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$K4_R2_CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+          node --experimental-strip-types --check packages/kodac-runtime/src/compatibility/mcp-catalog.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+
+      - name: Attest checkout unchanged after K4-R2 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k4-r2-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k4-r2-diff-after"
+          cmp "$RUNNER_TEMP/k4-r2-status-before" "$RUNNER_TEMP/k4-r2-status-after"
+          cmp "$RUNNER_TEMP/k4-r2-diff-before" "$RUNNER_TEMP/k4-r2-diff-after"
+          test ! -s "$RUNNER_TEMP/k4-r2-status-after"
+          test ! -s "$RUNNER_TEMP/k4-r2-diff-after"
