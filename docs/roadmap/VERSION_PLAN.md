@@ -33,7 +33,7 @@ Current state:
 | KRI-R1 through KRI-R4 | CANONICAL / COMPLETE FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES |
 | KRI-R5+ | NOT AUTHORIZED |
 | K4 | DEFINED / IN PROGRESS / NOT CLOSED |
-| K4-R1 | EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL |
+| K4-R1 | CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE |
 | K4-R2+ | NOT AUTHORIZED |
 | K5-K7 | PROPOSED / NOT AUTHORIZED |
 
@@ -89,8 +89,7 @@ K3 closed for that accepted engineering surface
 != a permanent graph/index/storage backend
 
 K4 defined
-K4-R1 exact data-only normalization implementation authorized
-!= K4-R1 canonical
+K4-R1 canonical for its exact data-only normalization scope
 != K4 closed
 != K4-R2+ authorized
 != MCP / ACP / Agent Skills execution authority
@@ -132,7 +131,7 @@ K3-R1 THROUGH K3-R6: CANONICAL FOR THEIR AUTHORIZED SCOPES
 K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 K4: DEFINED / IN PROGRESS / NOT CLOSED
-K4-R1: EXACT DATA-ONLY STANDARD-PIN AND CAPABILITY-NORMALIZATION IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
+K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
 K4-R2+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -215,3 +214,5 @@ The narrow `node:util` Proxy-rejection, structural-input, adjacency-index, and s
 The bounded K3 closure evidence, canonical implementation ledger, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.
 
 The K4 definition, current official standard pins, exact K4-R1 implementation allowlist, and non-executable normalization boundaries are recorded in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
+
+The exact K4-R1 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R1_COMPATIBILITY_NORMALIZATION_CANONICAL_EVIDENCE_2026-08-24.md`.
