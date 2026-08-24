@@ -16,7 +16,7 @@ K2    — trusted runtime spine
 K3    — evidence-backed repository intelligence & context engine
 KRI-P0 — Reviewer Intelligence planning / contract design authority
 KRI-R1 through KRI-R4 — separately authorized bounded Reviewer Intelligence slices
-K4    — ecosystem compatibility & capability registry; canonical R1 plus exact R2 gate only as separately authorized
+K4    — ecosystem compatibility & capability registry; canonical R1 plus gate-controlled R2, which becomes canonical only after its exact evidence merge gate passes
 K5+   — later milestones only when separately defined/authorized
 ```
 
@@ -34,8 +34,8 @@ Current state:
 | KRI-R5+ | NOT AUTHORIZED |
 | K4 | DEFINED / IN PROGRESS / NOT CLOSED |
 | K4-R1 | CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE |
-| K4-R2 | EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL |
-| K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING | EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE |
+| K4-R2 | CANONICAL / COMPLETE IFF ITS EXACT EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE |
+| K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING | CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE |
 | K4-R3+ | NOT AUTHORIZED |
 | K5-K7 | PROPOSED / NOT AUTHORIZED |
 
@@ -92,10 +92,9 @@ K3 closed for that accepted engineering surface
 
 K4 defined
 K4-R1 canonical for its exact data-only normalization scope
-K4-R2 exact caller-materialized data-only MCP catalog-evidence implementation authorized
-K4-R2 exact preimplementation K4-R1 canonical-regression workflow hardening required before source
+K4-R2 canonical for its exact caller-materialized data-only MCP catalog-evidence scope
+K4-R2 exact preimplementation K4-R1 canonical-regression workflow hardening canonical for its one-path scope
 != K4 closed
-!= K4-R2 canonical
 != K4-R3+ authorized
 != MCP / ACP / Agent Skills execution authority
 != skill allowed-tools approved by Kodac
@@ -137,8 +136,8 @@ K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 K4: DEFINED / IN PROGRESS / NOT CLOSED
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
+K4-R2: CANONICAL / COMPLETE IFF ITS EXACT EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
 K4-R3+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -229,3 +228,5 @@ The exact K4-R1 implementation ledger, qualified identity, review evidence, proo
 The exact K4-R2 caller-materialized MCP catalog-evidence contract, primary-source basis, implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
 The exact preimplementation shared-export CI-gate conflict, one-path K4-R1 canonical-regression hardening, self-canonicalizing merge proof, and unchanged K4-R2 five-path allowlist are recorded in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
+
+The exact K4-R2 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.

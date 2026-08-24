@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document records current engineering milestone status after canonical adoption and bounded closeout of K3-R1 through K3-R6, definition of K4, canonical adoption of its exact R1 data-only normalization gate, authorization of the exact R2 caller-materialized MCP catalog-evidence gate, KRI-P0 planning authority, and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. It does not authorize public release or implementation beyond an explicitly approved gate.
+This document records current engineering milestone status after canonical adoption and bounded closeout of K3-R1 through K3-R6, definition of K4, canonical adoption of its exact R1 data-only normalization and workflow-hardening gates, and gate-controlled adoption of its exact R2 caller-materialized MCP catalog evidence, plus KRI-P0 planning authority and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. K4-R2 is a canonicalization candidate before its evidence merge gate passes and canonical/complete for its bounded scope only afterward. This document does not authorize public release or implementation beyond an explicitly approved gate.
 
 ## K0/K1 — CLOSED
 
@@ -102,8 +102,8 @@ Current gate:
 
 ```text
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
+K4-R2: CANONICAL / COMPLETE IFF ITS EXACT EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
 K4-R3+: NOT AUTHORIZED
 K4: NOT CLOSED
 ```
@@ -118,7 +118,9 @@ The canonical implementation ledger, qualified identity, review evidence, proof 
 
 K4-R2 may correlate only already-materialized MCP tool/resource/prompt list-page digests with one exact K4-R1 binding snapshot. It adds no JSON-RPC, client/server, transport, discovery call, cursor traversal, caching, resource read, prompt retrieval, invocation, effect, or authority path. Its exact contract and five-path implementation allowlist are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
-Before K4-R2 source work, the inherited K4-R1 workflow must be hardened through the exact one-path canonical-regression gate in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`. That prerequisite preserves the K4-R1 artifacts and shared exports without expanding the K4-R2 five-path allowlist.
+Before K4-R2 source work, the inherited K4-R1 workflow was canonically hardened through the exact one-path, self-canonicalizing regression gate in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`. PR #175 satisfied that gate and its post-merge proof independently of this K4-R2 evidence candidate. That canonical prerequisite preserves the K4-R1 artifacts and shared exports without expanding the K4-R2 five-path allowlist.
+
+The exact K4-R2 implementation ledger, qualification, review, conditional canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 ## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
@@ -168,8 +170,8 @@ K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 K4: DEFINED / IN PROGRESS / NOT CLOSED
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
+K4-R2: CANONICAL / COMPLETE IFF ITS EXACT EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
 K4-R3+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY

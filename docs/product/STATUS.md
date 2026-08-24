@@ -13,7 +13,7 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, canonical K4-R1 compatibility normalization, and the exact bounded K4-R2 caller-materialized MCP catalog-evidence authorization:
+Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, canonical K4-R1 compatibility normalization and workflow hardening, and K4-R2 authority controlled by its exact evidence merge gate:
 
 ```text
 K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -22,8 +22,8 @@ K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
 K4: DEFINED / IN PROGRESS / NOT CLOSED
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
+K4-R2: CANONICAL / COMPLETE IFF ITS EXACT EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
 K4-R3+: NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
@@ -48,8 +48,8 @@ Later engineering milestones remain:
 ```text
 K4: DEFINED / IN PROGRESS / NOT CLOSED
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: EXACT CALLER-MATERIALIZED DATA-ONLY MCP CATALOG-EVIDENCE IMPLEMENTATION AUTHORIZED / NOT YET CANONICAL
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: EXACT ONE-PATH IMPLEMENTATION AUTHORIZED / REQUIRED BEFORE K4-R2 SOURCE
+K4-R2: CANONICAL / COMPLETE IFF ITS EXACT EVIDENCE MERGE GATE PASSES; OTHERWISE CANONICALIZATION CANDIDATE
+K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
 K4-R3+: NOT AUTHORIZED
 K5: PROPOSED / NOT AUTHORIZED
 K6: PROPOSED / NOT AUTHORIZED
@@ -117,3 +117,5 @@ The exact K4-R1 implementation ledger, qualified identity, review evidence, proo
 The exact K4-R2 caller-materialized MCP catalog-evidence contract, primary-source basis, implementation allowlist, required proofs, and non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
 The inherited shared-export CI-gate conflict, exact one-path K4-R1 canonical-regression workflow hardening, self-canonicalizing merge proof, and unchanged K4-R2 five-path allowlist are recorded in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
+
+The exact K4-R2 implementation ledger, qualified identity, review evidence, proof matrix, conditional canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
