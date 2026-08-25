@@ -4,6 +4,8 @@
 
 This document records current engineering milestone status after canonical closeout of K0/K1, K2, K3-R1 through K3-R6, and the bounded K4-R1 through K4-R5 data-only ecosystem-compatibility surface, plus KRI-P0 planning authority and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. This document does not authorize public release or implementation beyond an explicitly approved gate.
 
+**K4 closeout-candidate rule:** every K4 `CLOSED` statement in this candidate is conditional and becomes canonical only after the exact-head closeout gate, expected-head merge, and required post-merge ordered-parent/tree/protected-main verification in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md` all pass. Until then, canonical K4 remains `CLOSEOUT EVIDENCE AUTHORIZED / NOT YET CLOSED` under `docs/planning/KODAC_K4_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-25.md`; if any gate fails, the candidate closed-state text has no canonical closeout authority.
+
 ## K0/K1 — CLOSED
 
 Theme:

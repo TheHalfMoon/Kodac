@@ -13,7 +13,9 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, and canonical bounded closeout of K4-R1 through K4-R5 data-only ecosystem-compatibility evidence:
+**K4 closeout-candidate rule:** every `K4: CLOSED` or equivalent K4-closed statement introduced by the current bounded closeout candidate is conditional candidate state only. It becomes canonical only after the exact-head closeout gate, expected-head merge, and required post-merge ordered-parent/tree/protected-main verification in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md` all pass. Until then, canonical K4 remains `CLOSEOUT EVIDENCE AUTHORIZED / NOT YET CLOSED` under `docs/planning/KODAC_K4_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-25.md`. If any gate fails, the candidate `CLOSED` text has no canonical closeout authority.
+
+Current authority boundaries are reconciled to canonical closeout of the bounded K3-R1 through K3-R6 engineering milestone, the bounded KRI-R1 through KRI-R4 states, and the conditional bounded closeout candidate for K4-R1 through K4-R5 data-only ecosystem-compatibility evidence:
 
 ```text
 K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -47,7 +49,7 @@ BRAND LAUNCH: NOT AUTHORIZED
 KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
 ```
 
-K4 closure is bounded to the accepted data-only R1-R5 evidence surface. It does not claim MCP/ACP transport, Agent Skill installation/activation/execution, trust qualification, effect grants, persistent registry infrastructure, or completion of every future executable direction in ADR-0007. Those remain separately authorizable future work.
+K4 closure is bounded to the accepted data-only R1-R5 evidence surface. This bounded closeout does **not** grant MCP/ACP transport, invocation, or execution; Agent Skill package discovery/read/parsing/install/activation/routing/execution; trust qualification; effect grants; persistent marketplace/registry behavior; or completion of every ADR-0007 direction. Those capabilities remain separately authorizable future work and are not granted by this bounded K4 closeout.
 
 Later engineering milestones remain:
 
@@ -126,15 +128,15 @@ The exact K4-R2 caller-materialized MCP catalog-evidence contract, primary-sourc
 
 The inherited shared-export CI-gate conflict, exact one-path K4-R1 canonical-regression workflow hardening, self-canonicalizing merge proof, and unchanged K4-R2 five-path allowlist are recorded in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
 
-The exact K4-R2 implementation ledger, qualified identity, review evidence, proof matrix, conditional canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R2 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact pinned ACP v2 primary-source basis, 16-method catalog contract, ordered one-path K4-R2 workflow prerequisite, five-path K4-R3 implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
-The exact K4-R2 prerequisite-hardening identity, K4-R3 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R2 prerequisite-hardening identity, K4-R3 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact K4-R4 caller-materialized portable metadata and redacted content/provenance evidence contract, Agent Skills primary-source basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
-The exact K4-R4 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R4 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact K4-R5 caller-materialized governance-claim evidence contract, K4-R4 dependency basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 

@@ -6,6 +6,8 @@ Kodac engineering milestones and public product versions are separate governance
 
 This document removes the obsolete Kernux observability version promises from current roadmap authority. The earlier content remains recoverable from repository history and the pre-reconstitution canonical base.
 
+**K4 closeout-candidate rule:** every K4 `CLOSED` statement in this candidate is conditional and becomes canonical only after the exact-head closeout gate, expected-head merge, and required post-merge ordered-parent/tree/protected-main verification in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md` all pass. Until then, canonical K4 remains `CLOSEOUT EVIDENCE AUTHORIZED / NOT YET CLOSED` under `docs/planning/KODAC_K4_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-25.md`; if any gate fails, the candidate closed-state text has no canonical closeout authority.
+
 ## Engineering milestones
 
 Engineering milestones describe architectural and technical progress:

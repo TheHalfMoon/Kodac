@@ -4,6 +4,8 @@
 
 This document is the current Kodac engineering roadmap authority after K2 canonical closeout, canonical adoption and bounded closeout of K3-R1 through K3-R6, canonical adoption of the separately authorized bounded KRI-R1 through KRI-R4 slices, and bounded canonical closeout of K4-R1 through K4-R5 data-only ecosystem-compatibility evidence. KRI-P0 remains the planning/contract-design authority from which those later, narrower implementation gates were separately authorized.
 
+**K4 closeout-candidate rule:** every K4 `CLOSED` statement in this candidate is conditional and becomes canonical only after the exact-head closeout gate, expected-head merge, and required post-merge ordered-parent/tree/protected-main verification in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md` all pass. Until then, canonical K4 remains `CLOSEOUT EVIDENCE AUTHORIZED / NOT YET CLOSED` under `docs/planning/KODAC_K4_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-25.md`; if any gate fails, the candidate closed-state text has no canonical closeout authority.
+
 The pre-reconstitution roadmap at canonical base `11227cc8c58e00879e8b40e7ff7948bee396fef7` remains historical evidence and is superseded only as current product/roadmap authority.
 
 Engineering milestones do not themselves authorize public release, package publication, brand launch, trademark claims, OSS intake, or implementation beyond an explicitly authorized gate.
