@@ -112,8 +112,15 @@ export interface K5R3ReviewAdjudicationLinkage {
 }
 
 type Rec = Record<string, unknown>
+type SafeJsonFrame =
+  | { readonly kind: "value"; readonly value: unknown; readonly label: string; readonly depth: number }
+  | { readonly kind: "leave"; readonly value: object }
+
 const SHA40 = /^[0-9a-f]{40}$/
 const SHA256 = /^[0-9a-f]{64}$/
+const SAFE_JSON_MAX_DEPTH = 32
+const SAFE_JSON_MAX_NODES = 100_000
+const SAFE_JSON_MAX_TOTAL_STRING_CHARS = 4_000_000
 const KRI_SEVERITIES = new Set<string>(["blocker", "critical", "high", "medium", "low", "info"])
 const KRI_ACTIONS = new Set<string>(["CONFIRM", "REJECT", "MARK_DUPLICATE", "MARK_FIXED", "REVERIFY"])
 const KRI_PREVIOUS_STATES = new Set<string>(["NEW", "CONFIRMED", "FIXED"])
@@ -196,54 +203,88 @@ function validUnicodeScalars(value: string, label: string): void {
   }
 }
 
-function assertSafeJson(value: unknown, label: string, ancestors = new WeakSet<object>()): void {
-  if (typeof value === "object" && value !== null) {
-    if (utilTypes.isProxy(value)) bad(label, "must not be a Proxy")
-    if (ancestors.has(value)) bad(label, "must not contain cycles")
-    ancestors.add(value)
-    if (Array.isArray(value)) {
-      if (Object.getPrototypeOf(value) !== Array.prototype) bad(label, "must be a plain array")
-      if (Object.getOwnPropertySymbols(value).length !== 0) bad(label, "must not contain symbol fields")
-      const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
-      if (lengthDescriptor === undefined || !("value" in lengthDescriptor) || typeof lengthDescriptor.value !== "number") {
-        bad(label, "must have an ordinary length")
-      }
-      const length = lengthDescriptor.value
-      if (!Number.isSafeInteger(length) || length < 0) bad(label, "must have a safe array length")
-      const ownNames = Object.getOwnPropertyNames(value)
-      if (ownNames.length !== length + 1) bad(label, "contains unexpected array fields")
-      for (let index = 0; index < length; index += 1) {
-        const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
-        if (descriptor === undefined) bad(label, "must be dense")
-        if (!("value" in descriptor) || !descriptor.enumerable) bad(`${label}[${index}]`, "must be an enumerable data property")
-        assertSafeJson(descriptor.value, `${label}[${index}]`, ancestors)
-      }
-    } else {
-      const prototype = Object.getPrototypeOf(value)
-      if (prototype !== Object.prototype && prototype !== null) bad(label, "must be a plain object")
-      if (Object.getOwnPropertySymbols(value).length !== 0) bad(label, "must not contain symbol fields")
-      for (const name of Object.getOwnPropertyNames(value)) {
-        const descriptor = Object.getOwnPropertyDescriptor(value, name)
-        if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
-          bad(`${label}.${name}`, "must be an enumerable data property")
-        }
-        assertSafeJson(descriptor.value, `${label}.${name}`, ancestors)
-      }
-    }
-    ancestors.delete(value)
-    return
-  }
+function assertSafeJson(value: unknown, label: string): void {
+  const ancestors = new WeakSet<object>()
+  const stack: SafeJsonFrame[] = [{ kind: "value", value, label, depth: 0 }]
+  let nodes = 0
+  let totalStringChars = 0
 
-  if (typeof value === "string") {
-    validUnicodeScalars(value, label)
-    return
+  while (stack.length !== 0) {
+    const frame = stack.pop() as SafeJsonFrame
+    if (frame.kind === "leave") {
+      ancestors.delete(frame.value)
+      continue
+    }
+
+    nodes += 1
+    if (nodes > SAFE_JSON_MAX_NODES) bad(frame.label, `exceeds safe JSON node budget of ${SAFE_JSON_MAX_NODES}`)
+    if (frame.depth > SAFE_JSON_MAX_DEPTH) bad(frame.label, `exceeds safe JSON nesting depth of ${SAFE_JSON_MAX_DEPTH}`)
+
+    const current = frame.value
+    if (typeof current === "object" && current !== null) {
+      if (utilTypes.isProxy(current)) bad(frame.label, "must not be a Proxy")
+      if (ancestors.has(current)) bad(frame.label, "must not contain cycles")
+      ancestors.add(current)
+      stack.push({ kind: "leave", value: current })
+
+      if (Array.isArray(current)) {
+        if (Object.getPrototypeOf(current) !== Array.prototype) bad(frame.label, "must be a plain array")
+        if (Object.getOwnPropertySymbols(current).length !== 0) bad(frame.label, "must not contain symbol fields")
+        const lengthDescriptor = Object.getOwnPropertyDescriptor(current, "length")
+        if (lengthDescriptor === undefined || !("value" in lengthDescriptor) || typeof lengthDescriptor.value !== "number") {
+          bad(frame.label, "must have an ordinary length")
+        }
+        const length = lengthDescriptor.value
+        if (!Number.isSafeInteger(length) || length < 0) bad(frame.label, "must have a safe array length")
+        if (length > SAFE_JSON_MAX_NODES - nodes) bad(frame.label, `exceeds safe JSON node budget of ${SAFE_JSON_MAX_NODES}`)
+        const ownNames = Object.getOwnPropertyNames(current)
+        if (ownNames.length !== length + 1) bad(frame.label, "contains unexpected array fields")
+        for (let index = length - 1; index >= 0; index -= 1) {
+          const descriptor = Object.getOwnPropertyDescriptor(current, String(index))
+          if (descriptor === undefined) bad(frame.label, "must be dense")
+          if (!("value" in descriptor) || !descriptor.enumerable) {
+            bad(`${frame.label}[${index}]`, "must be an enumerable data property")
+          }
+          stack.push({ kind: "value", value: descriptor.value, label: `${frame.label}[${index}]`, depth: frame.depth + 1 })
+        }
+      } else {
+        const prototype = Object.getPrototypeOf(current)
+        if (prototype !== Object.prototype && prototype !== null) bad(frame.label, "must be a plain object")
+        if (Object.getOwnPropertySymbols(current).length !== 0) bad(frame.label, "must not contain symbol fields")
+        const names = Object.getOwnPropertyNames(current)
+        if (names.length > SAFE_JSON_MAX_NODES - nodes) bad(frame.label, `exceeds safe JSON node budget of ${SAFE_JSON_MAX_NODES}`)
+        for (let index = names.length - 1; index >= 0; index -= 1) {
+          const name = names[index] as string
+          if (name.length > K5_R3_LIMITS.maxKriTextChars) bad(frame.label, "contains an overlong property name")
+          validUnicodeScalars(name, `${frame.label} property name`)
+          const descriptor = Object.getOwnPropertyDescriptor(current, name)
+          if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
+            bad(`${frame.label}.${name}`, "must be an enumerable data property")
+          }
+          stack.push({ kind: "value", value: descriptor.value, label: `${frame.label}.${name}`, depth: frame.depth + 1 })
+        }
+      }
+      continue
+    }
+
+    if (typeof current === "string") {
+      if (current.length > K5_R3_LIMITS.maxKriTextChars) bad(frame.label, "exceeds safe JSON string length")
+      totalStringChars += current.length
+      if (totalStringChars > SAFE_JSON_MAX_TOTAL_STRING_CHARS) {
+        bad(frame.label, `exceeds safe JSON string budget of ${SAFE_JSON_MAX_TOTAL_STRING_CHARS} characters`)
+      }
+      validUnicodeScalars(current, frame.label)
+      continue
+    }
+    if (typeof current === "number") {
+      if (!Number.isSafeInteger(current) || Object.is(current, -0)) {
+        bad(frame.label, "must be a non-negative-zero safe integer")
+      }
+      continue
+    }
+    if (current === null || typeof current === "boolean") continue
+    bad(frame.label, "must contain only JSON data")
   }
-  if (typeof value === "number") {
-    if (!Number.isSafeInteger(value) || Object.is(value, -0)) bad(label, "must be a non-negative-zero safe integer")
-    return
-  }
-  if (value === null || typeof value === "boolean") return
-  bad(label, "must contain only JSON data")
 }
 
 function rec(
