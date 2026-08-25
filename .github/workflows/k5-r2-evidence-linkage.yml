@@ -1,0 +1,226 @@
+name: k5-r2-evidence-linkage
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k5-r2-evidence-linkage.yml"
+      - "schema/k5-r2-evidence-linkage.schema.json"
+      - "packages/kodac-runtime/src/proof-review/linkage-contracts.ts"
+      - "packages/kodac-runtime/src/proof-review/linkage.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-linkage:
+    name: k5-r2-evidence-linkage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K5_R2_AUTHORIZATION_MERGE_SHA: "fa0522488a48c9b2b945044979aa8918460e54e1"
+      K5_R2_AUTHORIZATION_MERGE_TREE: "e8e35172e453b0d611990d6088c871d0dce96301"
+      K5_R2_AUTHORIZATION_DOCUMENT_BLOB: "eac470653c1fe57f521fd68173f6589ed6fd1e8d"
+      K5_R2_IMPLEMENTATION_BRANCH: "feat/k5-r2-evidence-linkage"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact head, authorization, scope, and immutable Actions
+        shell: bash
+        env:
+          K5_R2_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K5_R2_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K5_R2_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K5_R2_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K5_R2_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K5_R2_PR_HEAD_SHA"
+          test "$K5_R2_PR_HEAD_REF" = "$K5_R2_IMPLEMENTATION_BRANCH"
+          test "$K5_R2_PR_HEAD_REPOSITORY" = "$K5_R2_REPOSITORY"
+          test "$K5_R2_PR_BASE_SHA" = "$K5_R2_AUTHORIZATION_MERGE_SHA"
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r2-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r2-diff-before"
+          test ! -s "$RUNNER_TEMP/k5-r2-status-before"
+          test ! -s "$RUNNER_TEMP/k5-r2-diff-before"
+          git fetch --no-tags --depth=1 origin "$K5_R2_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K5_R2_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K5_R2_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K5_R2_AUTHORIZATION_MERGE_TREE"
+          test "$(git rev-parse "$K5_R2_AUTHORIZATION_MERGE_SHA:docs/planning/KODAC_K5_R1_CANONICAL_EVIDENCE_AND_R2_EXACT_LINKAGE_AUTHORIZATION_2026-08-25.md")" = "$K5_R2_AUTHORIZATION_DOCUMENT_BLOB"
+          mapfile -t changed < <(git diff --name-only "$K5_R2_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k5-r2-evidence-linkage.yml"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/src/proof-review/linkage-contracts.ts"
+            "packages/kodac-runtime/src/proof-review/linkage.ts"
+            "packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts"
+            "schema/k5-r2-evidence-linkage.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do test "${changed[$index]}" = "${expected[$index]}"; done
+          git diff --check "$K5_R2_AUTHORIZATION_MERGE_SHA" HEAD
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k5-r2-evidence-linkage.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for index in "${!expected_actions[@]}"; do test "${action_lines[$index]}" = "${expected_actions[$index]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r2-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate K5-R2 schema and hostile schema fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r2-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path("schema/k5-r2-evidence-linkage.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          source = {
+              "version": "kodac-k5-r2-source-link-v1", "sourceIdentity": "a" * 64,
+              "evidenceId": "e-verify", "sourceKind": "VERIFICATION_REPORT",
+              "canonicalBase": "0" * 40, "candidateHead": "1" * 40,
+              "sourceRef": "verification:v1", "sourceDigest": "b" * 64,
+              "metadata": {"protocol": "kodac.verification", "reportVersion": 1, "sessionId": "session-1", "passed": True, "checkIds": ["agent.completed"]},
+          }
+          linkage = {
+              "version": "kodac-k5-r2-evidence-linkage-v1", "packageIdentity": "c" * 64,
+              "revision": {"repositoryId": "TheHalfMoon/Kodac", "canonicalBase": "0" * 40, "candidateHead": "1" * 40},
+              "links": [{"evidenceId": "e-verify", "evidenceKind": "VERIFICATION", "sourceKind": "VERIFICATION_REPORT", "status": "LINKED", "codes": [], "sourceIdentity": "a" * 64}],
+              "outOfScopeEvidenceIds": ["e-artifact"], "sourceIdentities": ["a" * 64], "linkageIdentity": "d" * 64,
+          }
+          validator.validate(source)
+          validator.validate(linkage)
+          mutations = []
+          extra = copy.deepcopy(source); extra["authority"] = "PROVEN_READY"; mutations.append(("unknown source field", extra))
+          wrong_metadata = copy.deepcopy(source); wrong_metadata["sourceKind"] = "EXECUTION_RECEIPT"; mutations.append(("kind/metadata mismatch", wrong_metadata))
+          uppercase = copy.deepcopy(source); uppercase["candidateHead"] = "A" * 40; mutations.append(("uppercase revision", uppercase))
+          duplicate_check = copy.deepcopy(source); duplicate_check["metadata"]["checkIds"] = ["x", "x"]; mutations.append(("duplicate verification check id", duplicate_check))
+          bad_link = copy.deepcopy(linkage); bad_link["links"][0]["status"] = "PROVEN_READY"; mutations.append(("unknown link status", bad_link))
+          bad_nullability = copy.deepcopy(linkage); bad_nullability["links"][0] = {"evidenceId": "e-verify", "evidenceKind": "VERIFICATION", "sourceKind": None, "status": "LINKED", "codes": [], "sourceIdentity": None}; mutations.append(("linked null source", bad_nullability))
+          mismatch_no_code = copy.deepcopy(linkage); mismatch_no_code["links"][0]["status"] = "MISMATCH"; mismatch_no_code["links"][0]["codes"] = []; mutations.append(("mismatch without code", mismatch_no_code))
+          for name, candidate in mutations:
+              if not list(validator.iter_errors(candidate)):
+                  raise SystemExit(f"schema accepted hostile K5-R2 mutation: {name}")
+          PY
+
+      - name: Prove deterministic and authority-bounded production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          sources=("packages/kodac-runtime/src/proof-review/linkage-contracts.ts" "packages/kodac-runtime/src/proof-review/linkage.ts")
+          if grep -nE 'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|vm)|ExecutionGateway|Trust Kernel|DoneGate|PROVEN_READY|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function' "${sources[@]}"; then
+            echo "K5-R2 production authority/determinism boundary violation" >&2
+            exit 1
+          else
+            grep_status=$?
+            if [ "$grep_status" -ne 1 ]; then
+              echo "K5-R2 production authority/determinism scanner failed with status $grep_status" >&2
+              exit "$grep_status"
+            fi
+          fi
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const contracts = readFileSync("packages/kodac-runtime/src/proof-review/linkage-contracts.ts", "utf8")
+          const linkage = readFileSync("packages/kodac-runtime/src/proof-review/linkage.ts", "utf8")
+          const imports = (source) => [...source.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const contractImports = imports(contracts)
+          if (JSON.stringify(contractImports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts"])) throw new Error(`unexpected linkage-contracts imports: ${contractImports.join(",")}`)
+          const linkageImports = imports(linkage)
+          if (JSON.stringify(linkageImports) !== JSON.stringify(["./contracts.ts", "./linkage-contracts.ts"])) throw new Error(`unexpected linkage imports: ${linkageImports.join(",")}`)
+          if (!contracts.includes('import { createHash } from "node:crypto"')) throw new Error("missing exact node:crypto import")
+          if (!contracts.includes('import { types as utilTypes } from "node:util"')) throw new Error("missing exact node:util import")
+          if (/\butilTypes\s*\[/.test(contracts)) throw new Error("computed node:util access is prohibited")
+          const utilMembers = [...contracts.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].map((match) => match[1])
+          if (utilMembers.some((name) => name !== "isProxy")) throw new Error(`unauthorized node:util API: ${utilMembers.join(",")}`)
+          NODE
+          test "$(grep -Fxc 'export { linkK5R2Evidence } from "./proof-review/linkage.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+          test "$(grep -Fxc '} from "./proof-review/linkage-contracts.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k5-r2-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k5-r2-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name": "k5-r2-typescript-validation", "version": "1.0.0", "lockfileVersion": 3, "requires": true,
+            "packages": {
+              "": {"name": "k5-r2-typescript-validation", "version": "1.0.0", "dependencies": {"@types/node": "24.3.0", "typescript": "5.9.3"}},
+              "node_modules/@types/node": {"version": "24.3.0", "resolved": "https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz", "integrity": "sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==", "dependencies": {"undici-types": "~7.10.0"}},
+              "node_modules/typescript": {"version": "5.9.3", "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz", "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==", "bin": {"tsc": "bin/tsc", "tsserver": "bin/tsserver"}, "engines": {"node": ">=14.17"}},
+              "node_modules/undici-types": {"version": "7.10.0", "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz", "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused K5-R2, R1 regression, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k5-r2-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k5-r2-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/proof-review/linkage-contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/proof-review/linkage.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r1-proof-package-judgment.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r2-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k5-r2-typescript"
+
+      - name: Attest checkout unchanged after K5-R2 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r2-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r2-diff-after"
+          cmp "$RUNNER_TEMP/k5-r2-status-before" "$RUNNER_TEMP/k5-r2-status-after"
+          cmp "$RUNNER_TEMP/k5-r2-diff-before" "$RUNNER_TEMP/k5-r2-diff-after"
+          test ! -s "$RUNNER_TEMP/k5-r2-status-after"
+          test ! -s "$RUNNER_TEMP/k5-r2-diff-after"

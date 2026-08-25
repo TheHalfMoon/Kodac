@@ -208,3 +208,26 @@ export * from "./verification/engine.ts"
 export * from "./verification/types.ts"
 export * from "./proof-review/contracts.ts"
 export * from "./proof-review/judge.ts"
+export {
+  K5_R2_EVIDENCE_LINKAGE_VERSION,
+  K5_R2_LIMITS,
+  K5_R2_LINK_CODES,
+  K5_R2_LINK_STATUSES,
+  K5_R2_SOURCE_KINDS,
+  K5_R2_SOURCE_LINK_VERSION,
+  createK5R2SourceLink,
+  validateK5R2EvidenceLinkage,
+  validateK5R2SourceLink,
+  type K5R2EvidenceLinkage,
+  type K5R2ExecutionReceiptMetadata,
+  type K5R2LinkCode,
+  type K5R2LinkResult,
+  type K5R2LinkStatus,
+  type K5R2RepositoryRevisionMetadata,
+  type K5R2SourceKind,
+  type K5R2SourceLink,
+  type K5R2SourceLinkInput,
+  type K5R2SourceMetadata,
+  type K5R2VerificationReportMetadata,
+} from "./proof-review/linkage-contracts.ts"
+export { linkK5R2Evidence } from "./proof-review/linkage.ts"
