@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k5-r3-review-adjudication-linkage.schema.json",
+  "title": "Kodac K5-R3 Review Adjudication Linkage Contracts",
+  "$comment": "Runtime validation is authoritative for identity recomputation, embedded/outer revision equality, K5-R1 package correlation, UTF-8 byte bounds, historical JavaScript .length semantics, Proxy/accessor/symbol/prototype/cycle/Unicode representation checks, canonical ordering, and exact source/linkage identity semantics.",
+  "oneOf": [
+    { "$ref": "#/$defs/sourceDescriptor" },
+    { "$ref": "#/$defs/linkage" }
+  ],
+  "$defs": {
+    "gitSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "outerString": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000]+$" },
+    "evidenceId": { "$ref": "#/$defs/outerString", "$comment": "Runtime enforces <=128 UTF-8 bytes." },
+    "sourceRef": { "$ref": "#/$defs/outerString", "$comment": "Opaque data only; runtime enforces <=1024 UTF-8 bytes and does not interpret it as URL/path/command/Git ref/instruction/authority." },
+    "kriShort": { "type": "string", "minLength": 1, "maxLength": 128, "$comment": "Runtime preserves historical JavaScript .length semantics and valid Unicode scalar admission." },
+    "kriText": { "type": "string", "minLength": 1, "maxLength": 4096, "$comment": "Runtime preserves historical JavaScript .length semantics and valid Unicode scalar admission." },
+    "kriRef": { "type": "string", "minLength": 1, "maxLength": 1024, "$comment": "Runtime preserves historical JavaScript .length semantics." },
+    "kriPath": { "type": "string", "minLength": 1, "maxLength": 1024, "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)(?:\\.|\\.\\.)(?:/|$))(?!.*//)[^\\u0000]+$", "$comment": "Runtime additionally applies historical JavaScript .length and Unicode representation checks." },
+    "reviewIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewRunId", "reviewerId", "reviewerVersion", "policyIdentity", "canonicalBase", "reviewedHead"],
+      "properties": {
+        "reviewRunId": { "$ref": "#/$defs/kriShort" },
+        "reviewerId": { "$ref": "#/$defs/kriShort" },
+        "reviewerVersion": { "$ref": "#/$defs/kriShort" },
+        "policyIdentity": { "$ref": "#/$defs/kriShort" },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "reviewedHead": { "$ref": "#/$defs/gitSha" }
+      }
+    },
+    "affectedRange": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startLine", "endLine"],
+      "properties": {
+        "startLine": { "type": "integer", "minimum": 1, "maximum": 10000000 },
+        "endLine": { "type": "integer", "minimum": 1, "maximum": 10000000 }
+      },
+      "$comment": "Runtime additionally requires startLine <= endLine."
+    },
+    "kriEvidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/kriRef" },
+      "$comment": "Runtime canonicalizes these references with locale-independent lexical ordering before historical KRI identity recomputation."
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "findingIdentity", "claimKey", "review", "evaluatedHead", "path", "summary", "contractClaim", "category", "severity", "confidenceBps", "evidenceRefs", "freshness", "state"],
+      "properties": {
+        "version": { "const": "kri-r2-finding-v1" },
+        "findingIdentity": { "$ref": "#/$defs/sha256" },
+        "claimKey": { "$ref": "#/$defs/kriShort" },
+        "review": { "$ref": "#/$defs/reviewIdentity" },
+        "evaluatedHead": { "$ref": "#/$defs/gitSha" },
+        "path": { "$ref": "#/$defs/kriPath" },
+        "range": { "$ref": "#/$defs/affectedRange" },
+        "summary": { "$ref": "#/$defs/kriText" },
+        "contractClaim": { "$ref": "#/$defs/kriText" },
+        "category": { "$ref": "#/$defs/kriShort" },
+        "severity": { "enum": ["blocker", "critical", "high", "medium", "low", "info"] },
+        "confidenceBps": { "type": "integer", "minimum": 0, "maximum": 10000 },
+        "evidenceRefs": { "$ref": "#/$defs/kriEvidenceRefs" },
+        "freshness": { "const": "CURRENT" },
+        "state": { "const": "NEW" }
+      },
+      "$comment": "Runtime requires evaluatedHead == review.reviewedHead and recomputes the historical KRI-R2 finding identity from version/claimKey/review/path/optional range/summary/contractClaim/category/severity/confidenceBps/canonical evidenceRefs only."
+    },
+    "adjudicationBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "adjudicationIdentity", "findingIdentity", "previousAdjudicationIdentity", "action", "previousState", "resultingState", "adjudicatorId", "evidenceRefs"],
+      "properties": {
+        "version": { "const": "kri-r2-adjudication-v1" },
+        "adjudicationIdentity": { "$ref": "#/$defs/sha256" },
+        "findingIdentity": { "$ref": "#/$defs/sha256" },
+        "previousAdjudicationIdentity": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] },
+        "action": { "enum": ["CONFIRM", "REJECT", "MARK_DUPLICATE", "MARK_FIXED", "REVERIFY"] },
+        "previousState": { "enum": ["NEW", "CONFIRMED", "FIXED"] },
+        "resultingState": { "enum": ["CONFIRMED", "REJECTED", "DUPLICATE", "FIXED", "REVERIFIED"] },
+        "adjudicatorId": { "$ref": "#/$defs/kriShort" },
+        "evidenceRefs": { "$ref": "#/$defs/kriEvidenceRefs" },
+        "duplicateOf": { "$ref": "#/$defs/sha256" },
+        "correctionRef": { "$ref": "#/$defs/kriRef" },
+        "reverificationRef": { "$ref": "#/$defs/kriRef" }
+      }
+    },
+    "adjudication": {
+      "allOf": [
+        { "$ref": "#/$defs/adjudicationBase" },
+        {
+          "oneOf": [
+            {
+              "properties": {
+                "action": { "const": "CONFIRM" },
+                "previousState": { "const": "NEW" },
+                "resultingState": { "const": "CONFIRMED" },
+                "previousAdjudicationIdentity": { "type": "null" }
+              },
+              "not": { "anyOf": [{ "required": ["duplicateOf"] }, { "required": ["correctionRef"] }, { "required": ["reverificationRef"] }] }
+            },
+            {
+              "properties": {
+                "action": { "const": "REJECT" },
+                "previousState": { "const": "NEW" },
+                "resultingState": { "const": "REJECTED" },
+                "previousAdjudicationIdentity": { "type": "null" }
+              },
+              "not": { "anyOf": [{ "required": ["duplicateOf"] }, { "required": ["correctionRef"] }, { "required": ["reverificationRef"] }] }
+            },
+            {
+              "required": ["duplicateOf"],
+              "properties": {
+                "action": { "const": "MARK_DUPLICATE" },
+                "previousState": { "const": "NEW" },
+                "resultingState": { "const": "DUPLICATE" },
+                "previousAdjudicationIdentity": { "type": "null" }
+              },
+              "not": { "anyOf": [{ "required": ["correctionRef"] }, { "required": ["reverificationRef"] }] }
+            },
+            {
+              "required": ["correctionRef"],
+              "properties": {
+                "action": { "const": "MARK_FIXED" },
+                "previousState": { "const": "CONFIRMED" },
+                "resultingState": { "const": "FIXED" },
+                "previousAdjudicationIdentity": { "$ref": "#/$defs/sha256" }
+              },
+              "not": { "anyOf": [{ "required": ["duplicateOf"] }, { "required": ["reverificationRef"] }] }
+            },
+            {
+              "required": ["reverificationRef"],
+              "properties": {
+                "action": { "const": "REVERIFY" },
+                "previousState": { "const": "FIXED" },
+                "resultingState": { "const": "REVERIFIED" },
+                "previousAdjudicationIdentity": { "$ref": "#/$defs/sha256" }
+              },
+              "not": { "anyOf": [{ "required": ["duplicateOf"] }, { "required": ["correctionRef"] }] }
+            }
+          ]
+        }
+      ],
+      "$comment": "Runtime recomputes the historical KRI-R2 adjudication identity excluding only adjudicationIdentity and independently validates the canonical transition."
+    },
+    "sourceDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "sourceIdentity", "evidenceId", "sourceKind", "canonicalBase", "candidateHead", "sourceRef", "sourceDigest", "finding", "adjudication"],
+      "properties": {
+        "version": { "const": "kodac-k5-r3-review-adjudication-source-v1" },
+        "sourceIdentity": { "$ref": "#/$defs/sha256" },
+        "evidenceId": { "$ref": "#/$defs/evidenceId" },
+        "sourceKind": { "const": "KRI_ADJUDICATION" },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "candidateHead": { "$ref": "#/$defs/gitSha" },
+        "sourceRef": { "$ref": "#/$defs/sourceRef" },
+        "sourceDigest": { "$ref": "#/$defs/sha256" },
+        "finding": { "$ref": "#/$defs/finding" },
+        "adjudication": { "$ref": "#/$defs/adjudication" }
+      },
+      "$comment": "Runtime requires adjudication.findingIdentity == finding.findingIdentity, canonicalBase == finding.review.canonicalBase, candidateHead == finding.evaluatedHead == finding.review.reviewedHead, sourceDigest == adjudication.adjudicationIdentity, and recomputes K5 sourceIdentity via the K5 canonical JSON/JCS path."
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryId", "canonicalBase", "candidateHead"],
+      "properties": {
+        "repositoryId": { "$ref": "#/$defs/outerString", "$comment": "Runtime enforces <=512 UTF-8 bytes." },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "candidateHead": { "$ref": "#/$defs/gitSha" }
+      }
+    },
+    "mismatchCodes": {
+      "enum": [
+        ["REVISION_MISMATCH"],
+        ["REF_MISMATCH"],
+        ["DIGEST_MISMATCH"],
+        ["REVISION_MISMATCH", "REF_MISMATCH"],
+        ["REVISION_MISMATCH", "DIGEST_MISMATCH"],
+        ["REF_MISMATCH", "DIGEST_MISMATCH"],
+        ["REVISION_MISMATCH", "REF_MISMATCH", "DIGEST_MISMATCH"]
+      ]
+    },
+    "linkBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceId", "evidenceKind", "sourceKind", "status", "codes", "sourceIdentity"],
+      "properties": {
+        "evidenceId": { "$ref": "#/$defs/evidenceId" },
+        "evidenceKind": { "const": "REVIEW_ADJUDICATION" },
+        "sourceKind": { "oneOf": [{ "const": "KRI_ADJUDICATION" }, { "type": "null" }] },
+        "status": { "enum": ["LINKED", "UNLINKED", "MISMATCH"] },
+        "codes": { "type": "array", "minItems": 0, "maxItems": 3, "uniqueItems": true, "items": { "enum": ["NO_SOURCE", "REVISION_MISMATCH", "REF_MISMATCH", "DIGEST_MISMATCH"] } },
+        "sourceIdentity": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+      }
+    },
+    "link": {
+      "allOf": [
+        { "$ref": "#/$defs/linkBase" },
+        {
+          "oneOf": [
+            { "properties": { "status": { "const": "LINKED" }, "sourceKind": { "const": "KRI_ADJUDICATION" }, "codes": { "maxItems": 0 }, "sourceIdentity": { "$ref": "#/$defs/sha256" } } },
+            { "properties": { "status": { "const": "UNLINKED" }, "sourceKind": { "type": "null" }, "codes": { "const": ["NO_SOURCE"] }, "sourceIdentity": { "type": "null" } } },
+            { "properties": { "status": { "const": "MISMATCH" }, "sourceKind": { "const": "KRI_ADJUDICATION" }, "codes": { "$ref": "#/$defs/mismatchCodes" }, "sourceIdentity": { "$ref": "#/$defs/sha256" } } }
+          ]
+        }
+      ]
+    },
+    "linkage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "packageIdentity", "revision", "links", "outOfScopeEvidenceIds", "sourceIdentities", "linkageIdentity"],
+      "properties": {
+        "version": { "const": "kodac-k5-r3-review-adjudication-linkage-v1" },
+        "packageIdentity": { "$ref": "#/$defs/sha256" },
+        "revision": { "$ref": "#/$defs/revision" },
+        "links": { "type": "array", "minItems": 0, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/link" }, "$comment": "Runtime additionally enforces evidenceId uniqueness and canonical K5 scalar ordering." },
+        "outOfScopeEvidenceIds": { "type": "array", "minItems": 0, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/evidenceId" }, "$comment": "Runtime enforces canonical K5 scalar ordering and disjointness from links." },
+        "sourceIdentities": { "type": "array", "minItems": 0, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" }, "$comment": "Runtime enforces canonical K5 scalar ordering and exact equality to non-null link source identities." },
+        "linkageIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

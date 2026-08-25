@@ -231,3 +231,26 @@ export {
   type K5R2VerificationReportMetadata,
 } from "./proof-review/linkage-contracts.ts"
 export { linkK5R2Evidence } from "./proof-review/linkage.ts"
+export {
+  K5_R3_LIMITS,
+  K5_R3_LINK_CODES,
+  K5_R3_LINK_STATUSES,
+  K5_R3_REVIEW_ADJUDICATION_LINKAGE_VERSION,
+  K5_R3_REVIEW_ADJUDICATION_SOURCE_VERSION,
+  K5_R3_SOURCE_KINDS,
+  createK5R3ReviewAdjudicationSource,
+  validateK5R3ReviewAdjudicationLinkage,
+  validateK5R3ReviewAdjudicationSource,
+  type K5R3KriAdjudicationRecord,
+  type K5R3KriAffectedRange,
+  type K5R3KriFindingRecord,
+  type K5R3KriReviewIdentity,
+  type K5R3LinkCode,
+  type K5R3LinkStatus,
+  type K5R3ReviewAdjudicationLinkResult,
+  type K5R3ReviewAdjudicationLinkage,
+  type K5R3ReviewAdjudicationSource,
+  type K5R3ReviewAdjudicationSourceInput,
+  type K5R3SourceKind,
+} from "./proof-review/review-adjudication-contracts.ts"
+export { linkK5R3ReviewAdjudicationEvidence } from "./proof-review/review-adjudication.ts"

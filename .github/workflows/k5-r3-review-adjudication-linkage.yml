@@ -1,0 +1,302 @@
+name: k5-r3-review-adjudication-linkage
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k5-r3-review-adjudication-linkage.yml"
+      - "schema/k5-r3-review-adjudication-linkage.schema.json"
+      - "packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts"
+      - "packages/kodac-runtime/src/proof-review/review-adjudication.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k5-r3-review-adjudication-linkage.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  review-adjudication-linkage:
+    name: k5-r3-review-adjudication-linkage
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K5_R3_AUTHORIZATION_MERGE_SHA: "4c483cb04f619a518469f9823ebc43a67a317a77"
+      K5_R3_AUTHORIZATION_MERGE_TREE: "1e05fcae1f87b49d41c82ce6b59eed7e85b80874"
+      K5_R3_AUTHORIZATION_DOCUMENT_BLOB: "ed21c4c7dcebeaecfad840c282e1d1ed1c916801"
+      K5_R3_IMPLEMENTATION_BRANCH: "feat/k5-r3-review-adjudication-linkage"
+      K5_R1_CONTRACTS_BLOB: "ef0ae26c2a44157fb20ad33145788ba1255239f5"
+      KRI_R2_CONTRACTS_BLOB: "5ebe91c3d98f626651230989564d367d0600863c"
+      KRI_R2_RUNTIME_BLOB: "4c5d01293d37b14ad4b017ec1e7dd17055393113"
+      KRI_FINDING_SCHEMA_BLOB: "ca74ebe040ed217d7696b9ae8cf612e21b462b07"
+      KRI_ADJUDICATION_SCHEMA_BLOB: "814cfe0eeef170d51536df91366a22c42e10dcb8"
+      K5_R2_WORKFLOW_BLOB: "3fe731e333b766d2a762d57e0fc075bedfb91933"
+      K5_R2_SCHEMA_BLOB: "85ee0070895bbc5b4eef16c3cd1760b92e4dccb2"
+      K5_R2_CONTRACTS_BLOB: "59d87c73d829c4cd1d57dba134f79839f13b9722"
+      K5_R2_RUNTIME_BLOB: "2ef2f786ee84dbcb2e937b710ee570963c50adc0"
+      K5_R2_TEST_BLOB: "4529c8c665dabcee3e2a0606113f7614e0139452"
+      PRE_R3_INDEX_BLOB: "c6ba6ac132b69da989d37eb4f4ae238186a51026"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact head, authorization, scope, dependencies, and immutable Actions
+        shell: bash
+        env:
+          K5_R3_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K5_R3_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K5_R3_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K5_R3_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K5_R3_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K5_R3_PR_HEAD_SHA"
+          test "$K5_R3_PR_HEAD_REF" = "$K5_R3_IMPLEMENTATION_BRANCH"
+          test "$K5_R3_PR_HEAD_REPOSITORY" = "$K5_R3_REPOSITORY"
+          test "$K5_R3_PR_BASE_SHA" = "$K5_R3_AUTHORIZATION_MERGE_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r3-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r3-diff-before"
+          test ! -s "$RUNNER_TEMP/k5-r3-status-before"
+          test ! -s "$RUNNER_TEMP/k5-r3-diff-before"
+
+          git fetch --no-tags --depth=1 origin "$K5_R3_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K5_R3_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K5_R3_AUTHORIZATION_MERGE_TREE"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:docs/planning/KODAC_K5_R2_CANONICAL_EVIDENCE_AND_R3_REVIEW_ADJUDICATION_LINKAGE_AUTHORIZATION_2026-08-25.md")" = "$K5_R3_AUTHORIZATION_DOCUMENT_BLOB"
+
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/proof-review/contracts.ts")" = "$K5_R1_CONTRACTS_BLOB"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/reviewer-intelligence/contracts.ts")" = "$KRI_R2_CONTRACTS_BLOB"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/reviewer-intelligence/runtime.ts")" = "$KRI_R2_RUNTIME_BLOB"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:schema/kri-finding.schema.json")" = "$KRI_FINDING_SCHEMA_BLOB"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:schema/kri-adjudication.schema.json")" = "$KRI_ADJUDICATION_SCHEMA_BLOB"
+
+          test "$(git rev-parse "HEAD:.github/workflows/k5-r2-evidence-linkage.yml")" = "$K5_R2_WORKFLOW_BLOB"
+          test "$(git rev-parse "HEAD:schema/k5-r2-evidence-linkage.schema.json")" = "$K5_R2_SCHEMA_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/proof-review/linkage-contracts.ts")" = "$K5_R2_CONTRACTS_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/src/proof-review/linkage.ts")" = "$K5_R2_RUNTIME_BLOB"
+          test "$(git rev-parse "HEAD:packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts")" = "$K5_R2_TEST_BLOB"
+          test "$(git rev-parse "$K5_R3_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts")" = "$PRE_R3_INDEX_BLOB"
+
+          mapfile -t changed < <(git diff --name-only "$K5_R3_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k5-r3-review-adjudication-linkage.yml"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts"
+            "packages/kodac-runtime/src/proof-review/review-adjudication.ts"
+            "packages/kodac-runtime/test/k5-r3-review-adjudication-linkage.test.ts"
+            "schema/k5-r3-review-adjudication-linkage.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do test "${changed[$index]}" = "${expected[$index]}"; done
+          git diff --check "$K5_R3_AUTHORIZATION_MERGE_SHA" HEAD
+
+          git show "$K5_R3_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts" > "$RUNNER_TEMP/k5-r3-index-base"
+          base_size="$(wc -c < "$RUNNER_TEMP/k5-r3-index-base")"
+          head -c "$base_size" packages/kodac-runtime/src/index.ts | cmp - "$RUNNER_TEMP/k5-r3-index-base"
+          tail -c "+$((base_size + 1))" packages/kodac-runtime/src/index.ts > "$RUNNER_TEMP/k5-r3-index-suffix"
+          cat > "$RUNNER_TEMP/k5-r3-index-expected-suffix" <<'EOF'
+          export {
+            K5_R3_LIMITS,
+            K5_R3_LINK_CODES,
+            K5_R3_LINK_STATUSES,
+            K5_R3_REVIEW_ADJUDICATION_LINKAGE_VERSION,
+            K5_R3_REVIEW_ADJUDICATION_SOURCE_VERSION,
+            K5_R3_SOURCE_KINDS,
+            createK5R3ReviewAdjudicationSource,
+            validateK5R3ReviewAdjudicationLinkage,
+            validateK5R3ReviewAdjudicationSource,
+            type K5R3KriAdjudicationRecord,
+            type K5R3KriAffectedRange,
+            type K5R3KriFindingRecord,
+            type K5R3KriReviewIdentity,
+            type K5R3LinkCode,
+            type K5R3LinkStatus,
+            type K5R3ReviewAdjudicationLinkResult,
+            type K5R3ReviewAdjudicationLinkage,
+            type K5R3ReviewAdjudicationSource,
+            type K5R3ReviewAdjudicationSourceInput,
+            type K5R3SourceKind,
+          } from "./proof-review/review-adjudication-contracts.ts"
+          export { linkK5R3ReviewAdjudicationEvidence } from "./proof-review/review-adjudication.ts"
+          EOF
+          sed -i 's/^          //' "$RUNNER_TEMP/k5-r3-index-expected-suffix"
+          cmp "$RUNNER_TEMP/k5-r3-index-suffix" "$RUNNER_TEMP/k5-r3-index-expected-suffix"
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k5-r3-review-adjudication-linkage.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for index in "${!expected_actions[@]}"; do test "${action_lines[$index]}" = "${expected_actions[$index]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r3-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate K5-R3 schema and hostile schema fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r3-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k5-r3-review-adjudication-linkage.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          finding = {
+              "version": "kri-r2-finding-v1", "findingIdentity": "a" * 64, "claimKey": "claim.review",
+              "review": {"reviewRunId": "run-1", "reviewerId": "reviewer", "reviewerVersion": "v1", "policyIdentity": "policy-1", "canonicalBase": "0" * 40, "reviewedHead": "1" * 40},
+              "evaluatedHead": "1" * 40, "path": "packages/kodac-runtime/src/index.ts", "range": {"startLine": 1, "endLine": 2},
+              "summary": "Finding", "contractClaim": "Claim", "category": "correctness", "severity": "high", "confidenceBps": 9000,
+              "evidenceRefs": ["review:terminal"], "freshness": "CURRENT", "state": "NEW",
+          }
+          adjudication = {
+              "version": "kri-r2-adjudication-v1", "adjudicationIdentity": "b" * 64, "findingIdentity": "a" * 64,
+              "previousAdjudicationIdentity": None, "action": "CONFIRM", "previousState": "NEW", "resultingState": "CONFIRMED",
+              "adjudicatorId": "founder", "evidenceRefs": ["review:terminal"],
+          }
+          source = {
+              "version": "kodac-k5-r3-review-adjudication-source-v1", "sourceIdentity": "c" * 64, "evidenceId": "e-review",
+              "sourceKind": "KRI_ADJUDICATION", "canonicalBase": "0" * 40, "candidateHead": "1" * 40,
+              "sourceRef": "review:adjudication:1", "sourceDigest": "b" * 64, "finding": finding, "adjudication": adjudication,
+          }
+          linkage = {
+              "version": "kodac-k5-r3-review-adjudication-linkage-v1", "packageIdentity": "d" * 64,
+              "revision": {"repositoryId": "TheHalfMoon/Kodac", "canonicalBase": "0" * 40, "candidateHead": "1" * 40},
+              "links": [{"evidenceId": "e-review", "evidenceKind": "REVIEW_ADJUDICATION", "sourceKind": "KRI_ADJUDICATION", "status": "LINKED", "codes": [], "sourceIdentity": "c" * 64}],
+              "outOfScopeEvidenceIds": ["e-artifact"], "sourceIdentities": ["c" * 64], "linkageIdentity": "e" * 64,
+          }
+          validator.validate(source)
+          validator.validate(linkage)
+          mutations = []
+          extra = copy.deepcopy(source); extra["authority"] = "PROVEN_READY"; mutations.append(("unknown source field", extra))
+          wrong_kind = copy.deepcopy(source); wrong_kind["sourceKind"] = "VERIFICATION_REPORT"; mutations.append(("wrong source kind", wrong_kind))
+          stale = copy.deepcopy(source); stale["finding"]["freshness"] = "STALE"; mutations.append(("stale finding", stale))
+          uppercase = copy.deepcopy(source); uppercase["candidateHead"] = "A" * 40; mutations.append(("uppercase revision", uppercase))
+          duplicate_refs = copy.deepcopy(source); duplicate_refs["finding"]["evidenceRefs"] = ["x", "x"]; mutations.append(("duplicate KRI refs", duplicate_refs))
+          parent_path = copy.deepcopy(source); parent_path["finding"]["path"] = "src/../escape.ts"; mutations.append(("parent path", parent_path))
+          invalid_transition = copy.deepcopy(source); invalid_transition["adjudication"].update({"action": "MARK_FIXED", "previousState": "NEW", "resultingState": "FIXED", "correctionRef": "commit:x"}); mutations.append(("invalid transition", invalid_transition))
+          bad_link = copy.deepcopy(linkage); bad_link["links"][0]["status"] = "PROVEN_READY"; mutations.append(("unknown link status", bad_link))
+          bad_nullability = copy.deepcopy(linkage); bad_nullability["links"][0].update({"sourceKind": None, "sourceIdentity": None}); mutations.append(("linked null source", bad_nullability))
+          bad_order = copy.deepcopy(linkage); bad_order["links"][0].update({"status": "MISMATCH", "codes": ["DIGEST_MISMATCH", "REF_MISMATCH"]}); mutations.append(("mismatch code order", bad_order))
+          no_source_mismatch = copy.deepcopy(linkage); no_source_mismatch["links"][0].update({"status": "MISMATCH", "codes": ["NO_SOURCE"]}); mutations.append(("NO_SOURCE mismatch", no_source_mismatch))
+          for name, candidate in mutations:
+              if not list(validator.iter_errors(candidate)):
+                  raise SystemExit(f"schema accepted hostile K5-R3 mutation: {name}")
+          PY
+
+      - name: Prove deterministic and authority-bounded production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          sources=("packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts" "packages/kodac-runtime/src/proof-review/review-adjudication.ts")
+          if grep -nE 'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|vm)|ExecutionGateway|DoneGate|PROVEN_READY|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|reviewer-intelligence/(runtime|executor|provider-contracts|qualification)' "${sources[@]}"; then
+            echo "K5-R3 production authority/determinism boundary violation" >&2
+            exit 1
+          else
+            grep_status=$?
+            if [ "$grep_status" -ne 1 ]; then echo "K5-R3 production boundary scanner failed with status $grep_status" >&2; exit "$grep_status"; fi
+          fi
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const contracts = readFileSync("packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts", "utf8")
+          const linkage = readFileSync("packages/kodac-runtime/src/proof-review/review-adjudication.ts", "utf8")
+          const imports = (source) => [...source.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
+          const contractImports = imports(contracts)
+          if (importKeywordCount(contracts) !== contractImports.length) throw new Error("contracts contains a side-effect or unsupported static import form")
+          if (JSON.stringify(contractImports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts"])) throw new Error(`unexpected contracts imports: ${contractImports.join(",")}`)
+          const linkageImports = imports(linkage)
+          if (importKeywordCount(linkage) !== linkageImports.length) throw new Error("linkage contains a side-effect or unsupported static import form")
+          if (JSON.stringify(linkageImports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts", "./review-adjudication-contracts.ts"])) throw new Error(`unexpected linkage imports: ${linkageImports.join(",")}`)
+          for (const source of [contracts, linkage]) {
+            if (/\butilTypes\s*\[/.test(source)) throw new Error("computed node:util access is prohibited")
+            const members = [...source.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].map((match) => match[1])
+            if (members.some((name) => name !== "isProxy")) throw new Error(`unauthorized node:util API: ${members.join(",")}`)
+          }
+          NODE
+          test "$(grep -Fxc '} from "./proof-review/review-adjudication-contracts.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+          test "$(grep -Fxc 'export { linkK5R3ReviewAdjudicationEvidence } from "./proof-review/review-adjudication.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k5-r3-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k5-r3-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name": "k5-r3-typescript-validation", "version": "1.0.0", "lockfileVersion": 3, "requires": true,
+            "packages": {
+              "": {"name": "k5-r3-typescript-validation", "version": "1.0.0", "dependencies": {"@types/node": "24.3.0", "typescript": "5.9.3"}},
+              "node_modules/@types/node": {"version": "24.3.0", "resolved": "https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz", "integrity": "sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==", "dependencies": {"undici-types": "~7.10.0"}},
+              "node_modules/typescript": {"version": "5.9.3", "resolved": "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz", "integrity": "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==", "bin": {"tsc": "bin/tsc", "tsserver": "bin/tsserver"}, "engines": {"node": ">=14.17"}},
+              "node_modules/undici-types": {"version": "7.10.0", "resolved": "https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz", "integrity": "sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused R3, R2/R1 regressions, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k5-r3-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k5-r3-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/proof-review/review-adjudication.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r3-review-adjudication-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r1-proof-package-judgment.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r3-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k5-r3-typescript"
+
+      - name: Attest checkout unchanged after K5-R3 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r3-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r3-diff-after"
+          cmp "$RUNNER_TEMP/k5-r3-status-before" "$RUNNER_TEMP/k5-r3-status-after"
+          cmp "$RUNNER_TEMP/k5-r3-diff-before" "$RUNNER_TEMP/k5-r3-diff-after"
+          test ! -s "$RUNNER_TEMP/k5-r3-status-after"
+          test ! -s "$RUNNER_TEMP/k5-r3-diff-after"
