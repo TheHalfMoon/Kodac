@@ -2,7 +2,7 @@
 
 ## Authority
 
-This document records current engineering milestone status after canonical adoption and bounded closeout of K3-R1 through K3-R6, definition of K4, canonical adoption of its exact R1 data-only normalization and R2 caller-materialized MCP catalog evidence, and authorization of the bounded R3 pinned ACP v2 method-catalog lifecycle, plus KRI-P0 planning authority and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. This document does not authorize public release or implementation beyond an explicitly approved gate.
+This document records current engineering milestone status after canonical closeout of K0/K1, K2, K3-R1 through K3-R6, and the bounded K4-R1 through K4-R5 data-only ecosystem-compatibility surface, plus KRI-P0 planning authority and the separately authorized bounded KRI-R1 through KRI-R4 implementation slices. This document does not authorize public release or implementation beyond an explicitly approved gate.
 
 ## K0/K1 — CLOSED
 
@@ -90,7 +90,7 @@ K3 does not select a permanent graph/index/storage backend by implication.
 
 Vector/embedding infrastructure, expansion beyond the exact K3-R6 gate plus its narrow review-hardening extension, and K3-R7+ remain unauthorized.
 
-## K4 — DEFINED / IN PROGRESS
+## K4 — CLOSED
 
 Theme:
 
@@ -98,9 +98,10 @@ Theme:
 Ecosystem Compatibility & Capability Registry
 ```
 
-Current gate:
+Current canonical state:
 
 ```text
+K4: CLOSED FOR THE CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
 K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
 K4-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY SCOPE
 K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
@@ -108,11 +109,10 @@ K4-R2 CANONICAL-REGRESSION WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTH
 K4-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED PINNED DATA-ONLY ACP V2 METHOD-CATALOG EVIDENCE SCOPE
 K4-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL PACKAGE EVIDENCE SCOPE
 K4-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE SCOPE
-K4-R6+: NOT AUTHORIZED
-K4: NOT CLOSED
+K4-R6+: NOT REQUIRED FOR K4 CLOSEOUT / NOT AUTHORIZED
 ```
 
-K4-R1 is a non-executable foundation over the canonical H1 extension/capability descriptor registry. It may pin exact MCP, ACP, and Agent Skills specification revisions and record deterministic `UNRESOLVED`, `SINGLE`, or `COMPOSITE` bindings from opaque external object names to existing H1 semantic capability identifiers.
+K4-R1 is a non-executable foundation over the canonical H1 extension/capability descriptor registry. It pins exact MCP, ACP, and Agent Skills specification revisions and records deterministic `UNRESOLVED`, `SINGLE`, or `COMPOSITE` bindings from opaque external object names to existing H1 semantic capability identifiers.
 
 K4-R1 grants no protocol transport, discovery, invocation, session behavior, skill parsing/installation/activation, script execution, network/filesystem/process/secret authority, persistence, external registry, policy change, or K2 authority. Normalization and registry membership are evidence only.
 
@@ -122,9 +122,9 @@ The canonical implementation ledger, qualified identity, review evidence, proof 
 
 K4-R2 may correlate only already-materialized MCP tool/resource/prompt list-page digests with one exact K4-R1 binding snapshot. It adds no JSON-RPC, client/server, transport, discovery call, cursor traversal, caching, resource read, prompt retrieval, invocation, effect, or authority path. Its exact contract and five-path implementation allowlist are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
-Before K4-R2 source work, the inherited K4-R1 workflow was canonically hardened through the exact one-path, self-canonicalizing regression gate in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`. PR #175 satisfied that gate and its post-merge proof independently of this K4-R2 evidence candidate. That canonical prerequisite preserves the K4-R1 artifacts and shared exports without expanding the K4-R2 five-path allowlist.
+Before K4-R2 source work, the inherited K4-R1 workflow was canonically hardened through the exact one-path, self-canonicalizing regression gate in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`. PR #175 satisfied that gate and its post-merge proof independently of K4-R2 evidence. That canonical prerequisite preserves the K4-R1 artifacts and shared exports without expanding the K4-R2 five-path allowlist.
 
-The exact K4-R2 implementation ledger, qualification, review, conditional canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R2 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 K4-R3 is limited to a fixed, pinned 16-method ACP v2 inventory, deterministic method metadata, and `UNBOUND`, `CURRENT`, or `STALE` correlation against one immutable K4-R1 snapshot. It adds no JSON-RPC, client/agent, transport, initialization, capability negotiation, authentication, session, prompt, permission, filesystem, terminal, update, elicitation, cancellation, custom-method, effect, or authority path. Its exact contract, ordered one-path K4-R2 workflow prerequisite, and five-path implementation allowlist are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
@@ -137,6 +137,14 @@ The exact K4-R4 implementation ledger, qualification, review, canonical surface,
 K4-R5 is limited to binding bounded caller assertions about package version, requested semantic capabilities, bounded `requirementClaims` using only the fixed `requirementKind` vocabulary (`FILESYSTEM` / `NETWORK` / `PROCESS` / `SECRET`), compatibility requirements, and evaluation artifacts to one already-valid K4-R4 evidence identity. It emits fixed `claimStatus: CALLER_ASSERTED`, `trustStatus: UNASSESSED`, and `authorityState: NONE` states and cannot verify a claim, reproduce an evaluation, qualify trust, approve a capability, grant an effect, or install, activate, route, or execute a skill. Its exact contract and five-path implementation allowlist are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
 The exact K4-R5 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+
+### K4 closeout evidence
+
+The bounded closeout does not invent K4-R6. It closes the accepted R1-R5 data-only surface and preserves ADR-0007's broader executable MCP/ACP/Agent Skills direction as separately authorizable future work.
+
+The closeout authorization is recorded in `docs/planning/KODAC_K4_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-25.md`.
+
+The canonical ledger, bounded exit-evidence matrix, platform applicability, closure meaning, and preserved non-grants are recorded in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md`.
 
 ## KRI-P0 THROUGH KRI-R4 — BOUNDED REVIEWER INTELLIGENCE
 
@@ -184,15 +192,9 @@ K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
 K3-R1 THROUGH K3-R6: CANONICAL FOR THEIR AUTHORIZED SCOPES
 K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
-K4: DEFINED / IN PROGRESS / NOT CLOSED
-K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY SCOPE
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
-K4-R2 CANONICAL-REGRESSION WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH PREREQUISITE SCOPE
-K4-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED PINNED DATA-ONLY ACP V2 METHOD-CATALOG EVIDENCE SCOPE
-K4-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL PACKAGE EVIDENCE SCOPE
-K4-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE SCOPE
-K4-R6+: NOT AUTHORIZED
+K4: CLOSED FOR THE CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
+K4-R1 THROUGH K4-R5: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
+K4-R6+: NOT REQUIRED FOR K4 CLOSEOUT / NOT AUTHORIZED
 
 KRI-P0: CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
