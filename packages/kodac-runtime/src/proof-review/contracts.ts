@@ -219,7 +219,7 @@ function denseArray(value: unknown, label: string, min: number, max: number): re
   if (Object.getPrototypeOf(value) !== Array.prototype) invalid(label, "must be a plain array")
   if (Object.getOwnPropertySymbols(value).length !== 0) invalid(label, "must not contain symbol fields")
   const descriptors = Object.getOwnPropertyDescriptors(value)
-  const lengthDescriptor = descriptors.length
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
   if (lengthDescriptor === undefined || !("value" in lengthDescriptor)) {
     invalid(label, `must contain ${min} through ${max} entries`)
   }
