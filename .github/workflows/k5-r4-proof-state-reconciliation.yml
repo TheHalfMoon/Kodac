@@ -197,6 +197,33 @@ jobs:
           nonempty_na = copy.deepcopy(valid); nonempty_na["status"] = "NOT_APPLICABLE"; mutations.append(("nonempty NOT_APPLICABLE", nonempty_na))
           empty_valid = copy.deepcopy(valid); empty_valid["results"] = []; mutations.append(("empty VALID", empty_valid))
           uppercase = copy.deepcopy(valid); uppercase["packageIdentity"] = "A" * 64; mutations.append(("uppercase identity", uppercase))
+
+          r1_cause = copy.deepcopy(valid)
+          r1_cause["status"] = "INCOMPLETE"
+          r1_cause["results"][0].update(state="INCOMPLETE", causes=["R1_EXPLICIT_FAILED"])
+          mutations.append(("SATISFIED with R1 cause", r1_cause))
+
+          linked_cause = copy.deepcopy(valid)
+          linked_cause["status"] = "INVALID"
+          linked_cause["results"][0].update(state="INVALID", causes=["R2_REF_MISMATCH"])
+          mutations.append(("LINKED with linkage cause", linked_cause))
+
+          unlinked_missing = copy.deepcopy(valid)
+          unlinked_missing["results"][0].update(linkStatus="UNLINKED", sourceIdentity=None)
+          mutations.append(("UNLINKED without NO_SOURCE", unlinked_missing))
+
+          mismatch_missing = copy.deepcopy(valid)
+          mismatch_missing["results"][0]["linkStatus"] = "MISMATCH"
+          mutations.append(("MISMATCH without mismatch cause", mismatch_missing))
+
+          wrong_derived_state = copy.deepcopy(valid)
+          wrong_derived_state["results"][0].update(
+              r1Status="FAILED",
+              state="VALID",
+              causes=["R1_EXPLICIT_FAILED"],
+          )
+          mutations.append(("state does not match cause contribution", wrong_derived_state))
+
           for name, candidate in mutations:
               if not list(validator.iter_errors(candidate)):
                   raise SystemExit(f"schema accepted hostile K5-R4 mutation: {name}")
