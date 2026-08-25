@@ -220,16 +220,19 @@ function denseArray(value: unknown, label: string, min: number, max: number): re
   if (Object.getOwnPropertySymbols(value).length !== 0) invalid(label, "must not contain symbol fields")
   const descriptors = Object.getOwnPropertyDescriptors(value)
   const lengthDescriptor = descriptors.length
+  if (lengthDescriptor === undefined || !("value" in lengthDescriptor)) {
+    invalid(label, `must contain ${min} through ${max} entries`)
+  }
+  const lengthValue: unknown = lengthDescriptor.value
   if (
-    lengthDescriptor === undefined ||
-    !("value" in lengthDescriptor) ||
-    !Number.isSafeInteger(lengthDescriptor.value) ||
-    lengthDescriptor.value < min ||
-    lengthDescriptor.value > max
+    typeof lengthValue !== "number" ||
+    !Number.isSafeInteger(lengthValue) ||
+    lengthValue < min ||
+    lengthValue > max
   ) {
     invalid(label, `must contain ${min} through ${max} entries`)
   }
-  const length = lengthDescriptor.value as number
+  const length = lengthValue
   const expected = new Set(["length", ...Array.from({ length }, (_, index) => String(index))])
   for (const [key, descriptor] of Object.entries(descriptors)) {
     if (!expected.has(key)) invalid(label, `contains unexpected array field: ${key}`)
