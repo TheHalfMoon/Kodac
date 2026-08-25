@@ -227,9 +227,12 @@ jobs:
           const contracts = readFileSync("packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts", "utf8")
           const linkage = readFileSync("packages/kodac-runtime/src/proof-review/review-adjudication.ts", "utf8")
           const imports = (source) => [...source.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
           const contractImports = imports(contracts)
+          if (importKeywordCount(contracts) !== contractImports.length) throw new Error("contracts contains a side-effect or unsupported static import form")
           if (JSON.stringify(contractImports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts"])) throw new Error(`unexpected contracts imports: ${contractImports.join(",")}`)
           const linkageImports = imports(linkage)
+          if (importKeywordCount(linkage) !== linkageImports.length) throw new Error("linkage contains a side-effect or unsupported static import form")
           if (JSON.stringify(linkageImports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts", "./review-adjudication-contracts.ts"])) throw new Error(`unexpected linkage imports: ${linkageImports.join(",")}`)
           for (const source of [contracts, linkage]) {
             if (/\butilTypes\s*\[/.test(source)) throw new Error("computed node:util access is prohibited")
