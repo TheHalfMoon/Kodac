@@ -128,15 +128,15 @@ The exact K4-R2 caller-materialized MCP catalog-evidence contract, primary-sourc
 
 The inherited shared-export CI-gate conflict, exact one-path K4-R1 canonical-regression workflow hardening, self-canonicalizing merge proof, and unchanged K4-R2 five-path allowlist are recorded in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
 
-The exact K4-R2 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R2 implementation ledger, qualified identity, review evidence, proof matrix, conditional canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact pinned ACP v2 primary-source basis, 16-method catalog contract, ordered one-path K4-R2 workflow prerequisite, five-path K4-R3 implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
-The exact K4-R2 prerequisite-hardening identity, K4-R3 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R2 prerequisite-hardening identity, K4-R3 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact K4-R4 caller-materialized portable metadata and redacted content/provenance evidence contract, Agent Skills primary-source basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
-The exact K4-R4 implementation ledger, qualification, review, canonical surface, evidence merge gate, and preserved boundaries are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
+The exact K4-R4 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
 
 The exact K4-R5 caller-materialized governance-claim evidence contract, K4-R4 dependency basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
 
