@@ -140,7 +140,14 @@ jobs:
           set -euo pipefail
           sources=("packages/kodac-runtime/src/proof-review/linkage-contracts.ts" "packages/kodac-runtime/src/proof-review/linkage.ts")
           if grep -nE 'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|vm)|ExecutionGateway|Trust Kernel|DoneGate|PROVEN_READY|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function' "${sources[@]}"; then
-            echo "K5-R2 production authority/determinism boundary violation" >&2; exit 1
+            echo "K5-R2 production authority/determinism boundary violation" >&2
+            exit 1
+          else
+            grep_status=$?
+            if [ "$grep_status" -ne 1 ]; then
+              echo "K5-R2 production authority/determinism scanner failed with status $grep_status" >&2
+              exit "$grep_status"
+            fi
           fi
           node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs"
