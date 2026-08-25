@@ -177,7 +177,7 @@ test("source validation reproduces historical KRI identities but K5 source ident
   const created = createK5R3ReviewAdjudicationSource({ evidenceId: "e-review", sourceKind: "KRI_ADJUDICATION", canonicalBase: base, candidateHead: head, sourceRef: "opaque:not/a/url/or/command", sourceDigest: adjudication.adjudicationIdentity, finding, adjudication })
   assert.equal(created.version, K5_R3_REVIEW_ADJUDICATION_SOURCE_VERSION)
   assert.equal(created.finding.findingIdentity, finding.findingIdentity)
-  const adjudicationPreimage = clone(adjudication) as Rec
+  const adjudicationPreimage = clone(adjudication) as unknown as Rec
   delete adjudicationPreimage.adjudicationIdentity
   assert.equal(created.adjudication.adjudicationIdentity, legacyIdentity(adjudicationPreimage))
   assert.equal(created.sourceDigest, created.adjudication.adjudicationIdentity)
