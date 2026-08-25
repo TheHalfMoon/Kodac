@@ -64,8 +64,8 @@ export function linkK5R2Evidence(proofPackageValue: unknown, sourceLinksValue: u
     const codes: K5R2LinkCode[] = []
     if (source.sourceKind !== expectedKind) codes.push("KIND_MISMATCH")
     if (
-      source.canonicalBase !== evidence.canonicalBase
-      || source.candidateHead !== evidence.candidateHead
+      source.canonicalBase !== proofPackage.revision.canonicalBase
+      || source.candidateHead !== proofPackage.revision.candidateHead
     ) codes.push("REVISION_MISMATCH")
     if (source.sourceRef !== evidence.ref) codes.push("REF_MISMATCH")
     if (source.sourceDigest !== evidence.digest) codes.push("DIGEST_MISMATCH")
