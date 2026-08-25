@@ -43,6 +43,7 @@ K5-R1 does not decide whether a repository change is globally complete, safe to 
 ```text
 REVIEWER OUTPUT = CLAIM DATA, NOT COMPLETION TRUTH
 EVIDENCE REFERENCE != VERIFIED FACT BY ITSELF
+EVIDENCE ID != ADDITIONAL EVIDENCE WEIGHT
 K5 JUDGMENT != DONE GATE VERDICT
 K5 JUDGMENT != PROVEN_READY
 K5 JUDGMENT != EXECUTION AUTHORITY
@@ -154,6 +155,15 @@ where:
 version = "kodac-k5-r1-proof-package-v1"
 ```
 
+Package-level collection bounds are mandatory:
+
+```text
+requirements: 1 through 128 records
+evidence: 0 through 4096 records
+```
+
+A package with zero requirements is structurally invalid rather than vacuously sufficient. An otherwise-valid package with one or more requirements and zero evidence is `INSUFFICIENT_PACKAGE`.
+
 ### Subject
 
 `subject` contains only bounded immutable identity data:
@@ -214,7 +224,7 @@ CUSTOM
 
 `requirementId` is an opaque non-empty NUL-free string of at most 128 UTF-8 bytes. Requirement identifiers must be unique.
 
-`minimumEvidence` is a positive safe integer from 1 through 16. R1 only counts distinct accepted evidence records that explicitly claim the requirement identifier; it does not infer requirement satisfaction from prose or artifact names.
+`minimumEvidence` is a positive safe integer from 1 through 16. R1 counts only distinct current `SATISFIED` evidence fingerprints that explicitly claim the requirement identifier and whose evidence `kind` exactly matches the requirement `kind`. It does not infer requirement satisfaction from prose, artifact names, or caller-chosen evidence IDs.
 
 ### Evidence records
 
@@ -233,7 +243,8 @@ status
 
 Rules:
 
-- `evidenceId` is an opaque non-empty NUL-free string of at most 128 UTF-8 bytes and is unique in one package;
+- `evidenceId` is an opaque non-empty NUL-free locator of at most 128 UTF-8 bytes and is unique in one package;
+- `evidenceId` is never evidence weight and changing only `evidenceId` cannot create a second independent proof item for threshold counting;
 - `kind` uses the same closed vocabulary as requirement `kind`;
 - `requirementIds` is a non-empty unique set of one through sixteen existing requirement identifiers;
 - `canonicalBase` and `candidateHead` must exactly equal the package revision to be current for the package;
@@ -255,6 +266,35 @@ INVALID
 
 Evidence with mismatched revision identity is treated as stale regardless of a supplied `SATISFIED` status.
 
+For threshold counting, an evidence fingerprint is the canonical SHA-256 identity of exactly:
+
+```text
+kind
+canonicalBase
+candidateHead
+ref
+digest
+```
+
+The fingerprint deliberately excludes `evidenceId`, `requirementIds`, and `status`. For any one requirement, multiple records with the same fingerprint can contribute at most one unit toward `minimumEvidence`, regardless of how many caller-chosen IDs or requirement-list variants are supplied. If records with one fingerprint carry incompatible current statuses for the same requirement, the package is contradictory rather than receiving extra weight.
+
+### Two-phase validation and judgment
+
+R1 must distinguish unsafe/malformed input from a safely validated package that carries invalid proof semantics.
+
+Phase A — structural/package validation:
+
+- validates exact keys, types, bounds, vocabularies, uniqueness, package identity, canonical JSON admissibility, and collection limits;
+- rejects malformed input fail-closed with a deterministic `TypeError` before a judgment object is minted;
+- a malformed or identity-invalid object is therefore not represented as an authoritative `INVALID_PACKAGE` judgment.
+
+Phase B — judgment over a successfully validated immutable package:
+
+- may produce `INVALID_PACKAGE` when the package is structurally valid but its safely inspectable cross-record proof semantics are invalid, including an explicit current evidence `status: INVALID` or a requirement/evidence kind mismatch;
+- then applies stale, contradiction, insufficiency, and sufficiency precedence as defined below.
+
+This separation prevents an invalid caller-supplied `packageIdentity` from being echoed into a judgment artifact that looks valid.
+
 ### Structural identity
 
 K5-R1 uses a closed canonical JSON identity rule:
@@ -269,7 +309,7 @@ K5-R1 uses a closed canonical JSON identity rule:
 - canonical UTF-8 JSON is hashed with SHA-256;
 - `packageIdentity` is the 64-character lowercase hex digest of the complete validated package excluding `packageIdentity`.
 
-Equivalent set/order inputs therefore produce the same package identity. Any semantic field change changes identity.
+Equivalent set/order inputs therefore produce the same package identity. Any identity-bearing semantic field change changes identity. Evidence threshold independence is separately determined by the evidence fingerprint above and cannot be manufactured by changing only `evidenceId`.
 
 ### Judgment v1
 
@@ -301,9 +341,9 @@ STALE_PACKAGE
 INVALID_PACKAGE
 ```
 
-These names describe the supplied package under this R1 structural contract only. They are not synonyms for Done Gate states and do not grant merge/readiness authority.
+These names describe the supplied package under this R1 contract only. They are not synonyms for Done Gate states and do not grant merge/readiness authority.
 
-Precedence is fail-closed and deterministic:
+Precedence over a successfully validated package is fail-closed and deterministic:
 
 ```text
 INVALID_PACKAGE
@@ -313,15 +353,15 @@ INVALID_PACKAGE
 > SUFFICIENT_PACKAGE
 ```
 
-A package is:
+A validated package is:
 
-- `INVALID_PACKAGE` if validation fails, an evidence item is `INVALID`, a requirement references an invalid/mismatched kind, identity is wrong, bounds are violated, or the package cannot be judged under the closed contract;
+- `INVALID_PACKAGE` if safely inspectable cross-record semantics are invalid, including any explicit `INVALID` evidence state or requirement/evidence kind mismatch;
 - `STALE_PACKAGE` if any otherwise-valid evidence record is revision-mismatched or explicitly `STALE`;
-- `CONTRADICTORY_PACKAGE` if any otherwise-current applicable evidence is `CONTRADICTORY`, or the same requirement has both current `SATISFIED` and `FAILED` evidence;
-- `INSUFFICIENT_PACKAGE` if any requirement lacks its declared minimum count of distinct current `SATISFIED` evidence, or has current `FAILED` evidence without a contradiction state;
-- `SUFFICIENT_PACKAGE` only if every declared requirement has at least its minimum distinct current `SATISFIED` evidence and no higher-precedence state applies.
+- `CONTRADICTORY_PACKAGE` if any otherwise-current applicable evidence is `CONTRADICTORY`, if the same requirement has both current `SATISFIED` and `FAILED` evidence, or if one evidence fingerprint carries incompatible current statuses for the same requirement;
+- `INSUFFICIENT_PACKAGE` if any requirement lacks its declared minimum count of distinct current `SATISFIED` evidence fingerprints, or has current `FAILED` evidence without a contradiction state;
+- `SUFFICIENT_PACKAGE` only if every declared requirement has at least its minimum distinct current `SATISFIED` evidence fingerprints and no higher-precedence state applies.
 
-`reasons`, `requirementResults`, and `evidenceIds` must be deterministic and immutable. A result may never hide a higher-precedence problem merely because another requirement is satisfied.
+`reasons`, `requirementResults`, and `evidenceIds` must be deterministic, bounded by package contents, and immutable. A result may never hide a higher-precedence problem merely because another requirement is satisfied.
 
 `judgmentIdentity` hashes exactly the validated deterministic judgment record excluding `judgmentIdentity` using the same canonical JSON algorithm.
 
@@ -372,23 +412,26 @@ K5-R1 implementation must prove at least:
 1. strict exact-key validation at every nested object level;
 2. proxies, accessors, symbol fields, prototype-bearing non-plain objects, sparse arrays, unsupported JSON values, non-finite numbers, and unknown properties fail closed before identity construction;
 3. all string byte bounds are enforced in UTF-8 and NUL is rejected;
-4. revision identities and SHA-256 digests use exact lowercase hexadecimal grammar;
-5. duplicate requirement/evidence identities and duplicate evidence requirement references fail closed;
-6. unknown subject kinds, requirement kinds, evidence kinds, and statuses fail closed;
-7. requirement/evidence kind mismatch cannot satisfy a requirement;
-8. revision mismatch becomes `STALE_PACKAGE` even if caller status says `SATISFIED`;
-9. `INVALID_PACKAGE > STALE_PACKAGE > CONTRADICTORY_PACKAGE > INSUFFICIENT_PACKAGE > SUFFICIENT_PACKAGE` precedence is exact;
-10. current `SATISFIED` plus current `FAILED` for one requirement produces contradiction rather than silent counting;
-11. failed evidence cannot count toward minimum evidence;
-12. one evidence record cannot be double-counted for one requirement;
-13. package and judgment identities are deterministic, order-independent for declared sets, content-addressed, and change on every identity-bearing semantic mutation;
-14. all returned records/arrays are immutable copies and caller mutation cannot change prior results;
-15. empty requirement/evidence sets and all documented numeric/string bounds behave exactly as the contract states;
-16. no R1 production source contains filesystem, process, network, dynamic import, model/provider, reviewer executor, ExecutionGateway, Trust Kernel, Git mutation, persistence, GitHub write, Done Gate mutation, or `PROVEN_READY` behavior;
-17. existing Done Gate tests remain unchanged and green;
-18. existing KRI-R1 through KRI-R4 contracts/tests remain unchanged and green;
-19. full runtime tests, strict TypeScript, Python tests, Ruff, provenance validation, scope checks, and `git diff --check` are green on the exact implementation head;
-20. exact-head independent review finds no unresolved material contract, authority, identity, mutability, stale-evidence, or fail-open defect.
+4. `requirements` is bounded to 1 through 128 and `evidence` to 0 through 4096; zero requirements fails structural validation while zero evidence over non-empty requirements yields `INSUFFICIENT_PACKAGE`;
+5. revision identities and SHA-256 digests use exact lowercase hexadecimal grammar;
+6. duplicate requirement/evidence IDs and duplicate evidence requirement references fail closed;
+7. unknown subject kinds, requirement kinds, evidence kinds, and statuses fail closed;
+8. malformed structure or package-identity mismatch throws deterministic `TypeError` and does not mint a judgment object;
+9. structurally valid explicit `INVALID` evidence or requirement/evidence kind mismatch yields `INVALID_PACKAGE`;
+10. revision mismatch becomes `STALE_PACKAGE` even if caller status says `SATISFIED`;
+11. `INVALID_PACKAGE > STALE_PACKAGE > CONTRADICTORY_PACKAGE > INSUFFICIENT_PACKAGE > SUFFICIENT_PACKAGE` precedence is exact;
+12. current `SATISFIED` plus current `FAILED` for one requirement produces contradiction rather than silent counting;
+13. failed evidence cannot count toward minimum evidence;
+14. threshold counting uses unique evidence fingerprints over `kind + canonicalBase + candidateHead + ref + digest`; changing only `evidenceId`, requirement-list ordering, or duplicating the same fingerprint cannot increase evidence weight;
+15. incompatible current statuses for the same evidence fingerprint and requirement produce contradiction;
+16. package and judgment identities are deterministic, order-independent for declared sets, content-addressed, and change on every identity-bearing semantic mutation;
+17. all returned records/arrays are immutable copies and caller mutation cannot change prior results;
+18. all documented numeric/string/collection bounds behave exactly as the contract states;
+19. no R1 production source contains filesystem, process, network, dynamic import, model/provider, reviewer executor, ExecutionGateway, Trust Kernel, Git mutation, persistence, GitHub write, Done Gate mutation, or `PROVEN_READY` behavior;
+20. existing Done Gate tests remain unchanged and green;
+21. existing KRI-R1 through KRI-R4 contracts/tests remain unchanged and green;
+22. full runtime tests, strict TypeScript, Python tests, Ruff, provenance validation, scope checks, and `git diff --check` are green on the exact implementation head;
+23. exact-head independent review finds no unresolved material contract, authority, identity, mutability, stale-evidence, evidence-weight, or fail-open defect.
 
 ## Explicit non-grants
 
