@@ -77,10 +77,13 @@ test("links the three authorized evidence classes without transferring R1 or Don
 
 test("source revision binds to the exact R1 evidence record without rejudging package revision", () => {
   const staleHead = "9".repeat(40)
-  const input = packageInput()
-  input.evidence = input.evidence.map((evidence) => evidence.evidenceId === "e-verify"
-    ? { ...evidence, candidateHead: staleHead, status: "STALE" as const }
-    : evidence)
+  const original = packageInput()
+  const input: K5R1ProofPackageInput = {
+    ...original,
+    evidence: original.evidence.map((evidence) => evidence.evidenceId === "e-verify"
+      ? { ...evidence, candidateHead: staleHead, status: "STALE" as const }
+      : evidence),
+  }
   const proofPackage = createK5R1ProofPackage(input)
   const source = verificationSource({ candidateHead: staleHead })
   const result = linkK5R2Evidence(proofPackage, [source]).links.find((item) => item.evidenceId === "e-verify")
