@@ -75,7 +75,7 @@ test("links the three authorized evidence classes without transferring R1 or Don
   assert.equal(proofPackage.evidence.find((item) => item.evidenceId === "e-repo")?.status, "STALE")
 })
 
-test("source revision binds to the exact R1 evidence record without rejudging package revision", () => {
+test("source revision binds to package revision while preserving stale R1 evidence status", () => {
   const staleHead = "9".repeat(40)
   const original = packageInput()
   const input: K5R1ProofPackageInput = {
@@ -85,10 +85,13 @@ test("source revision binds to the exact R1 evidence record without rejudging pa
       : evidence),
   }
   const proofPackage = createK5R1ProofPackage(input)
-  const source = verificationSource({ candidateHead: staleHead })
-  const result = linkK5R2Evidence(proofPackage, [source]).links.find((item) => item.evidenceId === "e-verify")
-  assert.equal(result?.status, "LINKED")
-  assert.deepEqual(result?.codes, [])
+  const linked = linkK5R2Evidence(proofPackage, [verificationSource()]).links.find((item) => item.evidenceId === "e-verify")
+  assert.equal(linked?.status, "LINKED")
+  assert.deepEqual(linked?.codes, [])
+  const staleDescriptor = verificationSource({ candidateHead: staleHead })
+  const mismatched = linkK5R2Evidence(proofPackage, [staleDescriptor]).links.find((item) => item.evidenceId === "e-verify")
+  assert.equal(mismatched?.status, "MISMATCH")
+  assert.deepEqual(mismatched?.codes, ["REVISION_MISMATCH"])
   assert.equal(proofPackage.revision.candidateHead, head)
   assert.equal(proofPackage.evidence.find((item) => item.evidenceId === "e-verify")?.candidateHead, staleHead)
   assert.equal(proofPackage.evidence.find((item) => item.evidenceId === "e-verify")?.status, "STALE")
