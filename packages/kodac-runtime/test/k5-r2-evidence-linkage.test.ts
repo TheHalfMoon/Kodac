@@ -75,6 +75,22 @@ test("links the three authorized evidence classes without transferring R1 or Don
   assert.equal(proofPackage.evidence.find((item) => item.evidenceId === "e-repo")?.status, "STALE")
 })
 
+test("source revision binds to the exact R1 evidence record without rejudging package revision", () => {
+  const staleHead = "9".repeat(40)
+  const input = packageInput()
+  input.evidence = input.evidence.map((evidence) => evidence.evidenceId === "e-verify"
+    ? { ...evidence, candidateHead: staleHead, status: "STALE" as const }
+    : evidence)
+  const proofPackage = createK5R1ProofPackage(input)
+  const source = verificationSource({ candidateHead: staleHead })
+  const result = linkK5R2Evidence(proofPackage, [source]).links.find((item) => item.evidenceId === "e-verify")
+  assert.equal(result?.status, "LINKED")
+  assert.deepEqual(result?.codes, [])
+  assert.equal(proofPackage.revision.candidateHead, head)
+  assert.equal(proofPackage.evidence.find((item) => item.evidenceId === "e-verify")?.candidateHead, staleHead)
+  assert.equal(proofPackage.evidence.find((item) => item.evidenceId === "e-verify")?.status, "STALE")
+})
+
 test("missing descriptors produce only UNLINKED + NO_SOURCE and preserve out-of-scope evidence separately", () => {
   const linkage = linkK5R2Evidence(createK5R1ProofPackage(packageInput()), [])
   assert.deepEqual(linkage.links.map((item) => ({ evidenceId: item.evidenceId, status: item.status, codes: item.codes, sourceKind: item.sourceKind, sourceIdentity: item.sourceIdentity })), [
