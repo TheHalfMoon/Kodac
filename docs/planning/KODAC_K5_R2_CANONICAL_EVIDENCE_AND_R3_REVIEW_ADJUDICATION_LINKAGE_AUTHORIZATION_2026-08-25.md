@@ -683,7 +683,7 @@ KRI REVIEWER QUALIFICATION OR ROUTING BY K5: NOT AUTHORIZED
 KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
 
 K2 EXECUTION-AUTHORITY EXPANSION: NOT AUTHORIZED
-EXECUTIONGATEWAY CALLS FROM K5-R3: NOT AUTHORIZED
+ExecutionGateway CALLS FROM K5-R3: NOT AUTHORIZED
 FILESYSTEM / PROCESS / CHILD-PROCESS AUTHORITY: NOT AUTHORIZED
 NETWORK / PROVIDER / SECRET AUTHORITY: NOT AUTHORIZED
 GIT / GITHUB READ OR WRITE AUTHORITY FROM K5-R3: NOT AUTHORIZED
@@ -715,7 +715,7 @@ This record does not modify `code_import_authorized` and admits no external sour
 
 This authorization candidate is a one-path documentation gate. It is eligible for canonical adoption only when all of the following are true on the exact final head:
 
-- PR base is exactly `73246f28abc9abea89c5eb62996d11a857946e29` unless canonical `main` moves first, in which case the record must be rebased by a new non-destructive follow-up or otherwise re-authored/requalified against live canonical truth rather than merged stale;
+- PR base is exactly `73246f28abc9abea89c5eb62996d11a857946e29` unless canonical `main` moves first, in which case the candidate branch must be brought forward by a non-destructive merge from canonical `main` or the record must be re-authored/requalified against live canonical truth rather than merged stale;
 - changed paths contain exactly this file and no other path;
 - the K5-R2 merge, ordered parents, tree, six canonical implementation blobs, authorization blob, CI evidence, and review evidence above remain exact;
 - canonical KRI-R2/R3/R4 lineage and dependency blobs above remain ancestors/current where claimed;
