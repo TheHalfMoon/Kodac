@@ -174,6 +174,21 @@ REPOSITORY_STATE   -> REPOSITORY_REVISION
 
 It deliberately leaves `REVIEW_ADJUDICATION`, `ARTIFACT`, and `CUSTOM` outside its linkage authority. It preserves R1 evidence status unchanged and never grants Done Gate, KRI, K2, Git/GitHub, reviewer, persistence, or provider authority.
 
+The K5-R2 dedicated artifacts are immutable dependencies for R3: the R2 workflow, schema, `linkage-contracts.ts`, `linkage.ts`, and focused R2 test must retain the exact blobs above. `packages/kodac-runtime/src/index.ts` is a shared public-export surface and is the only R2-ledger path whose bytes are authorized to change during R3. That change is additive-only: the R3 candidate may append its reviewed R3 export block, but it must not remove, rewrite, reorder, or alter any pre-existing export line. The implementation workflow must attest pre-R3 index blob `c6ba6ac132b69da989d37eb4f4ae238186a51026` and prove the diff contains additions only for R3 exports.
+
+### Current K5-R1 dependency blobs
+
+K5-R3 directly consumes the K5-R1 package contract and must preserve its exact semantics. At this authorization base:
+
+| Path | Blob |
+| --- | --- |
+| `packages/kodac-runtime/src/proof-review/contracts.ts` | `ef0ae26c2a44157fb20ad33145788ba1255239f5` |
+| `packages/kodac-runtime/src/proof-review/judge.ts` | `1b6093d6ec9239427e5f50a1dd9483d2c5603e36` |
+| `schema/k5-r1-proof-package.schema.json` | `abe0a39158d57d1ae668e18914f567548015b092` |
+| `schema/k5-r1-proof-judgment.schema.json` | `0cb015938744ec989e3bd34eabe24c436b4d0b18` |
+
+R3 must not modify those paths.
+
 ## Canonical KRI dependency basis for K5-R3
 
 K5-R3 consumes only already-canonical KRI-R2 data contracts. It does not consume KRI execution authority.
@@ -263,7 +278,7 @@ For accepted caller-materialized `FindingRecord` and `AdjudicationRecord` inputs
 
 The current KRI-R2 runtime recursively canonicalizes ordinary JSON-compatible object members by sorting object keys using its existing deterministic JavaScript string comparison, preserves array order, serializes with `JSON.stringify`, encodes the resulting text as UTF-8, and computes SHA-256. The KRI finding identity uses the historical finding preimage defined by canonical KRI-R2; the adjudication identity uses the adjudication preimage defined by canonical KRI-R2.
 
-K5-R3 must not replace this legacy canonical KRI identity algorithm with RFC 8785 JCS. Revalidation must reproduce KRI-R2 bytes exactly for accepted records.
+K5-R3 must not replace this legacy canonical KRI identity algorithm with RFC 8785 JCS. Revalidation must reproduce KRI-R2 identity bytes exactly for every R3-admitted record.
 
 ### K5-R3 identity domain
 
@@ -278,6 +293,24 @@ strict validated plain non-proxy JSON data
 ```
 
 This separation is mandatory.
+
+### Representation-admission rule
+
+K5-R3 intentionally applies a stricter JavaScript representation boundary than the historical KRI-R2 runtime. This is a K5 consumer-side admission rule, not a mutation or reinterpretation of KRI-R2.
+
+The ordering is mandatory:
+
+```text
+1. reject unsafe/ambiguous JavaScript representations at the K5-R3 boundary
+2. normalize only admitted plain JSON data under exact KRI-R2 field semantics
+3. prove the admitted semantic record is valid under the preserved KRI-R2 contract
+4. recompute KRI identities using the exact legacy KRI-R2 algorithm
+5. only then construct the K5-R3 source preimage and K5 JCS identity
+```
+
+Therefore R3 may reject a representation that the historical KRI parser could technically read—for example a Proxy, accessor-bearing object, symbol-bearing object, custom prototype, sparse/custom array, invalid Unicode scalar representation, or negative-zero numeric representation—even though R3 must never broaden KRI semantics or accept a semantic KRI record KRI-R2 would reject. For every record admitted by R3, the normalized KRI fields and KRI identity must be exactly those produced by the canonical KRI-R2 contract.
+
+Embedded KRI string bounds retain the historical KRI-R2 JavaScript string-length semantics where that contract uses `.length`; R3 must not silently reinterpret those historical bounds as UTF-8 byte limits. R3's own outer descriptor fields use the explicit UTF-8 byte limits defined below. Because JSON Schema cannot express every JavaScript UTF-16-code-unit or UTF-8-byte constraint exactly, runtime validation is authoritative for those representation/byte relations and the schema must remain a compatible structural superset rather than claim a contradictory length rule.
 
 ## Authorized K5-R3 source descriptor
 
@@ -338,12 +371,12 @@ The descriptor contains the complete caller-materialized KRI-R2 `FindingRecord` 
 K5-R3 must validate at least:
 
 - exact KRI versions;
-- exact object shapes and bounds;
+- exact object shapes and historical KRI bounds;
 - exact review identity grammar;
 - exact Git/SHA-256 grammar;
 - affected path/range grammar;
 - exact severity, freshness, finding-state, action, previous-state, and resulting-state vocabularies;
-- canonical evidence-reference semantics retained by KRI-R2;
+- canonical evidence-reference normalization retained by KRI-R2;
 - recomputed `findingIdentity` equals the claimed identity;
 - recomputed `adjudicationIdentity` equals the claimed identity;
 - `adjudication.findingIdentity == finding.findingIdentity`;
@@ -390,7 +423,9 @@ descriptor.canonicalBase == proofPackage.revision.canonicalBase
 descriptor.candidateHead == proofPackage.revision.candidateHead
 ```
 
-A source that was validly adjudicated for an older head remains structurally valid historical KRI data, but cannot be relabeled as current K5 package evidence. It produces R3 `REVISION_MISMATCH` when its outer, embedded-bound revision differs from the current K5 package revision.
+A structurally valid source representing an adjudication for an older head remains historical KRI data, but cannot be relabeled as current K5 package evidence. It produces R3 `REVISION_MISMATCH` when its outer, embedded-bound revision differs from the current K5 package revision.
+
+As in canonical K5-R2, R3 does **not** use the target R1 evidence record's own `canonicalBase` / `candidateHead` fields as the semantic linkage revision comparator. Those R1 evidence fields and its pre-existing `status` remain package data to be preserved, not rejudged by R3. The validated R1 **package revision** is the linkage revision root. Any inconsistency between an R1 evidence record's embedded revision/status and the package/source relationship belongs to separately authorized K5-R4 handling.
 
 K5-R3 does not contact Git and does not prove ancestry.
 
@@ -437,6 +472,25 @@ linkageIdentity
 `revision` is an immutable copy of the validated K5-R1 package revision.
 
 `links` contains exactly one result for every R1 evidence record whose kind is `REVIEW_ADJUDICATION`, sorted by `evidenceId`.
+
+Every link result contains exactly:
+
+```text
+evidenceId
+evidenceKind
+sourceKind
+status
+codes
+sourceIdentity
+```
+
+with:
+
+```text
+evidenceKind = REVIEW_ADJUDICATION
+sourceKind = KRI_ADJUDICATION | null
+sourceIdentity = lowercase SHA-256 | null
+```
 
 Every other R1 evidence ID appears exactly once in `outOfScopeEvidenceIds`, canonically sorted. R3 does not mutate or reinterpret those other evidence classes.
 
@@ -511,7 +565,7 @@ Conversely, `LINKED` does not upgrade any R1 status to `SATISFIED`.
 
 K5-R4, if separately authorized later, owns explicit cross-class stale/contradictory/incomplete/invalid handling. R3 must not smuggle R4 judgment semantics into linkage.
 
-K5-R2 linkage bytes and behavior must remain unchanged. K5-R3 is a separate result surface and must not add `KRI_ADJUDICATION` to the K5-R2 source-kind vocabulary.
+K5-R2 linkage behavior and dedicated bytes must remain unchanged. K5-R3 is a separate result surface and must not add `KRI_ADJUDICATION` to the K5-R2 source-kind vocabulary. The shared root `index.ts` may change only under the additive-only rule above.
 
 ## Hostile-input and determinism boundary
 
@@ -555,6 +609,24 @@ No seventh path is authorized without a separate canonical scope extension.
 
 The implementation PR must not modify this authorization document.
 
+## Authorized production API/export surface
+
+The public R3 orchestrator is:
+
+```text
+linkK5R3ReviewAdjudicationEvidence
+```
+
+The contract module may expose only the constants, readonly data types, source builder/validator, and linkage validator needed by that pure API. The intended source helpers are:
+
+```text
+createK5R3ReviewAdjudicationSource
+validateK5R3ReviewAdjudicationSource
+validateK5R3ReviewAdjudicationLinkage
+```
+
+The exact reviewed export block is qualified as part of the candidate. It must be appended to the existing root index without editing existing export lines.
+
 ## Authorized production import surface
 
 The production K5-R3 source may use only deterministic local validation/identity support.
@@ -588,11 +660,11 @@ It must at minimum encode:
 - action-specific adjudication branches where JSON Schema can express them;
 - current/NEW embedded finding representation;
 - target linkage nullability rules;
-- collection bounds;
+- collection bounds where JSON Schema expresses the same semantic unit;
 - exact link `REVIEW_ADJUDICATION` kind;
 - additional-properties denial throughout.
 
-Runtime validation remains authoritative for security-relevant cross-field relations JSON Schema cannot express, including identity recomputation, embedded/outside revision equality, KRI finding/adjudication identity recomputation, and target-package correlation.
+Runtime validation remains authoritative for security-relevant relations JSON Schema cannot express exactly, including identity recomputation, embedded/outside revision equality, KRI finding/adjudication identity recomputation, target-package correlation, UTF-8 byte limits, historical JavaScript string-length semantics, and representation-level hostile-input rejection. Schema/runtime parity means the schema must not contradict runtime vocabulary, required/optional shape, nullability, or representable branches; it need not pretend to encode a byte/code-unit relation JSON Schema does not natively model.
 
 The workflow must include hostile schema mutations so schema acceptance cannot silently drift from runtime semantics.
 
@@ -604,42 +676,47 @@ The exact-head K5-R3 candidate must prove at least all of the following:
 2. Only `REVIEW_ADJUDICATION` R1 evidence may be targeted.
 3. Only `KRI_ADJUDICATION` source descriptors are representable.
 4. Complete embedded KRI-R2 finding/adjudication records are structurally validated.
-5. KRI finding identity is recomputed under the exact canonical KRI-R2 identity algorithm.
-6. KRI adjudication identity is recomputed under the exact canonical KRI-R2 identity algorithm.
-7. KRI identity recomputation is not accidentally replaced by K5 JCS.
-8. `adjudication.findingIdentity` must equal the embedded finding identity.
-9. Embedded finding must be `CURRENT / NEW` with `evaluatedHead == reviewedHead`.
-10. Adjudication action/previous/resulting state semantics are exact.
-11. Action-specific duplicate/correction/reverification fields are exact.
-12. Previous-adjudication identity nullability is exact.
-13. Outer descriptor revision is exactly bound to embedded KRI revision.
-14. Outer descriptor revision is compared exactly to K5 package revision.
-15. `sourceDigest` must equal `adjudicationIdentity` before target comparison.
-16. `sourceRef` and digest correlate only by exact string equality to the R1 target record.
-17. Missing source derives only `UNLINKED + NO_SOURCE`.
-18. Revision/ref/digest mismatches are cumulative and emitted in fixed rank order.
-19. Orphan targets, non-R3 targets, duplicate descriptors, malformed descriptors, and identity tampering fail structurally.
-20. KRI terminal lifecycle values remain data only and never map automatically to R1 status.
-21. R1 evidence status remains byte-for-byte/semantically unchanged by R3.
-22. K5-R2 production bytes remain unchanged.
-23. Canonical KRI-R2/R3/R4 production source and schema bytes remain unchanged.
-24. Direct and nested proxies are rejected before traps execute.
-25. Accessors, symbols, sparse arrays, custom prototypes, cycles, non-JSON values, invalid Unicode, and unsafe numbers fail closed.
-26. Source and linkage outputs are deeply immutable detached copies.
-27. K5 source/linkage identities use K5 JCS; KRI identities use the preserved KRI algorithm.
-28. Published schema and runtime vocabularies/nullability/bounds remain in parity.
-29. Production imports remain inside the exact allowed pure surface.
-30. No Done Gate, `PROVEN_READY`, KRI runtime, KRI executor, KRI qualification, K2, Git/GitHub, provider, network, filesystem, process, persistence, review, approval, merge, or write authority is introduced.
-31. Strict TypeScript passes.
-32. Focused K5-R3 tests pass.
-33. Focused K5-R2 and K5-R1 regression tests pass on the exact head.
-34. Full runtime tests pass on the exact head across applicable existing CI lanes.
-35. Python, Ruff, and provenance gates pass.
-36. Exact-head independent review reports zero unresolved material findings.
-37. Changed paths are exactly the six authorized implementation paths.
-38. Checkout remains unchanged after qualification.
-39. Main remains the exact authorization merge used as implementation base until landing or the candidate is requalified against any canonically authorized replacement.
-40. Post-merge ordered-parent/tree/blob proof completes before K5-R3 is called canonical.
+5. R3's stricter representation admission runs before embedded KRI traversal/canonicalization and does not broaden KRI semantics.
+6. KRI finding identity is recomputed under the exact canonical KRI-R2 identity algorithm.
+7. KRI adjudication identity is recomputed under the exact canonical KRI-R2 identity algorithm.
+8. KRI identity recomputation is not accidentally replaced by K5 JCS.
+9. `adjudication.findingIdentity` must equal the embedded finding identity.
+10. Embedded finding must be `CURRENT / NEW` with `evaluatedHead == reviewedHead`.
+11. Adjudication action/previous/resulting state semantics are exact.
+12. Action-specific duplicate/correction/reverification fields are exact.
+13. Previous-adjudication identity nullability is exact.
+14. Outer descriptor revision is exactly bound to embedded KRI revision.
+15. Outer descriptor revision is compared exactly to K5 package revision.
+16. R1 target evidence `canonicalBase` / `candidateHead` / `status` are preserved data, not linkage-revision comparators or R3 judgment inputs.
+17. `sourceDigest` must equal `adjudicationIdentity` before target comparison.
+18. `sourceRef` and digest correlate only by exact string equality to the R1 target record.
+19. Missing source derives only `UNLINKED + NO_SOURCE`.
+20. Revision/ref/digest mismatches are cumulative and emitted in fixed rank order.
+21. Orphan targets, non-R3 targets, duplicate descriptors, malformed descriptors, and identity tampering fail structurally.
+22. KRI terminal lifecycle values remain data only and never map automatically to R1 status.
+23. R1 evidence status remains byte-for-byte/semantically unchanged by R3.
+24. K5-R2 dedicated workflow/schema/contracts/linkage/test blobs remain exact.
+25. The shared pre-R3 `index.ts` changes only by additive R3 export lines; all pre-existing export lines remain unchanged.
+26. Canonical K5-R1 contract/judge/schema bytes remain unchanged.
+27. Canonical KRI-R2/R3/R4 production source and schema bytes remain unchanged.
+28. Direct and nested proxies are rejected before traps execute.
+29. Accessors, symbols, sparse arrays, custom prototypes, cycles, non-JSON values, invalid Unicode, and unsafe/negative-zero numbers fail closed at R3 admission.
+30. Embedded KRI historical string-length semantics are preserved for admitted semantic records; R3 outer fields use their explicit UTF-8 byte bounds.
+31. Source and linkage outputs are deeply immutable detached copies.
+32. K5 source/linkage identities use K5 JCS; KRI identities use the preserved KRI algorithm.
+33. Published schema and runtime vocabularies/nullability/branches remain compatible under the schema/runtime rule above.
+34. Production imports remain inside the exact allowed pure surface.
+35. No Done Gate, `PROVEN_READY`, KRI runtime, KRI executor, KRI qualification, K2, Git/GitHub, provider, network, filesystem, process, persistence, review, approval, merge, or write authority is introduced.
+36. Strict TypeScript passes.
+37. Focused K5-R3 tests pass.
+38. Focused K5-R2 and K5-R1 regression tests pass on the exact head.
+39. Full runtime tests pass on the exact head across applicable existing CI lanes.
+40. Python, Ruff, and provenance gates pass.
+41. Exact-head independent review reports zero unresolved material findings.
+42. Changed paths are exactly the six authorized implementation paths.
+43. Checkout remains unchanged after qualification.
+44. Main remains the exact authorization merge used as implementation base until landing or the candidate is requalified against any canonically authorized replacement.
+45. Post-merge ordered-parent/tree/blob proof completes before K5-R3 is called canonical.
 
 ## K5-R3 implementation workflow requirements
 
@@ -657,7 +734,9 @@ At minimum the workflow must fail closed on:
 - purity/determinism forbidden surfaces;
 - schema hostile mutations;
 - KRI dependency blob drift;
-- K5-R1/R2 dependency blob drift not explicitly allowed by this authorization;
+- K5-R1 dependency blob drift;
+- K5-R2 dedicated dependency blob drift;
+- any root-index edit other than additive reviewed R3 exports from pre-R3 blob `c6ba6ac132b69da989d37eb4f4ae238186a51026`;
 - TypeScript/runtime/Python/Ruff/provenance failure;
 - dirty checkout after validation.
 
@@ -717,7 +796,8 @@ This authorization candidate is a one-path documentation gate. It is eligible fo
 
 - PR base is exactly `73246f28abc9abea89c5eb62996d11a857946e29` unless canonical `main` moves first, in which case the candidate branch must be brought forward by a non-destructive merge from canonical `main` or the record must be re-authored/requalified against live canonical truth rather than merged stale;
 - changed paths contain exactly this file and no other path;
-- the K5-R2 merge, ordered parents, tree, six canonical implementation blobs, authorization blob, CI evidence, and review evidence above remain exact;
+- the K5-R2 merge, ordered parents, tree, dedicated canonical implementation blobs, shared-index preimage, authorization blob, CI evidence, and review evidence above remain exact;
+- the current K5-R1 dependency blobs above remain exact;
 - canonical KRI-R2/R3/R4 lineage and dependency blobs above remain ancestors/current where claimed;
 - K5-R3 scope remains pure caller-materialized linkage only;
 - R4+ remains unauthorized;
