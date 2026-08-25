@@ -24,9 +24,11 @@ import {
 } from "../src/proof-review/review-adjudication-contracts.ts"
 import { linkK5R3ReviewAdjudicationEvidence } from "../src/proof-review/review-adjudication.ts"
 import {
+  K5_R4_EVIDENCE_STATES,
   K5_R4_LIMITS,
   K5_R4_PROOF_STATE_RECONCILIATION_VERSION,
   k5R4ReconciliationIdentity,
+  k5R4StateFromCauses,
   validateK5R4ProofStateReconciliation,
   type K5R4ProofStateReconciliation,
 } from "../src/proof-review/reconciliation-contracts.ts"
@@ -281,6 +283,15 @@ test("reconciles all five non-empty states without transferring Done Gate author
     assert.equal(result.status, expected)
     assert.equal(JSON.stringify(result).includes("PROVEN_READY"), false)
   }
+})
+
+test("STALE outranks CONTRADICTORY in both cause and aggregate precedence", () => {
+  assert.deepEqual(K5_R4_EVIDENCE_STATES, ["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"])
+  assert.equal(k5R4StateFromCauses(["R1_EXPLICIT_CONTRADICTORY", "R1_EXPLICIT_STALE"]), "STALE")
+  const mixed = reconcile({ statuses: { verify: "STALE", review: "CONTRADICTORY" } })
+  assert.equal(mixed.results.find((item) => item.evidenceId === "e-verify")?.state, "STALE")
+  assert.equal(mixed.results.find((item) => item.evidenceId === "e-review")?.state, "CONTRADICTORY")
+  assert.equal(mixed.status, "STALE")
 })
 
 test("NOT_APPLICABLE is emitted only when the package has no R4-linked evidence", () => {
