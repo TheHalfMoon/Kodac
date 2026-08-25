@@ -12,7 +12,7 @@ import { K5_R2_LINK_STATUSES, type K5R2LinkStatus } from "./linkage-contracts.ts
 import { K5_R3_LINK_STATUSES, type K5R3LinkStatus } from "./review-adjudication-contracts.ts"
 
 export const K5_R4_PROOF_STATE_RECONCILIATION_VERSION = "kodac-k5-r4-proof-state-reconciliation-v1" as const
-export const K5_R4_EVIDENCE_STATES = Object.freeze(["VALID", "INCOMPLETE", "STALE", "CONTRADICTORY", "INVALID"] as const)
+export const K5_R4_EVIDENCE_STATES = Object.freeze(["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"] as const)
 export const K5_R4_RECONCILIATION_STATUSES = Object.freeze(["NOT_APPLICABLE", ...K5_R4_EVIDENCE_STATES] as const)
 export const K5_R4_LINKAGE_LAYERS = Object.freeze(["K5_R2", "K5_R3"] as const)
 export const K5_R4_CAUSES = Object.freeze([
