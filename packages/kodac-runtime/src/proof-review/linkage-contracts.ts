@@ -92,6 +92,7 @@ const LINK_STATUSES = new Set<string>(K5_R2_LINK_STATUSES)
 const LINK_CODES = new Set<string>(K5_R2_LINK_CODES)
 const LINK_RANK = new Map<string, number>(K5_R2_LINK_CODES.map((v, i) => [v, i]))
 const EVIDENCE_KINDS = new Set<string>(["VERIFICATION", "EXECUTION_RECEIPT", "REPOSITORY_STATE"])
+const SOURCE_BY_EVIDENCE = Object.freeze({ VERIFICATION: "VERIFICATION_REPORT", EXECUTION_RECEIPT: "EXECUTION_RECEIPT", REPOSITORY_STATE: "REPOSITORY_REVISION" } as const)
 const POLICIES = new Set<string>(["allow", "ask", "deny"])
 const RESULTS = new Set<string>(["success", "blocked", "failure"])
 const FRESHNESS = new Set<string>(["current", "stale"])
@@ -256,16 +257,7 @@ function sourceParts(value: unknown, keys: readonly string[], label: string) {
   }
 }
 function sourcePreimage(p: ReturnType<typeof sourceParts>) {
-  return Object.freeze({
-    version: K5_R2_SOURCE_LINK_VERSION,
-    evidenceId: p.evidenceId,
-    sourceKind: p.sourceKind,
-    canonicalBase: p.canonicalBase,
-    candidateHead: p.candidateHead,
-    sourceRef: p.sourceRef,
-    sourceDigest: p.sourceDigest,
-    metadata: p.metadata,
-  })
+  return Object.freeze({ version: K5_R2_SOURCE_LINK_VERSION, evidenceId: p.evidenceId, sourceKind: p.sourceKind, canonicalBase: p.canonicalBase, candidateHead: p.candidateHead, sourceRef: p.sourceRef, sourceDigest: p.sourceDigest, metadata: p.metadata })
 }
 function frozenSource(p: ReturnType<typeof sourceParts>, sourceIdentity: string): K5R2SourceLink {
   return Object.freeze({ version: K5_R2_SOURCE_LINK_VERSION, sourceIdentity, evidenceId: p.evidenceId, sourceKind: p.sourceKind, canonicalBase: p.canonicalBase, candidateHead: p.candidateHead, sourceRef: p.sourceRef, sourceDigest: p.sourceDigest, metadata: p.metadata })
@@ -309,9 +301,11 @@ function link(value: unknown, label: string): K5R2LinkResult {
   const cs = codes(r.codes, `${label}.codes`)
   const sourceKind = r.sourceKind === null ? null : en<K5R2SourceKind>(r.sourceKind, SOURCE_KINDS, `${label}.sourceKind`)
   const sourceIdentity = r.sourceIdentity === null ? null : sha256(r.sourceIdentity, `${label}.sourceIdentity`)
+  const expectedSourceKind = SOURCE_BY_EVIDENCE[evidenceKind]
+  const kindMismatch = sourceKind !== null && sourceKind !== expectedSourceKind
   if (status === "UNLINKED" && (sourceKind !== null || sourceIdentity !== null || cs.length !== 1 || cs[0] !== "NO_SOURCE")) bad(label, "UNLINKED requires null source fields and exactly NO_SOURCE")
-  if (status === "LINKED" && (sourceKind === null || sourceIdentity === null || cs.length)) bad(label, "LINKED requires source fields and no codes")
-  if (status === "MISMATCH" && (sourceKind === null || sourceIdentity === null || !cs.length || cs.includes("NO_SOURCE"))) bad(label, "MISMATCH requires source fields and mismatch codes")
+  if (status === "LINKED" && (sourceKind !== expectedSourceKind || sourceIdentity === null || cs.length)) bad(label, "LINKED requires the matching source kind, source identity, and no codes")
+  if (status === "MISMATCH" && (sourceKind === null || sourceIdentity === null || !cs.length || cs.includes("NO_SOURCE") || cs.includes("KIND_MISMATCH") !== kindMismatch)) bad(label, "MISMATCH source-kind relation must agree with KIND_MISMATCH")
   return Object.freeze({ evidenceId, evidenceKind, sourceKind, status, codes: cs, sourceIdentity })
 }
 function links(value: unknown): readonly K5R2LinkResult[] {
