@@ -70,15 +70,7 @@ export interface K5R4ProofStateReconciliation {
   readonly reconciliationIdentity: string
 }
 
-export interface K5R4ProofStateReconciliationInput {
-  readonly packageIdentity: string
-  readonly r2LinkageIdentity: string
-  readonly r3LinkageIdentity: string
-  readonly revision: K5R1Revision
-  readonly status: K5R4ReconciliationStatus
-  readonly results: readonly K5R4EvidenceResult[]
-  readonly outOfScopeEvidenceIds: readonly string[]
-}
+export type K5R4ProofStateReconciliationInput = Omit<K5R4ProofStateReconciliation, "reconciliationIdentity">
 
 type Rec = Record<string, unknown>
 type JsonFrame =
@@ -95,6 +87,13 @@ const LINK_STATUSES = new Set<string>([...K5_R2_LINK_STATUSES, ...K5_R3_LINK_STA
 const CAUSES = new Set<string>(K5_R4_CAUSES)
 const CAUSE_RANK = new Map<string, number>(K5_R4_CAUSES.map((cause, index) => [cause, index]))
 const LINKED_EVIDENCE_KINDS = new Set<string>(["VERIFICATION", "EXECUTION_RECEIPT", "REPOSITORY_STATE", "REVIEW_ADJUDICATION"])
+const STATE_RANK = new Map<K5R4EvidenceState, number>([
+  ["VALID", 0],
+  ["INCOMPLETE", 1],
+  ["CONTRADICTORY", 2],
+  ["STALE", 3],
+  ["INVALID", 4],
+])
 
 const RECORD_KEYS = [
   "version",
@@ -149,9 +148,14 @@ function assertSafeJson(value: unknown, label: string): void {
       ancestors.delete(frame.value)
       continue
     }
+
     nodes += 1
-    if (nodes > K5_R4_LIMITS.safeJsonMaxNodes) bad(frame.label, `exceeds safe JSON node budget of ${K5_R4_LIMITS.safeJsonMaxNodes}`)
-    if (frame.depth > K5_R4_LIMITS.safeJsonMaxDepth) bad(frame.label, `exceeds safe JSON nesting depth of ${K5_R4_LIMITS.safeJsonMaxDepth}`)
+    if (nodes > K5_R4_LIMITS.safeJsonMaxNodes) {
+      bad(frame.label, `exceeds safe JSON node budget of ${K5_R4_LIMITS.safeJsonMaxNodes}`)
+    }
+    if (frame.depth > K5_R4_LIMITS.safeJsonMaxDepth) {
+      bad(frame.label, `exceeds safe JSON nesting depth of ${K5_R4_LIMITS.safeJsonMaxDepth}`)
+    }
 
     const current = frame.value
     if (typeof current === "object" && current !== null) {
@@ -168,13 +172,17 @@ function assertSafeJson(value: unknown, label: string): void {
         if (typeof length !== "number" || !Number.isSafeInteger(length) || Object.is(length, -0) || length < 0) {
           bad(frame.label, "must have a safe array length")
         }
-        if (length > K5_R4_LIMITS.safeJsonMaxNodes - nodes) bad(frame.label, `exceeds safe JSON node budget of ${K5_R4_LIMITS.safeJsonMaxNodes}`)
+        if (length > K5_R4_LIMITS.safeJsonMaxNodes - nodes) {
+          bad(frame.label, `exceeds safe JSON node budget of ${K5_R4_LIMITS.safeJsonMaxNodes}`)
+        }
         const names = Object.getOwnPropertyNames(current)
         if (names.length !== length + 1) bad(frame.label, "contains unexpected array fields")
         for (let index = length - 1; index >= 0; index -= 1) {
           const descriptor = Object.getOwnPropertyDescriptor(current, String(index))
           if (descriptor === undefined) bad(frame.label, "must be dense")
-          if (!("value" in descriptor) || !descriptor.enumerable) bad(`${frame.label}[${index}]`, "must be an enumerable data property")
+          if (!("value" in descriptor) || !descriptor.enumerable) {
+            bad(`${frame.label}[${index}]`, "must be an enumerable data property")
+          }
           stack.push({ kind: "value", value: descriptor.value, label: `${frame.label}[${index}]`, depth: frame.depth + 1 })
         }
       } else {
@@ -182,12 +190,16 @@ function assertSafeJson(value: unknown, label: string): void {
         if (prototype !== Object.prototype && prototype !== null) bad(frame.label, "must be a plain object")
         if (Object.getOwnPropertySymbols(current).length !== 0) bad(frame.label, "must not contain symbol fields")
         const names = Object.getOwnPropertyNames(current)
-        if (names.length > K5_R4_LIMITS.safeJsonMaxNodes - nodes) bad(frame.label, `exceeds safe JSON node budget of ${K5_R4_LIMITS.safeJsonMaxNodes}`)
+        if (names.length > K5_R4_LIMITS.safeJsonMaxNodes - nodes) {
+          bad(frame.label, `exceeds safe JSON node budget of ${K5_R4_LIMITS.safeJsonMaxNodes}`)
+        }
         for (let index = names.length - 1; index >= 0; index -= 1) {
           const name = names[index] as string
           validUnicodeScalars(name, `${frame.label} property name`)
           const descriptor = Object.getOwnPropertyDescriptor(current, name)
-          if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) bad(`${frame.label}.${name}`, "must be an enumerable data property")
+          if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
+            bad(`${frame.label}.${name}`, "must be an enumerable data property")
+          }
           stack.push({ kind: "value", value: descriptor.value, label: `${frame.label}.${name}`, depth: frame.depth + 1 })
         }
       }
@@ -203,7 +215,9 @@ function assertSafeJson(value: unknown, label: string): void {
       continue
     }
     if (typeof current === "number") {
-      if (!Number.isSafeInteger(current) || Object.is(current, -0)) bad(frame.label, "must be a non-negative-zero safe integer")
+      if (!Number.isSafeInteger(current) || Object.is(current, -0)) {
+        bad(frame.label, "must be a non-negative-zero safe integer")
+      }
       continue
     }
     if (current === null || typeof current === "boolean") continue
@@ -224,7 +238,9 @@ function rec(value: unknown, keys: readonly string[], label: string): Rec {
   for (const name of names) {
     if (!allowed.has(name)) bad(label, `contains unknown field: ${name}`)
     const descriptor = Object.getOwnPropertyDescriptor(value, name)
-    if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) bad(`${label}.${name}`, "must be an enumerable data property")
+    if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
+      bad(`${label}.${name}`, "must be an enumerable data property")
+    }
     out[name] = descriptor.value
   }
   for (const key of keys) if (!Object.hasOwn(out, key)) bad(label, `is missing required field: ${key}`)
@@ -244,7 +260,9 @@ function arr(value: unknown, label: string, min: number, max: number): readonly 
   for (let index = 0; index < length; index += 1) {
     const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
     if (descriptor === undefined) bad(label, "must be dense")
-    if (!("value" in descriptor) || !descriptor.enumerable) bad(`${label}[${index}]`, "must be an enumerable data property")
+    if (!("value" in descriptor) || !descriptor.enumerable) {
+      bad(`${label}[${index}]`, "must be an enumerable data property")
+    }
     out.push(descriptor.value)
   }
   if (Object.getOwnPropertyNames(value).length !== length + 1) bad(label, "contains unexpected array fields")
@@ -252,7 +270,9 @@ function arr(value: unknown, label: string, min: number, max: number): readonly 
 }
 
 function text(value: unknown, label: string, maxBytes: number): string {
-  if (typeof value !== "string" || value.length === 0 || value.includes("\0")) bad(label, "must be a non-empty NUL-free string")
+  if (typeof value !== "string" || value.length === 0 || value.includes("\0")) {
+    bad(label, "must be a non-empty NUL-free string")
+  }
   validUnicodeScalars(value, label)
   if (Buffer.byteLength(value, "utf8") > maxBytes) bad(label, `exceeds ${maxBytes} UTF-8 bytes`)
   return value
@@ -288,15 +308,18 @@ function revision(value: unknown, label: string): K5R1Revision {
 }
 
 function causeState(cause: K5R4Cause): K5R4EvidenceState {
-  if (cause === "R1_EXPLICIT_INVALID" || cause === "R2_KIND_MISMATCH" || cause === "R2_REF_MISMATCH" || cause === "R2_DIGEST_MISMATCH" || cause === "R3_REF_MISMATCH" || cause === "R3_DIGEST_MISMATCH") return "INVALID"
+  if (
+    cause === "R1_EXPLICIT_INVALID"
+    || cause === "R2_KIND_MISMATCH"
+    || cause === "R2_REF_MISMATCH"
+    || cause === "R2_DIGEST_MISMATCH"
+    || cause === "R3_REF_MISMATCH"
+    || cause === "R3_DIGEST_MISMATCH"
+  ) return "INVALID"
   if (cause === "R1_EXPLICIT_STALE" || cause === "R2_REVISION_MISMATCH" || cause === "R3_REVISION_MISMATCH") return "STALE"
   if (cause === "R1_EXPLICIT_CONTRADICTORY") return "CONTRADICTORY"
   return "INCOMPLETE"
 }
-
-const STATE_RANK = new Map<K5R4EvidenceState, number>([
-  ["VALID", 0], ["INCOMPLETE", 1], ["CONTRADICTORY", 2], ["STALE", 3], ["INVALID", 4],
-])
 
 export function k5R4StateFromCauses(causes: readonly K5R4Cause[]): K5R4EvidenceState {
   let state: K5R4EvidenceState = "VALID"
@@ -328,6 +351,7 @@ function validateCauseSemantics(
   if (expectedR1 === null ? r1Causes.length !== 0 : r1Causes.length !== 1 || r1Causes[0] !== expectedR1) {
     bad(`${label}.causes`, "must encode the exact R1 evidence-status contribution")
   }
+
   const r2Causes = causes.filter((cause) => cause.startsWith("R2_"))
   const r3Causes = causes.filter((cause) => cause.startsWith("R3_"))
   const own = layer === "K5_R2" ? r2Causes : r3Causes
@@ -336,22 +360,31 @@ function validateCauseSemantics(
 
   if (linkStatus === "LINKED") {
     if (sourceIdentity === null || own.length !== 0) bad(label, "LINKED requires source identity and no linkage cause")
-  } else if (linkStatus === "UNLINKED") {
-    const expected = layer === "K5_R2" ? "R2_NO_SOURCE" : "R3_NO_SOURCE"
-    if (sourceIdentity !== null || own.length !== 1 || own[0] !== expected) bad(label, "UNLINKED requires null source identity and the exact NO_SOURCE cause")
-  } else {
-    if (sourceIdentity === null || own.length === 0) bad(label, "MISMATCH requires source identity and one or more mismatch causes")
-    const allowed = layer === "K5_R2"
-      ? new Set<K5R4Cause>(["R2_KIND_MISMATCH", "R2_REF_MISMATCH", "R2_DIGEST_MISMATCH", "R2_REVISION_MISMATCH"])
-      : new Set<K5R4Cause>(["R3_REF_MISMATCH", "R3_DIGEST_MISMATCH", "R3_REVISION_MISMATCH"])
-    if (own.some((cause) => !allowed.has(cause))) bad(`${label}.causes`, "contains an invalid mismatch cause")
+    return
   }
+  if (linkStatus === "UNLINKED") {
+    const expected = layer === "K5_R2" ? "R2_NO_SOURCE" : "R3_NO_SOURCE"
+    if (sourceIdentity !== null || own.length !== 1 || own[0] !== expected) {
+      bad(label, "UNLINKED requires null source identity and the exact NO_SOURCE cause")
+    }
+    return
+  }
+
+  if (sourceIdentity === null || own.length === 0) bad(label, "MISMATCH requires source identity and one or more mismatch causes")
+  const allowed = layer === "K5_R2"
+    ? new Set<K5R4Cause>(["R2_KIND_MISMATCH", "R2_REF_MISMATCH", "R2_DIGEST_MISMATCH", "R2_REVISION_MISMATCH"])
+    : new Set<K5R4Cause>(["R3_REF_MISMATCH", "R3_DIGEST_MISMATCH", "R3_REVISION_MISMATCH"])
+  if (own.some((cause) => !allowed.has(cause))) bad(`${label}.causes`, "contains an invalid mismatch cause")
 }
 
 function causes(value: unknown, label: string): readonly K5R4Cause[] {
-  const parsed = arr(value, label, 0, K5_R4_LIMITS.maxCausesPerResult).map((item, index) => en<K5R4Cause>(item, CAUSES, `${label}[${index}]`))
+  const parsed = arr(value, label, 0, K5_R4_LIMITS.maxCausesPerResult).map((item, index) =>
+    en<K5R4Cause>(item, CAUSES, `${label}[${index}]`)
+  )
   if (new Set(parsed).size !== parsed.length) bad(label, "must not contain duplicates")
-  const sorted = parsed.slice().sort((left, right) => (CAUSE_RANK.get(left) as number) - (CAUSE_RANK.get(right) as number))
+  const sorted = parsed.slice().sort((left, right) =>
+    (CAUSE_RANK.get(left) as number) - (CAUSE_RANK.get(right) as number)
+  )
   if (parsed.some((cause, index) => cause !== sorted[index])) bad(label, "must be in fixed canonical cause order")
   return Object.freeze(parsed)
 }
@@ -374,23 +407,45 @@ function result(value: unknown, label: string): K5R4EvidenceResult {
   const state = en<K5R4EvidenceState>(record.state, EVIDENCE_STATES, `${label}.state`)
   const expectedState = k5R4StateFromCauses(parsedCauses)
   if (state !== expectedState) bad(`${label}.state`, "does not match the canonical worst contribution")
-  return Object.freeze({ evidenceId, evidenceKind, r1Status, linkageLayer, linkStatus, sourceIdentity, state, causes: parsedCauses })
+  return Object.freeze({
+    evidenceId,
+    evidenceKind,
+    r1Status,
+    linkageLayer,
+    linkStatus,
+    sourceIdentity,
+    state,
+    causes: parsedCauses,
+  })
 }
 
 function results(value: unknown): readonly K5R4EvidenceResult[] {
-  const parsed = arr(value, "proofStateReconciliation.results", 0, K5_R4_LIMITS.maxResults).map((item, index) => result(item, `proofStateReconciliation.results[${index}]`))
+  const parsed = arr(value, "proofStateReconciliation.results", 0, K5_R4_LIMITS.maxResults).map((item, index) =>
+    result(item, `proofStateReconciliation.results[${index}]`)
+  )
   const ids = parsed.map((item) => item.evidenceId)
   if (new Set(ids).size !== ids.length) bad("proofStateReconciliation.results", "contains duplicate evidenceId values")
   const sorted = parsed.slice().sort((left, right) => compareK5R1ScalarStrings(left.evidenceId, right.evidenceId))
-  if (parsed.some((item, index) => item.evidenceId !== sorted[index]?.evidenceId)) bad("proofStateReconciliation.results", "must be canonically sorted")
+  if (parsed.some((item, index) => item.evidenceId !== sorted[index]?.evidenceId)) {
+    bad("proofStateReconciliation.results", "must be canonically sorted")
+  }
   return Object.freeze(parsed)
 }
 
 function outOfScopeIds(value: unknown): readonly string[] {
-  const parsed = arr(value, "proofStateReconciliation.outOfScopeEvidenceIds", 0, K5_R4_LIMITS.maxOutOfScopeEvidenceIds).map((item, index) => text(item, `proofStateReconciliation.outOfScopeEvidenceIds[${index}]`, K5_R4_LIMITS.maxEvidenceIdBytes))
+  const parsed = arr(
+    value,
+    "proofStateReconciliation.outOfScopeEvidenceIds",
+    0,
+    K5_R4_LIMITS.maxOutOfScopeEvidenceIds,
+  ).map((item, index) =>
+    text(item, `proofStateReconciliation.outOfScopeEvidenceIds[${index}]`, K5_R4_LIMITS.maxEvidenceIdBytes)
+  )
   if (new Set(parsed).size !== parsed.length) bad("proofStateReconciliation.outOfScopeEvidenceIds", "must not contain duplicates")
   const sorted = parsed.slice().sort(compareK5R1ScalarStrings)
-  if (parsed.some((item, index) => item !== sorted[index])) bad("proofStateReconciliation.outOfScopeEvidenceIds", "must be canonically sorted")
+  if (parsed.some((item, index) => item !== sorted[index])) {
+    bad("proofStateReconciliation.outOfScopeEvidenceIds", "must be canonically sorted")
+  }
   return Object.freeze(parsed)
 }
 
@@ -406,9 +461,14 @@ function aggregateStatus(parsedResults: readonly K5R4EvidenceResult[]): K5R4Reco
 function jcs(value: unknown): string {
   if (value === null) return "null"
   if (typeof value === "boolean") return value ? "true" : "false"
-  if (typeof value === "string") { validUnicodeScalars(value, "canonical string"); return JSON.stringify(value) }
+  if (typeof value === "string") {
+    validUnicodeScalars(value, "canonical string")
+    return JSON.stringify(value)
+  }
   if (typeof value === "number") {
-    if (!Number.isSafeInteger(value) || Object.is(value, -0)) bad("canonical number", "must be a non-negative-zero safe integer")
+    if (!Number.isSafeInteger(value) || Object.is(value, -0)) {
+      bad("canonical number", "must be a non-negative-zero safe integer")
+    }
     return JSON.stringify(value)
   }
   if (Array.isArray(value)) return `[${value.map(jcs).join(",")}]`
@@ -418,27 +478,41 @@ function jcs(value: unknown): string {
 }
 
 export function k5R4ReconciliationIdentity(value: K5R4ProofStateReconciliationInput): string {
+  assertSafeJson(value, "proofStateReconciliationIdentityInput")
   return createHash("sha256").update(jcs(value), "utf8").digest("hex")
 }
 
 export function validateK5R4ProofStateReconciliation(value: unknown): K5R4ProofStateReconciliation {
   assertSafeJson(value, "proofStateReconciliation")
   const record = rec(value, RECORD_KEYS, "proofStateReconciliation")
-  fixed(record.version, K5_R4_PROOF_STATE_RECONCILIATION_VERSION, "proofStateReconciliation.version")
+  const version = fixed(record.version, K5_R4_PROOF_STATE_RECONCILIATION_VERSION, "proofStateReconciliation.version")
   const packageIdentity = sha256(record.packageIdentity, "proofStateReconciliation.packageIdentity")
   const r2LinkageIdentity = sha256(record.r2LinkageIdentity, "proofStateReconciliation.r2LinkageIdentity")
   const r3LinkageIdentity = sha256(record.r3LinkageIdentity, "proofStateReconciliation.r3LinkageIdentity")
-  const rev = revision(record.revision, "proofStateReconciliation.revision")
+  const normalizedRevision = revision(record.revision, "proofStateReconciliation.revision")
   const status = en<K5R4ReconciliationStatus>(record.status, RECONCILIATION_STATUSES, "proofStateReconciliation.status")
   const parsedResults = results(record.results)
-  const out = outOfScopeIds(record.outOfScopeEvidenceIds)
+  const outOfScopeEvidenceIds = outOfScopeIds(record.outOfScopeEvidenceIds)
   const resultIds = new Set(parsedResults.map((item) => item.evidenceId))
-  if (out.some((id) => resultIds.has(id))) bad("proofStateReconciliation.outOfScopeEvidenceIds", "must be disjoint from results")
+  if (outOfScopeEvidenceIds.some((id) => resultIds.has(id))) {
+    bad("proofStateReconciliation.outOfScopeEvidenceIds", "must be disjoint from results")
+  }
   const expectedStatus = aggregateStatus(parsedResults)
   if (status !== expectedStatus) bad("proofStateReconciliation.status", "does not match the canonical aggregate state")
   const claimedIdentity = sha256(record.reconciliationIdentity, "proofStateReconciliation.reconciliationIdentity")
-  const normalized = Object.freeze({ packageIdentity, r2LinkageIdentity, r3LinkageIdentity, revision: rev, status, results: parsedResults, outOfScopeEvidenceIds: out })
+  const normalized = Object.freeze({
+    version,
+    packageIdentity,
+    r2LinkageIdentity,
+    r3LinkageIdentity,
+    revision: normalizedRevision,
+    status,
+    results: parsedResults,
+    outOfScopeEvidenceIds,
+  }) satisfies K5R4ProofStateReconciliationInput
   const expectedIdentity = k5R4ReconciliationIdentity(normalized)
-  if (claimedIdentity !== expectedIdentity) bad("proofStateReconciliation.reconciliationIdentity", "does not match canonical reconciliation content")
-  return Object.freeze({ version: K5_R4_PROOF_STATE_RECONCILIATION_VERSION, ...normalized, reconciliationIdentity: expectedIdentity })
+  if (claimedIdentity !== expectedIdentity) {
+    bad("proofStateReconciliation.reconciliationIdentity", "does not match canonical reconciliation content")
+  }
+  return Object.freeze({ ...normalized, reconciliationIdentity: expectedIdentity })
 }
