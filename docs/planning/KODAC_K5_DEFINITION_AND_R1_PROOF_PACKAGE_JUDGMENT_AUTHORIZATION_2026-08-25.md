@@ -306,7 +306,116 @@ For threshold counting, an evidence fingerprint is the SHA-256 identity of this 
 }
 ```
 
-The preimage uses K5-R1 canonical JSON v1 exactly, then UTF-8, then SHA-256. The fingerprint deliberately excludes `evidenceId`, `requirementIds`, and `status`. For any one requirement, multiple records with the same fingerprint can contribute at most one unit toward `minimumEvidence`, regardless of how many caller-chosen IDs or requirement-list variants are supplied. If records with one fingerprint carry incompatible current statuses for the same requirement, the package is contradictory rather than receiving extra weight.
+The preimage uses K5-R1 canonical JSON v1 exactly, then UTF-8, then SHA-256. The fingerprint deliberately excludes `evidenceId`, `requirementIds`, and `status`. For any one requirement, multiple records with the same fingerprint can contribute at most one unit toward `minimumEvidence`, regardless of how many caller-chosen IDs or requirement-list variants are supplied.
+
+### Fingerprint status compatibility and overlap
+
+For one requirement, a record is **revision-current and kind-applicable** for fingerprint-status comparison only when all of the following are true:
+
+1. its `requirementIds` explicitly contains that requirement ID;
+2. its `canonicalBase` and `candidateHead` exactly equal the package revision;
+3. its evidence `kind` exactly equals the requirement `kind`.
+
+Kind-mismatched claiming records are handled at `INVALID` precedence before this comparison. Revision-mismatched claiming records are handled at `STALE` precedence before this comparison.
+
+For two revision-current, kind-applicable records with the same fingerprint, status compatibility is equality only. The complete unordered pair rule is:
+
+| status A | status B | compatible? |
+| --- | --- | --- |
+| `SATISFIED` | `SATISFIED` | YES |
+| `FAILED` | `FAILED` | YES |
+| `STALE` | `STALE` | YES |
+| `CONTRADICTORY` | `CONTRADICTORY` | YES |
+| `INVALID` | `INVALID` | YES |
+| any two distinct values from the five-status vocabulary | any different value | NO |
+
+A fingerprint therefore has `fingerprintStatusConflict=true` for a requirement iff at least two revision-current, kind-applicable records share that fingerprint and have distinct status values.
+
+Precedence remains authoritative over conflict reporting:
+
+- if any applicable invalid cause exists, the requirement is `INVALID`; contradiction-level reason codes are not emitted because reasons include only causes at the winning precedence level;
+- otherwise, if any applicable stale cause exists, the requirement is `STALE`; contradiction-level reason codes are not emitted;
+- only when neither higher level applies can a fingerprint status conflict contribute to `CONTRADICTORY`.
+
+At winning `CONTRADICTORY` precedence the three contradiction reason predicates are independent and cumulative:
+
+- `EXPLICIT_CONTRADICTORY` applies iff at least one revision-current, kind-applicable claiming record has `status: CONTRADICTORY`;
+- `SATISFIED_FAILED_CONFLICT` applies iff the requirement has at least one revision-current, kind-applicable `SATISFIED` record and at least one revision-current, kind-applicable `FAILED` record, whether or not they share a fingerprint;
+- `FINGERPRINT_STATUS_CONFLICT` applies iff `fingerprintStatusConflict=true` for at least one fingerprint and no higher invalid/stale precedence applies.
+
+If more than one contradiction predicate applies, **every applicable contradiction code is emitted** in the fixed reason-code rank order defined below. Evidence IDs are the duplicate-free sorted union of the records supporting all emitted codes. In particular, if one fingerprint has both a `SATISFIED` record and a `FAILED` record, both `SATISFIED_FAILED_CONFLICT` and `FINGERPRINT_STATUS_CONFLICT` are emitted; neither suppresses the other.
+
+#### Canonical overlapping-status vector
+
+The following vector is normative. All strings are ASCII, so its RFC 8785/JCS bytes are unambiguous under K5-R1 canonical JSON v1.
+
+```text
+canonicalBase = "0000000000000000000000000000000000000000"
+candidateHead = "1111111111111111111111111111111111111111"
+digest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+subject = { subjectId: "overlap", subjectKind: "VERIFICATION" }
+revision = {
+  repositoryId: "kodac/test",
+  canonicalBase,
+  candidateHead
+}
+requirements = [
+  { requirementId: "r1", kind: "VERIFICATION", minimumEvidence: 1 }
+]
+evidence = [
+  {
+    evidenceId: "e1",
+    kind: "VERIFICATION",
+    requirementIds: ["r1"],
+    canonicalBase,
+    candidateHead,
+    ref: "artifact:test",
+    digest,
+    status: "SATISFIED"
+  },
+  {
+    evidenceId: "e2",
+    kind: "VERIFICATION",
+    requirementIds: ["r1"],
+    canonicalBase,
+    candidateHead,
+    ref: "artifact:test",
+    digest,
+    status: "FAILED"
+  }
+]
+```
+
+For this vector the exact derived identities and judgment are:
+
+```text
+evidenceFingerprint = "58a93fed3381f2982f3b0cb5d334afe3a157d81b816c119fb7958273848e1342"
+packageIdentity = "10bc549943799a92365f9c2b8394f84e8804068f7f19192ec32a8387ce0d24b5"
+
+requirementResults = [
+  {
+    requirementId: "r1",
+    kind: "VERIFICATION",
+    minimumEvidence: 1,
+    satisfiedFingerprintCount: 1,
+    status: "CONTRADICTORY"
+  }
+]
+reasons = [
+  {
+    requirementId: "r1",
+    status: "CONTRADICTORY",
+    codes: ["SATISFIED_FAILED_CONFLICT", "FINGERPRINT_STATUS_CONFLICT"],
+    evidenceIds: ["e1", "e2"]
+  }
+]
+evidenceIds = ["e1", "e2"]
+status = "CONTRADICTORY_PACKAGE"
+judgmentIdentity = "20d9ad8a2aaf868823358ce9eb36b558daf1df8f03dd41c1acdc244618c07492"
+```
+
+An implementation that produces any other fingerprint, package identity, code set/order, evidence-ID set/order, requirement result, package status, or judgment identity for this exact vector is non-conforming.
 
 ### Two-phase validation and judgment
 
@@ -429,8 +538,9 @@ Rules for `reasons[]`:
 - collection size is 0 through 128 and entries are sorted by `requirementId`;
 - `status` equals that requirement's winning per-requirement status;
 - `codes[]` contains every applicable cause at exactly that winning precedence level, uses only the fixed vocabulary above, has no duplicates, and is sorted by the fixed rank order above;
+- contradiction codes are cumulative as defined by **Fingerprint status compatibility and overlap**; when multiple contradiction predicates apply, every applicable code appears;
 - `evidenceIds[]` is the duplicate-free sorted union of the evidence records supporting those included cause codes; it may be empty only for `BELOW_MINIMUM` when no evidence record supports the requirement;
-- evidence support is exact: `EXPLICIT_INVALID` uses claiming `INVALID` records; `KIND_MISMATCH` uses claiming records whose kind differs; `REVISION_MISMATCH` uses claiming revision-mismatched records; `EXPLICIT_STALE` uses claiming `STALE` records; `EXPLICIT_CONTRADICTORY` uses claiming `CONTRADICTORY` records; `SATISFIED_FAILED_CONFLICT` uses the current kind-matching `SATISFIED` and `FAILED` records creating the conflict; `FINGERPRINT_STATUS_CONFLICT` uses current claiming records sharing the conflicting fingerprint; `EXPLICIT_FAILED` uses current kind-matching `FAILED` records; and `BELOW_MINIMUM` uses all current kind-matching `SATISFIED` records counted toward the insufficient threshold.
+- evidence support is exact: `EXPLICIT_INVALID` uses claiming `INVALID` records; `KIND_MISMATCH` uses claiming records whose kind differs; `REVISION_MISMATCH` uses claiming revision-mismatched records; `EXPLICIT_STALE` uses claiming `STALE` records; `EXPLICIT_CONTRADICTORY` uses revision-current kind-matching claiming `CONTRADICTORY` records; `SATISFIED_FAILED_CONFLICT` uses all revision-current kind-matching `SATISFIED` and `FAILED` records participating in the requirement-level conflict; `FINGERPRINT_STATUS_CONFLICT` uses all revision-current kind-matching records belonging to each fingerprint whose distinct status set creates the conflict; `EXPLICIT_FAILED` uses revision-current kind-matching `FAILED` records; and `BELOW_MINIMUM` uses all revision-current kind-matching `SATISFIED` records counted toward the insufficient threshold.
 
 Top-level `evidenceIds[]` contains exactly every evidence ID present in the validated package, once each, sorted by the Kodac scalar-value comparison. Its size is 0 through 4096.
 
@@ -448,8 +558,8 @@ A requirement is:
 
 - `INVALID` if any claiming evidence is explicitly `INVALID` or any claiming evidence kind mismatches the requirement kind;
 - `STALE` if no invalid cause applies and any claiming evidence is revision-mismatched or explicitly `STALE`;
-- `CONTRADICTORY` if no higher cause applies and any current applicable evidence is explicitly `CONTRADICTORY`, current `SATISFIED` and `FAILED` evidence coexist, or one fingerprint has incompatible current statuses for that requirement;
-- `INSUFFICIENT` if no higher cause applies and current `FAILED` evidence exists or `satisfiedFingerprintCount < minimumEvidence`;
+- `CONTRADICTORY` if no higher cause applies and at least one contradiction predicate in **Fingerprint status compatibility and overlap** applies;
+- `INSUFFICIENT` if no higher cause applies and revision-current kind-matching `FAILED` evidence exists or `satisfiedFingerprintCount < minimumEvidence`;
 - `SATISFIED` otherwise.
 
 Package precedence is derived only from the worst per-requirement status:
@@ -531,7 +641,7 @@ K5-R1 implementation must prove at least:
 13. current `SATISFIED` plus current `FAILED` for one requirement produces contradiction rather than silent counting;
 14. failed evidence cannot count toward `minimumEvidence`;
 15. threshold counting uses the exact K5-R1 canonical-JSON-v1/UTF-8/SHA-256 evidence fingerprint over only `kind`, `canonicalBase`, `candidateHead`, `ref`, and `digest`; tests cover JSON escaping, non-ASCII Unicode, delimiter-like characters in `ref`, equivalent object construction, changing only `evidenceId`, requirement-list ordering, and duplicate-fingerprint threshold behavior;
-16. incompatible current statuses for the same evidence fingerprint and requirement produce contradiction;
+16. the complete same-fingerprint status-compatibility table, precedence interaction, and cumulative contradiction-code overlap rules are implemented exactly; the normative overlapping-status vector must produce fingerprint `58a93fed3381f2982f3b0cb5d334afe3a157d81b816c119fb7958273848e1342`, package identity `10bc549943799a92365f9c2b8394f84e8804068f7f19192ec32a8387ce0d24b5`, both contradiction codes in rank order, evidence IDs `["e1", "e2"]`, and judgment identity `20d9ad8a2aaf868823358ce9eb36b558daf1df8f03dd41c1acdc244618c07492`;
 17. RFC 8785/JCS serialization, valid-Unicode handling, no-normalization behavior, safe-integer rules, set sorting, UTF-8 encoding, and SHA-256 bytes are verified with fixed canonical vectors so independent implementations compute identical package, fingerprint, and judgment identities;
 18. `requirementResults[]`, `reasons[]`, and top-level `evidenceIds[]` obey the exact schemas, bounds, inclusion rules, cause support, deduplication, and canonical ordering in this record;
 19. package and judgment identities are deterministic, order-independent for declared valid sets, content-addressed, and change on every identity-bearing semantic mutation;
@@ -541,7 +651,7 @@ K5-R1 implementation must prove at least:
 23. existing Done Gate tests remain unchanged and green;
 24. existing KRI-R1 through KRI-R4 contracts/tests remain unchanged and green;
 25. full runtime tests, strict TypeScript, Python tests, Ruff, provenance validation, scope checks, and `git diff --check` are green on the exact implementation head;
-26. exact-head independent review finds no unresolved material contract, authority, identity, mutability, stale-evidence, evidence-weight, canonicalization, or fail-open defect.
+26. exact-head independent review finds no unresolved material contract, authority, identity, mutability, stale-evidence, evidence-weight, canonicalization, status-compatibility, reason-overlap, or fail-open defect.
 
 ## Explicit non-grants
 
