@@ -197,7 +197,7 @@ K5-R2+: NOT AUTHORIZED
 DONE GATE PROVEN_READY AUTHORITY: UNCHANGED
 ```
 
-K5-R1 is a pure, in-memory, caller-materialized proof-package contract and deterministic structural judgment core. It judges package validity, exact revision consistency, freshness, contradiction, and declared-evidence completeness without reading repositories, executing commands, fetching providers, changing KRI, or modifying Done Gate.
+K5-R1 is a pure, in-memory, caller-materialized proof-package contract with strict structural validation followed by deterministic judgment. It rejects malformed or identity-invalid input before producing a judgment object, then judges exact revision consistency, freshness, contradiction, and declared-evidence completeness without reading repositories, executing commands, fetching providers, changing KRI, or modifying Done Gate.
 
 The R1 judgment vocabulary is bounded to package state:
 
