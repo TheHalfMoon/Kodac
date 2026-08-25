@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kodac.dev/schema/k5-r4-proof-state-reconciliation.schema.json",
   "title": "Kodac K5-R4 Proof-State Reconciliation",
+  "description": "Structural interoperability schema. Canonical array ordering, cross-array disjointness, exact cause semantics, and reconciliationIdentity recomputation are normative runtime invariants enforced by validateK5R4ProofStateReconciliation().",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -22,17 +23,19 @@
     "r3LinkageIdentity": { "$ref": "#/$defs/sha256" },
     "revision": { "$ref": "#/$defs/revision" },
     "status": {
-      "enum": ["NOT_APPLICABLE", "VALID", "INCOMPLETE", "STALE", "CONTRADICTORY", "INVALID"]
+      "enum": ["NOT_APPLICABLE", "VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"]
     },
     "results": {
       "type": "array",
       "maxItems": 4096,
+      "$comment": "Entries MUST be strictly ordered by canonical evidenceId scalar ordering and duplicate-free. Draft 2020-12 cannot compare arbitrary adjacent string values; the runtime validator enforces this normative canonical-order invariant.",
       "items": { "$ref": "#/$defs/result" }
     },
     "outOfScopeEvidenceIds": {
       "type": "array",
       "maxItems": 4096,
       "uniqueItems": true,
+      "$comment": "Values MUST be strictly ordered by canonical scalar ordering and disjoint from results[].evidenceId. Draft 2020-12 cannot express arbitrary adjacent-string ordering or cross-array set disjointness; the runtime validator enforces both normative invariants.",
       "items": { "$ref": "#/$defs/evidenceId" }
     },
     "reconciliationIdentity": { "$ref": "#/$defs/sha256" }
@@ -46,6 +49,63 @@
     {
       "if": { "properties": { "results": { "maxItems": 0 } }, "required": ["results"] },
       "then": { "properties": { "status": { "const": "NOT_APPLICABLE" } } }
+    },
+    {
+      "if": { "properties": { "status": { "const": "VALID" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "results": {
+            "items": { "allOf": [{ "$ref": "#/$defs/result" }, { "properties": { "state": { "const": "VALID" } } }] }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "INCOMPLETE" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "results": {
+            "contains": { "properties": { "state": { "const": "INCOMPLETE" } }, "required": ["state"] },
+            "minContains": 1,
+            "items": { "allOf": [{ "$ref": "#/$defs/result" }, { "properties": { "state": { "enum": ["VALID", "INCOMPLETE"] } } }] }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "CONTRADICTORY" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "results": {
+            "contains": { "properties": { "state": { "const": "CONTRADICTORY" } }, "required": ["state"] },
+            "minContains": 1,
+            "items": { "allOf": [{ "$ref": "#/$defs/result" }, { "properties": { "state": { "enum": ["VALID", "INCOMPLETE", "CONTRADICTORY"] } } }] }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "STALE" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "results": {
+            "contains": { "properties": { "state": { "const": "STALE" } }, "required": ["state"] },
+            "minContains": 1,
+            "items": { "allOf": [{ "$ref": "#/$defs/result" }, { "properties": { "state": { "enum": ["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE"] } } }] }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "status": { "const": "INVALID" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "results": {
+            "contains": { "properties": { "state": { "const": "INVALID" } }, "required": ["state"] },
+            "minContains": 1
+          }
+        }
+      }
     }
   ],
   "$defs": {
@@ -124,11 +184,12 @@
             { "type": "null" }
           ]
         },
-        "state": { "enum": ["VALID", "INCOMPLETE", "STALE", "CONTRADICTORY", "INVALID"] },
+        "state": { "enum": ["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"] },
         "causes": {
           "type": "array",
           "maxItems": 13,
           "uniqueItems": true,
+          "$comment": "Causes MUST use the fixed K5-R4 cause order. Draft 2020-12 cannot express ordered arbitrary subsets of the 13-value vocabulary without exponential enumeration; the runtime validator enforces the normative canonical-order and exact cause-semantics invariants.",
           "items": { "$ref": "#/$defs/cause" }
         }
       },
