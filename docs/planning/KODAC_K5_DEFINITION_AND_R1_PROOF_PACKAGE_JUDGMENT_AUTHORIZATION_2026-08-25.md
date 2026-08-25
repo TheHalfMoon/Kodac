@@ -21,16 +21,18 @@
 
 ## Decision
 
-Define K5 and authorize only its first pure deterministic foundation:
+Define K5 and authorize only its first pure deterministic foundation, with the following candidate state effective only after canonical adoption and the required post-merge proof of this exact record:
 
 ```text
 K5 — PROOF REVIEW & JUDGE
-K5: DEFINED / IN PROGRESS AFTER CANONICAL ADOPTION OF THIS RECORD
-K5-R1: PURE PROOF-PACKAGE CONTRACT + DETERMINISTIC JUDGMENT CORE AUTHORIZED
+K5: DEFINED / IN PROGRESS ONLY AFTER CANONICAL ADOPTION AND POST-MERGE PROOF OF THIS RECORD
+K5-R1: PURE PROOF-PACKAGE CONTRACT + DETERMINISTIC JUDGMENT CORE AUTHORIZED ONLY AFTER CANONICAL ADOPTION AND POST-MERGE PROOF OF THIS RECORD
 K5-R1 IMPLEMENTATION: NOT YET CANONICAL
 K5-R2+: NOT AUTHORIZED
 DONE GATE PROVEN_READY AUTHORITY: UNCHANGED
 ```
+
+Until that adoption and post-merge proof complete, canonical K5 remains `PROPOSED / NOT AUTHORIZED` and K5-R1 implementation is not authorized.
 
 K5-R1 is not another reviewer and does not duplicate KRI. It consumes caller-materialized, already-typed proof inputs and answers a narrower question:
 
@@ -119,7 +121,7 @@ KRI still owns finding/adjudication semantics. K5-R1 may consume only caller-mat
 
 ## K5 bounded decomposition
 
-The canonical analysis supports the following dependency order. Only R1 is authorized by this record.
+The canonical analysis supports the following dependency order. Only R1 is authorized by this record after canonical adoption and post-merge proof.
 
 ```text
 K5-R1 — proof-package contract + pure deterministic judgment core
@@ -134,7 +136,7 @@ This decomposition is intentionally narrow. Later gates may refine names or comb
 
 ## Authorized K5-R1 contract
 
-K5-R1 may implement a pure TypeScript contract, strict validator, deterministic package identity, and deterministic judgment function. All inputs are caller-materialized in memory. No input may cause I/O.
+After canonical adoption and post-merge proof of this exact record, K5-R1 may implement a pure TypeScript contract, strict validator, deterministic package identity, and deterministic judgment function. All inputs are caller-materialized in memory. No input may cause I/O.
 
 ### Proof package v1
 
@@ -290,7 +292,7 @@ Phase A — structural/package validation:
 
 Phase B — judgment over a successfully validated immutable package:
 
-- may produce `INVALID_PACKAGE` when the package is structurally valid but its safely inspectable cross-record proof semantics are invalid, including an explicit current evidence `status: INVALID` or a requirement/evidence kind mismatch;
+- may produce `INVALID_PACKAGE` when the package is structurally valid but its safely inspectable cross-record proof semantics are invalid, including an explicit evidence `status: INVALID` or a requirement/evidence kind mismatch;
 - then applies stale, contradiction, insufficiency, and sufficiency precedence as defined below.
 
 This separation prevents an invalid caller-supplied `packageIdentity` from being echoed into a judgment artifact that looks valid.
@@ -302,14 +304,14 @@ K5-R1 uses a closed canonical JSON identity rule:
 - only plain non-proxy JSON data objects and arrays are accepted;
 - accessors, symbol fields, sparse arrays, non-finite numbers, `undefined`, functions, bigint, and unknown properties fail closed;
 - object keys use ascending ordinal string ordering;
-- set-valued arrays are deduplicated then sorted before identity construction;
-- requirement records sort by `requirementId`;
-- evidence records sort by `evidenceId`;
-- requirementIds inside evidence sort ascending;
+- arrays declared to have set semantics are first validated to contain no duplicate members and are then sorted; duplicate members fail closed and are never silently deduplicated;
+- requirement records sort by `requirementId` after requirement-ID uniqueness is validated;
+- evidence records sort by `evidenceId` after evidence-ID uniqueness is validated;
+- `requirementIds` inside each evidence record are validated unique and then sort ascending;
 - canonical UTF-8 JSON is hashed with SHA-256;
 - `packageIdentity` is the 64-character lowercase hex digest of the complete validated package excluding `packageIdentity`.
 
-Equivalent set/order inputs therefore produce the same package identity. Any identity-bearing semantic field change changes identity. Evidence threshold independence is separately determined by the evidence fingerprint above and cannot be manufactured by changing only `evidenceId`.
+Equivalent orderings of otherwise identical valid set-valued inputs therefore produce the same package identity. Any identity-bearing semantic field change changes identity. Evidence threshold independence is separately determined by the evidence fingerprint above and cannot be manufactured by changing only `evidenceId`.
 
 ### Judgment v1
 
@@ -387,7 +389,7 @@ K5-R1 does not:
 
 ## Exact K5-R1 implementation allowlist
 
-After canonical adoption of this authorization, the K5-R1 implementation PR may change exactly:
+After canonical adoption and post-merge proof of this authorization, the K5-R1 implementation PR may change exactly:
 
 ```text
 .github/workflows/k5-r1-proof-package-judgment.yml
@@ -414,7 +416,7 @@ K5-R1 implementation must prove at least:
 3. all string byte bounds are enforced in UTF-8 and NUL is rejected;
 4. `requirements` is bounded to 1 through 128 and `evidence` to 0 through 4096; zero requirements fails structural validation while zero evidence over non-empty requirements yields `INSUFFICIENT_PACKAGE`;
 5. revision identities and SHA-256 digests use exact lowercase hexadecimal grammar;
-6. duplicate requirement/evidence IDs and duplicate evidence requirement references fail closed;
+6. duplicate requirement/evidence IDs, duplicate evidence requirement references, and any other duplicate member in a declared set-valued array fail closed rather than being normalized away;
 7. unknown subject kinds, requirement kinds, evidence kinds, and statuses fail closed;
 8. malformed structure or package-identity mismatch throws deterministic `TypeError` and does not mint a judgment object;
 9. structurally valid explicit `INVALID` evidence or requirement/evidence kind mismatch yields `INVALID_PACKAGE`;
@@ -424,7 +426,7 @@ K5-R1 implementation must prove at least:
 13. failed evidence cannot count toward minimum evidence;
 14. threshold counting uses unique evidence fingerprints over `kind + canonicalBase + candidateHead + ref + digest`; changing only `evidenceId`, requirement-list ordering, or duplicating the same fingerprint cannot increase evidence weight;
 15. incompatible current statuses for the same evidence fingerprint and requirement produce contradiction;
-16. package and judgment identities are deterministic, order-independent for declared sets, content-addressed, and change on every identity-bearing semantic mutation;
+16. package and judgment identities are deterministic, order-independent for declared valid sets, content-addressed, and change on every identity-bearing semantic mutation;
 17. all returned records/arrays are immutable copies and caller mutation cannot change prior results;
 18. all documented numeric/string/collection bounds behave exactly as the contract states;
 19. no R1 production source contains filesystem, process, network, dynamic import, model/provider, reviewer executor, ExecutionGateway, Trust Kernel, Git mutation, persistence, GitHub write, Done Gate mutation, or `PROVEN_READY` behavior;
@@ -478,7 +480,7 @@ Canonical adoption requires:
 
 - current `main` remains the expected K4 closeout base or the candidate is reconciled against any newer canonical main before mutation/merge;
 - exact changed paths remain the five documentation paths above;
-- authority surfaces agree that K5 is defined/in progress, K5-R1 is authorized, K5-R1 implementation is not yet canonical, and K5-R2+ is unauthorized;
+- authority surfaces agree that K5 is defined/in progress only after this gate's canonical adoption/post-merge proof, K5-R1 becomes authorized only after that same gate, K5-R1 implementation is not yet canonical, and K5-R2+ is unauthorized;
 - all K4 closeout truth and KRI-R1 through KRI-R4 truth remain intact;
 - no text grants K5 `PROVEN_READY`, repository-write, review, approval, merge, execution, provider, persistence, or trust-root authority;
 - normal applicable GitHub Actions succeed on the exact final head;
