@@ -480,7 +480,10 @@ node:util            # only util.types.isProxy
 ./contracts.ts
 ./linkage-contracts.ts
 ./review-adjudication-contracts.ts
+./reconciliation-contracts.ts
 ```
+
+`./reconciliation-contracts.ts` is the only R4-local production import authorized between the two new R4 source files. The R4 qualification workflow must explicitly permit this local import while continuing to fail closed on every other unlisted static or dynamic import form.
 
 If the implementation can remain simpler without importing `judge.ts`, it must do so. R4 is not authorized to invoke or replace Done Gate and does not need a new R1 judgment engine. Dynamic imports are forbidden.
 
