@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k5-r2-evidence-linkage.schema.json",
+  "title": "Kodac K5-R2 Evidence Linkage Contracts",
+  "$comment": "Runtime validation is authoritative for UTF-8 byte bounds, proxy/accessor/symbol/prototype rejection, Unicode scalar validity, canonical ordering, source/linkage identity recomputation, package cross-reference existence, descriptor evidenceId uniqueness, code-rank ordering, and source-to-R1 semantic linkage.",
+  "oneOf": [
+    { "$ref": "#/$defs/sourceLink" },
+    { "$ref": "#/$defs/linkage" }
+  ],
+  "$defs": {
+    "gitSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "gitObjectId": { "type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "evidenceId": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$",
+      "$comment": "Runtime enforces <=128 UTF-8 bytes and valid Unicode scalar values."
+    },
+    "sourceRef": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$",
+      "$comment": "Runtime enforces <=1024 UTF-8 bytes and valid Unicode scalar values."
+    },
+    "sourceKind": { "enum": ["VERIFICATION_REPORT", "EXECUTION_RECEIPT", "REPOSITORY_REVISION"] },
+    "evidenceKind": { "enum": ["VERIFICATION", "EXECUTION_RECEIPT", "REPOSITORY_STATE"] },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryId", "canonicalBase", "candidateHead"],
+      "properties": {
+        "repositoryId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]+$",
+          "$comment": "Runtime enforces <=512 UTF-8 bytes and valid Unicode scalar values."
+        },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "candidateHead": { "$ref": "#/$defs/gitSha" }
+      }
+    },
+    "verificationMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "reportVersion", "sessionId", "passed", "checkIds"],
+      "properties": {
+        "protocol": { "const": "kodac.verification" },
+        "reportVersion": { "const": 1 },
+        "sessionId": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^\\u0000]+$",
+          "$comment": "Runtime enforces <=256 UTF-8 bytes and valid Unicode scalar values."
+        },
+        "passed": { "type": "boolean" },
+        "checkIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000]+$" },
+          "$comment": "Runtime enforces <=128 UTF-8 bytes per member, valid Unicode scalar values, duplicate rejection, and K5 scalar canonical ordering."
+        }
+      }
+    },
+    "receiptMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receiptId", "capability", "inputDigest", "policyDecision", "resultStatus"],
+      "properties": {
+        "receiptId": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000]+$", "$comment": "Runtime enforces <=128 UTF-8 bytes and valid Unicode scalar values." },
+        "capability": { "type": "string", "minLength": 1, "pattern": "^[^\\u0000]+$", "$comment": "Runtime enforces <=256 UTF-8 bytes and valid Unicode scalar values." },
+        "inputDigest": { "$ref": "#/$defs/sha256" },
+        "policyDecision": { "enum": ["allow", "ask", "deny"] },
+        "resultStatus": { "enum": ["success", "blocked", "failure"] }
+      }
+    },
+    "repositoryMetadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["snapshotVersion", "repositoryIdentity", "contentIdentity", "snapshotIdentity", "observedGitHead", "freshness", "completeness", "omittedAtLeast"],
+      "properties": {
+        "snapshotVersion": { "const": "k3-r2-snapshot-v1" },
+        "repositoryIdentity": { "$ref": "#/$defs/sha256" },
+        "contentIdentity": { "$ref": "#/$defs/sha256" },
+        "snapshotIdentity": { "$ref": "#/$defs/sha256" },
+        "observedGitHead": { "$ref": "#/$defs/gitObjectId" },
+        "freshness": { "enum": ["current", "stale"] },
+        "completeness": { "enum": ["complete", "partial", "truncated"] },
+        "omittedAtLeast": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 }
+      }
+    },
+    "sourceLinkBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "sourceIdentity", "evidenceId", "sourceKind", "canonicalBase", "candidateHead", "sourceRef", "sourceDigest", "metadata"],
+      "properties": {
+        "version": { "const": "kodac-k5-r2-source-link-v1" },
+        "sourceIdentity": { "$ref": "#/$defs/sha256" },
+        "evidenceId": { "$ref": "#/$defs/evidenceId" },
+        "sourceKind": { "$ref": "#/$defs/sourceKind" },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "candidateHead": { "$ref": "#/$defs/gitSha" },
+        "sourceRef": { "$ref": "#/$defs/sourceRef" },
+        "sourceDigest": { "$ref": "#/$defs/sha256" },
+        "metadata": {}
+      }
+    },
+    "sourceLink": {
+      "allOf": [
+        { "$ref": "#/$defs/sourceLinkBase" },
+        { "oneOf": [
+          { "properties": { "sourceKind": { "const": "VERIFICATION_REPORT" }, "metadata": { "$ref": "#/$defs/verificationMetadata" } } },
+          { "properties": { "sourceKind": { "const": "EXECUTION_RECEIPT" }, "metadata": { "$ref": "#/$defs/receiptMetadata" } } },
+          { "properties": { "sourceKind": { "const": "REPOSITORY_REVISION" }, "metadata": { "$ref": "#/$defs/repositoryMetadata" } } }
+        ] }
+      ]
+    },
+    "linkBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceId", "evidenceKind", "sourceKind", "status", "codes", "sourceIdentity"],
+      "properties": {
+        "evidenceId": { "$ref": "#/$defs/evidenceId" },
+        "evidenceKind": { "$ref": "#/$defs/evidenceKind" },
+        "sourceKind": { "oneOf": [{ "$ref": "#/$defs/sourceKind" }, { "type": "null" }] },
+        "status": { "enum": ["LINKED", "UNLINKED", "MISMATCH"] },
+        "codes": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": { "enum": ["NO_SOURCE", "KIND_MISMATCH", "REVISION_MISMATCH", "REF_MISMATCH", "DIGEST_MISMATCH"] },
+          "$comment": "Runtime enforces fixed code-rank ordering and status-specific code semantics."
+        },
+        "sourceIdentity": { "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+      }
+    },
+    "link": {
+      "allOf": [
+        { "$ref": "#/$defs/linkBase" },
+        { "oneOf": [
+          { "properties": { "status": { "const": "LINKED" }, "sourceKind": { "$ref": "#/$defs/sourceKind" }, "codes": { "maxItems": 0 }, "sourceIdentity": { "$ref": "#/$defs/sha256" } } },
+          { "properties": { "status": { "const": "UNLINKED" }, "sourceKind": { "type": "null" }, "codes": { "const": ["NO_SOURCE"] }, "sourceIdentity": { "type": "null" } } },
+          { "properties": { "status": { "const": "MISMATCH" }, "sourceKind": { "$ref": "#/$defs/sourceKind" }, "codes": { "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": { "enum": ["KIND_MISMATCH", "REVISION_MISMATCH", "REF_MISMATCH", "DIGEST_MISMATCH"] } }, "sourceIdentity": { "$ref": "#/$defs/sha256" } } }
+        ] }
+      ]
+    },
+    "linkage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "packageIdentity", "revision", "links", "outOfScopeEvidenceIds", "sourceIdentities", "linkageIdentity"],
+      "properties": {
+        "version": { "const": "kodac-k5-r2-evidence-linkage-v1" },
+        "packageIdentity": { "$ref": "#/$defs/sha256" },
+        "revision": { "$ref": "#/$defs/revision" },
+        "links": { "type": "array", "minItems": 0, "maxItems": 4096, "uniqueItems": true, "$comment": "uniqueItems enforces deep equality only; runtime additionally enforces evidenceId uniqueness and canonical evidenceId ordering.", "items": { "$ref": "#/$defs/link" } },
+        "outOfScopeEvidenceIds": { "type": "array", "minItems": 0, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/evidenceId" }, "$comment": "Runtime enforces canonical K5 scalar ordering." },
+        "sourceIdentities": { "type": "array", "minItems": 0, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" }, "$comment": "Runtime enforces canonical K5 scalar ordering." },
+        "linkageIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}
