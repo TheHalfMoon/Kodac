@@ -297,6 +297,22 @@ test("hostile JSON representations, unknown fields/vocabulary, Unicode, and nume
   for (const [name, run] of cases) assert.throws(run, TypeError, name)
 })
 
+test("hostile JSON pre-scan is depth- and size-bounded before structural validation", () => {
+  const deep = clone(source()) as unknown as Rec
+  let cursor: Rec = {}
+  deep.deep = cursor
+  for (let depth = 0; depth < 40; depth += 1) {
+    const next: Rec = {}
+    cursor.next = next
+    cursor = next
+  }
+  assert.throws(() => validateK5R3ReviewAdjudicationSource(deep), /safe JSON nesting depth/)
+
+  const wide = clone(source()) as unknown as Rec
+  wide.wide = new Array(100_001).fill(null)
+  assert.throws(() => validateK5R3ReviewAdjudicationSource(wide), /safe JSON node budget/)
+})
+
 test("returned source and linkage records are deeply immutable copies with no caller aliases", () => {
   const finding = clone(makeFinding())
   const adjudication = clone(makeAdjudication(finding))
