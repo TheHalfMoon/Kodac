@@ -794,7 +794,7 @@ This record does not modify `code_import_authorized` and admits no external sour
 
 This authorization candidate is a one-path documentation gate. It is eligible for canonical adoption only when all of the following are true on the exact final head:
 
-- PR base is exactly `73246f28abc9abea89c5eb62996d11a857946e29` unless canonical `main` moves first, in which case the candidate branch must be brought forward by a non-destructive merge from canonical `main` or the record must be re-authored/requalified against live canonical truth rather than merged stale;
+- PR base ref is exactly `main` and PR base SHA is exactly `73246f28abc9abea89c5eb62996d11a857946e29` unless canonical `main` moves first, in which case the candidate branch must be brought forward by a non-destructive merge from canonical `main` or the record must be re-authored/requalified against live canonical truth rather than merged stale;
 - changed paths contain exactly this file and no other path;
 - the K5-R2 merge, ordered parents, tree, dedicated canonical implementation blobs, shared-index preimage, authorization blob, CI evidence, and review evidence above remain exact;
 - the current K5-R1 dependency blobs above remain exact;
