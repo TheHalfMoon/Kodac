@@ -194,22 +194,21 @@ function plainRecord(value: unknown, keys: readonly string[], label: string): Un
   const prototype = Object.getPrototypeOf(value)
   if (prototype !== Object.prototype && prototype !== null) invalid(label, "must be a plain object")
   if (Object.getOwnPropertySymbols(value).length !== 0) invalid(label, "must not contain symbol fields")
-  const descriptors = Object.getOwnPropertyDescriptors(value)
-  const actual = Object.keys(descriptors)
+  const actual = Object.getOwnPropertyNames(value)
   if (actual.length !== keys.length) invalid(label, "has an invalid key set")
   const allowed = new Set(keys)
+  const result = Object.create(null) as UnknownRecord
   for (const key of actual) {
     if (!allowed.has(key)) invalid(label, `contains unknown field: ${key}`)
-    const descriptor = descriptors[key]
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)
     if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
       invalid(`${label}.${key}`, "must be an enumerable data property")
     }
+    result[key] = descriptor.value
   }
   for (const key of keys) {
-    if (!Object.hasOwn(descriptors, key)) invalid(label, `is missing required field: ${key}`)
+    if (!Object.hasOwn(result, key)) invalid(label, `is missing required field: ${key}`)
   }
-  const result = Object.create(null) as UnknownRecord
-  for (const key of keys) result[key] = (descriptors[key] as PropertyDescriptor & { value: unknown }).value
   return result
 }
 
@@ -218,7 +217,6 @@ function denseArray(value: unknown, label: string, min: number, max: number): re
   if (!Array.isArray(value)) invalid(label, "must be an array")
   if (Object.getPrototypeOf(value) !== Array.prototype) invalid(label, "must be a plain array")
   if (Object.getOwnPropertySymbols(value).length !== 0) invalid(label, "must not contain symbol fields")
-  const descriptors = Object.getOwnPropertyDescriptors(value)
   const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
   if (lengthDescriptor === undefined || !("value" in lengthDescriptor)) {
     invalid(label, `must contain ${min} through ${max} entries`)
@@ -233,19 +231,17 @@ function denseArray(value: unknown, label: string, min: number, max: number): re
     invalid(label, `must contain ${min} through ${max} entries`)
   }
   const length = lengthValue
-  const expected = new Set(["length", ...Array.from({ length }, (_, index) => String(index))])
-  for (const [key, descriptor] of Object.entries(descriptors)) {
-    if (!expected.has(key)) invalid(label, `contains unexpected array field: ${key}`)
-    if (key !== "length" && (!("value" in descriptor) || !descriptor.enumerable)) {
-      invalid(`${label}[${key}]`, "must be an enumerable data property")
-    }
-  }
   const result: unknown[] = []
   for (let index = 0; index < length; index += 1) {
-    const descriptor = descriptors[String(index)]
-    if (descriptor === undefined || !("value" in descriptor)) invalid(label, "must be dense")
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
+    if (descriptor === undefined) invalid(label, "must be dense")
+    if (!("value" in descriptor) || !descriptor.enumerable) {
+      invalid(`${label}[${index}]`, "must be an enumerable data property")
+    }
     result.push(descriptor.value)
   }
+  const ownNames = Object.getOwnPropertyNames(value)
+  if (ownNames.length !== length + 1) invalid(label, "contains unexpected array fields")
   return result
 }
 
