@@ -268,15 +268,19 @@ INVALID
 
 Evidence with mismatched revision identity is treated as stale regardless of a supplied `SATISFIED` status.
 
-For threshold counting, an evidence fingerprint is the canonical SHA-256 identity of exactly:
+For threshold counting, an evidence fingerprint is the SHA-256 identity of this exact plain-object preimage and no other fields:
 
 ```text
-kind
-canonicalBase
-candidateHead
-ref
-digest
+{
+  "kind": <validated evidence kind>,
+  "canonicalBase": <validated canonicalBase>,
+  "candidateHead": <validated candidateHead>,
+  "ref": <validated ref>,
+  "digest": <validated digest>
+}
 ```
+
+The preimage is canonicalized with the same closed canonical-JSON algorithm defined under **Structural identity** below: object keys are serialized in ascending ordinal string order, JSON string escaping is the JSON encoding produced by that algorithm, the resulting canonical JSON text is encoded as UTF-8, and SHA-256 is computed over exactly those bytes. No delimiter-concatenation or implementation-native object serialization is permitted. Under the ordinal-key rule the serialized key order is `candidateHead`, `canonicalBase`, `digest`, `kind`, `ref`.
 
 The fingerprint deliberately excludes `evidenceId`, `requirementIds`, and `status`. For any one requirement, multiple records with the same fingerprint can contribute at most one unit toward `minimumEvidence`, regardless of how many caller-chosen IDs or requirement-list variants are supplied. If records with one fingerprint carry incompatible current statuses for the same requirement, the package is contradictory rather than receiving extra weight.
 
@@ -424,7 +428,7 @@ K5-R1 implementation must prove at least:
 11. `INVALID_PACKAGE > STALE_PACKAGE > CONTRADICTORY_PACKAGE > INSUFFICIENT_PACKAGE > SUFFICIENT_PACKAGE` precedence is exact;
 12. current `SATISFIED` plus current `FAILED` for one requirement produces contradiction rather than silent counting;
 13. failed evidence cannot count toward minimum evidence;
-14. threshold counting uses unique evidence fingerprints over `kind + canonicalBase + candidateHead + ref + digest`; changing only `evidenceId`, requirement-list ordering, or duplicating the same fingerprint cannot increase evidence weight;
+14. threshold counting uses the exact canonical-JSON/UTF-8/SHA-256 evidence fingerprint over only `kind`, `canonicalBase`, `candidateHead`, `ref`, and `digest`; tests must cover JSON escaping/delimiter-like characters in `ref`, equivalent object construction, changing only `evidenceId`, requirement-list ordering, and duplicate-fingerprint threshold behavior so none can create extra evidence weight;
 15. incompatible current statuses for the same evidence fingerprint and requirement produce contradiction;
 16. package and judgment identities are deterministic, order-independent for declared valid sets, content-addressed, and change on every identity-bearing semantic mutation;
 17. all returned records/arrays are immutable copies and caller mutation cannot change prior results;
