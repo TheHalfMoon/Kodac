@@ -254,3 +254,23 @@ export {
   type K5R3SourceKind,
 } from "./proof-review/review-adjudication-contracts.ts"
 export { linkK5R3ReviewAdjudicationEvidence } from "./proof-review/review-adjudication.ts"
+export {
+  K5_R4_CAUSES,
+  K5_R4_EVIDENCE_STATES,
+  K5_R4_LIMITS,
+  K5_R4_LINKAGE_LAYERS,
+  K5_R4_PROOF_STATE_RECONCILIATION_VERSION,
+  K5_R4_RECONCILIATION_STATUSES,
+  k5R4ReconciliationIdentity,
+  k5R4StateFromCauses,
+  validateK5R4ProofStateReconciliation,
+  type K5R4Cause,
+  type K5R4EvidenceResult,
+  type K5R4EvidenceState,
+  type K5R4LinkageLayer,
+  type K5R4LinkStatus,
+  type K5R4ProofStateReconciliation,
+  type K5R4ProofStateReconciliationInput,
+  type K5R4ReconciliationStatus,
+} from "./proof-review/reconciliation-contracts.ts"
+export { reconcileK5R4ProofState } from "./proof-review/reconciliation.ts"

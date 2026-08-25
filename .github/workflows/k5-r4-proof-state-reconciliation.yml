@@ -1,0 +1,328 @@
+name: k5-r4-proof-state-reconciliation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k5-r4-proof-state-reconciliation.yml"
+      - "schema/k5-r4-proof-state-reconciliation.schema.json"
+      - "packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts"
+      - "packages/kodac-runtime/src/proof-review/reconciliation.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k5-r4-proof-state-reconciliation.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  proof-state-reconciliation:
+    name: k5-r4-proof-state-reconciliation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K5_R4_AUTHORIZATION_MERGE_SHA: "c7116d64a16d6f98dfc9544a60b77755d338ba66"
+      K5_R4_AUTHORIZATION_MERGE_TREE: "58c4fdc2fb91284b50249f40f10e5be962d3e241"
+      K5_R4_AUTHORIZATION_DOCUMENT_BLOB: "8356efc80e953521d661f7d36e3bde0852fd65cb"
+      K5_R4_IMPLEMENTATION_BRANCH: "feat/k5-r4-proof-state-reconciliation"
+      K5_R1_CONTRACTS_BLOB: "ef0ae26c2a44157fb20ad33145788ba1255239f5"
+      K5_R1_JUDGE_BLOB: "1b6093d6ec9239427e5f50a1dd9483d2c5603e36"
+      K5_R2_CONTRACTS_BLOB: "59d87c73d829c4cd1d57dba134f79839f13b9722"
+      K5_R2_RUNTIME_BLOB: "2ef2f786ee84dbcb2e937b710ee570963c50adc0"
+      K5_R3_CONTRACTS_BLOB: "d738c50de8f33e82f21f9392e9194f9499156f09"
+      K5_R3_RUNTIME_BLOB: "b8cdfc74b6ff786770a4097995696f9bea722daf"
+      PRE_R4_INDEX_BLOB: "cb4bc58d757d212201ab037295f93bf504808939"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact head, authorization, scope, dependencies, and immutable Actions
+        shell: bash
+        env:
+          K5_R4_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          K5_R4_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K5_R4_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K5_R4_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K5_R4_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K5_R4_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K5_R4_PR_HEAD_SHA"
+          test "$K5_R4_REPOSITORY" = "TheHalfMoon/Kodac"
+          test "$K5_R4_PR_HEAD_REPOSITORY" = "$K5_R4_REPOSITORY"
+          test "$K5_R4_PR_BASE_REF" = "main"
+          test "$K5_R4_PR_BASE_SHA" = "$K5_R4_AUTHORIZATION_MERGE_SHA"
+          test "$K5_R4_PR_HEAD_REF" = "$K5_R4_IMPLEMENTATION_BRANCH"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r4-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r4-diff-before"
+          test ! -s "$RUNNER_TEMP/k5-r4-status-before"
+          test ! -s "$RUNNER_TEMP/k5-r4-diff-before"
+
+          git fetch --no-tags --depth=1 origin "$K5_R4_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K5_R4_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K5_R4_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K5_R4_AUTHORIZATION_MERGE_TREE"
+          test "$(git rev-parse "$K5_R4_AUTHORIZATION_MERGE_SHA:docs/planning/KODAC_K5_R3_CANONICAL_EVIDENCE_AND_R4_PROOF_STATE_RECONCILIATION_AUTHORIZATION_2026-08-25.md")" = "$K5_R4_AUTHORIZATION_DOCUMENT_BLOB"
+          test "$(git rev-parse "HEAD:docs/planning/KODAC_K5_R3_CANONICAL_EVIDENCE_AND_R4_PROOF_STATE_RECONCILIATION_AUTHORIZATION_2026-08-25.md")" = "$K5_R4_AUTHORIZATION_DOCUMENT_BLOB"
+
+          dependencies=(
+            "packages/kodac-runtime/src/proof-review/contracts.ts:$K5_R1_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/judge.ts:$K5_R1_JUDGE_BLOB"
+            "packages/kodac-runtime/src/proof-review/linkage-contracts.ts:$K5_R2_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/linkage.ts:$K5_R2_RUNTIME_BLOB"
+            "packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts:$K5_R3_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/review-adjudication.ts:$K5_R3_RUNTIME_BLOB"
+          )
+          for entry in "${dependencies[@]}"; do
+            path="${entry%%:*}"
+            blob="${entry##*:}"
+            test "$(git rev-parse "$K5_R4_AUTHORIZATION_MERGE_SHA:$path")" = "$blob"
+            test "$(git rev-parse "HEAD:$path")" = "$blob"
+          done
+          test "$(git rev-parse "$K5_R4_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts")" = "$PRE_R4_INDEX_BLOB"
+
+          mapfile -t changed < <(git diff --name-only "$K5_R4_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k5-r4-proof-state-reconciliation.yml"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts"
+            "packages/kodac-runtime/src/proof-review/reconciliation.ts"
+            "packages/kodac-runtime/test/k5-r4-proof-state-reconciliation.test.ts"
+            "schema/k5-r4-proof-state-reconciliation.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do test "${changed[$index]}" = "${expected[$index]}"; done
+          git diff --check "$K5_R4_AUTHORIZATION_MERGE_SHA" HEAD
+
+          git show "$K5_R4_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts" > "$RUNNER_TEMP/k5-r4-index-base"
+          base_size="$(wc -c < "$RUNNER_TEMP/k5-r4-index-base")"
+          head -c "$base_size" packages/kodac-runtime/src/index.ts | cmp - "$RUNNER_TEMP/k5-r4-index-base"
+          tail -c "+$((base_size + 1))" packages/kodac-runtime/src/index.ts > "$RUNNER_TEMP/k5-r4-index-suffix"
+          cat > "$RUNNER_TEMP/k5-r4-index-expected-suffix" <<'SUFFIX'
+          export {
+            K5_R4_CAUSES,
+            K5_R4_EVIDENCE_STATES,
+            K5_R4_LIMITS,
+            K5_R4_LINKAGE_LAYERS,
+            K5_R4_PROOF_STATE_RECONCILIATION_VERSION,
+            K5_R4_RECONCILIATION_STATUSES,
+            k5R4ReconciliationIdentity,
+            k5R4StateFromCauses,
+            validateK5R4ProofStateReconciliation,
+            type K5R4Cause,
+            type K5R4EvidenceResult,
+            type K5R4EvidenceState,
+            type K5R4LinkageLayer,
+            type K5R4LinkStatus,
+            type K5R4ProofStateReconciliation,
+            type K5R4ProofStateReconciliationInput,
+            type K5R4ReconciliationStatus,
+          } from "./proof-review/reconciliation-contracts.ts"
+          export { reconcileK5R4ProofState } from "./proof-review/reconciliation.ts"
+          SUFFIX
+          sed -i 's/^          //' "$RUNNER_TEMP/k5-r4-index-expected-suffix"
+          cmp "$RUNNER_TEMP/k5-r4-index-suffix" "$RUNNER_TEMP/k5-r4-index-expected-suffix"
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k5-r4-proof-state-reconciliation.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for index in "${!expected_actions[@]}"; do test "${action_lines[$index]}" = "${expected_actions[$index]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r4-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate K5-R4 schema and hostile schema fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r4-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k5-r4-proof-state-reconciliation.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          valid = {
+              "version": "kodac-k5-r4-proof-state-reconciliation-v1",
+              "packageIdentity": "a" * 64,
+              "r2LinkageIdentity": "b" * 64,
+              "r3LinkageIdentity": "c" * 64,
+              "revision": {"repositoryId": "TheHalfMoon/Kodac", "canonicalBase": "0" * 40, "candidateHead": "1" * 40},
+              "status": "VALID",
+              "results": [{
+                  "evidenceId": "e-verify", "evidenceKind": "VERIFICATION", "r1Status": "SATISFIED",
+                  "linkageLayer": "K5_R2", "linkStatus": "LINKED", "sourceIdentity": "d" * 64,
+                  "state": "VALID", "causes": [],
+              }],
+              "outOfScopeEvidenceIds": ["e-artifact"],
+              "reconciliationIdentity": "e" * 64,
+          }
+          validator.validate(valid)
+          validator.validate({**valid, "status": "NOT_APPLICABLE", "results": []})
+
+          mutations = []
+          extra = copy.deepcopy(valid); extra["authority"] = "PROVEN_READY"; mutations.append(("unknown root field", extra))
+          status = copy.deepcopy(valid); status["status"] = "PROVEN_READY"; mutations.append(("unknown aggregate status", status))
+          state = copy.deepcopy(valid); state["results"][0]["state"] = "PROVEN_READY"; mutations.append(("unknown result state", state))
+          layer = copy.deepcopy(valid); layer["results"][0]["evidenceKind"] = "REVIEW_ADJUDICATION"; mutations.append(("wrong linkage layer", layer))
+          null_linked = copy.deepcopy(valid); null_linked["results"][0]["sourceIdentity"] = None; mutations.append(("linked null source", null_linked))
+          unlinked_source = copy.deepcopy(valid); unlinked_source["results"][0]["linkStatus"] = "UNLINKED"; mutations.append(("unlinked non-null source", unlinked_source))
+          duplicate_causes = copy.deepcopy(valid); duplicate_causes["results"][0]["causes"] = ["R2_NO_SOURCE", "R2_NO_SOURCE"]; mutations.append(("duplicate causes", duplicate_causes))
+          nonempty_na = copy.deepcopy(valid); nonempty_na["status"] = "NOT_APPLICABLE"; mutations.append(("nonempty NOT_APPLICABLE", nonempty_na))
+          empty_valid = copy.deepcopy(valid); empty_valid["results"] = []; mutations.append(("empty VALID", empty_valid))
+          uppercase = copy.deepcopy(valid); uppercase["packageIdentity"] = "A" * 64; mutations.append(("uppercase identity", uppercase))
+
+          r1_cause = copy.deepcopy(valid)
+          r1_cause["status"] = "INCOMPLETE"
+          r1_cause["results"][0].update(state="INCOMPLETE", causes=["R1_EXPLICIT_FAILED"])
+          mutations.append(("SATISFIED with R1 cause", r1_cause))
+
+          linked_cause = copy.deepcopy(valid)
+          linked_cause["status"] = "INVALID"
+          linked_cause["results"][0].update(state="INVALID", causes=["R2_REF_MISMATCH"])
+          mutations.append(("LINKED with linkage cause", linked_cause))
+
+          unlinked_missing = copy.deepcopy(valid)
+          unlinked_missing["results"][0].update(linkStatus="UNLINKED", sourceIdentity=None)
+          mutations.append(("UNLINKED without NO_SOURCE", unlinked_missing))
+
+          mismatch_missing = copy.deepcopy(valid)
+          mismatch_missing["results"][0]["linkStatus"] = "MISMATCH"
+          mutations.append(("MISMATCH without mismatch cause", mismatch_missing))
+
+          wrong_derived_state = copy.deepcopy(valid)
+          wrong_derived_state["results"][0].update(
+              r1Status="FAILED",
+              state="VALID",
+              causes=["R1_EXPLICIT_FAILED"],
+          )
+          mutations.append(("state does not match cause contribution", wrong_derived_state))
+
+          for name, candidate in mutations:
+              if not list(validator.iter_errors(candidate)):
+                  raise SystemExit(f"schema accepted hostile K5-R4 mutation: {name}")
+          PY
+
+      - name: Prove deterministic and authority-bounded production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          sources=(
+            "packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts"
+            "packages/kodac-runtime/src/proof-review/reconciliation.ts"
+          )
+          if grep -nE 'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|vm)|ExecutionGateway|DoneGate|PROVEN_READY|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|reviewer-intelligence/(runtime|executor|provider-contracts|qualification)|child_process|spawn[[:space:]]*\(|exec[[:space:]]*\(' "${sources[@]}"; then
+            echo "K5-R4 production authority/determinism boundary violation" >&2
+            exit 1
+          else
+            grep_status=$?
+            if [ "$grep_status" -ne 1 ]; then echo "K5-R4 production boundary scanner failed with status $grep_status" >&2; exit "$grep_status"; fi
+          fi
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const contracts = readFileSync("packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts", "utf8")
+          const reconciliation = readFileSync("packages/kodac-runtime/src/proof-review/reconciliation.ts", "utf8")
+          const imports = (source) => [...source.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
+          const contractImports = imports(contracts)
+          const expectedContracts = ["node:crypto", "node:util", "./contracts.ts", "./linkage-contracts.ts", "./review-adjudication-contracts.ts"]
+          if (importKeywordCount(contracts) !== contractImports.length) throw new Error("contracts contains a side-effect or unsupported static import form")
+          if (JSON.stringify(contractImports) !== JSON.stringify(expectedContracts)) throw new Error(`unexpected contracts imports: ${contractImports.join(",")}`)
+          const reconciliationImports = imports(reconciliation)
+          const expectedReconciliation = ["./contracts.ts", "./linkage-contracts.ts", "./review-adjudication-contracts.ts", "./reconciliation-contracts.ts"]
+          if (importKeywordCount(reconciliation) !== reconciliationImports.length) throw new Error("reconciliation contains a side-effect or unsupported static import form")
+          if (JSON.stringify(reconciliationImports) !== JSON.stringify(expectedReconciliation)) throw new Error(`unexpected reconciliation imports: ${reconciliationImports.join(",")}`)
+          for (const source of [contracts, reconciliation]) {
+            if (/\butilTypes\s*\[/.test(source)) throw new Error("computed node:util access is prohibited")
+            const members = [...source.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].map((match) => match[1])
+            if (members.some((name) => name !== "isProxy")) throw new Error(`unauthorized node:util API: ${members.join(",")}`)
+          }
+          NODE
+          test "$(grep -Fxc '} from "./proof-review/reconciliation-contracts.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+          test "$(grep -Fxc 'export { reconcileK5R4ProofState } from "./proof-review/reconciliation.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k5-r4-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k5-r4-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name": "k5-r4-typescript-validation", "version": "1.0.0", "lockfileVersion": 3, "requires": true,
+            "packages": {
+              "": {"name":"k5-r4-typescript-validation", "version":"1.0.0", "dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
+              "node_modules/@types/node": {"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
+              "node_modules/typescript": {"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
+              "node_modules/undici-types": {"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused R4, R3/R2/R1 regressions, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k5-r4-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k5-r4-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/proof-review/reconciliation.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r4-proof-state-reconciliation.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r3-review-adjudication-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r1-proof-package-judgment.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r4-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k5-r4-typescript"
+
+      - name: Attest checkout unchanged after K5-R4 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r4-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r4-diff-after"
+          cmp "$RUNNER_TEMP/k5-r4-status-before" "$RUNNER_TEMP/k5-r4-status-after"
+          cmp "$RUNNER_TEMP/k5-r4-diff-before" "$RUNNER_TEMP/k5-r4-diff-after"
+          test ! -s "$RUNNER_TEMP/k5-r4-status-after"
+          test ! -s "$RUNNER_TEMP/k5-r4-diff-after"
