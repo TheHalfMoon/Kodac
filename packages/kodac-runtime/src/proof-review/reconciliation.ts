@@ -61,18 +61,30 @@ function r1Cause(status: K5R1EvidenceStatus): K5R4Cause | null {
 }
 
 function r2Cause(code: K5R2LinkCode): K5R4Cause {
-  if (code === "NO_SOURCE") return "R2_NO_SOURCE"
-  if (code === "KIND_MISMATCH") return "R2_KIND_MISMATCH"
-  if (code === "REVISION_MISMATCH") return "R2_REVISION_MISMATCH"
-  if (code === "REF_MISMATCH") return "R2_REF_MISMATCH"
-  return "R2_DIGEST_MISMATCH"
+  switch (code) {
+    case "NO_SOURCE": return "R2_NO_SOURCE"
+    case "KIND_MISMATCH": return "R2_KIND_MISMATCH"
+    case "REVISION_MISMATCH": return "R2_REVISION_MISMATCH"
+    case "REF_MISMATCH": return "R2_REF_MISMATCH"
+    case "DIGEST_MISMATCH": return "R2_DIGEST_MISMATCH"
+    default: {
+      const unsupported: never = code
+      throw new TypeError(`unsupported K5-R2 link code: ${String(unsupported)}`)
+    }
+  }
 }
 
 function r3Cause(code: K5R3LinkCode): K5R4Cause {
-  if (code === "NO_SOURCE") return "R3_NO_SOURCE"
-  if (code === "REVISION_MISMATCH") return "R3_REVISION_MISMATCH"
-  if (code === "REF_MISMATCH") return "R3_REF_MISMATCH"
-  return "R3_DIGEST_MISMATCH"
+  switch (code) {
+    case "NO_SOURCE": return "R3_NO_SOURCE"
+    case "REVISION_MISMATCH": return "R3_REVISION_MISMATCH"
+    case "REF_MISMATCH": return "R3_REF_MISMATCH"
+    case "DIGEST_MISMATCH": return "R3_DIGEST_MISMATCH"
+    default: {
+      const unsupported: never = code
+      throw new TypeError(`unsupported K5-R3 link code: ${String(unsupported)}`)
+    }
+  }
 }
 
 function canonicalCauses(values: readonly K5R4Cause[]): readonly K5R4Cause[] {
