@@ -1,0 +1,462 @@
+name: k6-r2-deterministic-route-plan
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k6-r2-deterministic-route-plan.yml"
+      - "schema/k6-r2-deterministic-route-plan.schema.json"
+      - "packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts"
+      - "packages/kodac-runtime/src/evidence-router/route-plan.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-route-plan:
+    name: k6-r2-deterministic-route-plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K6_R2_AUTHORIZATION_MERGE_SHA: "ed7f3a022ccdf6e7c93ba3278e354ded3e9245bc"
+      K6_R2_AUTHORIZATION_MERGE_TREE: "3d6646eaf03360fec03cc998c214792e1c35d41d"
+      K6_R2_AUTHORIZATION_DOCUMENT_BLOB: "389765c1938d1e9f84612da538697ad8b5a270d4"
+      K6_R2_IMPLEMENTATION_BRANCH: "feat/k6-r2-deterministic-route-plan"
+      K6_R1_CONTRACTS_BLOB: "dc29c4ce85340312f28b67604cac01c1d775e370"
+      K6_R1_ELIGIBILITY_BLOB: "c6f987626168b76cedffb949b16d878c243a2715"
+      K6_R1_SCHEMA_BLOB: "336b5477b16f1bba5c4173874d819091cea9495d"
+      K6_R1_TEST_BLOB: "974137a513f16c93336d5bcda38c351326c53255"
+      K6_R1_WORKFLOW_BLOB: "c26a4de329d0cb0c4b28f07c97a4162642ef7cbb"
+      EXECUTION_GATEWAY_BLOB: "1732dae059fc878c04e6b1bb6a117385efe9ed6a"
+      DONE_GATE_BLOB: "067e147569fa52cc2b04c5df26fbe20a01e958e9"
+      VERIFICATION_TYPES_BLOB: "5c7006e6904f97791378a4a4367d569a6971c6af"
+      EXECUTION_RECEIPT_BLOB: "214403398751c9d22bf695786c7fd7c6fd7e35e1"
+      PRE_R2_INDEX_BLOB: "7b6f2ddc6347801dc38df4ceb0cd2f0c548dbc71"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact head, authorization, scope, predecessor pins, and immutable Actions
+        shell: bash
+        env:
+          K6_R2_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          K6_R2_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K6_R2_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K6_R2_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K6_R2_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K6_R2_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K6_R2_PR_HEAD_SHA"
+          test "$K6_R2_REPOSITORY" = "TheHalfMoon/Kodac"
+          test "$K6_R2_PR_HEAD_REPOSITORY" = "$K6_R2_REPOSITORY"
+          test "$K6_R2_PR_BASE_REF" = "main"
+          test "$K6_R2_PR_BASE_SHA" = "$K6_R2_AUTHORIZATION_MERGE_SHA"
+          test "$K6_R2_PR_HEAD_REF" = "$K6_R2_IMPLEMENTATION_BRANCH"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r2-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r2-diff-before"
+          test ! -s "$RUNNER_TEMP/k6-r2-status-before"
+          test ! -s "$RUNNER_TEMP/k6-r2-diff-before"
+
+          git fetch --no-tags --depth=1 origin "$K6_R2_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K6_R2_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K6_R2_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K6_R2_AUTHORIZATION_MERGE_TREE"
+          authorization_path="docs/planning/KODAC_K6_R2_DETERMINISTIC_ROUTE_PLAN_AUTHORIZATION_2026-08-26.md"
+          test "$(git rev-parse "$K6_R2_AUTHORIZATION_MERGE_SHA:$authorization_path")" = "$K6_R2_AUTHORIZATION_DOCUMENT_BLOB"
+          test "$(git rev-parse "HEAD:$authorization_path")" = "$K6_R2_AUTHORIZATION_DOCUMENT_BLOB"
+
+          predecessors=(
+            "packages/kodac-runtime/src/evidence-router/contracts.ts:$K6_R1_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/evidence-router/eligibility.ts:$K6_R1_ELIGIBILITY_BLOB"
+            "schema/k6-r1-model-provider-route-eligibility.schema.json:$K6_R1_SCHEMA_BLOB"
+            "packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts:$K6_R1_TEST_BLOB"
+            ".github/workflows/k6-r1-model-provider-route-eligibility.yml:$K6_R1_WORKFLOW_BLOB"
+            "packages/kodac-runtime/src/execution/gateway.ts:$EXECUTION_GATEWAY_BLOB"
+            "packages/kodac-runtime/src/verification/done-gate.ts:$DONE_GATE_BLOB"
+            "packages/kodac-runtime/src/verification/types.ts:$VERIFICATION_TYPES_BLOB"
+            "packages/kodac-runtime/src/evidence/receipt.ts:$EXECUTION_RECEIPT_BLOB"
+          )
+          for entry in "${predecessors[@]}"; do
+            path="${entry%%:*}"
+            blob="${entry##*:}"
+            test "$(git rev-parse "$K6_R2_AUTHORIZATION_MERGE_SHA:$path")" = "$blob"
+            test "$(git rev-parse "HEAD:$path")" = "$blob"
+          done
+          test "$(git rev-parse "$K6_R2_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts")" = "$PRE_R2_INDEX_BLOB"
+
+          mapfile -t changed < <(git diff --name-only "$K6_R2_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k6-r2-deterministic-route-plan.yml"
+            "packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts"
+            "packages/kodac-runtime/src/evidence-router/route-plan.ts"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts"
+            "schema/k6-r2-deterministic-route-plan.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do test "${changed[$index]}" = "${expected[$index]}"; done
+          git diff --check "$K6_R2_AUTHORIZATION_MERGE_SHA" HEAD
+
+          git show "$K6_R2_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts" > "$RUNNER_TEMP/k6-r2-index-base"
+          base_size="$(wc -c < "$RUNNER_TEMP/k6-r2-index-base")"
+          head -c "$base_size" packages/kodac-runtime/src/index.ts | cmp - "$RUNNER_TEMP/k6-r2-index-base"
+          tail -c "+$((base_size + 1))" packages/kodac-runtime/src/index.ts > "$RUNNER_TEMP/k6-r2-index-suffix"
+          cat > "$RUNNER_TEMP/k6-r2-index-expected-suffix" <<'SUFFIX'
+          export * from "./evidence-router/route-plan-contracts.ts"
+          export * from "./evidence-router/route-plan.ts"
+          SUFFIX
+          sed -i 's/^          //' "$RUNNER_TEMP/k6-r2-index-expected-suffix"
+          cmp "$RUNNER_TEMP/k6-r2-index-suffix" "$RUNNER_TEMP/k6-r2-index-expected-suffix"
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k6-r2-deterministic-route-plan.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for index in "${!expected_actions[@]}"; do test "${action_lines[$index]}" = "${expected_actions[$index]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r2-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate R2 schema, pinned R1 reference, and cross-field hostile fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r2-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError, validators
+          from referencing import Registry, Resource
+
+          def validate_utf8_max_bytes(validator, limit, instance, schema):
+              if not isinstance(instance, str):
+                  return
+              try:
+                  encoded = instance.encode("utf-8", "strict")
+              except UnicodeEncodeError:
+                  yield ValidationError("string is not valid Unicode for UTF-8 encoding")
+                  return
+              if len(encoded) > limit:
+                  yield ValidationError(f"string exceeds {limit} UTF-8 bytes")
+
+          def validate_unique_by(validator, property_name, instance, schema):
+              if not isinstance(instance, list):
+                  return
+              seen = {}
+              for index, item in enumerate(instance):
+                  if not isinstance(item, dict):
+                      continue
+                  value = item.get(property_name)
+                  if not isinstance(value, str):
+                      continue
+                  if value in seen:
+                      yield ValidationError(f"duplicate {property_name} at indexes {seen[value]} and {index}")
+                  else:
+                      seen[value] = index
+
+          def utf16_units(value):
+              encoded = value.encode("utf-16-be", "surrogatepass")
+              return tuple((encoded[index] << 8) | encoded[index + 1] for index in range(0, len(encoded), 2))
+
+          def validate_ordered_subset_of(validator, allowed_order, instance, schema):
+              if not isinstance(instance, list):
+                  return
+              rank = {value: index for index, value in enumerate(allowed_order)}
+              previous_rank = -1
+              for index, value in enumerate(instance):
+                  if not isinstance(value, str) or value not in rank:
+                      continue
+                  current_rank = rank[value]
+                  if current_rank <= previous_rank:
+                      yield ValidationError(f"array is not in canonical declared order at index {index}")
+                      return
+                  previous_rank = current_rank
+
+          def validate_utf16_sorted_by(validator, property_name, instance, schema):
+              if not isinstance(instance, list):
+                  return
+              previous_key = None
+              for index, item in enumerate(instance):
+                  if not isinstance(item, dict):
+                      continue
+                  value = item.get(property_name)
+                  if not isinstance(value, str):
+                      continue
+                  current_key = utf16_units(value)
+                  if previous_key is not None and current_key <= previous_key:
+                      yield ValidationError(f"array is not in unsigned UTF-16 {property_name} order at index {index}")
+                      return
+                  previous_key = current_key
+
+          def validate_r2_envelope_invariant(validator, enabled, instance, schema):
+              if not enabled or not isinstance(instance, dict):
+                  return
+              request = instance.get("request")
+              plan = instance.get("plan")
+              if not isinstance(request, dict) or not isinstance(plan, dict):
+                  return
+              result = request.get("eligibilityResult")
+              order = request.get("orderedEligibleCandidateIds")
+              steps = plan.get("steps")
+              if not isinstance(result, dict) or not isinstance(order, list) or not isinstance(steps, list):
+                  return
+              candidate_results = result.get("candidateResults")
+              if not isinstance(candidate_results, list):
+                  return
+              eligible = [item for item in candidate_results if isinstance(item, dict) and item.get("status") == "ELIGIBLE"]
+              eligible_ids = [item.get("candidateId") for item in eligible]
+              if len(order) != len(eligible_ids) or len(set(order)) != len(order) or set(order) != set(eligible_ids):
+                  yield ValidationError("orderedEligibleCandidateIds must be an exact permutation of every and only ELIGIBLE candidateId")
+                  return
+              linkage = {
+                  "planRequestIdentity": request.get("planRequestIdentity"),
+                  "orderingBasis": request.get("orderingBasis"),
+                  "eligibilityResultIdentity": result.get("resultIdentity"),
+                  "requestIdentity": result.get("requestIdentity"),
+                  "repositoryId": result.get("repositoryId"),
+                  "canonicalBase": result.get("canonicalBase"),
+                  "candidateHead": result.get("candidateHead"),
+                  "taskId": result.get("taskId"),
+              }
+              for field, expected in linkage.items():
+                  if plan.get(field) != expected:
+                      yield ValidationError(f"plan {field} does not exactly project request/result linkage")
+                      return
+              if not order:
+                  if plan.get("status") != "NO_ELIGIBLE_CANDIDATE" or steps:
+                      yield ValidationError("zero eligible candidates require NO_ELIGIBLE_CANDIDATE with zero steps")
+                  return
+              if plan.get("status") != "ROUTABLE" or len(steps) != len(order):
+                  yield ValidationError("non-empty eligible order requires ROUTABLE with exactly matching step count")
+                  return
+              by_id = {item.get("candidateId"): item for item in eligible}
+              for index, candidate_id in enumerate(order):
+                  step = steps[index]
+                  candidate = by_id.get(candidate_id)
+                  if not isinstance(step, dict) or not isinstance(candidate, dict):
+                      yield ValidationError(f"step {index} does not resolve to an eligible candidate")
+                      return
+                  expected_role = "PRIMARY" if index == 0 else "FALLBACK"
+                  expected = {
+                      "candidateId": candidate.get("candidateId"),
+                      "candidateKind": candidate.get("candidateKind"),
+                      "provider": candidate.get("provider"),
+                      "model": candidate.get("model"),
+                      "role": expected_role,
+                      "qualificationReportDigest": candidate.get("qualificationReportDigest"),
+                  }
+                  if step != expected:
+                      yield ValidationError(f"step {index} is not the exact ordered R1 candidate projection")
+                      return
+
+          KodacK6R2Validator = validators.extend(
+              Draft202012Validator,
+              {
+                  "x-kodacUtf8MaxBytes": validate_utf8_max_bytes,
+                  "x-kodacUniqueBy": validate_unique_by,
+                  "x-kodacOrderedSubsetOf": validate_ordered_subset_of,
+                  "x-kodacUtf16SortedBy": validate_utf16_sorted_by,
+                  "x-kodacR2EnvelopeInvariant": validate_r2_envelope_invariant,
+              },
+          )
+
+          r1_path = Path("schema/k6-r1-model-provider-route-eligibility.schema.json")
+          r2_path = Path("schema/k6-r2-deterministic-route-plan.schema.json")
+          r1_schema = json.loads(r1_path.read_text(encoding="utf-8"))
+          r2_schema = json.loads(r2_path.read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(r1_schema)
+          Draft202012Validator.check_schema(r2_schema)
+          expected_ref = "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeEligibilityResult"
+          actual_ref = r2_schema["$defs"]["routePlanRequest"]["properties"]["eligibilityResult"]["$ref"]
+          if actual_ref != expected_ref:
+              raise SystemExit(f"R2 schema does not reference pinned R1 routeEligibilityResult definition: {actual_ref}")
+          if r2_schema.get("$ref") != "#/$defs/routePlanEnvelope":
+              raise SystemExit("R2 public schema root must require the invariant-bearing request+plan envelope")
+          registry = Registry().with_resource(r1_schema["$id"], Resource.from_contents(r1_schema))
+          validator = KodacK6R2Validator(r2_schema, registry=registry)
+
+          def candidate_result(candidate_id, status):
+              reasons = [] if status == "ELIGIBLE" else ["QUALIFICATION_NOT_PASS"]
+              return {
+                  "candidateId":candidate_id,"candidateKind":"MODEL_PROVIDER","provider":f"provider-{candidate_id}",
+                  "model":f"model-{candidate_id}","status":status,"reasons":reasons,"missingCapabilities":[],
+                  "qualificationReportDigest":candidate_id*64,
+              }
+
+          result = {
+              "version":"kodac-k6-r1-route-eligibility-result-v1","resultIdentity":"e"*64,"requestIdentity":"f"*64,
+              "repositoryId":"TheHalfMoon/Kodac","canonicalBase":"1"*40,"candidateHead":"2"*40,"taskId":"k6-r2/vector",
+              "candidateResults":[candidate_result("a","ELIGIBLE"),candidate_result("b","ELIGIBLE"),candidate_result("c","INELIGIBLE")],
+          }
+          request = {
+              "version":"kodac-k6-r2-route-plan-request-v1","planRequestIdentity":"c"*64,
+              "orderingBasis":"CALLER_EXPLICIT_ORDER","eligibilityResult":result,"orderedEligibleCandidateIds":["b","a"],
+          }
+          plan = {
+              "version":"kodac-k6-r2-route-plan-v1","planIdentity":"d"*64,"planRequestIdentity":"c"*64,
+              "orderingBasis":"CALLER_EXPLICIT_ORDER","eligibilityResultIdentity":"e"*64,"requestIdentity":"f"*64,
+              "repositoryId":"TheHalfMoon/Kodac","canonicalBase":"1"*40,"candidateHead":"2"*40,"taskId":"k6-r2/vector",
+              "status":"ROUTABLE","steps":[
+                  {"candidateId":"b","candidateKind":"MODEL_PROVIDER","provider":"provider-b","model":"model-b","role":"PRIMARY","qualificationReportDigest":"b"*64},
+                  {"candidateId":"a","candidateKind":"MODEL_PROVIDER","provider":"provider-a","model":"model-a","role":"FALLBACK","qualificationReportDigest":"a"*64},
+              ],
+          }
+          envelope = {"request":request,"plan":plan}
+          validator.validate(envelope)
+          for name, standalone in (("standalone request", request), ("standalone plan", plan)):
+              if not list(validator.iter_errors(standalone)):
+                  raise SystemExit(f"public R2 schema incorrectly accepted {name} without invariant-bearing envelope")
+
+          zero_result = copy.deepcopy(result)
+          for item in zero_result["candidateResults"]:
+              item["status"] = "INELIGIBLE"
+              item["reasons"] = ["QUALIFICATION_NOT_PASS"]
+          zero_request = copy.deepcopy(request)
+          zero_request["eligibilityResult"] = zero_result
+          zero_request["orderedEligibleCandidateIds"] = []
+          zero_plan = copy.deepcopy(plan)
+          zero_plan["eligibilityResultIdentity"] = zero_result["resultIdentity"]
+          zero_plan["status"] = "NO_ELIGIBLE_CANDIDATE"
+          zero_plan["steps"] = []
+          zero_envelope = {"request":zero_request,"plan":zero_plan}
+          validator.validate(zero_envelope)
+
+          mutations = []
+          omitted = copy.deepcopy(envelope); omitted["request"]["orderedEligibleCandidateIds"] = ["a"]; mutations.append(("omitted eligible", omitted))
+          duplicate = copy.deepcopy(envelope); duplicate["request"]["orderedEligibleCandidateIds"] = ["a","a"]; mutations.append(("duplicate ordered ID", duplicate))
+          ineligible = copy.deepcopy(envelope); ineligible["request"]["orderedEligibleCandidateIds"] = ["a","c"]; mutations.append(("included ineligible", ineligible))
+          unknown = copy.deepcopy(envelope); unknown["request"]["orderedEligibleCandidateIds"] = ["a","unknown"]; mutations.append(("unknown ID", unknown))
+          wrong_order = copy.deepcopy(envelope); wrong_order["plan"]["steps"].reverse(); mutations.append(("wrong step order", wrong_order))
+          wrong_role = copy.deepcopy(envelope); wrong_role["plan"]["steps"][0]["role"] = "FALLBACK"; mutations.append(("wrong first role", wrong_role))
+          wrong_projection = copy.deepcopy(envelope); wrong_projection["plan"]["steps"][0]["provider"] = "other"; mutations.append(("wrong projection", wrong_projection))
+          wrong_link = copy.deepcopy(envelope); wrong_link["plan"]["requestIdentity"] = "0"*64; mutations.append(("wrong linkage", wrong_link))
+          wrong_status = copy.deepcopy(envelope); wrong_status["plan"]["status"] = "NO_ELIGIBLE_CANDIDATE"; mutations.append(("wrong non-empty status", wrong_status))
+          zero_nonempty_order = copy.deepcopy(zero_envelope); zero_nonempty_order["request"]["orderedEligibleCandidateIds"] = ["a"]; mutations.append(("zero eligible non-empty order", zero_nonempty_order))
+          zero_nonempty_steps = copy.deepcopy(zero_envelope); zero_nonempty_steps["plan"]["steps"] = [copy.deepcopy(plan["steps"][0])]; mutations.append(("zero eligible non-empty steps", zero_nonempty_steps))
+          utf8_overflow = copy.deepcopy(envelope); utf8_overflow["request"]["orderedEligibleCandidateIds"] = ["é"*129,"a"]; mutations.append(("candidateId UTF-8 overflow", utf8_overflow))
+          extra_plan_field = copy.deepcopy(envelope); extra_plan_field["plan"]["orderedEligibleCandidateIds"] = ["b","a"]; mutations.append(("request-only plan field", extra_plan_field))
+          for name, hostile in mutations:
+              if not list(validator.iter_errors(hostile)):
+                  raise SystemExit(f"schema accepted hostile K6-R2 mutation: {name}")
+          PY
+
+      - name: Prove deterministic and authority-bounded production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          sources=(
+            "packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts"
+            "packages/kodac-runtime/src/evidence-router/route-plan.ts"
+          )
+          if grep -nE 'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|vm|os|path|url)|ExecutionGateway|DoneGate|PROVEN_READY|fetch[[:space:]]*\(|require[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|child_process|spawn[[:space:]]*\(|exec[[:space:]]*\(' "${sources[@]}"; then
+            echo "K6-R2 production authority/determinism boundary violation" >&2
+            exit 1
+          else
+            grep_status=$?
+            if [ "$grep_status" -ne 1 ]; then echo "K6-R2 production boundary scanner failed with status $grep_status" >&2; exit "$grep_status"; fi
+          fi
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const contracts = readFileSync("packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts", "utf8")
+          const materializer = readFileSync("packages/kodac-runtime/src/evidence-router/route-plan.ts", "utf8")
+          const imports = (source) => [...source.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
+          const contractImports = imports(contracts)
+          if (importKeywordCount(contracts) !== contractImports.length) throw new Error("route-plan-contracts contains a side-effect or unsupported static import form")
+          if (JSON.stringify(contractImports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts"])) throw new Error(`unexpected route-plan-contracts imports: ${contractImports.join(",")}`)
+          const materializerImports = imports(materializer)
+          if (importKeywordCount(materializer) !== materializerImports.length) throw new Error("route-plan contains a side-effect or unsupported static import form")
+          if (JSON.stringify(materializerImports) !== JSON.stringify(["./route-plan-contracts.ts"])) throw new Error(`unexpected route-plan imports: ${materializerImports.join(",")}`)
+          if (/\butilTypes\s*\[/.test(contracts)) throw new Error("computed node:util access is prohibited")
+          const members = [...contracts.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].map((match) => match[1])
+          if (members.some((name) => name !== "isProxy")) throw new Error(`unauthorized node:util API: ${members.join(",")}`)
+          const hashAlgorithms = [...contracts.matchAll(/createHash\(["']([^"']+)["']\)/g)].map((match) => match[1])
+          if (hashAlgorithms.length !== 1 || hashAlgorithms[0] !== "sha256") throw new Error(`unexpected hash algorithms: ${hashAlgorithms.join(",")}`)
+          if (!contracts.includes("canonicalK6R1Json")) throw new Error("R2 must reuse canonical K6-R1 JSON semantics")
+          if (/JSON\.stringify|localeCompare|Intl\./.test(contracts + materializer)) throw new Error("R2 production source introduced an alternate canonicalization/ranking primitive")
+          NODE
+          test "$(grep -Fxc 'export * from "./evidence-router/route-plan-contracts.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+          test "$(grep -Fxc 'export * from "./evidence-router/route-plan.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k6-r2-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k6-r2-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name":"k6-r2-typescript-validation","version":"1.0.0","lockfileVersion":3,"requires":true,
+            "packages":{
+              "":{"name":"k6-r2-typescript-validation","version":"1.0.0","dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
+              "node_modules/@types/node":{"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
+              "node_modules/typescript":{"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
+              "node_modules/undici-types":{"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused K6-R2, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k6-r2-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k6-r2-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/route-plan.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts
+          (cd packages/kodac-runtime && npm test)
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r2-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k6-r2-typescript"
+
+      - name: Attest checkout unchanged after K6-R2 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r2-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r2-diff-after"
+          cmp "$RUNNER_TEMP/k6-r2-status-before" "$RUNNER_TEMP/k6-r2-status-after"
+          cmp "$RUNNER_TEMP/k6-r2-diff-before" "$RUNNER_TEMP/k6-r2-diff-after"
+          test ! -s "$RUNNER_TEMP/k6-r2-status-after"
+          test ! -s "$RUNNER_TEMP/k6-r2-diff-after"

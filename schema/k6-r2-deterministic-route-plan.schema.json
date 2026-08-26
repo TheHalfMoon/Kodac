@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k6-r2-deterministic-route-plan.schema.json",
+  "title": "Kodac K6-R2 Deterministic Route Plan",
+  "$comment": "The public R2 schema artifact is the request+plan envelope so executable validation always has both sides required for exact eligible-permutation and request-to-plan projection invariants. Request and plan shapes remain reusable under $defs, but are not standalone semantically validated root artifacts. The dedicated validator extends Draft 2020-12 with x-kodacUtf8MaxBytes and x-kodacR2EnvelopeInvariant and references the pinned K6-R1 routeEligibilityResult definition instead of copying it.",
+  "$ref": "#/$defs/routePlanEnvelope",
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gitSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "candidateId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "x-kodacUtf8MaxBytes": 256,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "x-kodacUtf8MaxBytes": 256,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "x-kodacUtf8MaxBytes": 512,
+      "pattern": "^[^\\u0000]+$"
+    },
+    "routePlanRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "planRequestIdentity", "orderingBasis", "eligibilityResult", "orderedEligibleCandidateIds"],
+      "properties": {
+        "version": { "const": "kodac-k6-r2-route-plan-request-v1" },
+        "planRequestIdentity": { "$ref": "#/$defs/sha256" },
+        "orderingBasis": { "const": "CALLER_EXPLICIT_ORDER" },
+        "eligibilityResult": {
+          "$ref": "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeEligibilityResult"
+        },
+        "orderedEligibleCandidateIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/candidateId" }
+        }
+      }
+    },
+    "routePlanStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidateId", "candidateKind", "provider", "model", "role", "qualificationReportDigest"],
+      "properties": {
+        "candidateId": { "$ref": "#/$defs/candidateId" },
+        "candidateKind": { "const": "MODEL_PROVIDER" },
+        "provider": { "$ref": "#/$defs/provider" },
+        "model": { "$ref": "#/$defs/model" },
+        "role": { "enum": ["PRIMARY", "FALLBACK"] },
+        "qualificationReportDigest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "routePlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "planIdentity", "planRequestIdentity", "orderingBasis", "eligibilityResultIdentity", "requestIdentity", "repositoryId", "canonicalBase", "candidateHead", "taskId", "status", "steps"],
+      "properties": {
+        "version": { "const": "kodac-k6-r2-route-plan-v1" },
+        "planIdentity": { "$ref": "#/$defs/sha256" },
+        "planRequestIdentity": { "$ref": "#/$defs/sha256" },
+        "orderingBasis": { "const": "CALLER_EXPLICIT_ORDER" },
+        "eligibilityResultIdentity": { "$ref": "#/$defs/sha256" },
+        "requestIdentity": { "$ref": "#/$defs/sha256" },
+        "repositoryId": { "type": "string", "minLength": 1, "maxLength": 512, "x-kodacUtf8MaxBytes": 512, "pattern": "^[^\\u0000]+$" },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "candidateHead": { "$ref": "#/$defs/gitSha" },
+        "taskId": { "type": "string", "minLength": 1, "maxLength": 256, "x-kodacUtf8MaxBytes": 256, "pattern": "^[^\\u0000]+$" },
+        "status": { "enum": ["ROUTABLE", "NO_ELIGIBLE_CANDIDATE"] },
+        "steps": { "type": "array", "minItems": 0, "maxItems": 128, "items": { "$ref": "#/$defs/routePlanStep" } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "ROUTABLE" } }, "required": ["status"] },
+          "then": { "properties": { "steps": { "minItems": 1 } } },
+          "else": { "properties": { "steps": { "maxItems": 0 } } }
+        }
+      ]
+    },
+    "routePlanEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "plan"],
+      "properties": {
+        "request": { "$ref": "#/$defs/routePlanRequest" },
+        "plan": { "$ref": "#/$defs/routePlan" }
+      },
+      "x-kodacR2EnvelopeInvariant": true
+    }
+  }
+}
