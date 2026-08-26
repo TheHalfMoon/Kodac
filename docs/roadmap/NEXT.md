@@ -1,6 +1,6 @@
 # Kodac — NEXT
 
-> Start here before doing repository work.
+> **Start here before doing repository work.**
 
 ## Authority
 
@@ -8,118 +8,126 @@ This file is a **navigation and status index only**. It does not grant implement
 
 If it conflicts with live GitHub, `AGENTS.md`, governing ADRs, or a canonical authorization record, the live/more authoritative source wins.
 
+Always re-read live GitHub before mutation.
+
 ---
 
-# Current snapshot — 2026-08-26
-
-Planning snapshot when this file was authored:
+# Current canonical snapshot — 2026-08-26
 
 ```text
-CANONICAL_MAIN = 13348e3efa1cfa5a71eda692e1f1ea428882c763
+CANONICAL_MAIN = 4ed9bed6fdb23643c722298adfba4ae8e72097b2
+CANONICAL_TREE = 38cc441d60ba11749fe290e3ec9570267a05ddbd
 
 K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
-K6-R3 = ACTIVE / NOT YET CLOSED_CANONICAL
+K6-R3 = CLOSED_CANONICAL
 
-ACTIVE_PR = #208
-ACTIVE_HEAD = 3e84a6a831206d2f2f7364cc46024fb6e160575e
-ACTIVE_TREE = 38cc441d60ba11749fe290e3ec9570267a05ddbd
-
+K6-R3_MERGE = 4ed9bed6fdb23643c722298adfba4ae8e72097b2
 K6-R4+ IMPLEMENTATION = NOT AUTHORIZED
 WAIVER = NO
 ```
 
-**Always re-read live GitHub before relying on this snapshot.**
+K6-R3 post-merge proof on the exact canonical merge established:
+
+```text
+ordered parent 1 = 13348e3efa1cfa5a71eda692e1f1ea428882c763
+ordered parent 2 = 3e84a6a831206d2f2f7364cc46024fb6e160575e
+merge tree = exact qualified candidate tree
+GitHub signature = VERIFIED / VALID
+post-merge governance = SUCCESS
+post-merge provenance = SUCCESS
+post-merge legacy-tests = SUCCESS
+post-merge K2 Ubuntu = SUCCESS
+post-merge K2 macOS = SUCCESS
+post-merge K2 Windows = SUCCESS
+post-merge k2-runtime-gate = SUCCESS
+```
 
 ---
 
 # NOW
 
-## N0 — Finish the exact K6-R3 disposition
+## N0 — Qualify and canonically adopt the intelligence improvement plan
 
-Read in order:
-
-1. `AGENTS.md`
-2. governing ADRs
-3. `docs/planning/KODAC_K6_DEFINITION_AND_PLANNING_AUTHORIZATION_2026-08-26.md`
-4. `docs/planning/KODAC_K6_R3_ROUTE_OUTCOME_LINKAGE_AUTHORIZATION_2026-08-26.md`
-5. PR #208 live state
-
-Current evidence snapshot:
+Active planning PR:
 
 ```text
-DEDICATED K6-R3 EXACT-HEAD CI = SUCCESS
-GOVERNANCE = SUCCESS
-K2 UBUNTU = SUCCESS
-K2 MACOS = SUCCESS
-K2 WINDOWS = SUCCESS
-K2 RUNTIME GATE = SUCCESS
-QODO FRESH EXACT-HEAD REVIEW = NO MATERIAL FINDINGS
-ACTIONABLE INLINE THREADS = RESOLVED
+PR = #209
+TITLE = docs(kodac): add intelligence improvement master plan
+STATE = DRAFT UNTIL ITS OWN EXACT-HEAD PLANNING GATES ARE SATISFIED
 ```
 
-Current blocker at authoring time:
+Do **not** trust a head SHA copied into this file. Read the live PR #209 head immediately before qualification or mutation.
 
-```text
-CODERABBIT_FRESH_REVIEW_DISPOSITION = UNSETTLED
-```
+PR #209 should contain only the intended documentation/planning scope unless a later explicit roadmap-reconciliation extension is separately reviewed.
 
-CodeRabbit raised a material governance concern about binding workflow qualification to the final reviewed candidate SHA. That finding is being adjudicated against the complete canonical merge protocol because a literal final SHA embedded in the same candidate commit is self-referential, while the canonical authorization separately requires captured exact-head evidence plus a server-enforced expected-head merge precondition.
+Core documents:
 
-### N0 rule
+1. `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
+2. `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
+3. `docs/roadmap/NEXT.md`
 
-```text
-DO NOT MERGE #208 WHILE A MATERIAL REVIEW FINDING HAS UNSETTLED DISPOSITION.
-DO NOT WAIVE IT.
-DO NOT CHANGE THE CANDIDATE ONLY TO SILENCE A REVIEWER WITHOUT PROVING THE REVIEWER IS CORRECT.
-```
+### N0 qualification rules
 
-If #208 changes, all earlier exact-head CI/review evidence is stale.
+- current PR head/base/scope must be re-read;
+- `main` must be an ancestor or be merged into the planning branch by normal non-destructive history;
+- governance and applicable shared checks must pass on the exact candidate;
+- fresh CodeRabbit/Qodo material findings must be adjudicated;
+- no unresolved actionable review threads;
+- no implementation/dependency/provider/persistence/autofix/release authority may leak from planning prose;
+- no circular dependency in P0-P8 ordering;
+- external research/vendor claims must remain evidence/reference claims, not automatic requirements;
+- no review waiver.
 
 ### N0 exit
 
-Exactly one:
-
 ```text
-K6-R3 = CLOSED_CANONICAL
+INTELLIGENCE_IMPROVEMENT_PLAN = CLOSED_CANONICAL
 ```
 
-or
-
-```text
-K6-R3 = EXPLICITLY_BLOCKED_WITH_EVIDENCE
-```
+or an explicit evidence-backed planning blocker.
 
 ---
 
 # NEXT
 
-Only after N0 reaches an explicit canonical disposition.
+Only after the plan itself is canonically adopted.
 
-## N1 — Reconcile roadmap truth
+## N1 — Reconcile legacy roadmap views
 
-Update current roadmap views so they match canonical engineering state:
+The older roadmap views still contain stale historical K5/K6 wording and must be reconciled to live canonical truth without rewriting historical authorization.
+
+Target views:
 
 - `docs/roadmap/ROADMAP.md`
 - `docs/roadmap/MILESTONES.md`
 - `docs/roadmap/VERSION_PLAN.md`
-- this file
+- this file if state changes during the reconciliation
 
-Do not retroactively rewrite historical authorization.
+Required resulting truth:
 
-## N2 — K6-R4 authorization candidate
+```text
+K6-R1 = CLOSED_CANONICAL
+K6-R2 = CLOSED_CANONICAL
+K6-R3 = CLOSED_CANONICAL
+K6-R4+ = NOT AUTHORIZED UNTIL A SEPARATE CANONICAL GATE EXISTS
+K6 AS A WHOLE = NOT YET CLOSED UNTIL ITS EXPLICITLY AUTHORIZED BOUNDED REMAINDER / CLOSEOUT IS PROVEN
+K7 / FULL KODACBENCH = NOT AUTHORIZED BY K6 OR THIS NAVIGATION FILE
+```
+
+## N2 — Prepare K6-R4 authorization candidate
 
 Planning target:
 
 ```text
-privacy-governed bounded outcome record / memory
+PRIVACY-GOVERNED BOUNDED OUTCOME RECORD / MEMORY
 ```
 
-Before implementation, define at least:
+Before any R4 implementation, a separate canonical authorization must define at least:
 
-- exact stored fields;
+- exact allowed stored fields;
 - forbidden raw/sensitive fields;
-- provenance identities;
+- exact provenance identities;
 - repository/user isolation;
 - retention/deletion/expiration;
 - conflict/supersession;
@@ -127,25 +135,35 @@ Before implementation, define at least:
 - no telemetry/upload by implication;
 - no cross-repository learning by default.
 
-K6-R4 implementation requires a separate canonical authorization.
+### R4 non-grants remain explicit
 
-## N3 — K6-R5 authorization candidate
+```text
+STRATEGY PROMOTION = NOT AUTHORIZED
+MODEL TRAINING = NOT AUTHORIZED
+CROSS-REPOSITORY AGGREGATION = NOT AUTHORIZED
+NEW PROVIDER INVOCATION = NOT AUTHORIZED BY R4 PLANNING
+NEW K2 AUTHORITY = NOT AUTHORIZED
+```
+
+## N3 — Prepare K6-R5 authorization candidate
+
+Only after R4 becomes canonical for its separately authorized scope.
 
 Planning target:
 
 ```text
-bounded strategy-improvement proposal + qualification
+BOUNDED STRATEGY-IMPROVEMENT PROPOSAL + QUALIFICATION
 ```
 
 A strategy may propose better context/reviewer/model/tool routing, but may not promote itself.
 
-### Important: K6-R5 qualification is not KodacBench
+### Critical boundary: K6-R5 qualification != KodacBench
 
-K6-R5 may define only the **minimum bounded qualification corpus/fixtures required by its exact authorization** to compare a candidate strategy with an incumbent.
+R5 may define only the **minimum bounded qualification corpus/fixtures explicitly authorized for R5** to compare a candidate strategy against an incumbent.
 
-If R5 uses a temporal holdout, it is an R5-specific qualification artifact only.
+If R5 uses a temporal holdout, that holdout is R5-specific.
 
-It must not be treated as:
+R5 evidence is **not** automatically:
 
 ```text
 FULL KODACBENCH
@@ -155,41 +173,23 @@ PUBLIC SUPERIORITY EVIDENCE
 PRODUCTION-READINESS EVIDENCE
 ```
 
-Full KodacBench comes **after K6 closeout** below.
-
-Required R5 safeguards:
-
-- immutable strategy proposal;
-- explicit incumbent;
-- bounded reproducible qualification evidence;
-- no self-reported reward as truth;
-- no automatic promotion;
-- relevant regression guardrails;
-- latency/compute/privacy/security kept visible;
-- rollback identity preserved.
-
-## N4 — K6 closeout
+## N4 — K6 bounded closeout
 
 After the explicitly authorized R1-R5 bounded scopes are proven, perform a separate closeout gate.
 
-Expected bounded outcome:
+Expected meaning:
 
 ```text
-K6 = CLOSED FOR ITS EXPLICITLY AUTHORIZED SCOPE
+K6 = CLOSED FOR ITS EXPLICITLY AUTHORIZED BOUNDED SCOPE
 ```
 
-This does **not** mean public release or general intelligence superiority.
+That still does not authorize public release or broad intelligence claims.
 
 ---
 
-# THEN
+# THEN — Improvement program after K6 closeout
 
-## T1 — Define KodacBench
-
-Read:
-
-- `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
-- `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
+## T1 — KodacBench
 
 Purpose:
 
@@ -197,7 +197,7 @@ Purpose:
 GENERAL MEASUREMENT SPINE FOR LATER INTELLIGENCE IMPROVEMENTS
 ```
 
-Benchmark families:
+Required families:
 
 ```text
 CONTEXT RETRIEVAL
@@ -209,16 +209,16 @@ ROUTING
 FULL-CYCLE ENGINEERING
 ```
 
-Required properties:
+Required design:
 
 - frozen reproducible corpus;
-- temporal/live reality-check lane;
+- later-in-time temporal/live reality-check lane;
 - exact repository snapshots;
 - provenance/license records;
-- task-family metrics;
 - contamination controls;
-- no single misleading aggregate score;
-- latency/compute/cost/privacy metrics.
+- task-family metrics rather than one misleading score;
+- latency/compute/cost/privacy metrics;
+- immutable evaluation reports.
 
 No broad “best” claim without accepted evidence.
 
@@ -230,15 +230,16 @@ Target:
 MINIMUM SUFFICIENT EVIDENCE, NOT MAXIMUM CONTEXT
 ```
 
-Key work:
+Measure:
 
-- task-specific retrieval;
+- task-specific retrieval quality;
 - no-gold/abstention;
-- context recall/precision;
+- recall/precision;
 - explored vs utilized context;
 - token-budgeted context yield;
-- context dilution measurement;
-- embeddings only if benchmark evidence justifies them.
+- context dilution.
+
+Embeddings/vector infrastructure is admitted only if benchmark evidence and a separate authority gate justify it.
 
 ## T3 — Reviewer Intelligence v2
 
@@ -248,19 +249,19 @@ Target:
 HYPOTHESIS-FOCUSED REVIEW + EVIDENCE-GROUNDED DISAGREEMENT
 ```
 
-Key work:
+Direction:
 
-- narrow risk hypotheses;
+- narrow risk hypotheses rather than generic large swarms;
 - reviewer + critic protocol;
-- structured `SUPPORTED / CONTRADICTED / UNVERIFIED_CONCERN`-like states;
-- no majority-vote truth;
+- structured supported/contradicted/unverified-like states;
+- majority vote is not truth;
 - rule provenance/conflict/staleness;
 - explicit incremental vs cumulative review;
 - candidate-controlled instructions cannot redefine reviewer authority.
 
 ## T4 — Finding Verifier Fabric
 
-Potential verifier families:
+Future verifier families may include:
 
 ```text
 STATIC RULE
@@ -278,19 +279,19 @@ Verifier execution authority remains separate from Reviewer Intelligence.
 
 ## T5 — Security Validation
 
-Combine deterministic evidence with agentic exploit reasoning.
+Combine deterministic security evidence with agentic exploit reasoning while keeping both independently visible.
 
-Required high-risk cases include:
+High-risk benchmark lanes include:
 
 - auth/authz;
 - secrets;
 - CI/trust policy;
 - candidate-controlled instructions;
-- dependency/supply-chain;
+- dependency/supply chain;
 - provenance substitution;
 - workflow/test self-bypass.
 
-AI findings cannot erase deterministic scanner evidence by assertion.
+AI cannot erase scanner evidence by assertion.
 
 ## T6 — Bounded Autofix
 
@@ -313,16 +314,16 @@ Never equate `PATCH_APPLIED` with `FIXED`.
 
 ## T7 — Product / Distribution Hardening
 
-Later surfaces may include:
+Potential later surfaces:
 
 - local/pre-commit review;
 - CLI review;
-- machine-readable findings/evidence;
+- stable machine-readable findings/evidence;
 - agent-ready handoffs;
 - transparent benchmark reports;
 - distribution/release hardening.
 
-Public release still requires separate authority.
+Public release remains separately authorized.
 
 ---
 
@@ -337,8 +338,6 @@ Do not execute by default:
 - learned high-level engineering policy;
 - cross-repository learning.
 
-These require evidence and separate gates.
-
 ---
 
 # Global stop conditions
@@ -347,10 +346,10 @@ Stop and report the exact blocker when:
 
 - `main` moved and exact-base evidence matters;
 - active PR head moved;
-- a material review finding is unresolved;
+- a material review finding has unsettled disposition;
 - next implementation authorization does not exist;
 - predecessor identities drift;
-- a dependency/source/provider/tool would need new authority;
+- a dependency/source/provider/tool requires new authority;
 - provider/network/secret access is needed without authority;
 - privacy rules for persistence are undefined;
 - benchmark evidence is insufficient or contaminated;
@@ -368,7 +367,7 @@ NO SILENT SCOPE EXPANSION
 
 ---
 
-# One-line execution rule
+# One-line rule
 
 ```text
 LIVE TRUTH -> ACTIVE AUTHORIZATION -> IMPLEMENT -> EXACT-HEAD PROOF -> GUARDED MERGE -> POST-MERGE PROOF -> UPDATE NEXT -> CONTINUE
