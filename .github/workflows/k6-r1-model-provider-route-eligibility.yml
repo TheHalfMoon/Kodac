@@ -351,7 +351,7 @@ jobs:
           node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/contracts.ts
           node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/eligibility.ts
           node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts
-          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+          npm test --workspace packages/kodac-runtime
           export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r1-schema-venv"
           uv run --frozen --no-sync pytest -p no:cacheprovider
           uv run --frozen --no-sync ruff check --no-cache .
