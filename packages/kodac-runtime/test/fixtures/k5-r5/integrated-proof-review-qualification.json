@@ -1,0 +1,217 @@
+{
+  "version": "kodac-k5-r5-integrated-proof-review-qualification-fixture-v1",
+  "positive": {
+    "packageInput": {
+      "subject": {
+        "subjectId": "k5-r5-integrated",
+        "subjectKind": "CHANGESET"
+      },
+      "revision": {
+        "repositoryId": "TheHalfMoon/Kodac",
+        "canonicalBase": "0000000000000000000000000000000000000000",
+        "candidateHead": "1111111111111111111111111111111111111111"
+      },
+      "requirements": [
+        {"requirementId": "artifact", "kind": "ARTIFACT", "minimumEvidence": 1},
+        {"requirementId": "custom", "kind": "CUSTOM", "minimumEvidence": 1},
+        {"requirementId": "review", "kind": "REVIEW_ADJUDICATION", "minimumEvidence": 1},
+        {"requirementId": "verify", "kind": "VERIFICATION", "minimumEvidence": 1}
+      ],
+      "evidence": [
+        {
+          "evidenceId": "e-artifact",
+          "kind": "ARTIFACT",
+          "requirementIds": ["artifact"],
+          "canonicalBase": "0000000000000000000000000000000000000000",
+          "candidateHead": "1111111111111111111111111111111111111111",
+          "ref": "artifact:a1",
+          "digest": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "status": "SATISFIED"
+        },
+        {
+          "evidenceId": "e-custom",
+          "kind": "CUSTOM",
+          "requirementIds": ["custom"],
+          "canonicalBase": "0000000000000000000000000000000000000000",
+          "candidateHead": "1111111111111111111111111111111111111111",
+          "ref": "custom:c1",
+          "digest": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+          "status": "SATISFIED"
+        },
+        {
+          "evidenceId": "e-review",
+          "kind": "REVIEW_ADJUDICATION",
+          "requirementIds": ["review"],
+          "canonicalBase": "0000000000000000000000000000000000000000",
+          "candidateHead": "1111111111111111111111111111111111111111",
+          "ref": "review:adjudication:1",
+          "digest": "a274027735ba341d522f1a762b4ebffb3f8895b07f650c5e767b10ce75654a2e",
+          "status": "SATISFIED"
+        },
+        {
+          "evidenceId": "e-verify",
+          "kind": "VERIFICATION",
+          "requirementIds": ["verify"],
+          "canonicalBase": "0000000000000000000000000000000000000000",
+          "candidateHead": "1111111111111111111111111111111111111111",
+          "ref": "verification:v1",
+          "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "status": "SATISFIED"
+        }
+      ]
+    },
+    "r2Sources": [
+      {
+        "evidenceId": "e-verify",
+        "sourceKind": "VERIFICATION_REPORT",
+        "canonicalBase": "0000000000000000000000000000000000000000",
+        "candidateHead": "1111111111111111111111111111111111111111",
+        "sourceRef": "verification:v1",
+        "sourceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "metadata": {
+          "protocol": "kodac.verification",
+          "reportVersion": 1,
+          "sessionId": "session-k5-r5",
+          "passed": true,
+          "checkIds": ["agent.completed", "workspace.integrity"]
+        }
+      }
+    ],
+    "r3Source": {
+      "evidenceId": "e-review",
+      "sourceKind": "KRI_ADJUDICATION",
+      "canonicalBase": "0000000000000000000000000000000000000000",
+      "candidateHead": "1111111111111111111111111111111111111111",
+      "sourceRef": "review:adjudication:1",
+      "sourceDigest": "a274027735ba341d522f1a762b4ebffb3f8895b07f650c5e767b10ce75654a2e",
+      "finding": {
+        "version": "kri-r2-finding-v1",
+        "claimKey": "claim.k5-r5.review",
+        "review": {
+          "reviewRunId": "review-run-k5-r5",
+          "reviewerId": "coderabbit",
+          "reviewerVersion": "2026-08-26",
+          "policyIdentity": "policy-kri-r2",
+          "canonicalBase": "0000000000000000000000000000000000000000",
+          "reviewedHead": "1111111111111111111111111111111111111111"
+        },
+        "path": "packages/kodac-runtime/src/proof-review/reconciliation.ts",
+        "range": {"startLine": 1, "endLine": 8},
+        "summary": "Bounded review finding for integrated qualification fixture.",
+        "contractClaim": "K5-R5 fixture preserves bounded proof-review authority.",
+        "category": "correctness",
+        "severity": "high",
+        "confidenceBps": 9750,
+        "evidenceRefs": ["review:request", "review:terminal"],
+        "findingIdentity": "89001fdeab6cec14807ee0d999a3f312e9c2b512ba230c7b66db37b0acb44306",
+        "evaluatedHead": "1111111111111111111111111111111111111111",
+        "freshness": "CURRENT",
+        "state": "NEW"
+      },
+      "adjudication": {
+        "version": "kri-r2-adjudication-v1",
+        "findingIdentity": "89001fdeab6cec14807ee0d999a3f312e9c2b512ba230c7b66db37b0acb44306",
+        "previousAdjudicationIdentity": null,
+        "action": "CONFIRM",
+        "previousState": "NEW",
+        "resultingState": "CONFIRMED",
+        "adjudicatorId": "founder-adjudicator",
+        "evidenceRefs": ["adjudication:reason", "review:terminal"],
+        "adjudicationIdentity": "a274027735ba341d522f1a762b4ebffb3f8895b07f650c5e767b10ce75654a2e"
+      }
+    },
+    "expected": {
+      "packageIdentity": "da9aa4be7dabc95a19e958f9a70b5632e8929df12ee194e78272adeb6ccffb91",
+      "judgment": {
+        "status": "SUFFICIENT_PACKAGE",
+        "judgmentIdentity": "3bc9bc23f7f60f6c55e88a56e6ac16acab59eba6210fd9e3fe61e6aed8453073",
+        "requirementResults": [
+          {"requirementId": "artifact", "kind": "ARTIFACT", "minimumEvidence": 1, "satisfiedFingerprintCount": 1, "status": "SATISFIED"},
+          {"requirementId": "custom", "kind": "CUSTOM", "minimumEvidence": 1, "satisfiedFingerprintCount": 1, "status": "SATISFIED"},
+          {"requirementId": "review", "kind": "REVIEW_ADJUDICATION", "minimumEvidence": 1, "satisfiedFingerprintCount": 1, "status": "SATISFIED"},
+          {"requirementId": "verify", "kind": "VERIFICATION", "minimumEvidence": 1, "satisfiedFingerprintCount": 1, "status": "SATISFIED"}
+        ],
+        "evidenceIds": ["e-artifact", "e-custom", "e-review", "e-verify"]
+      },
+      "r2": {
+        "sourceIdentities": ["0924fee0bb4b5e5a455616819803aa6aa2f4158e33cc13243a6c83d33a9ca5bf"],
+        "linkageIdentity": "337d166103472c3fecaf4d6728a60b0ebe305c01439e7d2581720f8c68574f05",
+        "links": [
+          {
+            "evidenceId": "e-verify",
+            "evidenceKind": "VERIFICATION",
+            "sourceKind": "VERIFICATION_REPORT",
+            "status": "LINKED",
+            "codes": [],
+            "sourceIdentity": "0924fee0bb4b5e5a455616819803aa6aa2f4158e33cc13243a6c83d33a9ca5bf"
+          }
+        ],
+        "outOfScopeEvidenceIds": ["e-artifact", "e-custom", "e-review"]
+      },
+      "r3": {
+        "sourceIdentities": ["236fe60745868f5024cd64731f52397893df7638bba055948e698cba389417cd"],
+        "linkageIdentity": "ac17535323d30ff417a38902fb089d72933e3de46a2cc7510054f10ec3436fc6",
+        "links": [
+          {
+            "evidenceId": "e-review",
+            "evidenceKind": "REVIEW_ADJUDICATION",
+            "sourceKind": "KRI_ADJUDICATION",
+            "status": "LINKED",
+            "codes": [],
+            "sourceIdentity": "236fe60745868f5024cd64731f52397893df7638bba055948e698cba389417cd"
+          }
+        ],
+        "outOfScopeEvidenceIds": ["e-artifact", "e-custom", "e-verify"]
+      },
+      "r4": {
+        "status": "VALID",
+        "results": [
+          {
+            "evidenceId": "e-review",
+            "evidenceKind": "REVIEW_ADJUDICATION",
+            "r1Status": "SATISFIED",
+            "linkageLayer": "K5_R3",
+            "linkStatus": "LINKED",
+            "sourceIdentity": "236fe60745868f5024cd64731f52397893df7638bba055948e698cba389417cd",
+            "state": "VALID",
+            "causes": []
+          },
+          {
+            "evidenceId": "e-verify",
+            "evidenceKind": "VERIFICATION",
+            "r1Status": "SATISFIED",
+            "linkageLayer": "K5_R2",
+            "linkStatus": "LINKED",
+            "sourceIdentity": "0924fee0bb4b5e5a455616819803aa6aa2f4158e33cc13243a6c83d33a9ca5bf",
+            "state": "VALID",
+            "causes": []
+          }
+        ],
+        "outOfScopeEvidenceIds": ["e-artifact", "e-custom"],
+        "reconciliationIdentity": "5ace101265784df688137756caa20a072c39089c0c29f30584498a5b457bac02"
+      }
+    }
+  },
+  "negativeCases": [
+    {"name": "malformed-r1-before-linkage", "contract": "R1 validation must fail before R2/R3 traversal"},
+    {"name": "foreign-r2-package-identity", "contract": "R4 rejects an R2 linkage for another package"},
+    {"name": "foreign-r3-package-identity", "contract": "R4 rejects an R3 linkage for another package"},
+    {"name": "r2-revision-mismatch", "contract": "R2 revision tampering is rejected fail-closed"},
+    {"name": "r3-revision-mismatch", "contract": "R3 revision mismatch maps to R3_REVISION_MISMATCH when structurally valid"},
+    {"name": "r2-missing-membership", "contract": "R2 missing linkage membership is structurally rejected"},
+    {"name": "r2-duplicate-membership", "contract": "R2 duplicate linkage membership is structurally rejected"},
+    {"name": "r2-orphaned-membership", "contract": "R2 orphaned linkage membership is structurally rejected"},
+    {"name": "r2-wrong-complement", "contract": "R2 out-of-scope complement tampering is structurally rejected"},
+    {"name": "r3-missing-membership", "contract": "R3 missing linkage membership is structurally rejected"},
+    {"name": "r3-duplicate-membership", "contract": "R3 duplicate linkage membership is structurally rejected"},
+    {"name": "r3-orphaned-membership", "contract": "R3 orphaned linkage membership is structurally rejected"},
+    {"name": "r3-wrong-complement", "contract": "R3 out-of-scope complement tampering is structurally rejected"},
+    {"name": "r2-fixed-cause-vocabulary", "contract": "R2 link codes map to fixed R4 causes"},
+    {"name": "r3-fixed-cause-vocabulary", "contract": "R3 link codes map to fixed R4 causes"},
+    {"name": "aggregate-precedence", "contract": "INVALID > STALE > CONTRADICTORY > INCOMPLETE > VALID"},
+    {"name": "not-applicable", "contract": "NOT_APPLICABLE only when no R4-linked evidence exists"},
+    {"name": "out-of-scope-non-influence", "contract": "ARTIFACT and CUSTOM never influence R4 linked-evidence state"},
+    {"name": "identity-tampering", "contract": "R1/R2/R3/R4 identity tampering fails closed"},
+    {"name": "immutability", "contract": "canonical outputs are deeply immutable and caller-alias independent"}
+  ]
+}
