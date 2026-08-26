@@ -156,11 +156,12 @@ The public R3 creation function accepts exactly one caller-materialized input ob
 routePlanRequest
 routePlan
 executionObservations[]
-verificationSource\ nk5Reconciliation
+verificationSource
+k5Reconciliation
 doneGateOutcome
 ```
 
-The literal field is `k5Reconciliation`; the line break above is formatting only. The implementation and public schema must use exactly these six field names.
+The implementation and public schema must use exactly these six field names.
 
 Before traversing any downstream outcome object, R3 must validate `routePlanRequest` and `routePlan` through the exact canonical K6-R2 validators. A malformed or forged R2 predecessor therefore fails before any K5 or outcome traversal.
 
