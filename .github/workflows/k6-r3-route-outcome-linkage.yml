@@ -25,6 +25,8 @@ jobs:
       K6_R3_AUTHORIZATION_MERGE_TREE: "1b6eea8e71a5283c389e9aec3375f8f444e07029"
       K6_R3_AUTHORIZATION_DOCUMENT_BLOB: "b7c68a4e963a0d082fd966b2cfdab44095d107dd"
       K6_R3_IMPLEMENTATION_BRANCH: "feat/k6-r3-route-outcome-linkage"
+      K6_R3_ADMISSION_PARENT_SHA: "9eba91c894af7dd2f654bdeecd45a526f2573e9a"
+      K6_R3_ADMISSION_PARENT_TREE: "7642cee13796d063edf9c283ae5f3a4e9685e758"
       RULESET_TRUSTED_SNAPSHOT_UPDATED_AT: "2026-08-11T21:30:21.316+03:00"
       RULESET_TRUSTED_NODE_ID: "RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js"
       PRE_R3_INDEX_BLOB: "49aa184daebca6464238396c71f7079dbbd96122"
@@ -68,6 +70,13 @@ jobs:
           test "$PR_BASE_REF" = "main"
           test "$PR_BASE_SHA" = "$K6_R3_AUTHORIZATION_MERGE_SHA"
           test "$PR_HEAD_REF" = "$K6_R3_IMPLEMENTATION_BRANCH"
+
+          mapfile -t head_parents < <(git cat-file -p HEAD | sed -n 's/^parent //p')
+          test "${#head_parents[@]}" -eq 1
+          test "${head_parents[0]}" = "$K6_R3_ADMISSION_PARENT_SHA"
+          git fetch --no-tags --depth=1 origin "$K6_R3_ADMISSION_PARENT_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K6_R3_ADMISSION_PARENT_SHA"
+          test "$(git rev-parse "$K6_R3_ADMISSION_PARENT_SHA^{tree}")" = "$K6_R3_ADMISSION_PARENT_TREE"
 
           git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r3-status-before"
           git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r3-diff-before"
@@ -214,7 +223,9 @@ jobs:
           const contracts = fs.readFileSync("packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts", "utf8")
           const materializer = fs.readFileSync("packages/kodac-runtime/src/evidence-router/outcome-linkage.ts", "utf8")
           const importSources = (source) => [...source.matchAll(/\bimport(?:\s+type)?[\s\S]*?\sfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
           const contractImports = importSources(contracts)
+          if (importKeywordCount(contracts) !== contractImports.length) throw new Error("R3 contracts contain a side-effect, dynamic, or unsupported import form")
           const expectedContracts = [
             "node:crypto",
             "node:util",
@@ -225,8 +236,11 @@ jobs:
             "../verification/types.ts",
           ]
           if (JSON.stringify(contractImports) !== JSON.stringify(expectedContracts)) throw new Error(`unexpected R3 contract imports: ${contractImports.join(",")}`)
-          if (JSON.stringify(importSources(materializer)) !== JSON.stringify(["./outcome-linkage-contracts.ts"])) throw new Error("unexpected R3 materializer imports")
+          const materializerImports = importSources(materializer)
+          if (importKeywordCount(materializer) !== materializerImports.length) throw new Error("R3 materializer contains a side-effect, dynamic, or unsupported import form")
+          if (JSON.stringify(materializerImports) !== JSON.stringify(["./outcome-linkage-contracts.ts"])) throw new Error("unexpected R3 materializer imports")
           const combined = contracts + "\n" + materializer
+          if (/\bimport\s*\(/.test(combined)) throw new Error("dynamic import is prohibited in R3 production source")
           const forbidden = [
             /ExecutionGateway/, /DoneGate\.evaluate/, /child_process/, /node:fs/, /node:http/, /node:https/, /node:net/,
             /\bfetch\s*\(/, /\bprocess\.(?:env|cwd|chdir)/, /Math\.random/, /Date\.now/, /new\s+Date\s*\(/,
