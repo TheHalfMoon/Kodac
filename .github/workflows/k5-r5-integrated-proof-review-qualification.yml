@@ -41,6 +41,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 32
           persist-credentials: false
 
       - name: Attest exact authorization base, head, scope, and immutable predecessors
@@ -68,8 +69,7 @@ jobs:
           test ! -s "$RUNNER_TEMP/k5-r5-status-before"
           test ! -s "$RUNNER_TEMP/k5-r5-diff-before"
 
-          git fetch --no-tags --depth=1 origin "$K5_R5_AUTHORIZATION_MERGE_SHA"
-          test "$(git rev-parse FETCH_HEAD)" = "$K5_R5_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K5_R5_AUTHORIZATION_MERGE_SHA^{commit}")" = "$K5_R5_AUTHORIZATION_MERGE_SHA"
           test "$(git rev-parse "$K5_R5_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K5_R5_AUTHORIZATION_MERGE_TREE"
           test "$(git merge-base "$K5_R5_AUTHORIZATION_MERGE_SHA" HEAD)" = "$K5_R5_AUTHORIZATION_MERGE_SHA"
 
