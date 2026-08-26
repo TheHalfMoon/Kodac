@@ -290,6 +290,8 @@ test("revision, repository, membership, source identity, and receipt identity dr
   assert.ok(mismatchedResult)
   mismatchedResult.linkStatus = "MISMATCH"
   mismatchedResult.causes = ["R2_REF_MISMATCH"]
+  mismatchedResult.state = "INVALID"
+  mismatch.k5Reconciliation.status = "INVALID"
   const mismatchPreimage = { ...mismatch.k5Reconciliation }
   delete (mismatchPreimage as Partial<typeof mismatchPreimage>).reconciliationIdentity
   mismatch.k5Reconciliation.reconciliationIdentity = k5R4ReconciliationIdentity(mismatchPreimage as K5R4ProofStateReconciliationInput)
