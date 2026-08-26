@@ -95,7 +95,7 @@ The merge tree exactly equals the qualified candidate tree.
 | Path | Canonical blob |
 | --- | --- |
 | `.github/workflows/k5-r4-proof-state-reconciliation.yml` | `a9b5fd620c26b9f95beb79fe5b34497a4bb23d65` |
-| `schema/k5-r4-proof-state-reconciliation.schema.json` | `e0f0871f2fc0a7359b55d8d8936a7d2a3d32819b` |
+| `schema/k5-r4-proof-state-reconciliation.schema.json` | `e0f0871f2fc0a73526df3e7676e4f90138621052` |
 | `packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts` | `acf758a6f17180448c1c46b0397bfe6742b4f04b` |
 | `packages/kodac-runtime/src/proof-review/reconciliation.ts` | `ec82ed7f1b941f7c523739ccd2e2663176edc30b` |
 | `packages/kodac-runtime/src/index.ts` | `824f6aaaa1d7c47a82e772a46dd6597b1819881d` |
