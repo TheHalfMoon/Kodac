@@ -108,8 +108,8 @@ K6-R4 implementation remains fail-closed until that authorization itself becomes
 ## Ordered later milestones
 
 ```text
-K6-R4 authorization + bounded implementation + closeout
--> K6-R5 authorization + bounded qualification + closeout
+K6-R4 authorization + bounded implementation + qualification + canonical closeout
+-> K6-R5 authorization + bounded strategy proposal + qualification + canonical closeout
 -> K6 bounded closeout
 -> P2 KodacBench
 -> P3 Context Engine v2
