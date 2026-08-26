@@ -184,11 +184,49 @@ jobs:
                   else:
                       seen[value] = index
 
+          def utf16_units(value):
+              encoded = value.encode("utf-16-be", "surrogatepass")
+              return tuple((encoded[index] << 8) | encoded[index + 1] for index in range(0, len(encoded), 2))
+
+          def validate_ordered_subset_of(validator, allowed_order, instance, schema):
+              if not isinstance(instance, list):
+                  return
+              rank = {value: index for index, value in enumerate(allowed_order)}
+              previous_rank = -1
+              for index, value in enumerate(instance):
+                  if not isinstance(value, str) or value not in rank:
+                      continue
+                  current_rank = rank[value]
+                  if current_rank <= previous_rank:
+                      yield ValidationError(f"array is not in canonical declared order at index {index}")
+                      return
+                  previous_rank = current_rank
+
+          def validate_utf16_sorted_by(validator, property_name, instance, schema):
+              if not isinstance(instance, list):
+                  return
+              previous_key = None
+              for index, item in enumerate(instance):
+                  if not isinstance(item, dict):
+                      continue
+                  value = item.get(property_name)
+                  if not isinstance(value, str):
+                      continue
+                  current_key = utf16_units(value)
+                  if previous_key is not None and current_key <= previous_key:
+                      yield ValidationError(
+                          f"array is not in unsigned UTF-16 {property_name} order at index {index}"
+                      )
+                      return
+                  previous_key = current_key
+
           KodacK6R1Validator = validators.extend(
               Draft202012Validator,
               {
                   "x-kodacUtf8MaxBytes": validate_utf8_max_bytes,
                   "x-kodacUniqueBy": validate_unique_by,
+                  "x-kodacOrderedSubsetOf": validate_ordered_subset_of,
+                  "x-kodacUtf16SortedBy": validate_utf16_sorted_by,
               },
           )
 
@@ -216,6 +254,17 @@ jobs:
           ineligible_with_missing["candidateResults"][0]["reasons"] = ["MISSING_REQUIRED_CAPABILITY"]
           ineligible_with_missing["candidateResults"][0]["missingCapabilities"] = ["model/retrieve"]
           validator.validate(ineligible_with_missing)
+          canonical_reasons = copy.deepcopy(result)
+          canonical_reasons["candidateResults"][0]["status"] = "INELIGIBLE"
+          canonical_reasons["candidateResults"][0]["reasons"] = ["QUALIFICATION_IDENTITY_MISMATCH", "QUALIFICATION_NOT_PASS", "RISK_CLASS_UNSUPPORTED", "PRIVACY_CLASS_UNSUPPORTED"]
+          validator.validate(canonical_reasons)
+          canonical_result_order = copy.deepcopy(result)
+          first_result = canonical_result_order["candidateResults"][0]
+          first_result["candidateId"] = "\U00010000"
+          second_result = copy.deepcopy(first_result)
+          second_result["candidateId"] = "\uE000"
+          canonical_result_order["candidateResults"].append(second_result)
+          validator.validate(canonical_result_order)
           mutations = []
           extra = copy.deepcopy(request); extra["authority"] = "PROVEN_READY"; mutations.append(("unknown root field", extra))
           kind = copy.deepcopy(request); kind["candidates"][0]["candidateKind"] = "TOOL"; mutations.append(("unsupported candidate kind", kind))
@@ -232,6 +281,8 @@ jobs:
           inconsistent = copy.deepcopy(result); inconsistent["candidateResults"][0]["status"] = "INELIGIBLE"; mutations.append(("ineligible without reasons", inconsistent))
           missing_without_reason = copy.deepcopy(ineligible_with_missing); missing_without_reason["candidateResults"][0]["reasons"] = ["RISK_CLASS_UNSUPPORTED"]; mutations.append(("missing capabilities without reason", missing_without_reason))
           reason_without_missing = copy.deepcopy(ineligible_with_missing); reason_without_missing["candidateResults"][0]["missingCapabilities"] = []; mutations.append(("missing reason without capabilities", reason_without_missing))
+          reversed_reasons = copy.deepcopy(canonical_reasons); reversed_reasons["candidateResults"][0]["reasons"] = ["RISK_CLASS_UNSUPPORTED", "QUALIFICATION_NOT_PASS"]; mutations.append(("noncanonical reason precedence", reversed_reasons))
+          reversed_results = copy.deepcopy(canonical_result_order); reversed_results["candidateResults"].reverse(); mutations.append(("noncanonical unsigned UTF-16 candidate result order", reversed_results))
           for name, candidate in mutations:
               if not list(validator.iter_errors(candidate)):
                   raise SystemExit(f"schema accepted hostile K6-R1 mutation: {name}")
