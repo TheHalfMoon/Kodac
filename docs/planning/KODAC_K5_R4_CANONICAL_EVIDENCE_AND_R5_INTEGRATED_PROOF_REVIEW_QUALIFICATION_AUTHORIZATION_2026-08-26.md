@@ -378,15 +378,17 @@ This authorization record itself is a one-path documentation/governance candidat
 
 Before merging this record:
 
-1. re-read live `main` and verify it still points to `6f343072f438c86b4781c29887485f83b491e9aa` with tree `67f7db35e7d9b91fecf6c9da09972375f52991c4`, unless a later canonical commit is explicitly reconciled before merge;
-2. verify the PR diff is exactly this one documentation path;
-3. verify all applicable exact-head CI is green;
-4. obtain fresh exact-head independent review required by current repository governance, including CodeRabbit and Qodo where those integrations are applicable;
-5. resolve every material review finding/thread;
-6. verify mergeability and branch protection live immediately before mutation;
-7. capture the exact authorization candidate head, tree, and document blob;
-8. merge with a real merge commit guarded by the exact candidate head SHA;
-9. prove ordered parents, tree equality, authorization blob equality, absence of unauthorized paths, protected `main`, and applicable post-merge governance evidence.
+1. verify the pull request base ref is exactly `main`;
+2. re-read live `main` and require both the PR base SHA and live `main` SHA to equal `6f343072f438c86b4781c29887485f83b491e9aa`, with live `main` tree exactly `67f7db35e7d9b91fecf6c9da09972375f52991c4`;
+3. if canonical `main` has advanced from that pinned SHA/tree, stop: this record is not merge-authorized until it is amended to explicitly record the replacement canonical base SHA/tree, the branch receives a normal non-destructive forward merge from that exact `main` state, and the resulting new exact head is requalified from scratch for scope, CI, independent CodeRabbit and Qodo review, thread resolution, mergeability, candidate tree, and document blob; rebase, force-push, or an implicit/stale-base exception is not permitted;
+4. verify the PR diff is exactly this one documentation path;
+5. verify all applicable exact-head CI is green;
+6. obtain fresh exact-head independent review required by current repository governance, including CodeRabbit and Qodo where those integrations are applicable;
+7. resolve every material review finding/thread;
+8. verify mergeability and branch protection live immediately before mutation;
+9. capture the exact authorization candidate head, tree, and document blob;
+10. merge with a real merge commit guarded by the exact candidate head SHA;
+11. prove ordered parents, tree equality, authorization blob equality, absence of unauthorized paths, protected `main`, and applicable post-merge governance evidence.
 
 Only after that post-merge proof does this record authorize the exact three-path K5-R5 implementation slice above.
 
