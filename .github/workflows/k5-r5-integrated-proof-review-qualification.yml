@@ -1,0 +1,233 @@
+name: k5-r5-integrated-proof-review-qualification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k5-r5-integrated-proof-review-qualification.yml"
+      - "packages/kodac-runtime/test/fixtures/k5-r5/integrated-proof-review-qualification.json"
+      - "packages/kodac-runtime/test/k5-r5-integrated-proof-review-qualification.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  integrated-proof-review-qualification:
+    name: k5-r5-integrated-proof-review-qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K5_R5_AUTHORIZATION_MERGE_SHA: "81fae61a18fddeecd6bdca459e23bbc679871fec"
+      K5_R5_AUTHORIZATION_MERGE_TREE: "1671a3a46432bd142c2dd3698c103f46e2bbac1a"
+      K5_R5_AUTHORIZATION_DOCUMENT_BLOB: "47da4dd50a8c71ec10204baed80c1e4200fc7698"
+      K5_R5_IMPLEMENTATION_BRANCH: "test/k5-r5-integrated-proof-review-qualification"
+      K5_R1_CONTRACTS_BLOB: "ef0ae26c2a44157fb20ad33145788ba1255239f5"
+      K5_R1_JUDGE_BLOB: "1b6093d6ec9239427e5f50a1dd9483d2c5603e36"
+      K5_R2_CONTRACTS_BLOB: "59d87c73d829c4cd1d57dba134f79839f13b9722"
+      K5_R2_RUNTIME_BLOB: "2ef2f786ee84dbcb2e937b710ee570963c50adc0"
+      K5_R3_CONTRACTS_BLOB: "d738c50de8f33e82f21f9392e9194f9499156f09"
+      K5_R3_RUNTIME_BLOB: "b8cdfc74b6ff786770a4097995696f9bea722daf"
+      K5_R4_CONTRACTS_BLOB: "acf758a6f17180448c1c46b0397bfe6742b4f04b"
+      K5_R4_RUNTIME_BLOB: "ec82ed7f1b941f7c523739ccd2e2663176edc30b"
+      K5_INDEX_BLOB: "824f6aaaa1d7c47a82e772a46dd6597b1819881d"
+      K5_R4_WORKFLOW_BLOB: "a9b5fd620c26b9f95beb79fe5b34497a4bb23d65"
+      K5_R4_SCHEMA_BLOB: "e0f0871f2fc0a73526df3e7676e4f90138621052"
+      K5_R4_TEST_BLOB: "6a2ab41e9c9d65ea3e31ad54dd82c53cb44b9597"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact authorization base, head, scope, and immutable predecessors
+        shell: bash
+        env:
+          K5_R5_PR_NUMBER: ${{ github.event.pull_request.number }}
+          K5_R5_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          K5_R5_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K5_R5_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K5_R5_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K5_R5_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K5_R5_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K5_R5_PR_HEAD_SHA"
+          test "$K5_R5_REPOSITORY" = "TheHalfMoon/Kodac"
+          test "$K5_R5_PR_HEAD_REPOSITORY" = "$K5_R5_REPOSITORY"
+          test "$K5_R5_PR_BASE_REF" = "main"
+          test "$K5_R5_PR_BASE_SHA" = "$K5_R5_AUTHORIZATION_MERGE_SHA"
+          test "$K5_R5_PR_HEAD_REF" = "$K5_R5_IMPLEMENTATION_BRANCH"
+          test "$K5_R5_PR_NUMBER" -gt 0
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r5-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r5-diff-before"
+          test ! -s "$RUNNER_TEMP/k5-r5-status-before"
+          test ! -s "$RUNNER_TEMP/k5-r5-diff-before"
+
+          git fetch --no-tags --depth=1 origin "$K5_R5_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K5_R5_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K5_R5_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K5_R5_AUTHORIZATION_MERGE_TREE"
+          test "$(git merge-base "$K5_R5_AUTHORIZATION_MERGE_SHA" HEAD)" = "$K5_R5_AUTHORIZATION_MERGE_SHA"
+
+          authorization_path="docs/planning/KODAC_K5_R4_CANONICAL_EVIDENCE_AND_R5_INTEGRATED_PROOF_REVIEW_QUALIFICATION_AUTHORIZATION_2026-08-26.md"
+          test "$(git rev-parse "$K5_R5_AUTHORIZATION_MERGE_SHA:$authorization_path")" = "$K5_R5_AUTHORIZATION_DOCUMENT_BLOB"
+          test "$(git rev-parse "HEAD:$authorization_path")" = "$K5_R5_AUTHORIZATION_DOCUMENT_BLOB"
+
+          immutable=(
+            "packages/kodac-runtime/src/proof-review/contracts.ts:$K5_R1_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/judge.ts:$K5_R1_JUDGE_BLOB"
+            "packages/kodac-runtime/src/proof-review/linkage-contracts.ts:$K5_R2_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/linkage.ts:$K5_R2_RUNTIME_BLOB"
+            "packages/kodac-runtime/src/proof-review/review-adjudication-contracts.ts:$K5_R3_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/review-adjudication.ts:$K5_R3_RUNTIME_BLOB"
+            "packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts:$K5_R4_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/reconciliation.ts:$K5_R4_RUNTIME_BLOB"
+            "packages/kodac-runtime/src/index.ts:$K5_INDEX_BLOB"
+            ".github/workflows/k5-r4-proof-state-reconciliation.yml:$K5_R4_WORKFLOW_BLOB"
+            "schema/k5-r4-proof-state-reconciliation.schema.json:$K5_R4_SCHEMA_BLOB"
+            "packages/kodac-runtime/test/k5-r4-proof-state-reconciliation.test.ts:$K5_R4_TEST_BLOB"
+          )
+          for entry in "${immutable[@]}"; do
+            path="${entry%%:*}"
+            blob="${entry##*:}"
+            test "$(git rev-parse "$K5_R5_AUTHORIZATION_MERGE_SHA:$path")" = "$blob"
+            test "$(git rev-parse "HEAD:$path")" = "$blob"
+          done
+
+          mapfile -t changed < <(git diff --name-only "$K5_R5_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k5-r5-integrated-proof-review-qualification.yml"
+            "packages/kodac-runtime/test/fixtures/k5-r5/integrated-proof-review-qualification.json"
+            "packages/kodac-runtime/test/k5-r5-integrated-proof-review-qualification.test.ts"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do test "${changed[$index]}" = "${expected[$index]}"; done
+          git diff --check "$K5_R5_AUTHORIZATION_MERGE_SHA" HEAD
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k5-r5-integrated-proof-review-qualification.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for index in "${!expected_actions[@]}"; do test "${action_lines[$index]}" = "${expected_actions[$index]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r5-python-venv"
+          uv sync --frozen --dev
+
+      - name: Validate bounded inert canonical fixture corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r5-python-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("packages/kodac-runtime/test/fixtures/k5-r5/integrated-proof-review-qualification.json")
+          raw = path.read_bytes()
+          if len(raw) > 64 * 1024:
+              raise SystemExit("K5-R5 fixture exceeds 64 KiB bound")
+          value = json.loads(raw)
+          if value.get("version") != "kodac-k5-r5-integrated-proof-review-qualification-fixture-v1":
+              raise SystemExit("unexpected K5-R5 fixture version")
+          if set(value) != {"version", "positive", "negativeCases"}:
+              raise SystemExit("unexpected K5-R5 fixture root fields")
+          negative = value.get("negativeCases")
+          if not isinstance(negative, list) or not (1 <= len(negative) <= 64):
+              raise SystemExit("K5-R5 negative fixture corpus is out of bounds")
+          names = [item.get("name") for item in negative if isinstance(item, dict)]
+          if len(names) != len(negative) or len(set(names)) != len(names):
+              raise SystemExit("K5-R5 negative fixture names must be unique")
+
+          stack = [value]
+          while stack:
+              current = stack.pop()
+              if isinstance(current, dict):
+                  stack.extend(current.values())
+              elif isinstance(current, list):
+                  stack.extend(current)
+              elif isinstance(current, str):
+                  if "\x00" in current:
+                      raise SystemExit("K5-R5 fixture contains NUL")
+                  lowered = current.lower()
+                  if lowered.startswith(("http://", "https://", "file://", "ssh://", "git@")):
+                      raise SystemExit("K5-R5 fixture contains an external transport locator")
+          PY
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k5-r5-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k5-r5-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name": "k5-r5-typescript-validation", "version": "1.0.0", "lockfileVersion": 3, "requires": true,
+            "packages": {
+              "": {"name":"k5-r5-typescript-validation", "version":"1.0.0", "dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
+              "node_modules/@types/node": {"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
+              "node_modules/typescript": {"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
+              "node_modules/undici-types": {"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run R5, predecessor, full-runtime, Python, Ruff, and provenance qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k5-r5-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k5-r5-typescript/node_modules/@types"
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r5-integrated-proof-review-qualification.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r4-proof-state-reconciliation.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r3-review-adjudication-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r2-evidence-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k5-r1-proof-package-judgment.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k5-r5-python-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k5-r5-typescript"
+
+      - name: Attest checkout unchanged after K5-R5 qualification
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k5-r5-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k5-r5-diff-after"
+          cmp "$RUNNER_TEMP/k5-r5-status-before" "$RUNNER_TEMP/k5-r5-status-after"
+          cmp "$RUNNER_TEMP/k5-r5-diff-before" "$RUNNER_TEMP/k5-r5-diff-after"
+          test ! -s "$RUNNER_TEMP/k5-r5-status-after"
+          test ! -s "$RUNNER_TEMP/k5-r5-diff-after"
