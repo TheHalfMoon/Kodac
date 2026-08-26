@@ -8,7 +8,7 @@
 - Canonical base commit: `90c00cfc01cb874c08b4f7bde1469ccb298b5648`
 - Canonical base tree: `018ec040cb82c1a6c4d8370f69ffbf46fdca8534`
 - Canonical `main` protection ruleset: `20707483` (`Kodac canonical main protection v1`)
-- Required ruleset properties: active, target `refs/heads/main`, no bypass actors, `strict_required_status_checks_policy = true`, required checks `provenance`, `legacy-tests`, `k2-runtime-gate`
+- Required ruleset properties: active, target `refs/heads/main`, no bypass actors, `strict_required_status_checks_policy = true`, required checks `provenance` (`integration_id = 15368`), `legacy-tests` (`integration_id = 15368`), `k2-runtime-gate` (`integration_id = 15368`)
 - K6-R2 canonical implementation merge: `90c00cfc01cb874c08b4f7bde1469ccb298b5648` (PR #206)
 - K6-R2 qualified implementation head: `4262fb54cd2cf14ac959a8fb986ac152c679c739`
 - K6-R2 qualified implementation tree: `018ec040cb82c1a6c4d8370f69ffbf46fdca8534`
@@ -481,21 +481,23 @@ The authorized workflow must fail closed on at least:
 18. Ruff;
 19. provenance validation;
 20. unchanged checkout after qualification; and
-21. the live canonical-main ruleset remains exactly ruleset `20707483`, active on `refs/heads/main`, with no bypass actors and strict required status checks for `provenance`, `legacy-tests`, and `k2-runtime-gate`.
+21. the live canonical-main ruleset remains exactly ruleset `20707483`, active on `refs/heads/main`, with no bypass actors and strict required status checks `provenance`, `legacy-tests`, and `k2-runtime-gate`, each bound to trusted producer `integration_id = 15368`.
 
 Historical branch/base-pinned K5/K6 implementation workflows are not automatically applicable to the R3 branch. The dedicated R3 workflow must execute the required focused predecessor regressions directly and must not relabel a historical expected branch/base failure as green.
 
 ## Repository-enforced base advancement guard
 
-Ruleset `20707483` is a mandatory part of the merge protocol, not background metadata. Its active `strict_required_status_checks_policy = true` means the PR branch must be up to date with the protected base before GitHub may merge it. There are no bypass actors. Therefore an advancement of `main` after qualification makes the branch stale against the base and the protected merge must be rejected until the authorization-defined forward reconciliation and full requalification are completed.
+Ruleset `20707483` is a mandatory part of the merge protocol, not background metadata. Its active `strict_required_status_checks_policy = true` means the PR branch must be up to date with the protected base before GitHub may merge it. There are no bypass actors. Each required status context is bound to trusted producer `integration_id = 15368`. Therefore an advancement of `main` after qualification makes the branch stale against the base and the protected merge must be rejected until the authorization-defined forward reconciliation and full requalification are completed.
 
 Immediately before either authorization merge or future R3 implementation merge:
 
 1. re-read `refs/heads/main` and require the exact authorized base SHA;
-2. re-read ruleset `20707483` and require it to remain active, targeted only as recorded, with no bypass actors, strict required status checks enabled, and the exact three required check contexts recorded above;
+2. re-read ruleset `20707483` and require it to remain active, targeted only as recorded, with no bypass actors, strict required status checks enabled, and the exact three required check contexts `provenance`, `legacy-tests`, and `k2-runtime-gate`, each with `integration_id = 15368`;
 3. require the PR to remain mergeable, non-draft, and up to date with `main` under that strict ruleset;
 4. invoke only normal GitHub merge-commit semantics with the exact expected PR head SHA;
-5. treat any base movement, ruleset drift, required-check invalidation, merge rejection, or parent mismatch as STOP — never retry with stale evidence and never waive the guard.
+5. treat any base movement, ruleset drift, required-check context or producer drift, required-check invalidation, merge rejection, or parent mismatch as STOP — never retry with stale evidence and never waive the guard.
+
+Merge-field mapping is normative: `expected_head_sha` is the internal connector/wrapper field used by repository automation. The wrapper MUST serialize it to GitHub REST `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` request-body field `sha` using the exact qualified PR head SHA. The literal key `expected_head_sha` MUST NOT be sent to GitHub REST, and no merge call may omit the resulting REST `sha` precondition.
 
 This protected strict-status rule is the repository-enforced base-ref lease for this protocol. If it is removed, loosened, bypassed, inaccessible for verification, or otherwise cannot be proven at merge time, the merge is not authorized.
 
@@ -515,7 +517,7 @@ K6-R3 implementation must not merge until all of the following are proven on the
 10. no review waiver is taken;
 11. protected `main` and ruleset `20707483` are re-read immediately before merge and satisfy the repository-enforced base advancement guard above;
 12. PR is open, non-draft, mergeable, up to date under the strict ruleset, and still has exactly six changed files;
-13. merge uses normal GitHub merge-commit semantics guarded by exact `expected_head_sha`, while the strict ruleset concurrently guards base freshness;
+13. merge uses normal GitHub merge-commit semantics through the connected wrapper with `expected_head_sha = <exact qualified head>`, which MUST map to GitHub REST request-body `sha = <same exact qualified head>`, while the strict ruleset concurrently guards base freshness;
 14. ordered merge parent 1 equals pre-merge canonical `main` and parent 2 equals the exact qualified candidate head;
 15. merge tree equals the qualified candidate tree;
 16. GitHub merge signature is valid;
@@ -580,7 +582,7 @@ K6-R3 implementation authority becomes effective only if this exact one-path aut
 7. final candidate head/tree/document blob are captured;
 8. no waiver is taken;
 9. protected `main` and ruleset `20707483` are re-read immediately before merge and satisfy the repository-enforced base advancement guard above;
-10. merge uses normal GitHub merge-commit semantics guarded by exact expected head SHA while the strict ruleset concurrently guards base freshness;
+10. merge uses normal GitHub merge-commit semantics through the connected wrapper with `expected_head_sha = <exact qualified head>`, which MUST map to GitHub REST request-body `sha = <same exact qualified head>`, while the strict ruleset concurrently guards base freshness;
 11. ordered merge parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified candidate head;
 12. merge tree equals the qualified candidate tree and the authorization document blob equals the qualified candidate blob;
 13. protected `main` equals the merge commit/tree and introduces exactly the authorized one path; and
