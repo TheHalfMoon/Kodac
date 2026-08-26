@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k6-r4-privacy-governed-outcome-memory.schema.json",
+  "title": "Kodac K6-R4 Privacy-Governed Outcome Memory",
+  "$comment": "The public root is the validated outcomeMemory representation. Operation definitions are pure input contracts only and are never persisted fields. JSON Schema does not prove R1/R3 cross-record binding, deterministic identity recomputation, lifecycle ordering, derived scope equality, supersession, anti-resurrection, hostile-object/proxy rejection, UTF-8 byte budgets, pseudonymity, or absence of side effects; executable TypeScript validation is authoritative for those invariants.",
+  "$ref": "#/$defs/outcomeMemory",
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "ownerScopeId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64,
+      "x-kodacUtf8MaxBytes": 64,
+      "description": "Opaque isolation data only; not authentication, authorization, capability, credential, secret, approval, or permission."
+    },
+    "timestamp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repositoryIdentity", "ownerScopeId", "privacyClass"],
+      "properties": {
+        "repositoryIdentity": { "$ref": "#/$defs/sha256" },
+        "ownerScopeId": { "$ref": "#/$defs/ownerScopeId" },
+        "privacyClass": { "enum": ["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"] }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeOutcomeLinkageIdentity", "routePlanIdentity", "requestIdentity", "revisionIdentity", "taskIdentity"],
+      "properties": {
+        "routeOutcomeLinkageIdentity": { "$ref": "#/$defs/sha256" },
+        "routePlanIdentity": { "$ref": "#/$defs/sha256" },
+        "requestIdentity": { "$ref": "#/$defs/sha256" },
+        "revisionIdentity": { "$ref": "#/$defs/sha256" },
+        "taskIdentity": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "executionOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planStepIndex", "candidateIdentity", "role", "executionResultStatus"],
+      "properties": {
+        "planStepIndex": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "candidateIdentity": { "$ref": "#/$defs/sha256" },
+        "role": { "enum": ["PRIMARY", "FALLBACK"] },
+        "executionResultStatus": { "enum": ["success", "blocked", "failure"] }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verificationPassed", "k5ReconciliationIdentity", "k5Status", "doneGateOutcomeIdentity", "doneGateStatus", "executionOutcomes"],
+      "properties": {
+        "verificationPassed": { "type": "boolean" },
+        "k5ReconciliationIdentity": { "$ref": "#/$defs/sha256" },
+        "k5Status": { "enum": ["NOT_APPLICABLE", "VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"] },
+        "doneGateOutcomeIdentity": { "$ref": "#/$defs/sha256" },
+        "doneGateStatus": { "enum": ["PROVEN_READY", "NOT_READY"] },
+        "executionOutcomes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/executionOutcome" }
+        }
+      }
+    },
+    "lifecycle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observedAtUnixMs", "expiresAtUnixMs", "supersedesRecordIdentity"],
+      "properties": {
+        "observedAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "expiresAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "supersedesRecordIdentity": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+      },
+      "x-kodacLifecycleOrderingInvariant": "expiresAtUnixMs > observedAtUnixMs"
+    },
+    "activeRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "recordIdentity", "scope", "source", "outcome", "lifecycle"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-record-v1" },
+        "recordIdentity": { "$ref": "#/$defs/sha256" },
+        "scope": { "$ref": "#/$defs/scope" },
+        "source": { "$ref": "#/$defs/source" },
+        "outcome": { "$ref": "#/$defs/outcome" },
+        "lifecycle": { "$ref": "#/$defs/lifecycle" }
+      },
+      "x-kodacDeterministicIdentityInvariant": true
+    },
+    "tombstone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "tombstoneIdentity", "scope", "recordIdentity", "taskIdentity", "transition", "transitionAtUnixMs", "expiresAtUnixMs", "replacementRecordIdentity"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-tombstone-v1" },
+        "tombstoneIdentity": { "$ref": "#/$defs/sha256" },
+        "scope": { "$ref": "#/$defs/scope" },
+        "recordIdentity": { "$ref": "#/$defs/sha256" },
+        "taskIdentity": { "$ref": "#/$defs/sha256" },
+        "transition": { "enum": ["DELETED", "EXPIRED", "SUPERSEDED"] },
+        "transitionAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "expiresAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "replacementRecordIdentity": { "anyOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }] }
+      },
+      "allOf": [{
+        "if": { "properties": { "transition": { "const": "SUPERSEDED" } }, "required": ["transition"] },
+        "then": { "properties": { "replacementRecordIdentity": { "$ref": "#/$defs/sha256" } } },
+        "else": { "properties": { "replacementRecordIdentity": { "type": "null" } } }
+      }],
+      "x-kodacLifecycleOrderingInvariant": "expiresAtUnixMs > transitionAtUnixMs",
+      "x-kodacNoOutcomePayload": true
+    },
+    "outcomeMemory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "memoryIdentity", "scope", "records", "tombstones"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-memory-v1" },
+        "memoryIdentity": { "$ref": "#/$defs/sha256" },
+        "scope": { "$ref": "#/$defs/scope" },
+        "records": { "type": "array", "minItems": 0, "maxItems": 4096, "items": { "$ref": "#/$defs/activeRecord" } },
+        "tombstones": { "type": "array", "minItems": 0, "maxItems": 8192, "items": { "$ref": "#/$defs/tombstone" } }
+      },
+      "x-kodacRuntimeSemanticInvariants": [
+        "exact scope equality for every record and tombstone",
+        "strict identity sorting and uniqueness",
+        "unique active taskIdentity",
+        "no recordIdentity simultaneously active and tombstoned",
+        "deterministic record/tombstone/memory identity recomputation"
+      ]
+    },
+    "appendOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "kind", "ownerScopeId", "observedAtUnixMs", "expiresAtUnixMs", "routeRequest", "routeOutcomeLinkageEnvelope"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-memory-operation-v1" },
+        "kind": { "const": "APPEND" },
+        "ownerScopeId": { "$ref": "#/$defs/ownerScopeId" },
+        "observedAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "expiresAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "routeRequest": { "$ref": "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest" },
+        "routeOutcomeLinkageEnvelope": { "$ref": "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope" }
+      },
+      "x-kodacSemanticInvariant": "R1/R3 exact identity+repository+base+head+task binding; expiresAtUnixMs > observedAtUnixMs"
+    },
+    "supersedeOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "kind", "targetRecordIdentity", "ownerScopeId", "observedAtUnixMs", "expiresAtUnixMs", "tombstoneExpiresAtUnixMs", "routeRequest", "routeOutcomeLinkageEnvelope"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-memory-operation-v1" },
+        "kind": { "const": "SUPERSEDE" },
+        "targetRecordIdentity": { "$ref": "#/$defs/sha256" },
+        "ownerScopeId": { "$ref": "#/$defs/ownerScopeId" },
+        "observedAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "expiresAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "tombstoneExpiresAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "routeRequest": { "$ref": "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest" },
+        "routeOutcomeLinkageEnvelope": { "$ref": "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope" }
+      },
+      "x-kodacSemanticInvariant": "exact active target, same task/scope, atomic replacement+tombstone, lifecycle ordering"
+    },
+    "deleteOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "kind", "targetRecordIdentity", "transitionAtUnixMs", "tombstoneExpiresAtUnixMs"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-memory-operation-v1" },
+        "kind": { "const": "DELETE" },
+        "targetRecordIdentity": { "$ref": "#/$defs/sha256" },
+        "transitionAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "tombstoneExpiresAtUnixMs": { "$ref": "#/$defs/timestamp" }
+      },
+      "x-kodacSemanticInvariant": "target active; transition >= observedAt; tombstone expiry > transition"
+    },
+    "expireOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "kind", "targetRecordIdentity", "transitionAtUnixMs", "tombstoneExpiresAtUnixMs"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-memory-operation-v1" },
+        "kind": { "const": "EXPIRE" },
+        "targetRecordIdentity": { "$ref": "#/$defs/sha256" },
+        "transitionAtUnixMs": { "$ref": "#/$defs/timestamp" },
+        "tombstoneExpiresAtUnixMs": { "$ref": "#/$defs/timestamp" }
+      },
+      "x-kodacSemanticInvariant": "target active; transition >= record expiry; tombstone expiry > transition"
+    },
+    "purgeTombstoneOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "kind", "targetTombstoneIdentity", "transitionAtUnixMs"],
+      "properties": {
+        "version": { "const": "kodac-k6-r4-outcome-memory-operation-v1" },
+        "kind": { "const": "PURGE_TOMBSTONE" },
+        "targetTombstoneIdentity": { "$ref": "#/$defs/sha256" },
+        "transitionAtUnixMs": { "$ref": "#/$defs/timestamp" }
+      },
+      "x-kodacSemanticInvariant": "target tombstone exists and transitionAtUnixMs >= tombstone.expiresAtUnixMs"
+    },
+    "operation": {
+      "oneOf": [
+        { "$ref": "#/$defs/appendOperation" },
+        { "$ref": "#/$defs/supersedeOperation" },
+        { "$ref": "#/$defs/deleteOperation" },
+        { "$ref": "#/$defs/expireOperation" },
+        { "$ref": "#/$defs/purgeTombstoneOperation" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,339 @@
+name: k6-r4-privacy-governed-outcome-memory
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k6-r4-privacy-governed-outcome-memory.yml"
+      - "schema/k6-r4-privacy-governed-outcome-memory.schema.json"
+      - "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
+      - "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  privacy-governed-outcome-memory:
+    name: k6-r4-privacy-governed-outcome-memory
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      K6_R4_AUTHORIZATION_MERGE_SHA: "1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372"
+      K6_R4_AUTHORIZATION_MERGE_TREE: "a75da9d57827e0967319fb5495dc7e6cac9a23f8"
+      K6_R4_AUTHORIZATION_DOCUMENT_BLOB: "db0cd6f5484494c1fcacb37570465059a0484c63"
+      K6_R4_IMPLEMENTATION_BRANCH: "feat/k6-r4-privacy-governed-outcome-memory"
+      PRE_R4_INDEX_BLOB: "f5f5c68de90e23ad07af4a0489cf85e57fe46cfe"
+      R3_AUTHORIZATION_BLOB: "b7c68a4e963a0d082fd966b2cfdab44095d107dd"
+      R3_WORKFLOW_BLOB: "7fdf087cab22719485b9aadd98568f9669cf3be1"
+      R1_SCHEMA_BLOB: "336b5477b16f1bba5c4173874d819091cea9495d"
+      R3_SCHEMA_BLOB: "70125dfeead8fa18ae7bddc909d611e92b5b1873"
+      R1_CONTRACTS_BLOB: "dc29c4ce85340312f28b67604cac01c1d775e370"
+      R3_CONTRACTS_BLOB: "eb49af7282ba9c60ac2d874dd71798867e39284e"
+      R3_MATERIALIZER_BLOB: "7349d8d84f698aced133d5932dae910bc01deb9b"
+      R1_TEST_BLOB: "974137a513f16c93336d5bcda38c351326c53255"
+      R3_TEST_BLOB: "9f79a44d8def5f04b943f9d4e7c87deba15bf61f"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      RULESET_TRUSTED_SNAPSHOT_UPDATED_AT: "2026-08-11T21:30:21.316+03:00"
+      RULESET_TRUSTED_NODE_ID: "RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions
+        shell: bash
+        env:
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PR_HEAD_SHA"
+          test "$REPOSITORY" = "TheHalfMoon/Kodac"
+          test "$PR_HEAD_REPOSITORY" = "$REPOSITORY"
+          test "$PR_BASE_REF" = "main"
+          test "$PR_BASE_SHA" = "$K6_R4_AUTHORIZATION_MERGE_SHA"
+          test "$PR_HEAD_REF" = "$K6_R4_IMPLEMENTATION_BRANCH"
+          git merge-base --is-ancestor "$K6_R4_AUTHORIZATION_MERGE_SHA" HEAD
+          test "$(git merge-base "$K6_R4_AUTHORIZATION_MERGE_SHA" HEAD)" = "$K6_R4_AUTHORIZATION_MERGE_SHA"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r4-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r4-diff-before"
+          test ! -s "$RUNNER_TEMP/k6-r4-status-before"
+          test ! -s "$RUNNER_TEMP/k6-r4-diff-before"
+
+          test "$(git rev-parse "$K6_R4_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K6_R4_AUTHORIZATION_MERGE_TREE"
+          authorization_path="docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md"
+          test "$(git rev-parse "$K6_R4_AUTHORIZATION_MERGE_SHA:$authorization_path")" = "$K6_R4_AUTHORIZATION_DOCUMENT_BLOB"
+          test "$(git rev-parse "HEAD:$authorization_path")" = "$K6_R4_AUTHORIZATION_DOCUMENT_BLOB"
+
+          predecessors=(
+            "docs/planning/KODAC_K6_R3_ROUTE_OUTCOME_LINKAGE_AUTHORIZATION_2026-08-26.md:$R3_AUTHORIZATION_BLOB"
+            ".github/workflows/k6-r3-route-outcome-linkage.yml:$R3_WORKFLOW_BLOB"
+            "schema/k6-r1-model-provider-route-eligibility.schema.json:$R1_SCHEMA_BLOB"
+            "schema/k6-r3-route-outcome-linkage.schema.json:$R3_SCHEMA_BLOB"
+            "packages/kodac-runtime/src/evidence-router/contracts.ts:$R1_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts:$R3_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/evidence-router/outcome-linkage.ts:$R3_MATERIALIZER_BLOB"
+            "packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts:$R1_TEST_BLOB"
+            "packages/kodac-runtime/test/k6-r3-route-outcome-linkage.test.ts:$R3_TEST_BLOB"
+            "tools/validate_provenance.py:$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          )
+          for entry in "${predecessors[@]}"; do
+            path="${entry%%:*}"
+            blob="${entry##*:}"
+            test "$(git rev-parse "$K6_R4_AUTHORIZATION_MERGE_SHA:$path")" = "$blob"
+            test "$(git rev-parse "HEAD:$path")" = "$blob"
+          done
+          test "$(git rev-parse "$K6_R4_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts")" = "$PRE_R4_INDEX_BLOB"
+
+          mapfile -t changed < <(git diff --name-only "$K6_R4_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k6-r4-privacy-governed-outcome-memory.yml"
+            "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
+            "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
+            "schema/k6-r4-privacy-governed-outcome-memory.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for i in "${!expected[@]}"; do test "${changed[$i]}" = "${expected[$i]}"; done
+          git diff --check "$K6_R4_AUTHORIZATION_MERGE_SHA" HEAD
+
+          git show "$K6_R4_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts" > "$RUNNER_TEMP/k6-r4-index-base"
+          base_size="$(wc -c < "$RUNNER_TEMP/k6-r4-index-base")"
+          head -c "$base_size" packages/kodac-runtime/src/index.ts | cmp - "$RUNNER_TEMP/k6-r4-index-base"
+          tail -c "+$((base_size + 1))" packages/kodac-runtime/src/index.ts > "$RUNNER_TEMP/k6-r4-index-suffix"
+          cat > "$RUNNER_TEMP/k6-r4-index-expected-suffix" <<'SUFFIX'
+          export * from "./evidence-router/outcome-memory-contracts.ts"
+          export * from "./evidence-router/outcome-memory.ts"
+          SUFFIX
+          sed -i 's/^          //' "$RUNNER_TEMP/k6-r4-index-expected-suffix"
+          cmp "$RUNNER_TEMP/k6-r4-index-suffix" "$RUNNER_TEMP/k6-r4-index-expected-suffix"
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k6-r4-privacy-governed-outcome-memory.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for i in "${!expected_actions[@]}"; do test "${action_lines[$i]}" = "${expected_actions[$i]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r4-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate R4 schema registration, predecessor references, and runtime parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r4-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          root = Path("schema")
+          r4 = json.loads((root / "k6-r4-privacy-governed-outcome-memory.schema.json").read_text())
+          r1 = json.loads((root / "k6-r1-model-provider-route-eligibility.schema.json").read_text())
+          r3 = json.loads((root / "k6-r3-route-outcome-linkage.schema.json").read_text())
+          for schema in (r4, r1, r3):
+              Draft202012Validator.check_schema(schema)
+          assert r4["$id"] == "https://kodac.dev/schema/k6-r4-privacy-governed-outcome-memory.schema.json"
+          assert r4["$ref"] == "#/$defs/outcomeMemory"
+          assert r1["$id"] == "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json"
+          assert r3["$id"] == "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json"
+          assert r4["$defs"]["appendOperation"]["properties"]["routeRequest"]["$ref"] == "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest"
+          assert r4["$defs"]["appendOperation"]["properties"]["routeOutcomeLinkageEnvelope"]["$ref"] == "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope"
+          assert r4["$defs"]["supersedeOperation"]["properties"]["routeRequest"]["$ref"].endswith("k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest")
+          assert r4["$defs"]["supersedeOperation"]["properties"]["routeOutcomeLinkageEnvelope"]["$ref"].endswith("k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope")
+          assert "does not prove" in r4["$comment"]
+          PY
+
+          node --experimental-strip-types --input-type=module <<'NODE'
+          import fs from "node:fs"
+          import {
+            K6_R4_PRIVACY_CLASSES,
+            K6_R4_K5_STATUSES,
+            K6_R4_DONE_GATE_STATUSES,
+            K6_R4_EXECUTION_RESULT_STATUSES,
+            K6_R4_STEP_ROLES,
+            K6_R4_TOMBSTONE_TRANSITIONS,
+            K6_R4_OPERATION_KINDS,
+            K6_R4_LIMITS,
+          } from "./packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
+          const schema = JSON.parse(fs.readFileSync("schema/k6-r4-privacy-governed-outcome-memory.schema.json", "utf8"))
+          const d = schema.$defs
+          const eq = (left, right, label) => { if (JSON.stringify(left) !== JSON.stringify(right)) throw new Error(`${label} drift`) }
+          eq(d.scope.properties.privacyClass.enum, [...K6_R4_PRIVACY_CLASSES], "privacy enum")
+          eq(d.outcome.properties.k5Status.enum, [...K6_R4_K5_STATUSES], "K5 enum")
+          eq(d.outcome.properties.doneGateStatus.enum, [...K6_R4_DONE_GATE_STATUSES], "Done Gate enum")
+          eq(d.executionOutcome.properties.executionResultStatus.enum, [...K6_R4_EXECUTION_RESULT_STATUSES], "execution enum")
+          eq(d.executionOutcome.properties.role.enum, [...K6_R4_STEP_ROLES], "role enum")
+          eq(d.tombstone.properties.transition.enum, [...K6_R4_TOMBSTONE_TRANSITIONS], "transition enum")
+          const operationKinds = d.operation.oneOf.map((entry) => d[entry.$ref.split("/").at(-1)].properties.kind.const)
+          eq(operationKinds, [...K6_R4_OPERATION_KINDS], "operation enum")
+          if (d.outcomeMemory.properties.records.maxItems !== K6_R4_LIMITS.maxActiveRecords) throw new Error("record bound drift")
+          if (d.outcomeMemory.properties.tombstones.maxItems !== K6_R4_LIMITS.maxTombstones) throw new Error("tombstone bound drift")
+          if (d.outcome.properties.executionOutcomes.maxItems !== K6_R4_LIMITS.maxExecutionOutcomesPerRecord) throw new Error("execution bound drift")
+          if (d.ownerScopeId.maxLength !== K6_R4_LIMITS.maxOwnerScopeIdBytes) throw new Error("owner scope bound drift")
+          NODE
+
+      - name: Prove pure authority-bounded production surface and live ruleset
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from "node:fs"
+          const contracts = fs.readFileSync("packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts", "utf8")
+          const runtime = fs.readFileSync("packages/kodac-runtime/src/evidence-router/outcome-memory.ts", "utf8")
+          const importSources = (source) => [...source.matchAll(/\bimport(?:\s+type)?[\s\S]*?\sfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
+          if (importKeywordCount(contracts) !== 0) throw new Error("R4 contracts must be import-free")
+          const imports = importSources(runtime)
+          if (importKeywordCount(runtime) !== imports.length) throw new Error("R4 runtime contains a side-effect, dynamic, or unsupported import form")
+          const expected = ["node:crypto", "node:util", "./contracts.ts", "./outcome-linkage-contracts.ts"]
+          if (JSON.stringify(imports) !== JSON.stringify(expected)) throw new Error(`unexpected R4 runtime imports: ${imports.join(",")}`)
+          if (/\bimport\s*\(/.test(runtime)) throw new Error("dynamic import is prohibited in R4 production source")
+          const combined = contracts + "\n" + runtime
+          const forbidden = [
+            /ExecutionGateway/, /child_process/, /node:fs/, /node:path/, /node:http/, /node:https/, /node:net/, /node:tls/,
+            /\bfetch\s*\(/, /\bprocess\.(?:env|cwd|chdir)/, /Math\.random/, /Date\.now/, /new\s+Date\s*\(/,
+            /\b(?:exec|spawn|fork)\s*\(/, /localeCompare/, /Intl\./, /telemetry/i, /database/i,
+          ]
+          for (const pattern of forbidden) if (pattern.test(combined)) throw new Error(`forbidden R4 production primitive: ${pattern}`)
+          const utilMembers = [...runtime.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].map((match) => match[1])
+          if (utilMembers.some((member) => member !== "isProxy")) throw new Error(`unauthorized node:util member: ${utilMembers.join(",")}`)
+          const hashes = [...runtime.matchAll(/createHash\(["']([^"']+)["']\)/g)].map((match) => match[1])
+          if (hashes.length !== 1 || hashes[0] !== "sha256") throw new Error(`unexpected hash algorithms: ${hashes.join(",")}`)
+          if (!runtime.includes("canonicalK6R1Json")) throw new Error("R4 must reuse canonical K6-R1 JSON semantics")
+          if (!runtime.includes("validateK6R1RouteRequest")) throw new Error("R4 must validate canonical R1")
+          if (!runtime.includes("validateK6R3RouteOutcomeLinkageEnvelope")) throw new Error("R4 must validate canonical R3")
+          NODE
+          test "$(grep -Fxc 'export * from "./evidence-router/outcome-memory-contracts.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+          test "$(grep -Fxc 'export * from "./evidence-router/outcome-memory.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+
+          curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/TheHalfMoon/Kodac/rulesets/20707483" > "$RUNNER_TEMP/k6-r4-ruleset.json"
+          python - "$RUNNER_TEMP/k6-r4-ruleset.json" <<'PY'
+          import json, os, sys
+          from datetime import datetime, timezone
+
+          def instant(value: str):
+              return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
+          r = json.load(open(sys.argv[1]))
+          assert r["id"] == 20707483
+          assert r["name"] == "Kodac canonical main protection v1"
+          assert r["target"] == "branch"
+          assert r["source_type"] == "Repository"
+          assert r["source"] == "TheHalfMoon/Kodac"
+          assert r["node_id"] == os.environ["RULESET_TRUSTED_NODE_ID"]
+          assert instant(r["updated_at"]) == instant(os.environ["RULESET_TRUSTED_SNAPSHOT_UPDATED_AT"])
+          assert r["enforcement"] == "active"
+          assert r["conditions"]["ref_name"] == {"exclude": [], "include": ["refs/heads/main"]}
+          if "bypass_actors" in r:
+              assert r["bypass_actors"] == []
+          if "current_user_can_bypass" in r:
+              assert r["current_user_can_bypass"] == "never"
+          pr_rules = [item for item in r["rules"] if item["type"] == "pull_request"]
+          assert len(pr_rules) == 1
+          assert pr_rules[0]["parameters"]["required_review_thread_resolution"] is True
+          status_rules = [item for item in r["rules"] if item["type"] == "required_status_checks"]
+          assert len(status_rules) == 1
+          p = status_rules[0]["parameters"]
+          assert p["strict_required_status_checks_policy"] is True
+          assert p["required_status_checks"] == [
+              {"context": "provenance", "integration_id": 15368},
+              {"context": "legacy-tests", "integration_id": 15368},
+              {"context": "k2-runtime-gate", "integration_id": 15368},
+          ]
+          PY
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k6-r4-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k6-r4-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name":"k6-r4-typescript-validation","version":"1.0.0","lockfileVersion":3,"requires":true,
+            "packages":{
+              "":{"name":"k6-r4-typescript-validation","version":"1.0.0","dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
+              "node_modules/@types/node":{"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
+              "node_modules/typescript":{"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
+              "node_modules/undici-types":{"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused R4 and predecessor regressions, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k6-r4-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k6-r4-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r3-route-outcome-linkage.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts
+          (cd packages/kodac-runtime && npm test)
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r4-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k6-r4-typescript"
+
+      - name: Attest checkout unchanged after K6-R4 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r4-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r4-diff-after"
+          cmp "$RUNNER_TEMP/k6-r4-status-before" "$RUNNER_TEMP/k6-r4-status-after"
+          cmp "$RUNNER_TEMP/k6-r4-diff-before" "$RUNNER_TEMP/k6-r4-diff-after"
+          test ! -s "$RUNNER_TEMP/k6-r4-status-after"
+          test ! -s "$RUNNER_TEMP/k6-r4-diff-after"
