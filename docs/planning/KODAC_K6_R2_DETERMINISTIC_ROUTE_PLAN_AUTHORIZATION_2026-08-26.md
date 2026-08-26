@@ -217,9 +217,10 @@ For a non-empty eligible ordering:
 
 For zero eligible candidates:
 
-- `status = NO_ELIGIBLE_CANDIDATE`;
-- `orderedEligibleCandidateIds = []`;
-- `steps = []`.
+- the route-plan request has `orderedEligibleCandidateIds = []`;
+- the emitted route plan has `status = NO_ELIGIBLE_CANDIDATE`;
+- the emitted route plan has `steps = []`;
+- the emitted route plan contains no `orderedEligibleCandidateIds` or other request-only fields.
 
 A plan with `ROUTABLE` and zero steps, or `NO_ELIGIBLE_CANDIDATE` with any step, fails closed.
 
