@@ -234,7 +234,8 @@ No source, test, schema, fixture, workflow, dependency, lockfile, package manife
 
 The exact closeout candidate must establish on its final head:
 
-- exact canonical base `f1457f8e7efd1e09e2d55e73fc0e4ea860bf8762` and tree `64a643e4cf326c029007427d530e1a7c517d6317`, unless any forward reconciliation is explicit and scope-preserving;
+- pull request base ref exactly `main`, pull request base SHA exactly `f1457f8e7efd1e09e2d55e73fc0e4ea860bf8762`, and live protected `main` SHA/tree exactly `f1457f8e7efd1e09e2d55e73fc0e4ea860bf8762` / `64a643e4cf326c029007427d530e1a7c517d6317`;
+- if live `main` advances, STOP: this closeout candidate is not merge-authorized until this record is amended to state the replacement canonical base SHA/tree, the branch receives a normal non-destructive forward merge from that exact `main`, and the resulting new head is requalified from scratch for scope, CI, CodeRabbit, Qodo, review threads, mergeability, candidate tree, and all five document blobs; no stale-base exception is permitted;
 - every canonical K5 ledger merge above remains an ancestor;
 - exact five-document scope and no other changed path;
 - no source/runtime/dependency/protected-boundary mutation;
@@ -250,17 +251,18 @@ Earlier R1-R5 implementation test evidence remains historical proof for those ex
 
 K5 becomes closed only if:
 
-1. the closeout PR base ref is exactly `main` and both PR base and live protected `main` equal `f1457f8e7efd1e09e2d55e73fc0e4ea860bf8762` with tree `64a643e4cf326c029007427d530e1a7c517d6317`, unless any reconciliation is explicit, non-destructive, and scope-preserving;
-2. every canonical K5 ledger merge above remains an ancestor of the candidate;
-3. the final diff is exactly the five authorized documentation paths;
-4. repository-required exact-head Actions and authority/documentation checks are green;
-5. terminal independent review is anchored to the exact final head with zero unresolved material findings and zero unresolved actionable threads;
-6. merge uses normal merge-commit semantics with `expected_head_sha` protection;
-7. merge ordered parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified closeout head;
-8. merge tree equals the qualified closeout-head tree;
-9. the five closeout-document blobs at merge equal their exact qualified candidate blobs;
-10. post-merge protected `main` equals that merge commit/tree and the diff remains exactly the five authorized paths; and
-11. applicable post-merge governance/shared checks reach terminal success.
+1. the closeout PR base ref is exactly `main`, the PR base SHA is exactly `f1457f8e7efd1e09e2d55e73fc0e4ea860bf8762`, and live protected `main` is exactly that commit with tree `64a643e4cf326c029007427d530e1a7c517d6317`;
+2. if live `main` advances before merge, STOP: this candidate is not merge-authorized until this record is amended to record the replacement canonical base SHA/tree, the branch receives a normal non-destructive forward merge from that exact `main`, and the resulting new head is requalified from scratch for exact five-path scope, CI, CodeRabbit, Qodo, review threads, mergeability, candidate tree, and all five document blobs; no squash, rebase, force-push, destructive history rewrite, or stale-base exception is permitted;
+3. every canonical K5 ledger merge above remains an ancestor of the candidate;
+4. the final diff is exactly the five authorized documentation paths;
+5. repository-required exact-head Actions and authority/documentation checks are green;
+6. terminal independent review is anchored to the exact final head with zero unresolved material findings and zero unresolved actionable threads;
+7. merge uses normal merge-commit semantics with `expected_head_sha` protection;
+8. merge ordered parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified closeout head;
+9. merge tree equals the qualified closeout-head tree;
+10. the five closeout-document blobs at merge equal their exact qualified candidate blobs;
+11. post-merge protected `main` equals that merge commit/tree and the diff remains exactly the five authorized paths; and
+12. applicable post-merge governance/shared checks reach terminal success.
 
 If any condition fails, K5 remains defined/in progress and this candidate is not canonical closeout authority.
 
