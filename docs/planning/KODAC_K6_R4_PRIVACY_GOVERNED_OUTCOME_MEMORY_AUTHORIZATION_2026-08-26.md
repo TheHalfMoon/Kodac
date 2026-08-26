@@ -46,6 +46,24 @@ required_status_checks =
 
 The pull-request rule must continue to require review-thread resolution. A different ruleset ID, changed trusted node/snapshot identity, bypass actor, disabled enforcement, changed target, non-strict status policy, missing required check, or different trusted producer is a material governance drift and fails qualification closed.
 
+### Least-privilege ruleset proof
+
+The dedicated R4 implementation workflow must remain read-only. It must **not** receive repository-administration or ruleset-write permission merely to inspect protection state.
+
+GitHub's repository-ruleset API may omit sensitive control-plane fields such as `bypass_actors` when the caller lacks ruleset write authority. Therefore:
+
+```text
+MISSING bypass_actors IN A READ-ONLY RESPONSE != []
+MISSING current_user_can_bypass IN A READ-ONLY RESPONSE != never
+UNKNOWN CONTROL-PLANE FIELD != PASS
+```
+
+The dedicated workflow proves only ruleset fields available to its least-privilege repository metadata/read context: exact ruleset identity/name/node/snapshot, repository source, target/ref conditions, enforcement, pull-request/thread-resolution rule where exposed, strict required-status policy, and exact required checks/trusted producers.
+
+The mandatory `bypass_actors = []` and `current_user_can_bypass = never` evidence is proven separately immediately before guarded merge and again after merge by an authorized GitHub repository-control-plane read whose response actually exposes those fields. This external proof is evidence only; it grants no implementation authority and may not mutate the ruleset.
+
+No workflow or implementation may request administration/write permission solely to convert an unreadable ruleset field into a passing result.
+
 ## Authority reconciliation
 
 K6-R1, K6-R2 and K6-R3 are closed canonical for their separately authorized pure-data scopes. P0 roadmap reconciliation is closed canonical. `docs/roadmap/NEXT.md` therefore authorizes preparation of this R4 authorization candidate only.
@@ -731,7 +749,7 @@ The sole new workflow path must:
 
 1. run only on PRs to `main` touching the exact six implementation paths;
 2. use immutable full-SHA GitHub Action references;
-3. use read-only repository permissions;
+3. use least-privilege read-only repository permissions and must not request repository-administration/ruleset-write permission;
 4. attest exact repo/base/head and six-path scope;
 5. pin canonical R4 authorization merge SHA/tree/document blob;
 6. pin every predecessor above, including R1 schema/contract and R3 schema/contract;
@@ -743,11 +761,11 @@ The sole new workflow path must:
 12. run canonical R3, R2 and R1 focused regressions;
 13. run full runtime tests;
 14. run canonical Python tests, Ruff and provenance validation;
-15. fetch ruleset `20707483` read-only and prove the exact trusted node/snapshot identity, active target, no bypass actors, strict required-status policy and exact trusted checks/producers stated above;
+15. fetch ruleset `20707483` read-only and prove only the exact fields actually exposed to that least-privilege context: trusted ID/name/node/snapshot, repository source, active target/ref conditions, strict required-status policy, exact required checks/trusted producers, and pull-request/thread-resolution rule where exposed; omitted sensitive fields are `UNKNOWN`, never an inferred pass;
 16. prove checkout cleanliness before and after;
-17. fail closed on any predecessor, authorization, scope, action-pin, ruleset, schema/runtime or workspace drift.
+17. fail closed on any predecessor, authorization, scope, action-pin, readable-ruleset, schema/runtime or workspace drift.
 
-No repository dependency or lockfile change is authorized.
+No repository dependency, lockfile, administration permission or ruleset-write authority is authorized.
 
 ## Required focused tests
 
@@ -821,9 +839,10 @@ A later R4 implementation PR is not qualified unless the exact final head proves
 7. fresh exact-head Qodo review has zero unresolved material correctness/security/privacy/retention/authority findings;
 8. zero unresolved actionable review threads;
 9. open, non-draft, mergeable and `behind_by = 0`;
-10. ruleset `20707483` matches the exact trusted active/no-bypass/strict/required-check configuration stated in this record;
-11. final head/tree/six blobs captured;
-12. `WAIVER=NO`.
+10. the dedicated workflow proves all readable ruleset fields required above from a least-privilege response;
+11. an independent authorized GitHub repository-control-plane pre-merge read proves `bypass_actors = []` and `current_user_can_bypass = never` from a response that actually exposes those fields;
+12. final head/tree/six blobs captured;
+13. `WAIVER=NO`.
 
 Any new commit invalidates all prior exact-head evidence.
 
@@ -837,7 +856,7 @@ expected_head_sha = exact qualified implementation head
 
 No squash, rebase, force-push, destructive history rewrite, stale-head reuse or review waiver.
 
-Post-merge prove canonical main, ordered parents, candidate/merge tree equality where applicable, all six blobs, valid GitHub signature, exact ruleset `20707483`, applicable post-merge governance/R4 gates, no unauthorized path, and `WAIVER=NO` before declaring R4 implementation canonical.
+Post-merge prove canonical main, ordered parents, candidate/merge tree equality where applicable, all six blobs, valid GitHub signature, readable ruleset fields, independent authorized `bypass_actors = []` / `current_user_can_bypass = never` control-plane evidence, applicable post-merge governance/R4 gates, no unauthorized path, and `WAIVER=NO` before declaring R4 implementation canonical.
 
 ## R4 bounded closeout meaning
 
@@ -891,6 +910,7 @@ GIT / GITHUB / REVIEW / APPROVAL / MERGE AUTHORITY FROM R4 = NOT AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT AUTHORIZED
 PR #163 / Z0-FAMILY MUTATION = NOT AUTHORIZED
 RULESET / BRANCH-PROTECTION MUTATION = NOT AUTHORIZED
+ADMINISTRATION / RULESET-WRITE PERMISSION FOR R4 WORKFLOW = NOT AUTHORIZED
 ```
 
 ## Exact scope of this authorization-candidate gate
@@ -914,15 +934,17 @@ This authorization remains non-canonical unless its exact final candidate proves
 5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness/security/privacy/retention/governance/authority findings;
 6. zero unresolved actionable threads;
 7. PR open, non-draft, mergeable and `behind_by = 0`;
-8. ruleset `20707483` exactly matches the trusted active main-target/no-bypass/strict-required-status configuration and trusted check producers stated above;
-9. final candidate head/tree/document blob captured;
-10. guarded normal merge uses exact qualified `expected_head_sha`;
-11. ordered merge parent 1 equals pre-merge canonical main and parent 2 equals qualified candidate head;
-12. merge tree equals qualified candidate tree and document blob equals qualified blob;
-13. protected main equals merge commit/tree and introduces exactly the one path;
-14. applicable post-merge governance/shared checks terminal success;
-15. post-merge ruleset `20707483` still matches the exact trusted configuration;
-16. `WAIVER=NO`.
+8. a least-privilege/readable ruleset proof matches the exact trusted identity, source, main target, active enforcement, strict required-status configuration and trusted check producers stated above;
+9. an independent authorized GitHub repository-control-plane read proves `bypass_actors = []` and `current_user_can_bypass = never` from a response that actually exposes those fields;
+10. final candidate head/tree/document blob captured;
+11. guarded normal merge uses exact qualified `expected_head_sha`;
+12. ordered merge parent 1 equals pre-merge canonical main and parent 2 equals qualified candidate head;
+13. merge tree equals qualified candidate tree and document blob equals qualified blob;
+14. protected main equals merge commit/tree and introduces exactly the one path;
+15. applicable post-merge governance/shared checks terminal success;
+16. post-merge readable ruleset fields still match exactly;
+17. a post-merge authorized GitHub control-plane read again proves `bypass_actors = []` and `current_user_can_bypass = never`;
+18. `WAIVER=NO`.
 
 If live main moves, stop stale merge. Reconcile with a normal non-destructive forward commit, update recorded base as required, and requalify the new exact head from scratch.
 
@@ -937,6 +959,7 @@ DO NOT ADD TELEMETRY OR REMOTE FALLBACK
 DO NOT INVOKE PROVIDERS / MODELS / REVIEWERS
 DO NOT TRAIN OR LEARN FROM R4 RECORDS
 DO NOT PROMOTE STRATEGIES
+DO NOT GRANT ADMINISTRATION / RULESET-WRITE PERMISSION TO THE R4 WORKFLOW
 DO NOT BEGIN K6-R5 UNTIL R4 IMPLEMENTATION IS MERGED, QUALIFIED AND POST-MERGE PROVEN
 ```
 
