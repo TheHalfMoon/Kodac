@@ -16,6 +16,12 @@ import {
 } from "../src/evidence-router/route-plan-contracts.ts"
 import { materializeK6R2DeterministicRoutePlan } from "../src/evidence-router/route-plan.ts"
 
+type Mutable<T> = T extends readonly (infer U)[]
+  ? Mutable<U>[]
+  : T extends object
+    ? { -readonly [Key in keyof T]: Mutable<T[Key]> }
+    : T
+
 function candidate(candidateId: string, eligible = true): Record<string, unknown> {
   return {
     candidateId,
@@ -66,8 +72,8 @@ function requestInput(order: readonly string[], result = eligibilityResult()): R
   }
 }
 
-function deepJsonClone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T
+function deepJsonClone<T>(value: T): Mutable<T> {
+  return JSON.parse(JSON.stringify(value)) as Mutable<T>
 }
 
 test("materializes one primary and ordered fallbacks from caller order only", () => {
@@ -194,7 +200,7 @@ test("plan validation rejects projection, role, order, status, and extra-field d
 
 test("proxies at every R2-specific container layer fail closed without invoking traps", () => {
   let traps = 0
-  const handler: ProxyHandler<object> = {
+  const handler = {
     get() {
       traps += 1
       throw new Error("proxy trap executed")
