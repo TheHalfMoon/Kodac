@@ -1,581 +1,549 @@
 # Kodac Final Gap and Improvement Review — 2026-08-26
 
-## Status
+## Status and authority
 
 ```text
 CLASS: RESEARCH / GAP REVIEW / PLANNING INPUT ONLY
 IMPLEMENTATION AUTHORITY: NONE
-CODE IMPORT AUTHORITY: NONE
 DEPENDENCY ADMISSION: NONE
 EXTERNAL SERVICE AUTHORITY: NONE
+PERSISTENCE / TELEMETRY / LEARNING AUTHORITY: NONE
+AUTOFIX AUTHORITY: NONE
+PUBLIC RELEASE AUTHORITY: NONE
 ```
 
-This record is a final research and architecture review before a new improvement plan is adopted. It does not authorize implementation, dependency intake, provider calls, persistent learning, repository writes by Reviewer Intelligence, autofix execution, public release, or any expansion of K2 / K5 / Done Gate authority.
+This is the final reconciled research review supporting the Kodac intelligence improvement master plan. It records evidence, gaps and recommendations. It does not authorize implementation.
 
-Live GitHub and canonical authorization records remain authoritative if any state below moves.
+Live GitHub, root `AGENTS.md`, governing ADRs and exact canonical authorization records remain controlling.
 
-## 1. Review scope
-
-The review covered four evidence classes:
-
-1. current Kodac repository architecture and roadmap truth;
-2. current K3 / KRI / K5 / K6 contracts and trust boundaries;
-3. recent 2026 research on repository context retrieval, code review, verification, end-to-end coding-agent evaluation, multi-agent disagreement, and self-evolving coding agents;
-4. current product patterns from GitHub Copilot, CodeRabbit, Qodo, and Greptile as product/research references only.
-
-External product claims are treated as vendor-reported evidence, not benchmark truth. Research papers are treated as research evidence, not automatic product requirements.
-
-## 2. Current live-state finding
-
-At the time this record was prepared:
+## Canonical state at final reconciliation
 
 ```text
-CANONICAL_MAIN = 13348e3efa1cfa5a71eda692e1f1ea428882c763
-ACTIVE_K6_R3_PR = #208
-ACTIVE_K6_R3_HEAD = 3e84a6a831206d2f2f7364cc46024fb6e160575e
-ACTIVE_K6_R3_TREE = 38cc441d60ba11749fe290e3ec9570267a05ddbd
-```
-
-The K6-R3 candidate has exact-head dedicated CI, governance, and K2 cross-platform runtime success. Qodo's fresh exact-head review reports no remaining material correctness, security, or governance findings. A fresh CodeRabbit review raised one remaining governance finding about binding qualification to the final reviewed head from inside the candidate workflow. That finding is under explicit adjudication because the proposed literal self-SHA fix is self-referential, while the canonical merge protocol separately captures the qualified head and uses a server-enforced expected-head precondition.
-
-Therefore:
-
-```text
-K6-R3 = NOT YET CLOSED_CANONICAL
-PR #208 = DO NOT MERGE WHILE MATERIAL REVIEW DISPOSITION IS UNSETTLED
+CANONICAL_MAIN = 4ed9bed6fdb23643c722298adfba4ae8e72097b2
+K6-R1 = CLOSED_CANONICAL
+K6-R2 = CLOSED_CANONICAL
+K6-R3 = CLOSED_CANONICAL
+K6-R4 = NOT_AUTHORIZED
+K6-R5 = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-## 3. What Kodac already does unusually well
+K6-R3 closed through PR #208. The final qualified candidate was `3e84a6a831206d2f2f7364cc46024fb6e160575e`; the guarded GitHub merge is `4ed9bed6fdb23643c722298adfba4ae8e72097b2`. Post-merge proof established the expected parent/tree relationship, valid GitHub merge signature, successful governance/provenance/legacy tests, and successful K2 Ubuntu/macOS/Windows/runtime-gate execution.
 
-The review did **not** find a need to restart the architecture. Kodac already has several foundations that should be preserved as competitive advantages.
+Any earlier draft text that described PR #208 as active or K6-R3 as not yet closed is superseded by this reconciled record.
 
-### 3.1 Proof-oriented authority separation
+---
 
-Kodac separates information from authority:
+# 1. Review question
 
-- K2 owns side-effect execution authority;
-- K3 owns bounded repository/context evidence;
-- KRI treats reviewer output as a claim rather than truth;
-- K5 owns bounded proof review / reconciliation semantics;
-- Done Gate retains completion truth;
-- K6 routing evidence does not become execution or completion authority.
+The review asked:
 
-This is stronger than a conventional review bot architecture and should not be weakened to copy competitor convenience features.
+> What is still missing for Kodac to become a best-in-class proof-oriented software validation system, while preserving its authority separation and making the repository easy for coding agents to continue correctly?
 
-### 3.2 Exact-revision and evidence identity
+Evidence classes reviewed:
 
-Kodac already treats one reviewed head as different from another head and binds evidence to exact repository identities. Recent PR qualification work has also exposed why CI/reviewer self-bypass must itself be reviewed.
+1. current Kodac architecture, ADRs, K3/KRI/K5/K6 contracts and roadmap state;
+2. current code-review and coding-agent product patterns;
+3. 2026 research on repository retrieval/context, code review, disagreement, verification, full-cycle agent evaluation and self-evolving coding agents;
+4. current execution/governance failures observed during Kodac's own exact-head qualification work.
 
-### 3.3 Context Engine and relation graph foundation
+External product claims are treated as vendor-reported evidence. Research papers are evidence, not automatic requirements. Neither grants authority or dependency admission.
 
-K3 already provides deterministic Context Bundle and snapshot-bound relation evidence. The next opportunity is not simply “add embeddings”; it is to measure whether context is selected correctly for the task and whether the consumer actually uses it.
+---
 
-### 3.4 Finding adjudication instead of blind reviewer trust
+# 2. What Kodac already does well
 
-KRI's principle remains correct:
+## 2.1 Authority separation
 
-> Reviewer output is an evidence-backed claim to adjudicate, not completion truth.
+Kodac already has a strong constitutional distinction between information and authority:
 
-This principle should become more operational through verifiers, disagreement protocols, and benchmarked disposition quality.
+```text
+K2 = bounded side-effect execution authority
+K3 = repository/context evidence
+KRI = reviewer claims and qualification evidence
+K5 = proof review/reconciliation evidence
+Done Gate = completion authority
+K6 = routing/outcome intelligence without automatic execution authority
+```
 
-### 3.5 Self-improving is already separated from self-authorizing
+This should be preserved. Kodac should not become a generic “AI reviewer that can also edit code” by bypassing these boundaries.
 
-The K6 direction and future-intelligence research already preserve the correct safety invariant:
+## 2.2 Exact revision identity
+
+Kodac treats one reviewed head as different from another head. This is a major advantage for review correctness, stale-evidence detection and merge safety.
+
+## 2.3 Evidence-first review semantics
+
+Reviewer output is already treated as a claim rather than truth. The next improvement is to make more claims directly falsifiable through verifier evidence.
+
+## 2.4 Repository intelligence foundation
+
+K3 already provides deterministic context and snapshot-bound relation evidence. The next step is not simply more context or embeddings; it is measured context quality and task-specific selection.
+
+## 2.5 Self-improvement without self-authorization
+
+The K6 direction preserves the right invariant:
 
 ```text
 SELF-IMPROVING != SELF-AUTHORIZING
 ```
 
-The gap is now measurement, controlled outcome memory, and promotion gates — not permission for an agent to rewrite its own authority.
+The missing pieces are privacy-governed outcome records, bounded qualification, general benchmarking and explicit promotion gates.
 
-## 4. Material gaps
+---
 
-### GAP-01 — Roadmap truth drift
+# 3. Material gaps and required improvements
 
-**Priority: P0**
-
-`docs/roadmap/ROADMAP.md`, `MILESTONES.md`, and `VERSION_PLAN.md` still describe K6 primarily as proposed/not authorized even though K6 definition is canonical, K6-R1/R2 are canonical, and K6-R3 is an active bounded implementation PR.
-
-Risk:
-
-- new agents can start from stale ordering;
-- humans must reconstruct state across many planning records;
-- roadmap status and live GitHub truth can diverge silently.
-
-Required improvement:
-
-- establish one easy execution index (`docs/roadmap/NEXT.md`);
-- treat it as a navigation/status view, never as a substitute for exact authorization records;
-- reconcile the larger roadmap documents after K6-R3 reaches a canonical disposition;
-- define a single rule for where milestone status is updated first.
-
-### GAP-02 — No unified KodacBench measurement spine
+## GAP-01 — Roadmap truth drift
 
 **Priority: P0**
 
-KRI-P0 lists useful future benchmark metrics, but Kodac does not yet have one benchmark architecture spanning context retrieval, review findings, adjudication, patch verification, security, routing, and full-cycle behavior.
-
-Without this, “better reviewer”, “better context”, “better routing”, or “better autofix” cannot be proven consistently.
+Current roadmap views can lag behind canonical implementation evidence. This already happened around K6-R1/R2/R3.
 
 Required improvement:
 
-- frozen reproducible benchmark corpus;
-- temporal/live holdout to reduce contamination and memorization;
-- task-family metrics rather than one blended score;
-- per-stage measurements plus end-to-end outcome measurements;
-- deterministic evidence manifests and exact revision identity;
-- benchmark provenance and rights ledger;
-- no public superiority claim without accepted evidence.
+- root `AGENTS.md`;
+- one concise `docs/roadmap/NEXT.md` current-action page;
+- durable master plan separate from live status;
+- explicit reconciliation after each canonical merge;
+- current roadmap views must never silently override exact authorization records.
 
-### GAP-03 — Context quality is not measured as a process
-
-**Priority: P0**
-
-Recent retrieval research shows that context acquisition itself is a major failure surface.
-
-Required improvement:
-
-- task taxonomy: `code2test`, `comment2context`, `trace2code`, `edit2ripple`, issue-to-edit localization, broader-context retrieval;
-- no-gold / abstention cases;
-- context recall, precision, and budgeted context yield;
-- explored-context vs utilized-context distinction;
-- context dilution measurement;
-- task-specific retrieval strategies rather than a universal ranking method;
-- vector/embedding infrastructure only if benchmark evidence justifies it.
-
-### GAP-04 — More context can make review worse
-
-**Priority: P0**
-
-SWE-PRBench reports monotonic degradation as more context was added across its evaluated models, with a structured compact context outperforming richer full-context configurations.
-
-Required improvement:
-
-- Context Engine v2 must optimize **selective evidence packaging**, not context volume;
-- context budgets must be observable;
-- every context item should have a reason for inclusion;
-- benchmark `diff-only`, `selective-context`, and richer-context configurations;
-- high recall is not sufficient if attention dilution destroys precision.
-
-### GAP-05 — Reviewer disagreement is under-specified
+## GAP-02 — No unified KodacBench measurement spine
 
 **Priority: P0/P1**
 
-KRI correctly says majority vote is not truth, but does not yet define a concrete evidence-grounded disagreement protocol.
-
-Recent Adversarial Review research shows that naive multi-agent agreement can create false consensus and that a small structured reviewer/critic protocol can outperform a larger agent team.
+Kodac lacks one general benchmark architecture spanning context, review, verification, security, routing and full-cycle behavior.
 
 Required improvement:
 
-- reviewer produces findings with evidence;
-- critic must classify each material finding as `SUPPORTED`, `CONTRADICTED`, or `UNVERIFIED_CONCERN` (names remain contract decisions);
-- disagreement must cite repository/evidence artifacts;
-- the reviewed artifact is frozen for the review round;
-- adjudication remains separate from reviewer/critic voting;
-- large swarms are risk-triggered experiments, not a default architecture.
+- immutable benchmark manifests;
+- frozen reproducible corpus;
+- later-in-time holdout/reality-check lane;
+- task-family metrics rather than one blended score;
+- exact model/provider/strategy/evaluator identities;
+- contamination/provenance controls;
+- no broad “best” claim without accepted evidence.
 
-### GAP-06 — Findings lack a first-class verifier contract
-
-**Priority: P0**
-
-A finding today can be well-argued but still lack a direct way to prove or falsify the claimed defect.
-
-Required improvement:
-
-Each material finding should be able to reference a verifier proposal where applicable:
-
-- deterministic static check;
-- focused test;
-- generated regression test;
-- sandbox execution;
-- schema/contract proof;
-- dependency/security evidence;
-- context-grounded rubric when execution is unavailable.
-
-A verifier result is evidence, not automatic completion truth.
-
-### GAP-07 — Patch correctness cannot equal “tests pass”
-
-**Priority: P0**
-
-SWE-Cycle and patch-correctness research reinforce that isolated task success and test success do not establish full correctness. Generated tests can help but can also be incomplete.
-
-Required improvement:
-
-- original tests + finding-specific regression;
-- negative/edge-case tests where applicable;
-- static review after fix;
-- verification of unchanged contracts;
-- K5 evidence reconciliation;
-- exact-head re-review;
-- optional mutation/fault injection for benchmark tasks;
-- regression-survival measurement over later commits where possible.
-
-### GAP-08 — Bounded autofix architecture is not yet defined
+## GAP-03 — Context quality is not measured as a process
 
 **Priority: P1**
 
-Autofix is explicitly unauthorized today, which is correct. Before it is ever authorized, Kodac needs a proof-preserving design.
+Measure:
 
-Required improvement:
+- Recall@K / Precision@K;
+- file F1;
+- token-budgeted evidence yield;
+- no-gold abstention;
+- explored vs actually utilized context;
+- duplicate/low-value context;
+- quality as context budget grows.
+
+No retrieval method should be assumed universally superior.
+
+## GAP-04 — More context can reduce review quality
+
+**Priority: P1**
+
+Recent repository-review research reports attention dilution as richer context is added.
+
+Required direction:
 
 ```text
-finding claim
--> adjudicated finding
--> patch proposal
--> exact write-scope proposal
--> K2-authorized execution only
--> verifier execution
--> independent re-review / critic
--> K5 reconciliation
--> Done Gate remains unchanged
+MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 ```
 
-A failed verifier must leave the patch untrusted. “Patch generated” and “finding fixed” must never be equivalent states.
+Context Engine v2 should benchmark diff-only, selective-context and richer-context configurations rather than assuming context volume is beneficial.
 
-### GAP-09 — Review instruction trust-root poisoning needs an explicit benchmark lane
+## GAP-05 — Reviewer disagreement needs a concrete protocol
 
 **Priority: P1**
 
-Current coding/review products increasingly consume repository instruction files, agent skills, MCP context, and path-specific rules. Some current GitHub documentation describes code review consuming instructions from the PR head branch. That creates an important general class of candidate-controlled-review-policy risk.
+Majority vote or agent agreement is not truth.
 
-Kodac already states that repository content is data, not instructions. This must become an executable benchmark/security property.
+Future reviewer/critic design should require evidence-grounded dispositions such as:
+
+```text
+SUPPORTED
+CONTRADICTED
+UNVERIFIED_CONCERN
+DUPLICATE_OR_SUPERSEDED
+```
+
+Exact vocabulary requires a future contract gate.
+
+Large swarms should be experiments triggered by risk/benchmark evidence, not the default architecture.
+
+## GAP-06 — Findings need first-class verifier proposals
+
+**Priority: P1**
+
+Material findings should be able to propose a falsification/verification method, for example:
+
+```text
+STATIC_RULE
+TYPECHECK
+SCHEMA_VALIDATION
+FOCUSED_TEST
+GENERATED_REGRESSION
+SANDBOX_EXECUTION
+SECURITY_SCAN
+DEPENDENCY_EVIDENCE
+CONTEXTUAL_RUBRIC
+FORMAL_PROOF
+```
+
+Verifier output remains evidence, not Done Gate authority.
+
+## GAP-07 — Tests passing is insufficient patch proof
+
+**Priority: P1**
+
+Patch verification should combine, where applicable:
+
+- original tests;
+- finding-specific regression;
+- negative/edge cases;
+- static/type/schema checks;
+- exact-head re-review;
+- K5 reconciliation;
+- held-out or mutation/fault evidence in benchmark settings.
+
+Required invariant:
+
+```text
+TESTS GREEN != COMPLETE CORRECTNESS
+```
+
+## GAP-08 — Bounded autofix architecture is not defined
+
+**Priority: P2**
+
+Autofix should remain unauthorized until its proof-preserving lifecycle is explicit:
+
+```text
+ADJUDICATED FINDING
+-> IMMUTABLE PATCH PROPOSAL
+-> EXACT WRITE SCOPE
+-> K2-BOUNDED EXECUTION
+-> VERIFIER RE-RUN
+-> EXACT-HEAD RE-REVIEW
+-> K5 RECONCILIATION
+-> DONE GATE
+```
+
+`PROPOSED`, `APPLIED`, `VERIFIED` and `REJECTED` must remain distinct states.
+
+## GAP-09 — Candidate-controlled review-policy poisoning needs a dedicated lane
+
+**Priority: P1**
+
+Modern agents/reviewers consume repository instructions, skills, configs and workflow files. Candidate changes to these surfaces can attempt to redefine the reviewer itself.
 
 Required improvement:
 
-- explicit trusted instruction-source identity;
-- base/canonical policy pinning where required;
-- tests for malicious candidate changes to `AGENTS.md`, review instructions, skills, config, workflows, wrappers, and test entrypoints;
-- fail-closed policy conflict handling;
-- reviewer policy evidence included in review-run identity.
+- trusted instruction/policy source identity;
+- tests for malicious candidate changes to agent/review instructions, skills, configs, workflows and wrappers;
+- policy conflict handling;
+- reviewer policy identity included in review-run evidence;
+- repository text remains data, not authority.
 
-### GAP-10 — Rule health and governance are not yet a first-class data product
+## GAP-10 — Rule health should become first-class evidence
 
-**Priority: P1**
+**Priority: P2**
 
-Qodo's current product work highlights useful product patterns: central rule identity, duplicate/conflict/outdated-rule detection, scoped rules, and adoption/violation analytics.
+Future rule governance should capture:
 
-Kodac should implement only Kodac-owned semantics if separately authorized.
+- source/provenance;
+- scope/precedence;
+- duplicate/conflict/superseded/stale states;
+- violation and false-positive evidence;
+- inferred proposal vs canonical policy distinction.
 
-Required improvement:
+No inferred rule should silently become canonical policy.
 
-- immutable rule source/provenance identity;
-- scope and precedence;
-- conflict / duplicate / superseded / stale state;
-- rule evidence vs trust authority separation;
-- measured false-positive and adoption outcomes;
-- no automatic promotion of inferred rules into canonical policy.
+## GAP-11 — Outcome memory lacks an implemented privacy contract
 
-### GAP-11 — Outcome memory lacks an implemented privacy contract
+**Priority: P1 / K6-R4**
 
-**Priority: P1**
+Before any persistence, define:
 
-K6-R4 is already the correct planned boundary, but is not authorized/implemented.
-
-Required improvement before persistence:
-
-- exact record schema and provenance;
+- allowed/forbidden fields;
 - privacy classification;
-- allowed fields / forbidden raw content;
-- retention and deletion;
-- repository isolation;
-- conflict and supersession;
-- no cross-repository learning by default;
-- no telemetry by implication;
-- explicit user/team policy and authority boundaries.
+- local-first behavior;
+- repository/user isolation;
+- provenance;
+- retention/deletion/expiry;
+- conflict/supersession;
+- telemetry/egress rules;
+- cross-repository boundaries.
 
-### GAP-12 — Strategy improvement lacks a temporal promotion protocol
+No persistence or telemetry by implication.
 
-**Priority: P1**
+## GAP-12 — Strategy improvement needs bounded qualification and external promotion
 
-K6-R5 is planned but not implemented.
+**Priority: P1 / K6-R5**
 
-Required improvement:
+K6-R5 should create immutable candidate strategy proposals and compare them to an explicit incumbent using only an R5-authorized bounded corpus/holdout.
 
-- strategy proposals are immutable candidates;
-- qualify on frozen historical corpus and temporal holdout;
-- compare against incumbent using accepted metrics;
-- reject benchmark regressions even if one aggregate metric improves;
-- record compute, latency, cost, privacy, and failure behavior;
-- no automatic production promotion;
-- rollback identity must be preserved.
+Critical sequencing boundary:
 
-### GAP-13 — Security validation should combine deterministic and agentic evidence
+```text
+K6-R5-SPECIFIC QUALIFICATION CORPUS != GENERAL KODACBENCH
+```
 
-**Priority: P1**
+Full KodacBench comes after bounded K6 closeout. R5 evidence cannot justify broad reviewer/context/product superiority claims.
 
-Modern review products are converging on hybrid approaches: pattern/SAST/SCA/secret scanning plus AI reasoning for exploit chains and contextual false-positive reduction.
+No automatic promotion.
 
-Required improvement:
+## GAP-13 — Security validation needs deterministic + agentic evidence
 
-- deterministic scanner evidence remains independently visible;
-- AI security findings cannot erase scanner evidence;
-- dependency / supply-chain evidence lane;
-- secret detection lane;
-- authorization and trust-boundary review lane;
-- CI self-bypass / workflow integrity lane;
-- exploitability reasoning as a claim with evidence;
-- high-risk security findings require stronger verification than ordinary style findings.
+**Priority: P2**
 
-### GAP-14 — Full-cycle engineering evaluation is missing
+Future security validation should preserve independently visible lanes for:
 
-**Priority: P1**
+- static/SAST evidence;
+- dependency/SCA evidence;
+- secrets;
+- supply-chain/provenance;
+- authorization/trust-boundary review;
+- CI/workflow self-bypass;
+- exploitability reasoning.
 
-SWE-Cycle shows a sharp performance drop when environment reconstruction, implementation, and verification generation are combined.
+AI reasoning may contextualize deterministic findings but cannot erase them.
 
-Required improvement:
+## GAP-14 — Full-cycle engineering evaluation is missing
 
-KodacBench must separately score:
+**Priority: P2**
+
+Measure separately:
 
 1. environment/readiness reconstruction;
 2. issue/spec understanding;
 3. localization/context acquisition;
-4. plan/task decomposition;
+4. planning/decomposition;
 5. implementation;
 6. verification generation;
 7. review/adjudication;
-8. final proof/Done Gate inputs;
+8. proof-chain completion;
 9. integrated full-cycle outcome.
 
-### GAP-15 — Reviewer/model independence is a promising experiment, not a rule
+This prevents strong isolated scores from hiding poor end-to-end behavior.
 
-**Priority: P2**
+## GAP-15 — Reviewer/model independence is an experiment, not a trust rule
 
-Greptile reports improved review when a different model family reviews agent-authored code. This is useful experimental evidence but currently vendor-reported and should not become trust policy without KodacBench evidence.
+**Priority: RESEARCH**
 
-Required improvement:
+Cross-family reviewers may improve diversity, but this must be benchmarked against same-family reviewers while controlling for capability and context.
 
-- record authoring-agent/model identity when caller-materialized and permitted;
-- benchmark same-family vs cross-family reviewers;
-- control for model capability and context;
-- never treat diversity alone as correctness evidence.
+Model diversity alone is not correctness evidence.
 
-### GAP-16 — Formal verification should be a high-risk optional lane
+## GAP-16 — Formal verification is a targeted high-risk lane
 
-**Priority: P2 / RESEARCH**
+**Priority: RESEARCH**
 
-Repository-level formal-verification benchmarks such as Vero show both value and current limitations. Kodac should not impose formal proof on ordinary code, but may later evaluate it for cryptographic, authorization, serialization, or protocol invariants where proof tooling already exists.
+Formal proof may later be valuable for cryptographic, authorization, serialization or protocol invariants where tools/contracts make it practical. It should not become a blanket requirement for ordinary code.
 
-## 5. Research evidence that changes the design
+---
 
-### 5.1 Context / retrieval
+# 4. Research evidence that materially changes the plan
 
-- Agent Retrieval Bench — https://arxiv.org/abs/2607.24882
-  - 427 samples across 25 repositories;
-  - no single retrieval family dominates;
-  - includes natural no-gold and wrong-repository controls;
-  - logged trajectories miss all gold files on a material fraction of tasks.
+## Context and retrieval
 
-- ContextBench — https://arxiv.org/abs/2602.05892
-  - 1,136 tasks / 66 repositories / eight languages;
-  - measures context recall, precision, and efficiency throughout trajectories;
-  - reports a substantial explored-vs-utilized context gap.
+### Agent Retrieval Bench
 
-- SWE Context Bench — https://arxiv.org/abs/2602.08316
-  - experience reuse helps when correctly selected and summarized;
-  - unfiltered or incorrect prior experience can hurt.
+https://arxiv.org/abs/2607.24882
 
-### 5.2 Code review
+Design implication:
 
-- SWE-PRBench — https://arxiv.org/abs/2603.26130
-  - 350 PRs with human-annotated review ground truth;
-  - evaluated models detect only a minority of human issues;
-  - richer context can reduce review quality through attention dilution.
+- no single retrieval family dominates;
+- natural no-gold/negative cases matter;
+- retrieval itself must be evaluated rather than assumed.
 
-- Code Review Agent Benchmark / c-CRAB — https://arxiv.org/abs/2603.23448
-  - benchmark generated from human reviews plus held-out tests;
-  - evaluated review agents collectively solve only about 40% of tasks;
-  - human and agent reviews often catch different aspects.
+### ContextBench
 
-- Adversarial Review — https://arxiv.org/abs/2608.18167
-  - reviewer + critic structured disagreement;
-  - naive agreement can create false consensus;
-  - evidence-grounded disagreement can outperform larger agent teams.
+https://arxiv.org/abs/2602.05892
 
-### 5.3 End-to-end and verification
+Design implication:
 
-- SWE-Cycle — https://arxiv.org/abs/2605.13139
-  - 489 instances;
-  - environment reconstruction, implementation, verification generation, and FullCycle;
-  - full-cycle performance drops materially versus isolated tasks.
+- measure recall, precision and efficiency throughout trajectories;
+- distinguish explored context from actually utilized context.
 
-- RACE-Bench — https://arxiv.org/abs/2603.26337
-  - 528 repository-level feature-addition instances;
-  - executable patch verification plus structured intermediate reference artifacts;
-  - supports measuring localization/decomposition failures rather than only final patch success.
+### SWE Context Bench
 
-- Agentic Rubrics as Contextual Verifiers — https://arxiv.org/abs/2601.04171
-  - repository-interacting expert builds contextual rubrics;
-  - useful as scalable supplemental verification when execution is unavailable;
-  - should not replace executable evidence when executable evidence is available.
+https://arxiv.org/abs/2602.08316
 
-### 5.4 Self-evolving coding agents
+Design implication:
 
-- Self-Evolving Coding Agents — https://arxiv.org/abs/2608.03392
-  - survey highlights executable feedback and trajectories as useful evolution signals;
-  - also identifies feedback reliability, benchmark overfitting, safety, maintainability, cost, and generalization as major risks.
+- correctly selected/summarized prior experience can help;
+- unfiltered or incorrect experience can hurt.
 
-This supports K6-R5's controlled proposal/qualification direction and argues against silent self-modification.
+## Code review
 
-## 6. Product-pattern evidence — reference only
+### SWE-PRBench
 
-### CodeRabbit
+https://arxiv.org/abs/2603.26130
 
-References:
+Design implication:
 
-- https://docs.coderabbit.ai/issues/planner
-- https://docs.coderabbit.ai/plan/plan-refinement
-- https://docs.coderabbit.ai/guides/commands
+- current models detect only a minority of human review issues;
+- richer context can reduce review quality through dilution;
+- selective context should be benchmarked explicitly.
 
-Useful patterns:
+### Code Review Agent Benchmark / c-CRAB
 
-- plans consistently structured as Summary / Research / Design Choices / Phases / Tasks / Agent Prompt;
-- explicit full vs incremental review modes;
-- agent-ready handoff;
-- version history for plans.
+https://arxiv.org/abs/2603.23448
 
-Kodac improvement:
+Design implication:
 
-Use the navigability pattern, but retain Kodac's stronger proof and authority model.
+- current review agents still leave substantial human-review ground truth uncovered;
+- human and agent review can catch different defect classes;
+- Kodac should optimize validated finding coverage rather than comment volume.
 
-### Qodo
+### Adversarial Review
 
-References:
+https://arxiv.org/abs/2608.18167
 
-- https://docs.qodo.ai/code-review
-- https://docs.qodo.ai/whats-new
+Design implication:
 
-Useful patterns:
+- naive multi-agent agreement can create false consensus;
+- structured reviewer/critic disagreement with evidence is a stronger default direction than a large swarm.
 
-- specialized review agents;
-- centralized rule identity and scoped enforcement;
-- duplicate/conflict/outdated rule health;
-- PR-history relevance and findings analytics;
-- local pre-commit review.
+## Verification and full-cycle evaluation
 
-Kodac improvement:
+### SWE-Cycle
 
-Treat learned/inferred rules as proposals until separately qualified; do not let reviewer history silently become authority.
+https://arxiv.org/abs/2605.13139
 
-### Greptile
+Design implication:
 
-References:
+- environment reconstruction, implementation and verification are individually easier than the integrated lifecycle;
+- benchmark the full engineering cycle, not only patch success.
 
-- https://www.greptile.com/changelog
-- https://www.greptile.com/blog/automating-code-validation
-- https://www.greptile.com/blog/trex-code-execution
+### RACE-Bench
 
-Useful patterns:
+https://arxiv.org/abs/2603.26337
 
-- hypothesis-scoped narrow parallel reviewers;
-- deterministic security scanning + AI exploit reasoning;
-- targeted test generation in a sandbox;
-- local/CLI review;
-- read-only related-repository context;
-- outcome-driven review personalization;
-- experimental author/reviewer model diversity.
+Design implication:
 
-Kodac improvement:
+- executable patch verification plus structured intermediate artifacts can expose localization/decomposition failure rather than only final outcomes.
 
-Benchmark each idea under Kodac-owned contracts before adoption. Do not copy auto-approval or opaque learning semantics into Kodac's trust model.
+### Agentic Rubrics as Contextual Verifiers
 
-### GitHub Copilot / CodeQL Autofix
+https://arxiv.org/abs/2601.04171
 
-References:
+Design implication:
 
-- https://docs.github.com/en/code-security/concepts/code-scanning/autofix-for-code-scanning
-- https://docs.github.com/en/copilot/concepts/agents/code-review
+- contextual rubrics can supplement verification where execution is unavailable;
+- executable evidence remains preferable when available.
 
-Useful lessons:
+## Self-evolving coding agents
 
-- agentic autofix explores the repository and re-runs CodeQL where supported;
-- GitHub explicitly describes autofix as best-effort and documents validation limits;
-- code review can consume repository instructions, skills, and MCP context;
-- instruction source identity must therefore be treated as a security property in Kodac.
+### Self-Evolving Coding Agents
 
-## 7. Recommended architecture direction
+https://arxiv.org/abs/2608.03392
 
-Do **not** turn Kodac into a larger swarm review bot.
+Design implication:
 
-The recommended long-term flow is:
+- executable feedback and trajectories are useful improvement signals;
+- reliability, overfitting, safety, cost and generalization remain major risks;
+- supports K6's proposal/qualification model rather than silent self-modification.
+
+---
+
+# 5. Product-pattern evidence — reference only
+
+Product references reviewed include current public materials from:
+
+- CodeRabbit — https://docs.coderabbit.ai/
+- Qodo — https://docs.qodo.ai/
+- Greptile — https://www.greptile.com/
+- GitHub Copilot / code review / code scanning autofix — https://docs.github.com/
+
+Useful patterns include:
+
+- cross-file/context-aware review;
+- configurable review rules;
+- rule conflict/health concepts;
+- security and reliability finding lanes;
+- review suggestions and agentic autofix;
+- repository instruction consumption;
+- different reviewer/model configurations.
+
+These are product references only. Kodac should implement only Kodac-owned semantics that are separately authorized and benchmarked.
+
+---
+
+# 6. Final architecture recommendation
+
+Kodac should not compete by producing the most comments or using the most agents.
+
+Recommended differentiator:
+
+> **Proof-oriented software validation:** retrieve the minimum sufficient context, generate evidence-backed claims, challenge them through structured disagreement, verify material findings where possible, bind every result to the exact revision, reconcile the evidence, and improve strategies only through bounded qualification and explicit promotion.
+
+Target flow:
 
 ```text
-Task / PR / spec
-      |
-      v
-K3 Context Engine v2
-selective, task-specific, evidence-labeled context
-      |
-      v
-KRI Reviewer Intelligence v2
-hypothesis-focused reviewer lanes
-      |
-      v
-evidence-grounded critic / disagreement
-      |
-      v
-finding adjudication
-      |
-      v
-Finding Verifier Fabric
-static | generated test | sandbox | rubric | security evidence
-      |
-      v
-K5 proof linkage / reconciliation
-      |
-      +------------------------------+
-      |                              |
-      v                              v
-Done Gate (unchanged)         bounded patch proposal
-                                     |
-                                     v
-                           K2-only authorized execution
-                                     |
-                                     v
-                              exact-head re-proof
-                                     |
-                                     v
-                         K6 outcome record / strategy data
-                                     |
-                                     v
-                      benchmarked strategy proposal only
+PR / TASK
+-> TASK-AWARE CONTEXT
+-> REVIEWER HYPOTHESES
+-> EVIDENCE-BACKED FINDINGS
+-> STRUCTURED CRITIC
+-> ADJUDICATION
+-> VERIFIER EVIDENCE
+-> K5 RECONCILIATION
+-> DONE GATE
 ```
 
-The key product claim should become:
+Future bounded autofix:
 
-> Kodac does not merely comment on code. Kodac builds an evidence chain that tries to prove whether a software change is safe, correct, intentional, and ready — without allowing the reviewer to become its own authority.
+```text
+ADJUDICATED FINDING
+-> PATCH PROPOSAL
+-> K2 EXECUTION
+-> VERIFICATION
+-> RE-REVIEW
+-> K5
+-> DONE GATE
+```
 
-## 8. What should not be built yet
+---
 
-Do not authorize by implication:
+# 7. Recommended priority order
 
-- persistent cross-repository memory;
-- hidden telemetry;
-- vector infrastructure without benchmark need;
-- autonomous rule promotion;
-- autonomous model/provider admission;
-- default large swarms;
-- reviewer auto-approval;
-- direct merge authority;
-- unverified autofix;
-- training on repository data;
-- public superiority claims;
-- release/package publication.
+```text
+P0  agent/navigation + roadmap truth
+P1  K6-R4 privacy-governed outcome records
+P1  K6-R5 bounded strategy proposal/qualification
+P1  K6 bounded closeout
+P2  general KodacBench
+P3  Context Engine v2
+P4  Reviewer Intelligence v2
+P5  Finding Verifier Fabric
+P6  Security Validation
+P7  Bounded Autofix
+P8  Product / Distribution Hardening
+R   formal proof / cross-repo / world models / learned policies / large swarms
+```
 
-## 9. Final review conclusion
+Each implementation unit still requires the authority process defined by the repository.
 
-Kodac's core architecture is directionally strong. The biggest current risk is not missing another framework; it is **failing to turn strong contracts into a measurable, navigable, proof-producing product loop**.
+---
 
-The highest-value improvements are therefore, in order:
+# 8. Final decision
 
-1. repair roadmap truth and execution navigation;
-2. close K6-R3 without waiving the remaining review disposition;
-3. finish K6 privacy-governed outcome memory and bounded strategy qualification through separate gates;
-4. define KodacBench before claiming intelligence improvements;
-5. make context selective and measurable;
-6. make reviewer disagreement explicit and evidence-grounded;
-7. attach verifiers to material findings;
-8. only then define bounded autofix through K2;
-9. add hybrid security validation and temporal outcome learning under explicit authority;
-10. productize through local/CLI/CI surfaces only after benchmark evidence supports the behavior.
+```text
+RESTART_ARCHITECTURE = NO
+PRESERVE_K2_K3_KRI_K5_K6_AUTHORITY_SEPARATION = YES
+MAKE_AGENT_NAVIGATION_FIRST_CLASS = YES
+MEASURE_BEFORE_BROAD_QUALITY_CLAIMS = YES
+CONTEXT_ENGINE_DIRECTION = SELECTIVE / TASK-AWARE / DILUTION-MEASURED
+REVIEWER_DIRECTION = EVIDENCE-GROUNDED REVIEWER + CRITIC
+VERIFIER_FABRIC = RECOMMENDED
+SECURITY = HYBRID DETERMINISTIC + AGENTIC EVIDENCE
+AUTOFIX = FUTURE / BOUNDED / K2-EXECUTED / RE-PROVEN
+LEARNING = PROPOSAL + QUALIFICATION + EXPLICIT PROMOTION ONLY
+SELF_AUTHORIZATION = FORBIDDEN BY DESIGN
+```
+
+The next durable source for execution sequencing is `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`; the current-action source is `docs/roadmap/NEXT.md` after live GitHub and `AGENTS.md` are read.
