@@ -37,7 +37,12 @@ function candidate(candidateId: string, eligible = true): Record<string, unknown
   }
 }
 
-function eligibilityResult(options: { allIneligible?: boolean } = {}) {
+function eligibilityResult(options: { allIneligible?: boolean; singleEligible?: boolean } = {}) {
+  const candidates = options.allIneligible
+    ? [candidate("a", false), candidate("b", false)]
+    : options.singleEligible
+      ? [candidate("b", false), candidate("a")]
+      : [candidate("c", false), candidate("b"), candidate("a")]
   const request = createK6R1RouteRequest({
     version: K6_R1_ROUTE_REQUEST_VERSION,
     repositoryId: "TheHalfMoon/Kodac",
@@ -47,9 +52,7 @@ function eligibilityResult(options: { allIneligible?: boolean } = {}) {
     riskClass: "MEDIUM",
     privacyClass: "REPOSITORY_PRIVATE",
     requiredCapabilities: ["repo/search", "model/generate"],
-    candidates: options.allIneligible
-      ? [candidate("a", false), candidate("b", false)]
-      : [candidate("c", false), candidate("b"), candidate("a")],
+    candidates,
   })
   return evaluateK6R1ModelProviderRouteEligibility(request)
 }
@@ -87,18 +90,15 @@ test("materializes one primary and ordered fallbacks from caller order only", ()
 })
 
 test("one eligible candidate produces exactly one PRIMARY step", () => {
-  const result = eligibilityResult()
-  const oneEligibleResult = {
-    ...deepJsonClone(result),
-    candidateResults: result.candidateResults.map((entry) => entry.candidateId === "b"
-      ? { ...deepJsonClone(entry), status: "INELIGIBLE", reasons: ["QUALIFICATION_NOT_PASS"] }
-      : deepJsonClone(entry)),
-  }
-  assert.throws(() => createK6R2RoutePlanRequest(requestInput(["a"], oneEligibleResult)), TypeError)
-
-  const request = createK6R2RoutePlanRequest(requestInput(["a", "b"]))
+  const result = eligibilityResult({ singleEligible: true })
+  assert.deepEqual(result.candidateResults.map((entry) => [entry.candidateId, entry.status]), [
+    ["a", "ELIGIBLE"],
+    ["b", "INELIGIBLE"],
+  ])
+  const request = createK6R2RoutePlanRequest(requestInput(["a"], result))
   const plan = materializeK6R2DeterministicRoutePlan(request)
-  assert.equal(plan.steps[0]?.role, "PRIMARY")
+  assert.equal(plan.status, "ROUTABLE")
+  assert.deepEqual(plan.steps.map((step) => [step.candidateId, step.role]), [["a", "PRIMARY"]])
   assert.equal(plan.steps.filter((step) => step.role === "PRIMARY").length, 1)
 })
 
@@ -192,10 +192,9 @@ test("plan validation rejects projection, role, order, status, and extra-field d
   assert.throws(() => validateK6R2RoutePlan(extra, request), TypeError)
 })
 
-test("request validation rejects proxies without invoking proxy traps", () => {
+test("proxies at every R2-specific container layer fail closed without invoking traps", () => {
   let traps = 0
-  const target = requestInput(["a", "b"])
-  const proxy = new Proxy(target, {
+  const handler: ProxyHandler<object> = {
     get() {
       traps += 1
       throw new Error("proxy trap executed")
@@ -208,17 +207,30 @@ test("request validation rejects proxies without invoking proxy traps", () => {
       traps += 1
       throw new Error("proxy trap executed")
     },
-  })
-  assert.throws(() => createK6R2RoutePlanRequest(proxy), /must not be a Proxy/)
+  }
+
+  const rootProxy = new Proxy(requestInput(["a", "b"]), handler)
+  assert.throws(() => createK6R2RoutePlanRequest(rootProxy), /must not be a Proxy/)
   assert.equal(traps, 0)
 
-  const orderProxy = new Proxy(["a", "b"], {
-    get() {
-      traps += 1
-      throw new Error("proxy trap executed")
-    },
-  })
+  const orderProxy = new Proxy(["a", "b"], handler)
   assert.throws(() => createK6R2RoutePlanRequest(requestInput(orderProxy)), /must not be a Proxy/)
+  assert.equal(traps, 0)
+
+  const request = createK6R2RoutePlanRequest(requestInput(["a", "b"]))
+  const plan = materializeK6R2DeterministicRoutePlan(request)
+  const planProxy = new Proxy(deepJsonClone(plan), handler)
+  assert.throws(() => validateK6R2RoutePlan(planProxy, request), /must not be a Proxy/)
+  assert.equal(traps, 0)
+
+  const stepsProxyPlan = deepJsonClone(plan)
+  stepsProxyPlan.steps = new Proxy(stepsProxyPlan.steps, handler)
+  assert.throws(() => validateK6R2RoutePlan(stepsProxyPlan, request), /must not be a Proxy/)
+  assert.equal(traps, 0)
+
+  const stepProxyPlan = deepJsonClone(plan)
+  stepProxyPlan.steps[0] = new Proxy(stepProxyPlan.steps[0]!, handler)
+  assert.throws(() => validateK6R2RoutePlan(stepProxyPlan, request), /must not be a Proxy/)
   assert.equal(traps, 0)
 })
 
