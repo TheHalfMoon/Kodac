@@ -154,11 +154,47 @@ jobs:
           import copy
           import json
           from pathlib import Path
-          from jsonschema import Draft202012Validator
+          from jsonschema import Draft202012Validator, ValidationError, validators
+
+          def validate_utf8_max_bytes(validator, limit, instance, schema):
+              if not isinstance(instance, str):
+                  return
+              try:
+                  encoded = instance.encode("utf-8", "strict")
+              except UnicodeEncodeError:
+                  yield ValidationError("string is not valid Unicode for UTF-8 encoding")
+                  return
+              if len(encoded) > limit:
+                  yield ValidationError(f"string exceeds {limit} UTF-8 bytes")
+
+          def validate_unique_by(validator, property_name, instance, schema):
+              if not isinstance(instance, list):
+                  return
+              seen = {}
+              for index, item in enumerate(instance):
+                  if not isinstance(item, dict):
+                      continue
+                  value = item.get(property_name)
+                  if not isinstance(value, str):
+                      continue
+                  if value in seen:
+                      yield ValidationError(
+                          f"duplicate {property_name} at indexes {seen[value]} and {index}"
+                      )
+                  else:
+                      seen[value] = index
+
+          KodacK6R1Validator = validators.extend(
+              Draft202012Validator,
+              {
+                  "x-kodacUtf8MaxBytes": validate_utf8_max_bytes,
+                  "x-kodacUniqueBy": validate_unique_by,
+              },
+          )
 
           schema = json.loads(Path("schema/k6-r1-model-provider-route-eligibility.schema.json").read_text(encoding="utf-8"))
           Draft202012Validator.check_schema(schema)
-          validator = Draft202012Validator(schema)
+          validator = KodacK6R1Validator(schema)
           qualification = {"protocol":"kodac.provider-qualification","version":1,"provider":"provider","model":"model","workspaceDigest":"a"*64,"status":"PASS","reportDigest":"b"*64}
           request = {
               "version":"kodac-k6-r1-route-request-v1","requestIdentity":"c"*64,"repositoryId":"TheHalfMoon/Kodac",
@@ -186,6 +222,10 @@ jobs:
           risk = copy.deepcopy(request); risk["riskClass"] = "EXTREME"; mutations.append(("unsupported risk", risk))
           privacy = copy.deepcopy(request); privacy["privacyClass"] = "PHI"; mutations.append(("unsupported privacy", privacy))
           duplicate = copy.deepcopy(request); duplicate["requiredCapabilities"] = ["model/generate", "model/generate"]; mutations.append(("duplicate capability", duplicate))
+          duplicate_candidate = copy.deepcopy(request); duplicate_candidate_record = copy.deepcopy(duplicate_candidate["candidates"][0]); duplicate_candidate_record["model"] = "other-model"; duplicate_candidate_record["qualification"]["model"] = "other-model"; duplicate_candidate["candidates"].append(duplicate_candidate_record); mutations.append(("duplicate request candidateId", duplicate_candidate))
+          duplicate_result = copy.deepcopy(result); duplicate_result_record = copy.deepcopy(duplicate_result["candidateResults"][0]); duplicate_result_record["model"] = "other-model"; duplicate_result["candidateResults"].append(duplicate_result_record); mutations.append(("duplicate result candidateId", duplicate_result))
+          utf8_repository = copy.deepcopy(request); utf8_repository["repositoryId"] = "é" * 257; mutations.append(("repositoryId UTF-8 byte overflow", utf8_repository))
+          utf8_candidate = copy.deepcopy(request); utf8_candidate["candidates"][0]["candidateId"] = "é" * 129; mutations.append(("candidateId UTF-8 byte overflow", utf8_candidate))
           digest = copy.deepcopy(request); digest["candidates"][0]["qualification"]["reportDigest"] = "B" * 64; mutations.append(("uppercase digest", digest))
           winner = copy.deepcopy(result); winner["winner"] = "candidate"; mutations.append(("winner field", winner))
           proven = copy.deepcopy(result); proven["candidateResults"][0]["status"] = "PROVEN_READY"; mutations.append(("authority-like status", proven))
