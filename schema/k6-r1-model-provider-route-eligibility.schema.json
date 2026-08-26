@@ -83,6 +83,16 @@
           "if": { "properties": { "status": { "const": "ELIGIBLE" } }, "required": ["status"] },
           "then": { "properties": { "reasons": { "maxItems": 0 }, "missingCapabilities": { "maxItems": 0 } } },
           "else": { "properties": { "reasons": { "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": {
+              "reasons": { "contains": { "const": "MISSING_REQUIRED_CAPABILITY" } }
+            },
+            "required": ["reasons"]
+          },
+          "then": { "properties": { "missingCapabilities": { "minItems": 1 } } },
+          "else": { "properties": { "missingCapabilities": { "maxItems": 0 } } }
         }
       ]
     },

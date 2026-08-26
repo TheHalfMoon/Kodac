@@ -175,6 +175,11 @@ jobs:
           }
           validator.validate(request)
           validator.validate(result)
+          ineligible_with_missing = copy.deepcopy(result)
+          ineligible_with_missing["candidateResults"][0]["status"] = "INELIGIBLE"
+          ineligible_with_missing["candidateResults"][0]["reasons"] = ["MISSING_REQUIRED_CAPABILITY"]
+          ineligible_with_missing["candidateResults"][0]["missingCapabilities"] = ["model/retrieve"]
+          validator.validate(ineligible_with_missing)
           mutations = []
           extra = copy.deepcopy(request); extra["authority"] = "PROVEN_READY"; mutations.append(("unknown root field", extra))
           kind = copy.deepcopy(request); kind["candidates"][0]["candidateKind"] = "TOOL"; mutations.append(("unsupported candidate kind", kind))
@@ -185,6 +190,8 @@ jobs:
           winner = copy.deepcopy(result); winner["winner"] = "candidate"; mutations.append(("winner field", winner))
           proven = copy.deepcopy(result); proven["candidateResults"][0]["status"] = "PROVEN_READY"; mutations.append(("authority-like status", proven))
           inconsistent = copy.deepcopy(result); inconsistent["candidateResults"][0]["status"] = "INELIGIBLE"; mutations.append(("ineligible without reasons", inconsistent))
+          missing_without_reason = copy.deepcopy(ineligible_with_missing); missing_without_reason["candidateResults"][0]["reasons"] = ["RISK_CLASS_UNSUPPORTED"]; mutations.append(("missing capabilities without reason", missing_without_reason))
+          reason_without_missing = copy.deepcopy(ineligible_with_missing); reason_without_missing["candidateResults"][0]["missingCapabilities"] = []; mutations.append(("missing reason without capabilities", reason_without_missing))
           for name, candidate in mutations:
               if not list(validator.iter_errors(candidate)):
                   raise SystemExit(f"schema accepted hostile K6-R1 mutation: {name}")
