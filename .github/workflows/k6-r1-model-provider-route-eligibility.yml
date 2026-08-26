@@ -1,0 +1,280 @@
+name: k6-r1-model-provider-route-eligibility
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k6-r1-model-provider-route-eligibility.yml"
+      - "schema/k6-r1-model-provider-route-eligibility.schema.json"
+      - "packages/kodac-runtime/src/evidence-router/contracts.ts"
+      - "packages/kodac-runtime/src/evidence-router/eligibility.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  route-eligibility:
+    name: k6-r1-model-provider-route-eligibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      K6_R1_AUTHORIZATION_MERGE_SHA: "c1ae8202b3abfe9445d86ff687a8d36931372c2f"
+      K6_R1_AUTHORIZATION_MERGE_TREE: "2e5ef039804d3eb8c9705e0c6575cfd876e9b06d"
+      K6_R1_AUTHORIZATION_DOCUMENT_BLOB: "59ad23a302dc55ab02c4a875d529c569514471b0"
+      K6_R1_IMPLEMENTATION_BRANCH: "feat/k6-r1-model-provider-route-eligibility"
+      MODEL_PROVIDER_BLOB: "a15f1d86ceab88ab6fa1be787719d222e354e0c4"
+      PROVIDER_QUALIFICATION_BLOB: "2aeb08dac153b7044ba3ea7951ffc3ad4452d590"
+      KRI_PROVIDER_CONTRACTS_BLOB: "97e95f3cd19aebf63c86dba254bc8e55f919c031"
+      H1_EXTENSION_CONTRACTS_BLOB: "8d022b6b0b26115aacbf4dfe7a0711c6868ee92c"
+      K4_COMPATIBILITY_CONTRACTS_BLOB: "5a1ba557c89c2c312789f94a9a495e262f411057"
+      K5_R1_CONTRACTS_BLOB: "ef0ae26c2a44157fb20ad33145788ba1255239f5"
+      K5_R4_RECONCILIATION_CONTRACTS_BLOB: "acf758a6f17180448c1c46b0397bfe6742b4f04b"
+      DONE_GATE_BLOB: "067e147569fa52cc2b04c5df26fbe20a01e958e9"
+      VERIFICATION_TYPES_BLOB: "5c7006e6904f97791378a4a4367d569a6971c6af"
+      EXECUTION_RECEIPT_BLOB: "214403398751c9d22bf695786c7fd7c6fd7e35e1"
+      PRE_R1_INDEX_BLOB: "824f6aaaa1d7c47a82e772a46dd6597b1819881d"
+      CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Attest exact head, authorization, scope, predecessor pins, and immutable Actions
+        shell: bash
+        env:
+          K6_R1_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          K6_R1_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          K6_R1_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          K6_R1_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          K6_R1_PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          K6_R1_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$K6_R1_PR_HEAD_SHA"
+          test "$K6_R1_REPOSITORY" = "TheHalfMoon/Kodac"
+          test "$K6_R1_PR_HEAD_REPOSITORY" = "$K6_R1_REPOSITORY"
+          test "$K6_R1_PR_BASE_REF" = "main"
+          test "$K6_R1_PR_BASE_SHA" = "$K6_R1_AUTHORIZATION_MERGE_SHA"
+          test "$K6_R1_PR_HEAD_REF" = "$K6_R1_IMPLEMENTATION_BRANCH"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r1-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r1-diff-before"
+          test ! -s "$RUNNER_TEMP/k6-r1-status-before"
+          test ! -s "$RUNNER_TEMP/k6-r1-diff-before"
+
+          git fetch --no-tags --depth=1 origin "$K6_R1_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse FETCH_HEAD)" = "$K6_R1_AUTHORIZATION_MERGE_SHA"
+          test "$(git rev-parse "$K6_R1_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K6_R1_AUTHORIZATION_MERGE_TREE"
+          authorization_path="docs/planning/KODAC_K6_R1_MODEL_PROVIDER_ROUTE_ELIGIBILITY_AUTHORIZATION_2026-08-26.md"
+          test "$(git rev-parse "$K6_R1_AUTHORIZATION_MERGE_SHA:$authorization_path")" = "$K6_R1_AUTHORIZATION_DOCUMENT_BLOB"
+          test "$(git rev-parse "HEAD:$authorization_path")" = "$K6_R1_AUTHORIZATION_DOCUMENT_BLOB"
+
+          predecessors=(
+            "packages/kodac-runtime/src/model/provider.ts:$MODEL_PROVIDER_BLOB"
+            "packages/kodac-runtime/src/provider-qualification.ts:$PROVIDER_QUALIFICATION_BLOB"
+            "packages/kodac-runtime/src/reviewer-intelligence/provider-contracts.ts:$KRI_PROVIDER_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/extensions/contracts.ts:$H1_EXTENSION_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/compatibility/contracts.ts:$K4_COMPATIBILITY_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/contracts.ts:$K5_R1_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/proof-review/reconciliation-contracts.ts:$K5_R4_RECONCILIATION_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/verification/done-gate.ts:$DONE_GATE_BLOB"
+            "packages/kodac-runtime/src/verification/types.ts:$VERIFICATION_TYPES_BLOB"
+            "packages/kodac-runtime/src/evidence/receipt.ts:$EXECUTION_RECEIPT_BLOB"
+          )
+          for entry in "${predecessors[@]}"; do
+            path="${entry%%:*}"
+            blob="${entry##*:}"
+            test "$(git rev-parse "$K6_R1_AUTHORIZATION_MERGE_SHA:$path")" = "$blob"
+            test "$(git rev-parse "HEAD:$path")" = "$blob"
+          done
+          test "$(git rev-parse "$K6_R1_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts")" = "$PRE_R1_INDEX_BLOB"
+
+          mapfile -t changed < <(git diff --name-only "$K6_R1_AUTHORIZATION_MERGE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k6-r1-model-provider-route-eligibility.yml"
+            "packages/kodac-runtime/src/evidence-router/contracts.ts"
+            "packages/kodac-runtime/src/evidence-router/eligibility.ts"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts"
+            "schema/k6-r1-model-provider-route-eligibility.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for index in "${!expected[@]}"; do test "${changed[$index]}" = "${expected[$index]}"; done
+          git diff --check "$K6_R1_AUTHORIZATION_MERGE_SHA" HEAD
+
+          git show "$K6_R1_AUTHORIZATION_MERGE_SHA:packages/kodac-runtime/src/index.ts" > "$RUNNER_TEMP/k6-r1-index-base"
+          base_size="$(wc -c < "$RUNNER_TEMP/k6-r1-index-base")"
+          head -c "$base_size" packages/kodac-runtime/src/index.ts | cmp - "$RUNNER_TEMP/k6-r1-index-base"
+          tail -c "+$((base_size + 1))" packages/kodac-runtime/src/index.ts > "$RUNNER_TEMP/k6-r1-index-suffix"
+          cat > "$RUNNER_TEMP/k6-r1-index-expected-suffix" <<'SUFFIX'
+          export * from "./evidence-router/contracts.ts"
+          export * from "./evidence-router/eligibility.ts"
+          SUFFIX
+          sed -i 's/^          //' "$RUNNER_TEMP/k6-r1-index-expected-suffix"
+          cmp "$RUNNER_TEMP/k6-r1-index-suffix" "$RUNNER_TEMP/k6-r1-index-expected-suffix"
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k6-r1-model-provider-route-eligibility.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for index in "${!expected_actions[@]}"; do test "${action_lines[$index]}" = "${expected_actions[$index]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked Python validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r1-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate K6-R1 schema and closed structural fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r1-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path("schema/k6-r1-model-provider-route-eligibility.schema.json").read_text(encoding="utf-8"))
+          Draft202012Validator.check_schema(schema)
+          validator = Draft202012Validator(schema)
+          qualification = {"protocol":"kodac.provider-qualification","version":1,"provider":"provider","model":"model","workspaceDigest":"a"*64,"status":"PASS","reportDigest":"b"*64}
+          request = {
+              "version":"kodac-k6-r1-route-request-v1","requestIdentity":"c"*64,"repositoryId":"TheHalfMoon/Kodac",
+              "canonicalBase":"0"*40,"candidateHead":"1"*40,"taskId":"task","riskClass":"HIGH",
+              "privacyClass":"REPOSITORY_PRIVATE","requiredCapabilities":["model/generate"],
+              "candidates":[{"candidateId":"candidate","candidateKind":"MODEL_PROVIDER","provider":"provider","model":"model",
+              "declaredCapabilities":["model/generate"],"maximumRiskClass":"HIGH","supportedPrivacyClasses":["REPOSITORY_PRIVATE"],"qualification":qualification}],
+          }
+          result = {
+              "version":"kodac-k6-r1-route-eligibility-result-v1","resultIdentity":"d"*64,"requestIdentity":"c"*64,
+              "repositoryId":"TheHalfMoon/Kodac","canonicalBase":"0"*40,"candidateHead":"1"*40,"taskId":"task",
+              "candidateResults":[{"candidateId":"candidate","candidateKind":"MODEL_PROVIDER","provider":"provider","model":"model",
+              "status":"ELIGIBLE","reasons":[],"missingCapabilities":[],"qualificationReportDigest":"b"*64}],
+          }
+          validator.validate(request)
+          validator.validate(result)
+          mutations = []
+          extra = copy.deepcopy(request); extra["authority"] = "PROVEN_READY"; mutations.append(("unknown root field", extra))
+          kind = copy.deepcopy(request); kind["candidates"][0]["candidateKind"] = "TOOL"; mutations.append(("unsupported candidate kind", kind))
+          risk = copy.deepcopy(request); risk["riskClass"] = "EXTREME"; mutations.append(("unsupported risk", risk))
+          privacy = copy.deepcopy(request); privacy["privacyClass"] = "PHI"; mutations.append(("unsupported privacy", privacy))
+          duplicate = copy.deepcopy(request); duplicate["requiredCapabilities"] = ["model/generate", "model/generate"]; mutations.append(("duplicate capability", duplicate))
+          digest = copy.deepcopy(request); digest["candidates"][0]["qualification"]["reportDigest"] = "B" * 64; mutations.append(("uppercase digest", digest))
+          winner = copy.deepcopy(result); winner["winner"] = "candidate"; mutations.append(("winner field", winner))
+          proven = copy.deepcopy(result); proven["candidateResults"][0]["status"] = "PROVEN_READY"; mutations.append(("authority-like status", proven))
+          inconsistent = copy.deepcopy(result); inconsistent["candidateResults"][0]["status"] = "INELIGIBLE"; mutations.append(("ineligible without reasons", inconsistent))
+          for name, candidate in mutations:
+              if not list(validator.iter_errors(candidate)):
+                  raise SystemExit(f"schema accepted hostile K6-R1 mutation: {name}")
+          PY
+
+      - name: Prove deterministic and authority-bounded production surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          sources=("packages/kodac-runtime/src/evidence-router/contracts.ts" "packages/kodac-runtime/src/evidence-router/eligibility.ts")
+          if grep -nE 'node:(fs|child_process|http|https|http2|net|tls|dgram|worker_threads|vm|os|path|url)|ExecutionGateway|DoneGate|PROVEN_READY|fetch[[:space:]]*\(|require[[:space:]]*\(|import[[:space:]]*\(|process[[:space:]]*\.|Date[[:space:]]*\(|Date\.now|Math\.random|randomUUID|getRandomValues|performance\.now|setTimeout|setInterval|writeFile|readFile|eval[[:space:]]*\(|new[[:space:]]+Function|reviewer-intelligence|model/provider|child_process|spawn[[:space:]]*\(|exec[[:space:]]*\(' "${sources[@]}"; then
+            echo "K6-R1 production authority/determinism boundary violation" >&2
+            exit 1
+          else
+            grep_status=$?
+            if [ "$grep_status" -ne 1 ]; then echo "K6-R1 production boundary scanner failed with status $grep_status" >&2; exit "$grep_status"; fi
+          fi
+          node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs"
+          const contracts = readFileSync("packages/kodac-runtime/src/evidence-router/contracts.ts", "utf8")
+          const eligibility = readFileSync("packages/kodac-runtime/src/evidence-router/eligibility.ts", "utf8")
+          const imports = (source) => [...source.matchAll(/\bfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
+          const importKeywordCount = (source) => [...source.matchAll(/\bimport\b/g)].length
+          const contractImports = imports(contracts)
+          if (importKeywordCount(contracts) !== contractImports.length) throw new Error("contracts contains a side-effect or unsupported static import form")
+          if (JSON.stringify(contractImports) !== JSON.stringify(["node:crypto", "node:util"])) throw new Error(`unexpected contracts imports: ${contractImports.join(",")}`)
+          const eligibilityImports = imports(eligibility)
+          if (importKeywordCount(eligibility) !== eligibilityImports.length) throw new Error("eligibility contains a side-effect or unsupported static import form")
+          if (JSON.stringify(eligibilityImports) !== JSON.stringify(["./contracts.ts"])) throw new Error(`unexpected eligibility imports: ${eligibilityImports.join(",")}`)
+          if (/\butilTypes\s*\[/.test(contracts)) throw new Error("computed node:util access is prohibited")
+          const members = [...contracts.matchAll(/\butilTypes\.([A-Za-z_$][\w$]*)/g)].map((match) => match[1])
+          if (members.some((name) => name !== "isProxy")) throw new Error(`unauthorized node:util API: ${members.join(",")}`)
+          const hashAlgorithms = [...contracts.matchAll(/createHash\(["']([^"']+)["']\)/g)].map((match) => match[1])
+          if (hashAlgorithms.length !== 1 || hashAlgorithms[0] !== "sha256") throw new Error(`unexpected hash algorithms: ${hashAlgorithms.join(",")}`)
+          NODE
+          test "$(grep -Fxc 'export * from "./evidence-router/contracts.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+          test "$(grep -Fxc 'export * from "./evidence-router/eligibility.ts"' packages/kodac-runtime/src/index.ts)" -eq 1
+
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k6-r1-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k6-r1-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name":"k6-r1-typescript-validation","version":"1.0.0","lockfileVersion":3,"requires":true,
+            "packages":{
+              "":{"name":"k6-r1-typescript-validation","version":"1.0.0","dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
+              "node_modules/@types/node":{"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
+              "node_modules/typescript":{"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
+              "node_modules/undici-types":{"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused K6-R1, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k6-r1-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k6-r1-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/eligibility.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/*.test.ts
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r1-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          test "$(git rev-parse "HEAD:tools/validate_provenance.py")" = "$CANONICAL_PROVENANCE_VALIDATOR_BLOB"
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k6-r1-typescript"
+
+      - name: Attest checkout unchanged after K6-R1 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r1-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r1-diff-after"
+          cmp "$RUNNER_TEMP/k6-r1-status-before" "$RUNNER_TEMP/k6-r1-status-after"
+          cmp "$RUNNER_TEMP/k6-r1-diff-before" "$RUNNER_TEMP/k6-r1-diff-after"
+          test ! -s "$RUNNER_TEMP/k6-r1-status-after"
+          test ! -s "$RUNNER_TEMP/k6-r1-diff-after"
