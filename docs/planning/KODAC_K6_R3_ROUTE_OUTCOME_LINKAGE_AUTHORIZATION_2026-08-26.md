@@ -7,6 +7,8 @@
 - Authority class: DOCUMENTATION / BOUNDED IMPLEMENTATION AUTHORIZATION
 - Canonical base commit: `90c00cfc01cb874c08b4f7bde1469ccb298b5648`
 - Canonical base tree: `018ec040cb82c1a6c4d8370f69ffbf46fdca8534`
+- Canonical `main` protection ruleset: `20707483` (`Kodac canonical main protection v1`)
+- Required ruleset properties: active, target `refs/heads/main`, no bypass actors, `strict_required_status_checks_policy = true`, required checks `provenance`, `legacy-tests`, `k2-runtime-gate`
 - K6-R2 canonical implementation merge: `90c00cfc01cb874c08b4f7bde1469ccb298b5648` (PR #206)
 - K6-R2 qualified implementation head: `4262fb54cd2cf14ac959a8fb986ac152c679c739`
 - K6-R2 qualified implementation tree: `018ec040cb82c1a6c4d8370f69ffbf46fdca8534`
@@ -185,6 +187,8 @@ Rules:
 - `executionReceiptSource` must pass the canonical K5-R2 source-link validator;
 - its `sourceKind` must equal `EXECUTION_RECEIPT`;
 - its `canonicalBase` and `candidateHead` must equal the R2 plan revision exactly;
+- K5-R2 `SourceLink` has no `repositoryId` field by canonical contract; therefore repository binding is established only through exact K5-R4 membership under the reconciliation whose `revision.repositoryId` equals `routePlan.repositoryId`;
+- an otherwise matching source link from another repository is rejected unless it is an exact member of that repository-bound K5-R4 reconciliation; no standalone source-link identity is treated as repository authority;
 - its source identity must be unique across `executionObservations[]`;
 - its receipt metadata `receiptId` must be unique across `executionObservations[]`;
 - R3 derives candidate ID, candidate kind, provider, model, and role only from the referenced R2 plan step; the caller does not restate those fields;
@@ -202,7 +206,7 @@ R3 preserves the execution-receipt `resultStatus` (`success`, `blocked`, or `fai
 sourceKind = VERIFICATION_REPORT
 ```
 
-Its `canonicalBase` and `candidateHead` must equal the R2 plan revision exactly. Its metadata is the existing K5-R2 verification metadata:
+Its `canonicalBase` and `candidateHead` must equal the R2 plan revision exactly. Like execution-receipt source links, its repository binding is established through exact membership in the same repository-bound K5-R4 reconciliation; the K5-R2 source identity alone does not assert repository identity. Its metadata is the existing K5-R2 verification metadata:
 
 ```text
 protocol = kodac.verification
@@ -230,9 +234,10 @@ R3 must then prove exact K5 membership for the caller-materialized source links:
 
 1. the verification source must match exactly one K5-R4 result with the same `evidenceId`, `evidenceKind = VERIFICATION`, and the same non-null `sourceIdentity`;
 2. every execution-receipt source must match exactly one K5-R4 result with the same `evidenceId`, `evidenceKind = EXECUTION_RECEIPT`, and the same non-null `sourceIdentity`;
-3. missing, duplicate, substituted, null, or wrong-kind K5 membership is structural `TypeError`;
-4. R3 does not require the matched K5 state to be `VALID`; `VALID`, `INCOMPLETE`, `CONTRADICTORY`, `STALE`, and `INVALID` remain K5-owned caller-materialized outcomes and may all be linked without reinterpretation;
-5. `NOT_APPLICABLE` cannot satisfy the required verification/receipt membership and therefore cannot produce a valid R3 linkage for this v1 contract.
+3. the repository identity for every accepted source is the already-validated `k5Reconciliation.revision.repositoryId`, which must equal `routePlan.repositoryId`; R3 must never infer repository identity from K5-R2 `SourceLink` because that predecessor type intentionally has no repository field;
+4. missing, duplicate, substituted, null, wrong-kind, or wrong-repository reconciliation membership is structural `TypeError`;
+5. R3 does not require the matched K5 state to be `VALID`; `VALID`, `INCOMPLETE`, `CONTRADICTORY`, `STALE`, and `INVALID` remain K5-owned caller-materialized outcomes and may all be linked without reinterpretation;
+6. `NOT_APPLICABLE` cannot satisfy the required verification/receipt membership and therefore cannot produce a valid R3 linkage for this v1 contract.
 
 R3 preserves the K5 `packageIdentity`, `reconciliationIdentity`, and aggregate `status`. It does not recalculate K5 state or causes.
 
@@ -387,7 +392,7 @@ No seventh path is authorized.
 
 `packages/kodac-runtime/src/index.ts` may change only by appending the exact two reviewed exports for the new R3 contract and linkage modules. Every pre-R3 export line and order must remain byte-for-byte unchanged.
 
-No dependency, package manifest, lockfile, configuration, documentation, K2/K5/KRI/Done Gate source, provider implementation, receipt implementation, verification implementation, or R1/R2 source path is authorized to change.
+No path outside the six-path allowlist is authorized to change. The named `.github/workflows/k6-r3-route-outcome-linkage.yml` path is the sole authorized workflow/configuration addition. All other configuration, dependency, package-manifest, lockfile, documentation, K2/K5/KRI/Done Gate source, provider implementation, receipt implementation, verification implementation, and R1/R2 source paths remain unauthorized.
 
 If this contract cannot be implemented inside the exact six-path surface, implementation must stop and a replacement canonical authorization is required.
 
@@ -409,7 +414,7 @@ https://kodac.dev/schema/k5-r2-evidence-linkage.schema.json
 https://kodac.dev/schema/k5-r4-proof-state-reconciliation.schema.json
 ```
 
-A dedicated executable validator may extend Draft 2020-12 only for invariants that JSON Schema cannot express, including UTF-8 byte limits, exact predecessor cross-record identity binding, exact K5 source membership, output projection, and deterministic identity recomputation.
+A dedicated executable validator may extend Draft 2020-12 only for invariants that JSON Schema cannot express, including UTF-8 byte limits, exact predecessor cross-record identity binding, exact repository-bound K5 source membership, output projection, and deterministic identity recomputation.
 
 The dedicated workflow must prove schema/runtime parity with positive and hostile fixtures. A fixture that fails for multiple unrelated reasons is not sufficient evidence for a specific custom keyword or byte-bound invariant when the workflow claims to prove that invariant.
 
@@ -434,6 +439,7 @@ The focused R3 tests must include at least:
 - duplicate receipt source identity rejected;
 - duplicate receipt ID rejected;
 - K5 repository/canonical-base/candidate-head mismatch rejected;
+- an otherwise matching verification or receipt source under a reconciliation with a different `repositoryId` rejected, proving repository binding through K5-R4 membership;
 - missing verification K5 membership rejected;
 - wrong-kind verification K5 membership rejected;
 - missing receipt K5 membership rejected;
@@ -473,10 +479,25 @@ The authorized workflow must fail closed on at least:
 16. full runtime tests;
 17. Python tests;
 18. Ruff;
-19. provenance validation; and
-20. unchanged checkout after qualification.
+19. provenance validation;
+20. unchanged checkout after qualification; and
+21. the live canonical-main ruleset remains exactly ruleset `20707483`, active on `refs/heads/main`, with no bypass actors and strict required status checks for `provenance`, `legacy-tests`, and `k2-runtime-gate`.
 
 Historical branch/base-pinned K5/K6 implementation workflows are not automatically applicable to the R3 branch. The dedicated R3 workflow must execute the required focused predecessor regressions directly and must not relabel a historical expected branch/base failure as green.
+
+## Repository-enforced base advancement guard
+
+Ruleset `20707483` is a mandatory part of the merge protocol, not background metadata. Its active `strict_required_status_checks_policy = true` means the PR branch must be up to date with the protected base before GitHub may merge it. There are no bypass actors. Therefore an advancement of `main` after qualification makes the branch stale against the base and the protected merge must be rejected until the authorization-defined forward reconciliation and full requalification are completed.
+
+Immediately before either authorization merge or future R3 implementation merge:
+
+1. re-read `refs/heads/main` and require the exact authorized base SHA;
+2. re-read ruleset `20707483` and require it to remain active, targeted only as recorded, with no bypass actors, strict required status checks enabled, and the exact three required check contexts recorded above;
+3. require the PR to remain mergeable, non-draft, and up to date with `main` under that strict ruleset;
+4. invoke only normal GitHub merge-commit semantics with the exact expected PR head SHA;
+5. treat any base movement, ruleset drift, required-check invalidation, merge rejection, or parent mismatch as STOP — never retry with stale evidence and never waive the guard.
+
+This protected strict-status rule is the repository-enforced base-ref lease for this protocol. If it is removed, loosened, bypassed, inaccessible for verification, or otherwise cannot be proven at merge time, the merge is not authorized.
 
 ## Review and merge gate for the future implementation PR
 
@@ -492,9 +513,9 @@ K6-R3 implementation must not merge until all of the following are proven on the
 8. fresh exact-head Qodo review has zero unresolved material correctness/security/governance findings;
 9. zero unresolved actionable review threads remain;
 10. no review waiver is taken;
-11. protected `main` is re-read immediately before merge and equals the authorized implementation base;
-12. PR is open, non-draft, mergeable, and still has exactly six changed files;
-13. merge uses normal merge-commit semantics guarded by exact `expected_head_sha`;
+11. protected `main` and ruleset `20707483` are re-read immediately before merge and satisfy the repository-enforced base advancement guard above;
+12. PR is open, non-draft, mergeable, up to date under the strict ruleset, and still has exactly six changed files;
+13. merge uses normal GitHub merge-commit semantics guarded by exact `expected_head_sha`, while the strict ruleset concurrently guards base freshness;
 14. ordered merge parent 1 equals pre-merge canonical `main` and parent 2 equals the exact qualified candidate head;
 15. merge tree equals the qualified candidate tree;
 16. GitHub merge signature is valid;
@@ -558,13 +579,16 @@ K6-R3 implementation authority becomes effective only if this exact one-path aut
 6. zero unresolved actionable review threads remain;
 7. final candidate head/tree/document blob are captured;
 8. no waiver is taken;
-9. merge uses normal merge-commit semantics guarded by exact expected head SHA;
-10. ordered merge parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified candidate head;
-11. merge tree equals the qualified candidate tree and the authorization document blob equals the qualified candidate blob;
-12. protected `main` equals the merge commit/tree and introduces exactly the authorized one path; and
-13. applicable post-merge governance/shared/runtime checks reach terminal success.
+9. protected `main` and ruleset `20707483` are re-read immediately before merge and satisfy the repository-enforced base advancement guard above;
+10. merge uses normal GitHub merge-commit semantics guarded by exact expected head SHA while the strict ruleset concurrently guards base freshness;
+11. ordered merge parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified candidate head;
+12. merge tree equals the qualified candidate tree and the authorization document blob equals the qualified candidate blob;
+13. protected `main` equals the merge commit/tree and introduces exactly the authorized one path; and
+14. applicable post-merge governance/shared/runtime checks reach terminal success.
 
-If `main` advances before merge: STOP. Amend this authorization record to the replacement canonical base SHA/tree, forward-merge that exact `main` into the authorization branch using normal non-destructive history, and requalify the new exact head from scratch for scope, CI, CodeRabbit, Qodo, threads, mergeability, tree, and document blob.
+If `main` advances before merge: STOP. Amend this authorization record to the replacement canonical base SHA/tree, forward-merge that exact `main` into the authorization branch using normal non-destructive history, and requalify the new exact head from scratch for scope, CI, CodeRabbit, Qodo, threads, mergeability, tree, document blob, and ruleset guard.
+
+If ruleset `20707483` drifts from the pinned properties before this authorization merges, STOP. Amend this candidate to record the replacement canonical protection truth and requalify from a new exact head. No merge may rely on a looser or unverified base-freshness policy.
 
 No rebase, force-push, destructive history rewrite, stale-base exception, or review waiver is permitted.
 
