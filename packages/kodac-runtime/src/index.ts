@@ -276,3 +276,5 @@ export {
 export { reconcileK5R4ProofState } from "./proof-review/reconciliation.ts"
 export * from "./evidence-router/contracts.ts"
 export * from "./evidence-router/eligibility.ts"
+export * from "./evidence-router/route-plan-contracts.ts"
+export * from "./evidence-router/route-plan.ts"
