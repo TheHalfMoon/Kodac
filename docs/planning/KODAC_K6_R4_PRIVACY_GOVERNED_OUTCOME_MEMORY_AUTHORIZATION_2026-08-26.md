@@ -14,30 +14,34 @@
 - Governing constitution: `docs/adr/ADR-0001-kodac-product-constitution-done-means-proven.md`
 - Canonical event/evidence direction: `docs/adr/ADR-0005-canonical-session-event-tool-protocol.md`
 - Mandatory side-effect trust boundary: `docs/adr/ADR-0006-mandatory-trust-hook-side-effects.md`
-- Canonical K6-R3 authorization: `docs/planning/KODAC_K6_R3_ROUTE_OUTCOME_LINKAGE_AUTHORIZATION_2026-08-26.md`
-- Canonical K6-R3 runtime contract: `packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts`
-- Canonical K6-R3 materializer: `packages/kodac-runtime/src/evidence-router/outcome-linkage.ts`
+- Canonical K6-R1 contract: `packages/kodac-runtime/src/evidence-router/contracts.ts`
+- Canonical K6-R3 contract: `packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts`
+
+## Authority reconciliation
+
+K6-R1, K6-R2 and K6-R3 are closed canonical for their separately authorized pure-data scopes. P0 roadmap reconciliation is closed canonical. `docs/roadmap/NEXT.md` therefore authorizes preparation of this R4 authorization candidate only.
+
+This candidate remains non-canonical until its exact final head passes the adoption gate below.
 
 ## Decision
 
-Authorize one later bounded K6-R4 implementation PR, and only that implementation PR, after this exact authorization record is canonically adopted and post-merge proven.
+After and only after canonical adoption and post-merge proof of this exact record, authorize one later K6-R4 implementation PR for a **pure deterministic privacy-governed outcome-record and in-memory snapshot/lifecycle contract**.
 
-K6-R4 v1 is a **pure deterministic privacy-governed outcome-record and in-memory snapshot contract** over already-materialized K6-R3 route-outcome linkage evidence.
-
-It deliberately does **not** authorize a filesystem store, database, network service, daemon, cache service, telemetry pipeline, vector store, training loop, strategy promoter, or any other side-effecting persistence implementation.
+R4 v1 consumes caller-materialized canonical K6-R1 and K6-R3 records. It produces only minimized immutable in-memory values. It does not read or write durable storage and does not execute any side effect.
 
 ```text
-K6-R4 = PRIVACY-GOVERNED BOUNDED OUTCOME RECORD / MEMORY CONTRACT
+K6-R4 = PRIVACY-GOVERNED BOUNDED OUTCOME RECORD / IN-MEMORY MEMORY CONTRACT
 R4 RUNTIME I/O = NONE
-R4 PERSISTENCE EXECUTOR = NOT AUTHORIZED
+R4 FILESYSTEM / DATABASE PERSISTENCE = NOT AUTHORIZED
 R4 NETWORK / UPLOAD / TELEMETRY = NOT AUTHORIZED
 R4 TRAINING / LEARNING MUTATION = NOT AUTHORIZED
 R4 STRATEGY PROMOTION = NOT AUTHORIZED
 K2 SIDE-EFFECT AUTHORITY = UNCHANGED
+K5 AUTHORITY = UNCHANGED
 DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
 ```
 
-This is intentional. The K6 constitution already establishes:
+The governing invariant remains:
 
 ```text
 OUTCOME DATA != PERMISSION TO LEARN OR PERSIST
@@ -45,13 +49,13 @@ SELF-IMPROVING != SELF-AUTHORIZING
 ROUTING EVIDENCE != EXECUTION AUTHORITY
 ```
 
-R4 therefore establishes exact privacy, minimization, identity, isolation, lifecycle and conflict semantics first. Any future act that actually writes a snapshot to durable storage remains a separately authorized side effect and must traverse the canonical K2 `ExecutionGateway` / Trust Kernel path.
+Any future act that durably stores an R4 value is a separately authorized side effect and must traverse the canonical K2 `ExecutionGateway` / Trust Kernel path.
 
 ## Exact bounded question
 
 R4 v1 answers exactly one question:
 
-> Given one exact canonical K6-R3 route-outcome linkage envelope, one caller-materialized opaque owner scope, explicit caller-materialized lifecycle times, and one already-materialized R4 memory snapshot, what minimized immutable outcome record and deterministic next snapshot are valid under exact repository/owner/privacy isolation, retention, deletion, expiry, conflict and supersession rules?
+> Given one exact validated K6-R1 route request, one exact validated K6-R3 route-outcome linkage envelope cryptographically bound to that R1 request, one caller-materialized opaque owner isolation scope, explicit caller-materialized lifecycle times, and one validated R4 memory snapshot, what minimized immutable outcome record and deterministic next snapshot are valid under exact repository/owner/privacy isolation, retention, deletion, expiry, conflict and supersession rules?
 
 R4 does not decide what should execute, which provider is better, whether a strategy should be promoted, whether a task is complete, or whether any data should be durably stored.
 
@@ -67,13 +71,49 @@ OUTCOME MEMORY != STRATEGY PROMOTION
 OUTCOME MEMORY != PROVIDER QUALIFICATION
 OUTCOME MEMORY != DONE GATE
 OUTCOME MEMORY != PROVEN_READY
+OWNER_SCOPE_ID != AUTHENTICATION
+OWNER_SCOPE_ID != AUTHORIZATION
+OWNER_SCOPE_ID != CAPABILITY OR SECRET
+PSEUDONYMOUS DIGEST != ANONYMOUS DATA
 DELETION != HIDDEN ARCHIVAL RETENTION
 EXPIRED != ACTIVE
 SUPERSEDED != CONCURRENT WINNER
 CALLER CLOCK != TRUSTED WALL-CLOCK PROOF
 ```
 
-R4 must preserve K6-R1/R2/R3, K5, KRI, K2 and Done Gate ownership. Information may be linked or minimized; authority never follows that information flow.
+Information may be linked or minimized; authority never follows information flow.
+
+## Canonical predecessor binding
+
+### Why R1 is supplied explicitly
+
+The canonical K6-R1 route request contains `privacyClass`. The canonical K6-R1 eligibility result intentionally does not repeat it, and the K6-R2 request / K6-R3 envelope therefore do not independently expose `privacyClass`.
+
+R4 must not infer or invent privacy classification. R4 therefore requires the caller to supply the original canonical K6-R1 route request alongside the canonical K6-R3 envelope.
+
+This is not a predecessor mutation. Both records already exist under canonical contracts.
+
+### Required validation and binding
+
+For every APPEND or SUPERSEDE operation, before projecting any R4 field:
+
+1. validate `routeRequest` through canonical `validateK6R1RouteRequest()`;
+2. validate `routeOutcomeLinkageEnvelope` through canonical `validateK6R3RouteOutcomeLinkageEnvelope()`;
+3. require exact equality of:
+
+```text
+routeRequest.requestIdentity == routeOutcomeLinkageEnvelope.linkage.requestIdentity
+routeRequest.repositoryId   == routeOutcomeLinkageEnvelope.linkage.repositoryId
+routeRequest.canonicalBase  == routeOutcomeLinkageEnvelope.linkage.canonicalBase
+routeRequest.candidateHead  == routeOutcomeLinkageEnvelope.linkage.candidateHead
+routeRequest.taskId         == routeOutcomeLinkageEnvelope.linkage.taskId
+```
+
+The R1 validator recomputes `requestIdentity` from the complete closed R1 request. Matching that identity to the validated R3 linkage cryptographically binds the supplied R1 privacy class and all other R1 request fields to the R3 outcome lineage.
+
+Any mismatch is structural `TypeError`. R4 may not choose one predecessor as “more authoritative,” repair a mismatch, or infer a privacy value.
+
+The validated R1 request is input evidence only. R4 does not retain the raw request in memory output.
 
 ## Privacy classification and isolation
 
@@ -85,10 +125,10 @@ REPOSITORY_PRIVATE
 SENSITIVE
 ```
 
-For every admitted R3 envelope, the R4 privacy class is an exact projection of:
+For every admitted operation:
 
 ```text
-routePlanRequest.privacyClass
+privacyClass = validatedRouteRequest.privacyClass
 ```
 
 R4 must not infer, downgrade, upgrade, remap or merge privacy classes.
@@ -103,17 +143,30 @@ privacyClass
 
 Where:
 
-- `repositoryIdentity` is a deterministic SHA-256 digest derived from the validated R3 `repositoryId`; the raw repository identifier is not retained in R4 memory;
-- `ownerScopeId` is a caller-materialized opaque 64-character lowercase hexadecimal authority-scope identity; R4 never accepts or stores a raw user name, email, account name or other human-readable owner identity;
-- `privacyClass` is the exact R1/R3 privacy class.
+- `repositoryIdentity` is a deterministic domain-separated SHA-256 digest derived from the validated R3/R1 repository identity;
+- `ownerScopeId` is caller-materialized opaque 64-character lowercase hexadecimal **isolation data only**;
+- `privacyClass` is the exact validated R1 privacy class.
 
-One memory snapshot may contain only records and tombstones for one exact scope triple. Cross-repository, cross-owner and cross-privacy admission fail closed.
+`ownerScopeId` is not an authentication result, permission, capability, credential, secret, approver identity or proof of human ownership. Possession or equality of an `ownerScopeId` grants no authority.
 
-`PUBLIC` does not disable owner/repository isolation. It only preserves the upstream privacy classification.
+One snapshot may contain only records and tombstones for one exact scope triple. Cross-repository, cross-owner and cross-privacy admission fail closed. `PUBLIC` does not weaken repository/owner isolation.
 
-## Local-first and persistence authority
+## Pseudonymity and correlation boundary
 
-The exact R4 v1 persistence posture is:
+R4 uses deterministic digests for minimization and stable in-scope provenance. They are **pseudonymous identifiers, not anonymous identifiers**.
+
+Equal source identities may be correlatable if an external caller later colocates multiple snapshots. R4 does not claim to prevent such correlation cryptographically.
+
+However:
+
+- R4 itself has no storage, aggregation, network or telemetry authority;
+- one memory value is restricted to one exact scope triple;
+- cross-repository and cross-user aggregation/learning remain explicitly unauthorized;
+- no caller may treat digest equality as permission to join, upload, learn from or share records across scopes.
+
+A later persistence or cross-scope design must separately address unlinkability, encryption/keying and retention as appropriate. This record does not authorize HMAC keys, secrets, encryption services or cross-scope aggregation.
+
+## Local-first and persistence boundary
 
 ```text
 R4_MEMORY_REPRESENTATION = JSON-COMPATIBLE IMMUTABLE VALUE
@@ -129,47 +182,36 @@ R4_TELEMETRY = NO
 R4_UPLOAD = NO
 ```
 
-A caller may hold the returned memory value in process. R4 itself performs no persistence side effect.
+A caller may hold the returned value in process. R4 itself performs no persistence side effect.
 
-If a future canonical slice chooses to durably store an R4 snapshot, that storage operation must be separately authorized, locally scoped by default, fail closed on unauthorized remote fallback, and execute through K2. This R4 authorization does not register or grant such a capability.
+A deserialized or caller-supplied R4 memory is untrusted input and must pass the full R4 validator before use. Failure is terminal; no partial/permissive load is allowed.
 
-A deserialized or caller-supplied R4 memory is always untrusted input and must pass the full R4 validator before use. Failure is terminal validation failure; no permissive partial load is allowed.
+## Prohibited retained content
 
-## Prohibited raw or sensitive content
+R4 memory uses exact-key closed records. No extension bag, metadata map, note field, arbitrary labels or free-form payload field is authorized.
 
-R4 uses exact-key closed records. There is no extension bag, metadata map, note field, arbitrary label map or free-form payload field.
+R4 memory output must not retain raw:
 
-The persisted/returned R4 memory representation must not contain any of the following raw content:
-
-- source-code text;
-- file contents;
-- diff or patch text;
-- prompt text;
-- chat/model messages;
+- repository IDs or task IDs;
+- candidate IDs, provider names or model names;
+- R1 required-capability strings or candidate declarations;
+- source code, file contents, diffs or patches;
+- prompts, chat/model messages or arbitrary user notes;
 - secrets, tokens, credentials or environment values;
-- shell commands or command arguments;
-- stdout or stderr bodies;
-- execution-receipt bodies;
-- verification-report bodies;
-- K5 proof-package or reconciliation payload bodies;
+- shell commands or arguments;
+- stdout/stderr bodies;
+- execution-receipt or verification-report bodies;
+- K5 proof/reconciliation payload bodies;
 - Done Gate reason strings or evidence-reference bodies;
 - reviewer finding text;
-- reviewer/model/provider response content;
-- arbitrary user notes;
-- raw user names, emails, account identifiers or display names;
-- raw repository identifiers;
-- raw task identifiers;
-- raw candidate identifiers;
-- raw provider names;
-- raw model names.
+- provider/model/reviewer response content;
+- raw user names, emails, account IDs or display names.
 
-The implementation tests must plant unique sentinel values into every relevant upstream raw field and prove those sentinels are absent from canonical serialized R4 memory output.
+Implementation tests must plant unique sentinels into relevant R1/R3 raw fields and prove those sentinels are absent from canonical serialized R4 memory output.
 
 ## Exact identity derivations
 
-R4 uses the canonical K6 JSON serialization helper already owned by the R1 contract and SHA-256 from `node:crypto`.
-
-All identity inputs are domain-separated closed objects.
+R4 reuses `canonicalK6R1Json()` and SHA-256 from `node:crypto`.
 
 ### Repository identity
 
@@ -191,7 +233,7 @@ taskIdentity = SHA256(canonicalK6R1Json({
 
 ### Candidate identity
 
-For every linked execution observation:
+For every validated R3 linked execution observation:
 
 ```text
 candidateIdentity = SHA256(canonicalK6R1Json({
@@ -203,17 +245,15 @@ candidateIdentity = SHA256(canonicalK6R1Json({
 }))
 ```
 
-The raw candidate/provider/model strings are used only transiently for this derivation and are not retained in the R4 record.
+Raw candidate/provider/model strings are transient derivation inputs only and are not retained.
 
 ### Record, tombstone and memory identities
 
-`recordIdentity`, `tombstoneIdentity` and `memoryIdentity` are SHA-256 digests over their exact canonical identity-input objects with their own identity field omitted and with an exact version field included.
+`recordIdentity`, `tombstoneIdentity` and `memoryIdentity` are SHA-256 digests over exact closed canonical identity-input objects with their own identity field omitted and exact version included.
 
-No identity may depend on object insertion order, host locale, wall clock, filesystem state, process state, random values, iteration over a `Set`/`Map`, or provider/model output beyond the already-materialized validated R3 fields.
+No identity may depend on object insertion order, host locale, wall clock, filesystem/process state, randomness, `Set`/`Map` iteration, or live provider/model output.
 
 ## Contract versions
-
-The implementation must expose exactly these version constants:
 
 ```text
 K6_R4_OUTCOME_RECORD_VERSION = "kodac-k6-r4-outcome-record-v1"
@@ -222,9 +262,11 @@ K6_R4_MEMORY_VERSION = "kodac-k6-r4-outcome-memory-v1"
 K6_R4_OPERATION_VERSION = "kodac-k6-r4-outcome-memory-operation-v1"
 ```
 
+No floating alias or implicit migration is accepted.
+
 ## Exact minimized active record
 
-An active R4 outcome record has exactly these top-level fields:
+An active record has exactly:
 
 ```text
 version
@@ -237,8 +279,6 @@ lifecycle
 
 ### `scope`
 
-Exactly:
-
 ```text
 repositoryIdentity
 ownerScopeId
@@ -246,8 +286,6 @@ privacyClass
 ```
 
 ### `source`
-
-Exactly:
 
 ```text
 routeOutcomeLinkageIdentity
@@ -258,11 +296,9 @@ candidateHead
 taskIdentity
 ```
 
-Every source field except `taskIdentity` is an exact projection from the validated R3 linkage. `taskIdentity` is the exact digest defined above.
+Every source field is projected from the validated R3 linkage except `taskIdentity`, which is the digest defined above. R1 raw request fields are not retained.
 
 ### `outcome`
-
-Exactly:
 
 ```text
 verificationPassed
@@ -282,13 +318,9 @@ role
 executionResultStatus
 ```
 
-The array preserves the validated R3 execution-observation order. The only candidate data retained is the digest `candidateIdentity`.
-
-R4 does not recalculate or reinterpret verification, K5, execution or Done Gate states.
+The array preserves validated R3 execution-observation order. R4 does not reinterpret verification, K5, execution or Done Gate state.
 
 ### `lifecycle`
-
-Exactly:
 
 ```text
 observedAtUnixMs
@@ -296,9 +328,7 @@ expiresAtUnixMs
 supersedesRecordIdentity
 ```
 
-`observedAtUnixMs` and `expiresAtUnixMs` are caller-materialized non-negative safe integers. R4 does not call `Date.now()` or any host clock.
-
-Requirements:
+`observedAtUnixMs` and `expiresAtUnixMs` are caller-materialized non-negative safe integers. R4 never calls a host clock.
 
 ```text
 expiresAtUnixMs > observedAtUnixMs
@@ -306,19 +336,13 @@ supersedesRecordIdentity = null for APPEND
 supersedesRecordIdentity = exact replaced record identity for SUPERSEDE
 ```
 
-There is no implicit infinite retention and no hidden default TTL. Every active record carries an explicit expiry selected by the caller/policy outside R4 and included in the record identity.
+No implicit infinite retention or default TTL exists.
 
-The timestamps are lifecycle inputs, not verified claims that Kodac observed a trusted wall clock.
+## Logical subject and uniqueness
 
-## Logical subject and active-record uniqueness
+Within one exact scope triple, `taskIdentity` is the v1 logical outcome subject. At most one active record may exist for a task.
 
-Within one scope triple, `taskIdentity` is the v1 logical outcome subject.
-
-A valid memory may contain at most one active record for a given `taskIdentity`.
-
-A second different active outcome for the same task is a conflict unless it is introduced by the explicit `SUPERSEDE` operation against the current active record.
-
-No last-write-wins behavior exists.
+A different outcome for an already-active task is a conflict unless introduced by explicit `SUPERSEDE` against the current record. No last-write-wins behavior exists.
 
 ## Exact tombstone
 
@@ -336,7 +360,7 @@ expiresAtUnixMs
 replacementRecordIdentity
 ```
 
-Closed transition vocabulary:
+Closed transitions:
 
 ```text
 DELETED
@@ -346,19 +370,17 @@ SUPERSEDED
 
 Rules:
 
-- tombstones contain no outcome payload;
+- no outcome payload is retained;
 - `replacementRecordIdentity` is non-null only for `SUPERSEDED`;
-- `replacementRecordIdentity` is null for `DELETED` and `EXPIRED`;
+- tombstone scope equals memory scope;
+- `recordIdentity` and `taskIdentity` identify the removed active record;
 - `expiresAtUnixMs > transitionAtUnixMs`;
-- tombstone scope must equal the containing memory scope;
-- tombstone `recordIdentity` and `taskIdentity` must exactly identify the removed active record;
-- a retained tombstone blocks exact-record resurrection until the tombstone itself is explicitly purged after expiry.
-
-Tombstones are deliberately minimal anti-resurrection/conflict evidence, not hidden archival outcome storage.
+- a retained tombstone blocks exact-record resurrection;
+- tombstones are anti-resurrection/conflict evidence, not archival outcome storage.
 
 ## Exact memory snapshot
 
-An R4 memory has exactly:
+A memory has exactly:
 
 ```text
 version
@@ -370,21 +392,19 @@ tombstones
 
 Rules:
 
-- `scope` is the exact repository/owner/privacy triple;
-- all records and tombstones must match that scope exactly;
-- `records` are canonicalized in ascending `recordIdentity` order;
-- `tombstones` are canonicalized in ascending `tombstoneIdentity` order;
+- every record/tombstone matches the exact memory scope;
+- records sort ascending by `recordIdentity`;
+- tombstones sort ascending by `tombstoneIdentity`;
 - duplicate identities are rejected;
 - duplicate active `taskIdentity` values are rejected;
-- an identity may not be simultaneously active and tombstoned;
-- every record/tombstone identity and the memory identity must be recomputed during validation;
-- no object/array is trusted merely because it was previously emitted by R4.
+- one `recordIdentity` cannot be both active and tombstoned;
+- every record/tombstone/memory identity is recomputed during validation;
+- previously emitted objects are never trusted merely because R4 emitted them;
+- returned memory and nested values are deeply frozen.
 
-The returned memory and all nested structures must be frozen/immutable in the same public style as existing R1-R3 outputs.
+## Operation vocabulary
 
-## Exact operation vocabulary
-
-The only R4 v1 mutations are pure value-to-value transitions:
+Only these pure value-to-value operations exist:
 
 ```text
 APPEND
@@ -394,11 +414,11 @@ EXPIRE
 PURGE_TOMBSTONE
 ```
 
-Every operation has exact closed keys and version `kodac-k6-r4-outcome-memory-operation-v1`.
+Every operation has exact closed keys and `version = kodac-k6-r4-outcome-memory-operation-v1`.
 
 ### APPEND
 
-Input contains:
+Exact input:
 
 ```text
 version
@@ -406,23 +426,24 @@ kind = "APPEND"
 ownerScopeId
 observedAtUnixMs
 expiresAtUnixMs
+routeRequest
 routeOutcomeLinkageEnvelope
 ```
 
 Requirements:
 
-1. validate the full R3 envelope through the canonical R3 validator before reading R4 projections;
-2. derive repository/task/candidate identities exactly as defined above;
-3. derive privacy class exactly from the validated R3 route request;
-4. require the resulting scope to equal the memory scope;
+1. validate and bind R1+R3 exactly as specified above;
+2. derive privacy class from validated R1 request only;
+3. derive repository/task/candidate identities;
+4. require derived scope to equal memory scope;
 5. reject a different active record with the same `taskIdentity`;
-6. reject a record identity currently protected by a retained tombstone;
-7. an already-active byte/semantic-identical record is idempotent and returns the same canonical memory value;
-8. otherwise append the new record and recompute canonical ordering and `memoryIdentity`.
+6. reject an exact record identity protected by a retained tombstone;
+7. an exact already-active semantically identical record is idempotent;
+8. otherwise append, canonicalize and recompute memory identity.
 
 ### SUPERSEDE
 
-Input contains:
+Exact input:
 
 ```text
 version
@@ -432,26 +453,27 @@ ownerScopeId
 observedAtUnixMs
 expiresAtUnixMs
 tombstoneExpiresAtUnixMs
+routeRequest
 routeOutcomeLinkageEnvelope
 ```
 
 Requirements:
 
-1. target must identify exactly one current active record;
-2. validate and derive the replacement exactly as for APPEND;
-3. replacement scope and `taskIdentity` must equal the target scope and `taskIdentity`;
-4. replacement `recordIdentity` must differ from target identity;
-5. replacement lifecycle `supersedesRecordIdentity` equals the exact target identity;
-6. `observedAtUnixMs` must be greater than or equal to the target `observedAtUnixMs`;
-7. create one `SUPERSEDED` tombstone for the target with `replacementRecordIdentity` equal to the new record identity;
-8. require `tombstoneExpiresAtUnixMs > observedAtUnixMs`;
-9. atomically, as one pure return value, remove target payload, add tombstone, add replacement, sort, and recompute memory identity.
+1. target identifies exactly one active record;
+2. validate and bind R1+R3 as above;
+3. replacement scope and task equal target scope/task;
+4. replacement identity differs from target;
+5. replacement `supersedesRecordIdentity` equals target;
+6. `observedAtUnixMs >= target.lifecycle.observedAtUnixMs`;
+7. create one minimal `SUPERSEDED` tombstone whose replacement identity is the new record;
+8. `tombstoneExpiresAtUnixMs > observedAtUnixMs`;
+9. atomically remove target payload, add tombstone and replacement, canonicalize and recompute memory identity.
 
 No implicit conflict resolution or “newer wins” rule exists.
 
 ### DELETE
 
-Input contains:
+Exact input:
 
 ```text
 version
@@ -463,18 +485,18 @@ tombstoneExpiresAtUnixMs
 
 Requirements:
 
-1. target must identify exactly one current active record;
+1. target identifies exactly one active record;
 2. `transitionAtUnixMs >= target.lifecycle.observedAtUnixMs`;
 3. `tombstoneExpiresAtUnixMs > transitionAtUnixMs`;
-4. remove the complete active outcome payload;
-5. add a minimal `DELETED` tombstone with no replacement identity;
-6. sort and recompute memory identity.
+4. remove the complete active payload;
+5. add one minimal `DELETED` tombstone;
+6. canonicalize and recompute memory identity.
 
-A deletion transition is not permission to retain the removed payload elsewhere.
+Deletion is not permission to retain removed payload elsewhere.
 
 ### EXPIRE
 
-Input contains:
+Exact input:
 
 ```text
 version
@@ -486,18 +508,18 @@ tombstoneExpiresAtUnixMs
 
 Requirements:
 
-1. target must identify exactly one current active record;
+1. target identifies exactly one active record;
 2. `transitionAtUnixMs >= target.lifecycle.expiresAtUnixMs`;
 3. `tombstoneExpiresAtUnixMs > transitionAtUnixMs`;
-4. remove the complete active outcome payload;
-5. add a minimal `EXPIRED` tombstone;
-6. sort and recompute memory identity.
+4. remove the complete active payload;
+5. add one minimal `EXPIRED` tombstone;
+6. canonicalize and recompute memory identity.
 
-R4 never consults a host clock. A later consumer must not treat an active record as fresh merely because an EXPIRE operation has not yet been applied; any consumer using time validity must provide its own caller-materialized `asOf` value and fail closed on `asOf >= expiresAtUnixMs`.
+R4 never consults a host clock. Consumers that care about freshness must provide a caller-materialized `asOf` and fail closed when `asOf >= expiresAtUnixMs`; absence of an EXPIRE operation is not proof of freshness.
 
 ### PURGE_TOMBSTONE
 
-Input contains:
+Exact input:
 
 ```text
 version
@@ -508,50 +530,39 @@ transitionAtUnixMs
 
 Requirements:
 
-1. target must identify exactly one current tombstone;
+1. target identifies exactly one tombstone;
 2. `transitionAtUnixMs >= tombstone.expiresAtUnixMs`;
 3. remove the tombstone completely;
-4. sort and recompute memory identity.
+4. canonicalize and recompute memory identity.
 
-After purge, R4 intentionally retains no hidden anti-resurrection history for that tombstone. Privacy retention wins over indefinite hidden history.
+After purge, R4 retains no hidden anti-resurrection history. Privacy retention wins over indefinite hidden history.
 
-## Conflict and idempotency semantics
+## Conflict and replay semantics
 
-Fail closed with structural `TypeError` unless otherwise identified as a resource `RangeError` when any of the following occurs:
+Fail closed with structural `TypeError`, except explicit resource-bound `RangeError`, for:
 
+- invalid or mismatched R1/R3 predecessor binding;
 - foreign repository/owner/privacy scope;
-- duplicate active `taskIdentity`;
-- duplicate or forged record/tombstone/memory identity;
-- APPEND of a different active outcome for an already-active task;
-- APPEND of a still-tombstoned exact record identity;
-- SUPERSEDE of a missing/non-active target;
-- SUPERSEDE across task/scope boundaries;
-- DELETE or EXPIRE of a missing/non-active target;
-- EXPIRE before record expiry;
-- tombstone purge before tombstone expiry;
+- duplicate active task;
+- forged/duplicate record, tombstone or memory identity;
+- conflicting APPEND;
+- APPEND of an exact still-tombstoned record;
+- missing/non-active SUPERSEDE/DELETE/EXPIRE target;
+- cross-task or cross-scope supersession;
+- early EXPIRE or early tombstone purge;
 - contradictory replacement identity;
-- malformed or forged R3 predecessor;
-- unknown fields, unsupported enum values, non-data properties, getters/accessors, proxies, symbols, sparse arrays, cycles or unexpected prototypes;
+- unknown fields/enums;
+- accessors/getters, proxies, symbols, sparse arrays, cycles or unexpected prototypes;
 - invalid Unicode scalar values;
-- identity mismatch after canonical recomputation.
+- canonical identity mismatch.
 
-No conflict path may silently choose a winner.
+The only idempotent no-op is exact semantically identical APPEND of the current active record.
 
-The only idempotent no-op is an exact APPEND whose derived active record is already present byte/semantically identically in the same validated memory.
-
-## No resurrection by implicit replay
-
-While a tombstone remains active, the exact removed `recordIdentity` cannot be appended again.
-
-Superseded records cannot become active again merely because an older operation is replayed.
-
-After a tombstone's explicit expiry and `PURGE_TOMBSTONE`, R4 keeps no hidden history. A later record admission is judged from the then-current memory only.
+A retained tombstone blocks exact removed-record replay. After explicit tombstone expiry and purge, R4 retains no hidden history and later admission is judged only from the then-current memory.
 
 ## Resource-safety bounds
 
-R4 v1 uses closed parser/validation safety bounds. These are not vendor quotas or product usage limits.
-
-The implementation must define and enforce constants for at least:
+R4 implementation must define and enforce at least:
 
 ```text
 maxDepth = 32
@@ -564,27 +575,19 @@ maxOwnerScopeIdBytes = 64
 maxIdentityBytes = 64
 ```
 
-R3 predecessor objects remain subject to their own stricter limits and canonical validator.
+R1 and R3 predecessor values remain subject to their own canonical limits.
 
-These limits bound one in-memory contract value and hostile-input traversal. They do not establish a daily/file/review quota and do not authorize hidden truncation. Exceeding a bound fails closed with `RangeError`.
+These are hostile-input/value bounds, not product usage quotas. Exceeding a bound fails closed with `RangeError`; no hidden truncation is authorized.
 
 ## Hostile-input and immutability rules
 
-Validation and materialization must not trigger:
+Validation/materialization must not trigger caller getters/setters, custom iterators, `toJSON`, coercion hooks, prototype methods or filesystem/network/process effects.
 
-- caller getters/setters;
-- proxy traps beyond the explicit proxy rejection check;
-- custom iterators;
-- `toJSON`;
-- coercion hooks;
-- prototype methods;
-- filesystem/network/process effects.
+Only plain objects, plain dense arrays and exact enumerable data properties are accepted. Proxies, symbols, custom prototypes, sparse arrays, cycles and invalid Unicode scalars fail closed.
 
-Only plain objects, plain dense arrays and exact enumerable data properties are accepted.
+Inputs are not mutated. Outputs are deeply frozen.
 
-Inputs are never mutated. Outputs are deeply frozen/immutable.
-
-## Exact allowed runtime imports
+## Exact allowed production imports
 
 R4 production source may import only:
 
@@ -595,39 +598,39 @@ packages/kodac-runtime/src/evidence-router/contracts.ts
 packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts
 ```
 
-`node:crypto` is limited to SHA-256 identity derivation.
+`node:crypto` is limited to SHA-256 identity derivation. `node:util` is limited to fail-closed proxy detection.
 
-`node:util` is limited to fail-closed proxy detection.
+The R1 import is limited to canonical JSON, privacy vocabulary/types and `validateK6R1RouteRequest()`.
 
-The R1 contract import is limited to canonical K6 JSON and the canonical privacy vocabulary/types needed for parity.
+The R3 import is limited to `validateK6R3RouteOutcomeLinkageEnvelope()` and required types/projections.
 
-The R3 contract import is limited to the canonical R3 validator and types/projections required by this R4 contract.
+R4 production source must not import filesystem, path, HTTP/network/TLS, child-process/process-execution, database, telemetry, provider/model/reviewer/evaluator, K2 executor or any new package.
 
-R4 production source must not import `node:fs`, `node:path`, `node:http`, `node:https`, `node:net`, `node:tls`, child-process/process-execution helpers, database clients, telemetry clients, model/provider/reviewer/evaluator implementations, K2 executors, or any package not already present in the repository.
+## Immutable predecessor pins for future R4 implementation
 
-## Immutable predecessor pins for the future implementation gate
-
-The later R4 implementation workflow must prove that these already-canonical predecessor blobs remain unchanged from this authorization basis unless a replacement R4 authorization is canonically adopted:
+The later dedicated R4 workflow must prove these canonical blobs remain unchanged unless a replacement R4 authorization is canonically adopted:
 
 | Path | Required blob |
 | --- | --- |
 | `docs/planning/KODAC_K6_R3_ROUTE_OUTCOME_LINKAGE_AUTHORIZATION_2026-08-26.md` | `b7c68a4e963a0d082fd966b2cfdab44095d107dd` |
 | `.github/workflows/k6-r3-route-outcome-linkage.yml` | `7fdf087cab22719485b9aadd98568f9669cf3be1` |
+| `schema/k6-r1-model-provider-route-eligibility.schema.json` | `336b5477b16f1bba5c4173874d819091cea9495d` |
 | `schema/k6-r3-route-outcome-linkage.schema.json` | `70125dfeead8fa18ae7bddc909d611e92b5b1873` |
 | `packages/kodac-runtime/src/evidence-router/contracts.ts` | `dc29c4ce85340312f28b67604cac01c1d775e370` |
 | `packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts` | `eb49af7282ba9c60ac2d874dd71798867e39284e` |
 | `packages/kodac-runtime/src/evidence-router/outcome-linkage.ts` | `7349d8d84f698aced133d5932dae910bc01deb9b` |
+| `packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts` | `974137a513f16c93336d5bcda38c351326c53255` |
 | `packages/kodac-runtime/test/k6-r3-route-outcome-linkage.test.ts` | `9f79a44d8def5f04b943f9d4e7c87deba15bf61f` |
 | `packages/kodac-runtime/src/index.ts` | `f5f5c68de90e23ad07af4a0489cf85e57fe46cfe` |
 | `tools/validate_provenance.py` | `e312be037d5a7e4d6645b7056cb948486d035848` |
 
-The workflow must also pin this R4 authorization document to the exact blob that becomes canonical when this candidate is adopted.
+The future workflow must also pin this R4 authorization document to the exact canonical blob created by its adoption merge.
 
-If any required predecessor drifts before R4 implementation qualification, the implementation must stop and a replacement authorization is required. R4 must not silently reimplement or reinterpret a drifted predecessor.
+Any predecessor drift stops implementation qualification and requires replacement authorization; R4 must not silently reinterpret a drifted predecessor.
 
 ## Authorized K6-R4 implementation surface
 
-After and only after canonical adoption and post-merge proof of this authorization record, one K6-R4 implementation PR is authorized to change exactly these six paths and no others:
+After and only after canonical adoption and post-merge proof of this authorization, one implementation PR may change exactly:
 
 ```text
 .github/workflows/k6-r4-privacy-governed-outcome-memory.yml
@@ -640,43 +643,44 @@ packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts
 
 No seventh path is authorized.
 
-`packages/kodac-runtime/src/index.ts` may change only by appending exactly these two exports after the complete canonical pre-R4 file bytes:
+`packages/kodac-runtime/src/index.ts` may change only by appending exactly:
 
 ```text
 export * from "./evidence-router/outcome-memory-contracts.ts"
 export * from "./evidence-router/outcome-memory.ts"
 ```
 
-Every pre-R4 export line and order must remain byte-for-byte unchanged.
+to the complete canonical pre-R4 bytes. Every earlier export line/order remains byte-for-byte unchanged.
 
-No dependency, lockfile, package manifest, documentation, K2/K5/KRI/Done Gate source, R1/R2/R3 source, provider/model/reviewer implementation, storage adapter, database, telemetry, secret, release artifact, PR #163 or Z0-family path is authorized to change.
+No dependency, lockfile, package manifest, documentation, K2/K5/KRI/Done Gate source, R1/R2/R3 source, provider/model/reviewer implementation, storage adapter, database, telemetry, secret, PR #163, Z0-family path or release artifact may change.
 
-If the contract cannot be implemented inside this exact six-path surface, implementation stops and a replacement canonical authorization is required.
+If implementation cannot fit this six-path surface, stop and replace the authorization; do not widen scope implicitly.
 
 ## Public JSON Schema requirements
 
-The new schema must use Draft 2020-12 and exact `$id`:
+The new schema uses Draft 2020-12 and exact `$id`:
 
 ```text
 https://kodac.dev/schema/k6-r4-privacy-governed-outcome-memory.schema.json
 ```
 
-The public root is the validated R4 `outcomeMemory` representation.
+The public root is the validated R4 `outcomeMemory` representation. Operation shapes may live under `$defs`; they are input contracts, not persisted-memory fields.
 
 The schema must:
 
-- use `additionalProperties: false` / equivalent closed-object semantics at every R4 object layer;
-- expose reusable `$defs` for scope, active record, source, outcome, execution outcome, lifecycle, tombstone, memory and each operation shape;
-- reference the canonical R3 schema for APPEND/SUPERSEDE operation predecessor envelopes rather than copying the R3 shape;
-- carry exact enum parity with runtime privacy, K5, Done Gate, execution-result, role, tombstone-transition and operation-kind vocabularies;
-- carry the structural array/string bounds that Draft 2020-12 can express;
-- never imply that standalone schema validation proves cross-record identity, expiry, supersession, R3 semantic validity or deterministic hash invariants that JSON Schema cannot express.
+- use closed-object semantics at every R4-owned object layer;
+- expose reusable `$defs` for scope, active record, source, outcome, execution outcome, lifecycle, tombstone, memory and each operation;
+- reference `https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest` for APPEND/SUPERSEDE `routeRequest`;
+- reference `https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope` for APPEND/SUPERSEDE `routeOutcomeLinkageEnvelope`;
+- carry exact runtime parity for privacy, K5, Done Gate, execution-result, role, tombstone-transition and operation enums;
+- carry expressible structural array/string bounds;
+- state that JSON Schema alone does not prove R1/R3 cross-record binding, identity recomputation, lifecycle ordering, scope derivation, supersession or anti-resurrection.
 
-A dedicated executable TypeScript validator/materializer must enforce all invariants that JSON Schema alone cannot express, including UTF-8 byte bounds, canonical identity recomputation, scope derivation, R3 semantic validation, active-task uniqueness, lifecycle ordering, tombstone anti-resurrection, explicit supersession, and privacy-minimization projection.
+Executable TypeScript validation remains authoritative for those semantic invariants and UTF-8 byte bounds.
 
 ## Future implementation API surface
 
-The implementation may expose only pure helpers needed for this contract, including equivalents of:
+The implementation may expose only pure helpers equivalent to:
 
 ```text
 deriveK6R4RepositoryIdentity(repositoryId)
@@ -688,83 +692,82 @@ validateK6R4OutcomeMemoryOperation(value)
 applyK6R4OutcomeMemoryOperation(memory, operation)
 ```
 
-Names may be refined during implementation only when the semantic surface remains exactly equivalent and reviewers can prove there is no authority expansion.
+Names may be refined only without semantic or authority expansion.
 
-No API may open/read/write a file, connect to a network/database, spawn a process, inspect environment secrets, invoke a provider/model/reviewer, or register an execution capability.
+No API may open/read/write a file, connect to network/database, spawn process, inspect secrets, invoke providers/models/reviewers, or register an execution capability.
 
 ## Dedicated workflow requirements
 
-The authorized workflow path is the sole new workflow/configuration path for R4.
+The sole new workflow path must:
 
-It must:
-
-1. run only on PRs to `main` touching the six-path R4 implementation surface;
+1. run only on PRs to `main` touching the exact six implementation paths;
 2. use immutable full-SHA GitHub Action references;
 3. use read-only repository permissions;
-4. attest exact repository/base/head identities and exact six-path scope;
-5. pin the canonical R4 authorization merge SHA/tree/document blob after adoption;
-6. pin all predecessor blobs listed above;
-7. prove the pre-R4 `index.ts` bytes are an exact prefix and the only suffix is the two authorized exports;
-8. fail if unauthorized production imports are introduced;
-9. validate Draft 2020-12 schema registration and schema/runtime enum/bound parity;
-10. run strict TypeScript validation in an isolated temporary tooling directory without mutating repository manifests or lockfiles;
-11. run the focused R4 test;
-12. run the canonical R3, R2 and R1 focused regressions;
-13. run the full runtime test suite;
+4. attest exact repo/base/head and six-path scope;
+5. pin canonical R4 authorization merge SHA/tree/document blob;
+6. pin every predecessor above, including R1 schema/contract and R3 schema/contract;
+7. prove pre-R4 `index.ts` is an exact prefix and only the two authorized exports are appended;
+8. fail on unauthorized production imports;
+9. validate Draft 2020-12 registration and R1/R3/R4 schema references plus schema/runtime enum/bound parity;
+10. run strict TypeScript validation using integrity-locked temporary tooling outside the checkout with install scripts disabled;
+11. run focused R4 tests;
+12. run canonical R3, R2 and R1 focused regressions;
+13. run full runtime tests;
 14. run canonical Python tests, Ruff and provenance validation;
-15. prove checkout cleanliness before and after validation;
-16. fail closed on any predecessor, authorization, scope, action-pin, schema/runtime or workspace mutation drift.
+15. prove checkout cleanliness before and after;
+16. fail closed on any predecessor, authorization, scope, action-pin, schema/runtime or workspace drift.
 
-The workflow may use the same locked temporary TypeScript validation pattern already canonically used by R3; it may not add repository dependencies or execute install lifecycle scripts.
+No repository dependency or lockfile change is authorized.
 
 ## Required focused tests
 
-The R4 implementation test must include at least:
+### Canonical predecessor/privacy binding
 
-### Positive / determinism
+- valid R1 route request + matching valid R3 envelope for each privacy class;
+- forged R1 request identity rejection;
+- forged R3 envelope rejection;
+- valid R1 request whose `requestIdentity` differs from R3 rejection;
+- repository/base/head/task mismatch rejection even if other identities look valid;
+- prove privacy is projected from validated R1 only and never inferred from R3 status or candidate capabilities;
+- prove R1 raw request fields are absent from serialized R4 memory.
 
-- exact R3-to-R4 minimized record projection;
-- exact repository/task/candidate digest derivation;
-- exact privacy projection for each `PUBLIC`, `REPOSITORY_PRIVATE`, `SENSITIVE` class;
+### Positive/determinism
+
+- exact minimized R3-to-R4 projection;
+- repository/task/candidate digest derivation;
 - deterministic record/tombstone/memory identities;
-- canonical record/tombstone sorting independent of benign input array order where semantics permit;
+- canonical sorting;
 - exact APPEND idempotency;
 - deep output immutability;
 - caller input immutability.
 
-### Isolation / minimization
+### Isolation/minimization
 
 - cross-repository admission rejection;
 - cross-owner admission rejection;
 - cross-privacy admission rejection;
 - duplicate active task rejection;
-- sentinel proof that raw repository/task/candidate/provider/model strings are absent from serialized R4 memory;
-- sentinel proof that prompt/code/diff/secret/command/stdout/stderr/reason/finding/output text cannot be retained through any exact R4 field;
-- unknown-field rejection at every R4 object layer.
+- raw repository/task/candidate/provider/model sentinel absence;
+- prompt/code/diff/secret/command/stdout/stderr/reason/finding/output sentinel absence;
+- unknown-field rejection at every R4-owned object layer;
+- explicit proof that `ownerScopeId` equality grants no execution/authorization behavior;
+- documentation/schema parity that deterministic digests are pseudonymous, not anonymous.
 
 ### Lifecycle
 
-- DELETE removes complete active payload and creates only minimal tombstone data;
-- EXPIRE before expiry rejects;
-- EXPIRE at/after expiry succeeds;
+- DELETE removes active payload and creates minimal tombstone;
+- EXPIRE before expiry rejects and at/after succeeds;
 - SUPERSEDE requires exact active target and same task/scope;
-- SUPERSEDE creates replacement and minimal tombstone atomically;
-- no last-write-wins conflict path;
+- SUPERSEDE atomically creates replacement + minimal tombstone;
+- no last-write-wins;
 - retained tombstone blocks exact-record resurrection;
-- PURGE_TOMBSTONE before tombstone expiry rejects;
-- PURGE_TOMBSTONE at/after expiry removes the tombstone completely;
-- no hidden history remains in the returned memory after purge.
+- purge before tombstone expiry rejects; at/after succeeds;
+- after purge no hidden history remains in returned memory.
 
-### Hostile input / bounds
+### Hostile input/bounds
 
-- forged R3 linkage/envelope rejection through the canonical R3 validator;
-- getter/accessor rejection without getter execution;
-- proxy rejection;
-- symbol-field rejection;
-- custom-prototype rejection;
-- sparse-array rejection;
-- cyclic-value rejection;
-- invalid Unicode scalar rejection;
+- getter/accessor rejection without execution;
+- proxy/symbol/custom-prototype/sparse-array/cycle/invalid-Unicode rejection;
 - negative/unsafe/`-0` timestamp rejection;
 - every configured resource bound at boundary and over boundary;
 - forged record/tombstone/memory identity rejection;
@@ -772,76 +775,66 @@ The R4 implementation test must include at least:
 
 ### No side effects
 
-- static import proof that production R4 source has no filesystem/network/database/process/provider/reviewer/telemetry import;
-- focused test must not require network access, credentials, provider accounts, local databases or persistent directories.
+- static import proof of no filesystem/network/database/process/provider/reviewer/telemetry import;
+- tests require no network credentials, provider account, database or persistent directory.
 
-## Exact-head implementation qualification requirements
+## Exact-head implementation qualification
 
-A later R4 implementation PR is not qualified unless the exact final head proves all of the following:
+A later R4 implementation PR is not qualified unless the exact final head proves:
 
-1. its base is the canonical R4 authorization merge required by the dedicated workflow, or a separately canonically reconciled replacement base;
-2. exactly the six authorized implementation paths changed and no others;
-3. the authorization document, R3 predecessor and all pinned predecessor blobs match exactly;
-4. the dedicated `k6-r4-privacy-governed-outcome-memory` workflow is terminal success;
-5. repository-required `provenance`, `legacy-tests` and `k2-runtime-gate` checks are terminal success;
-6. fresh exact-head CodeRabbit review has zero unresolved material correctness, security, privacy, data-retention, authority-boundary or implementation findings;
-7. fresh exact-head Qodo review has zero unresolved material correctness, security, privacy, data-retention, authority-boundary or implementation findings;
-8. zero unresolved actionable review threads remain;
-9. PR is open, non-draft, mergeable and `behind_by = 0` against the live qualified `main`;
-10. active protected-main ruleset/protection is unchanged as required;
-11. final head SHA, tree and all six blobs are captured;
+1. base is the canonical R4 authorization merge or separately canonical replacement base;
+2. exactly six authorized paths changed;
+3. authorization and every pinned predecessor match exactly;
+4. dedicated R4 workflow terminal success;
+5. repository-required `provenance`, `legacy-tests`, `k2-runtime-gate` terminal success;
+6. fresh exact-head CodeRabbit review has zero unresolved material correctness/security/privacy/retention/authority findings;
+7. fresh exact-head Qodo review has zero unresolved material correctness/security/privacy/retention/authority findings;
+8. zero unresolved actionable review threads;
+9. open, non-draft, mergeable and `behind_by = 0`;
+10. protected-main ruleset unchanged;
+11. final head/tree/six blobs captured;
 12. `WAIVER=NO`.
 
-Any new commit invalidates prior exact-head qualification evidence.
+Any new commit invalidates all prior exact-head evidence.
 
 ## Guarded implementation merge and post-merge proof
 
-The later implementation merge must use normal GitHub merge-commit semantics with:
+Merge only by normal GitHub merge commit with:
 
 ```text
-expected_head_sha = exact qualified R4 implementation head
+expected_head_sha = exact qualified implementation head
 ```
 
 No squash, rebase, force-push, destructive history rewrite, stale-head reuse or review waiver.
 
-After merge, prove before declaring R4 implementation canonical:
+Post-merge prove canonical main, ordered parents, candidate/merge tree equality where applicable, all six blobs, valid GitHub signature, active ruleset, applicable post-merge governance/R4 gates, no unauthorized path, and `WAIVER=NO` before declaring R4 implementation canonical.
 
-- `main` equals the merge commit;
-- ordered parent 1 equals the exact pre-merge canonical main;
-- ordered parent 2 equals the exact qualified implementation head;
-- merge tree equals the qualified candidate tree where applicable;
-- all six implementation blobs equal qualified blobs;
-- GitHub merge signature is valid;
-- protected-main ruleset remains active;
-- applicable post-merge governance and R4 gates are terminal success;
-- no unauthorized path was introduced;
-- `WAIVER=NO`.
+## R4 bounded closeout meaning
 
-## R4 qualification / closeout meaning
-
-After the implementation is canonically merged and post-merge proven, R4 may be closed only for this exact bounded v1 surface:
+After implementation is merged and post-merge proven, R4 may be closed only for:
 
 ```text
 PURE PRIVACY-GOVERNED MINIMIZED OUTCOME RECORD = PROVEN
+CANONICAL R1 PRIVACY BINDING TO R3 OUTCOME LINEAGE = PROVEN
 PURE DETERMINISTIC IN-MEMORY SNAPSHOT / LIFECYCLE TRANSITIONS = PROVEN
-REPOSITORY / OWNER / PRIVACY ISOLATION = PROVEN FOR CONTRACT V1
-RETENTION / DELETE / EXPIRE / SUPERSEDE / TOMBSTONE PURGE SEMANTICS = PROVEN FOR CONTRACT V1
-R4 RUNTIME PERSISTENCE = NOT IMPLEMENTED / NOT AUTHORIZED
+REPOSITORY / OWNER / PRIVACY ISOLATION = PROVEN FOR V1
+RETENTION / DELETE / EXPIRE / SUPERSEDE / TOMBSTONE PURGE = PROVEN FOR V1
+R4 DURABLE PERSISTENCE = NOT IMPLEMENTED / NOT AUTHORIZED
 R4 TELEMETRY / UPLOAD = NOT IMPLEMENTED / NOT AUTHORIZED
 R4 TRAINING / LEARNING MUTATION = NOT IMPLEMENTED / NOT AUTHORIZED
 R4 STRATEGY PROMOTION = NOT IMPLEMENTED / NOT AUTHORIZED
 ```
 
-This bounded closeout is sufficient to establish the privacy semantics required before K6-R5 planning. It does not create durable-storage authority or support broad product claims.
+This is sufficient privacy groundwork before K6-R5 authorization planning. It is not durable-storage authority and supports no broad product superiority claim.
 
-## What becomes authorized after canonical adoption of this record
+## What becomes authorized after canonical adoption
 
-Only after this exact authorization record is merged and post-merge proven:
+Only after this exact record is merged and post-merge proven:
 
 ```text
-K6-R4 IMPLEMENTATION = AUTHORIZED FOR THE EXACT SIX-PATH PURE V1 SURFACE
+K6-R4 IMPLEMENTATION = AUTHORIZED FOR EXACT SIX-PATH PURE V1 SURFACE
 K6-R4 DURABLE PERSISTENCE = NOT AUTHORIZED
-K6-R5 AUTHORIZATION-CANDIDATE PREPARATION = NOT YET AUTHORIZED UNTIL R4 IMPLEMENTATION/CLOSEOUT IS CANONICAL
+K6-R5 AUTHORIZATION-CANDIDATE PREPARATION = NOT AUTHORIZED UNTIL R4 IMPLEMENTATION/CLOSEOUT IS CANONICAL
 K6-R5 IMPLEMENTATION = NOT AUTHORIZED
 K6 BOUNDED CLOSEOUT = NOT AUTHORIZED
 P2 KODACBENCH = NOT AUTHORIZED
@@ -850,9 +843,8 @@ P2 KODACBENCH = NOT AUTHORIZED
 ## Preserved non-grants
 
 ```text
-FILESYSTEM / DATABASE PERSISTENCE FROM R4 = NOT AUTHORIZED
-REMOTE STORAGE / UPLOAD = NOT AUTHORIZED
-TELEMETRY = NOT AUTHORIZED
+FILESYSTEM / DATABASE PERSISTENCE = NOT AUTHORIZED
+REMOTE STORAGE / UPLOAD / TELEMETRY = NOT AUTHORIZED
 MODEL / PROVIDER / REVIEWER / EVALUATOR INVOCATION = NOT AUTHORIZED
 MODEL TRAINING / FINETUNING = NOT AUTHORIZED
 EMBEDDINGS / VECTOR INFRASTRUCTURE = NOT AUTHORIZED
@@ -863,8 +855,7 @@ STRATEGY SCORING / RANKING / PROMOTION = NOT AUTHORIZED
 AUTOFIX = NOT AUTHORIZED
 NEW DEPENDENCIES = NOT AUTHORIZED
 NEW EXTERNAL SERVICES = NOT AUTHORIZED
-K2 EXECUTION AUTHORITY EXPANSION = NOT AUTHORIZED
-K5 AUTHORITY EXPANSION = NOT AUTHORIZED
+K2 / K5 AUTHORITY EXPANSION = NOT AUTHORIZED
 DONE GATE / PROVEN_READY AUTHORITY CHANGE = NOT AUTHORIZED
 GIT / GITHUB / REVIEW / APPROVAL / MERGE AUTHORITY FROM R4 = NOT AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT AUTHORIZED
@@ -873,50 +864,47 @@ PR #163 / Z0-FAMILY MUTATION = NOT AUTHORIZED
 
 ## Exact scope of this authorization-candidate gate
 
-This candidate may change exactly one path:
+This PR may change exactly one path:
 
 ```text
 docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md
 ```
 
-No second path is authorized in this PR.
-
-No source, test, schema, fixture, workflow, dependency, lockfile, package manifest, roadmap, ADR, provenance policy, ruleset, protected lane, K2/K3/K4/K5/KRI/K6-R1/R2/R3 runtime, Done Gate, provider configuration, storage, secret, PR #163, Z0-family artifact or release artifact is changed.
+No second path is authorized. No source, test, schema, fixture, workflow, dependency, lockfile, package manifest, roadmap, ADR, ruleset, protected lane, K2/K3/K4/K5/KRI/K6-R1/R2/R3 runtime, Done Gate, storage, secret, provider config, PR #163, Z0-family artifact or release artifact changes.
 
 ## Canonical adoption gate for this record
 
-This R4 authorization remains a non-canonical candidate unless the exact final authorization head proves all of the following:
+This authorization remains non-canonical unless its exact final candidate proves:
 
 1. PR base ref is exactly `main`;
-2. live protected `main` and PR base are exactly `84c6a97a02d6e0478a6dbe681e24349cf79df9e7` with tree `7c3dd9ca1969833a289b4446e9e3a0a38fce59c4`, unless a replacement canonical base is explicitly reconciled by a forward commit and this record is amended/requalified;
-3. the diff is exactly the one authorized documentation path;
-4. all applicable exact-head repository CI is terminal success;
-5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness, security, privacy, retention, governance or authority-boundary findings;
-6. there are zero unresolved actionable review threads;
-7. PR is open, non-draft, mergeable and `behind_by = 0`;
-8. active protected-main ruleset/protection remains unchanged as required;
-9. final candidate head, tree and document blob are captured;
-10. merge uses normal merge-commit semantics guarded by the exact qualified `expected_head_sha`;
-11. ordered merge parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified candidate head;
-12. merge tree equals the qualified candidate tree and document blob equals the qualified candidate blob;
-13. protected `main` equals the merge commit/tree and introduces exactly the one authorized path;
-14. applicable post-merge governance/shared checks reach terminal success; and
+2. live protected `main` and PR base remain `84c6a97a02d6e0478a6dbe681e24349cf79df9e7` tree `7c3dd9ca1969833a289b4446e9e3a0a38fce59c4`, unless explicitly reconciled by a normal forward commit and requalified;
+3. diff is exactly the one authorized documentation path;
+4. all applicable exact-head repository CI terminal success;
+5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness/security/privacy/retention/governance/authority findings;
+6. zero unresolved actionable threads;
+7. PR open, non-draft, mergeable and `behind_by = 0`;
+8. active protected-main ruleset unchanged;
+9. final candidate head/tree/document blob captured;
+10. guarded normal merge uses exact qualified `expected_head_sha`;
+11. ordered merge parent 1 equals pre-merge canonical main and parent 2 equals qualified candidate head;
+12. merge tree equals qualified candidate tree and document blob equals qualified blob;
+13. protected main equals merge commit/tree and introduces exactly the one path;
+14. applicable post-merge governance/shared checks terminal success;
 15. `WAIVER=NO`.
 
-If live `main` moves before merge, stop the stale merge path. Reconcile with live canonical truth using a normal forward commit/merge, update the candidate's recorded base where required, and requalify the resulting exact head from scratch. No stale-base exception exists.
+If live main moves, stop stale merge. Reconcile with a normal non-destructive forward commit, update recorded base as required, and requalify the new exact head from scratch.
 
 ## Stop boundary
 
 Even after this authorization becomes canonical:
 
 ```text
-DO NOT ADD ANY PATH OUTSIDE THE SIX-PATH R4 IMPLEMENTATION ALLOWLIST
-DO NOT ADD A STORAGE ADAPTER
-DO NOT WRITE A DATABASE OR FILE
+DO NOT CHANGE ANY PATH OUTSIDE THE SIX-PATH R4 IMPLEMENTATION ALLOWLIST
+DO NOT ADD STORAGE ADAPTERS OR DURABLE I/O
 DO NOT ADD TELEMETRY OR REMOTE FALLBACK
-DO NOT INVOKE A PROVIDER / MODEL / REVIEWER
+DO NOT INVOKE PROVIDERS / MODELS / REVIEWERS
 DO NOT TRAIN OR LEARN FROM R4 RECORDS
-DO NOT PROMOTE A STRATEGY
+DO NOT PROMOTE STRATEGIES
 DO NOT BEGIN K6-R5 UNTIL R4 IMPLEMENTATION IS MERGED, QUALIFIED AND POST-MERGE PROVEN
 ```
 
