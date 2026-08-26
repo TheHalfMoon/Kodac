@@ -217,7 +217,7 @@ Each capability is at most 160 UTF-8 bytes, matching the current H1 maximum.
 Collections are sets:
 
 - duplicates fail closed;
-- canonical form sorts ascending by ordinal string comparison;
+- canonical form sorts ascending by the normative UTF-16 comparator defined in the review-hardening section below;
 - no capability may be inferred from provider/model names, prose, K4 external names, descriptions, metadata, or prior outcomes.
 
 A candidate is capability-eligible only if every requested capability appears exactly in its explicit caller-declared `declaredCapabilities[]` set.
@@ -316,6 +316,7 @@ Structural invalidity includes at least:
 - `undefined` values;
 - non-finite numbers;
 - unsafe integers;
+- negative zero;
 - malformed Git/SHA-256 identities;
 - malformed capability identifiers;
 - NUL-bearing strings;
@@ -397,7 +398,7 @@ missingCapabilities[]
 qualificationReportDigest
 ```
 
-Candidate results are sorted by ascending ordinal `candidateId` regardless of caller input order.
+Candidate results are sorted by the normative UTF-16 comparator on `candidateId` defined in the review-hardening section below, regardless of caller input order.
 
 The result does not contain a winner, ranking, score, probability, reward, historical success rate, price, latency preference, provider priority, fallback order, execution request, prompt, secret, tool call, or side-effect instruction.
 
@@ -408,11 +409,11 @@ R1 uses deterministic canonical JSON and SHA-256.
 Requirements:
 
 - input objects must already satisfy structural validation before canonicalization;
-- object keys sort ascending by ordinal string comparison;
-- arrays that represent sets are first canonicalized and sorted using the contract-specific order above;
-- candidate results sort by `candidateId`;
+- object keys use the normative UTF-16 comparator and JSON string-serialization profile defined in the review-hardening section below;
+- arrays that represent sets are first canonicalized and sorted using the exact contract-specific rules defined below;
+- candidate results sort by the normative UTF-16 comparator on `candidateId`;
 - JSON strings retain exact valid Unicode scalar content with no Unicode normalization;
-- numbers, where present, must be safe integers and use JSON numeric serialization;
+- numbers, where present, must be finite safe integers, must not be negative zero, and use the exact JSON numeric serialization defined below;
 - canonical UTF-8 bytes are SHA-256 hashed;
 - derived identities are 64 lowercase hexadecimal characters.
 
@@ -423,6 +424,96 @@ Requirements:
 Changing caller ordering of any set-valued input without changing its members must not change either identity.
 
 Changing only `candidateId` changes request/result identity but cannot change whether the same candidate facts satisfy qualification/capability/risk/privacy predicates.
+
+## Normative canonical JSON and ordering profile — review hardening
+
+This section is normative and overrides any less-specific use of `ordinal`, `ascending`, `canonical JSON`, or `JSON numeric serialization` elsewhere in this record.
+
+### String domain
+
+Every string must first pass the structural Unicode rules above. Lone surrogate code units are invalid. Valid surrogate pairs are permitted. Unicode normalization is forbidden: NFC/NFD/NFKC/NFKD-equivalent spellings remain distinct strings and therefore may produce distinct identities.
+
+### UTF-16 comparator
+
+Whenever this record requires string sorting, use this exact comparator:
+
+1. compare the two JavaScript strings lexicographically by their UTF-16 code-unit sequences;
+2. at the first differing code unit, the smaller unsigned 16-bit numeric value sorts first;
+3. if all shared code units are equal, the shorter code-unit sequence sorts first;
+4. do not use locale collation, `localeCompare`, Unicode normalization, case folding, natural sorting, code-point sorting, UTF-8 byte sorting, or provider-specific collation.
+
+This comparator applies to:
+
+- object property names during canonical serialization;
+- `candidateId` ordering for request `candidates[]` canonicalization;
+- `candidateId` ordering for `candidateResults[]`;
+- `requiredCapabilities[]`;
+- each candidate `declaredCapabilities[]`;
+- `missingCapabilities[]`.
+
+Because capability identifiers are restricted to the H1 ASCII grammar, their UTF-16 comparator order is also their ASCII code-unit order.
+
+### JSON string serialization
+
+After key ordering, serialize JSON strings with this exact escape profile:
+
+- `U+0022` (`"`) serializes as `\"`;
+- `U+005C` (`\`) serializes as `\\`;
+- `U+0008`, `U+0009`, `U+000A`, `U+000C`, and `U+000D` serialize as `\b`, `\t`, `\n`, `\f`, and `\r` respectively;
+- every other control character `U+0000` through `U+001F` serializes as `\u00xx` using lowercase hexadecimal digits;
+- `/` is not escaped;
+- every other valid Unicode scalar value, including `U+2028`, `U+2029`, and non-BMP characters represented by valid surrogate pairs in JavaScript, is emitted as the literal character and later encoded as UTF-8;
+- no optional escaping of otherwise-literal characters is permitted;
+- no Unicode normalization or case transformation is permitted.
+
+Thus two implementations cannot choose different but JSON-equivalent escape spellings and still claim the same K6-R1 canonical byte representation.
+
+### JSON primitives and numbers
+
+Canonical literals are exactly lowercase `true`, `false`, and `null` where a future schema field explicitly permits them. R1 v1 currently permits no floating-point field.
+
+Every numeric value encountered by the R1 v1 schema must be a finite safe integer and must not be negative zero. It is serialized as the shortest base-10 integer spelling with an optional leading `-` only for a negative value, with no leading `+`, no leading zero except the value `0`, no decimal point, and no exponent. The qualification projection `version` therefore serializes exactly as `1`.
+
+### Object serialization
+
+Canonical objects are serialized recursively as:
+
+```text
+{<canonical-key>:<canonical-value>,...}
+```
+
+with no insignificant whitespace. Property names are sorted using the normative UTF-16 comparator above. The contract's exact-field validation occurs before serialization, so no unknown property can enter the identity preimage.
+
+### Array and set canonicalization
+
+Arrays are serialized with no insignificant whitespace. Their semantic order is fixed as follows before serialization:
+
+```text
+requiredCapabilities[]       UTF-16 comparator
+candidate.declaredCapabilities[] UTF-16 comparator
+candidate.supportedPrivacyClasses[] PUBLIC, REPOSITORY_PRIVATE, SENSITIVE
+candidates[]                 candidateId via UTF-16 comparator
+candidateResults[]           candidateId via UTF-16 comparator
+candidateResult.reasons[]    exact reason precedence already defined above
+missingCapabilities[]        UTF-16 comparator
+```
+
+All input arrays listed as sets reject duplicates before sorting. `candidates[]` is a set keyed by unique `candidateId`; reordering candidates without changing any candidate record must not change `requestIdentity`. `candidateResults[]` is derived and always emitted in canonical `candidateId` order.
+
+No other array may be silently treated as a set. If a later K6 revision adds an array, that revision must explicitly classify the array as ordered or set-valued before it may participate in a canonical identity.
+
+### Required canonicalization vectors
+
+The K6-R1 implementation tests must pin exact UTF-8 preimages and SHA-256 outputs for vectors that include at least:
+
+- property names whose relative order distinguishes uppercase/lowercase and BMP/non-BMP UTF-16 code units;
+- candidate IDs whose input order differs from normative UTF-16 order;
+- a string containing quote, backslash, backspace, tab, newline, form feed, carriage return, `U+0001`, `/`, `U+2028`, `U+2029`, and one non-BMP scalar value;
+- canonically equivalent set permutations for capabilities, privacy classes, and candidates;
+- a normalization pair such as precomposed and decomposed accented text proving that no Unicode normalization occurs;
+- qualification `version: 1` proving the exact integer spelling.
+
+Equivalent inputs under only the contract-declared set-order equivalences must produce byte-for-byte identical canonical preimages and identical request/result identities. Distinct Unicode spellings, distinct candidate IDs, or distinct field values must not be collapsed merely because a locale or normalization library considers them equivalent.
 
 ## Hostile-input and resource bounds
 
@@ -543,6 +634,13 @@ A future K6-R1 implementation candidate must prove at least:
 28. merge is guarded by the exact expected head SHA; and
 29. applicable post-merge governance/shared/runtime gates reach terminal success.
 
+Review-hardening adds these mandatory proofs:
+
+30. object-key and candidate-ID sorting exactly follow the normative UTF-16 code-unit comparator and never locale collation;
+31. canonical JSON string escaping exactly matches the normative escape table above, including control characters, quote/backslash, literal slash, `U+2028`, `U+2029`, and non-BMP values;
+32. every declared set permutation produces the same canonical preimage and identity while normalization-distinct strings remain distinct; and
+33. the canonicalization vectors above pin exact preimage bytes and SHA-256 values so future runtime or implementation changes cannot silently alter identity semantics.
+
 ## Required negative corpus
 
 The implementation tests must contain inert deterministic negative cases for at least:
@@ -576,8 +674,11 @@ The implementation tests must contain inert deterministic negative cases for at 
 - cyclic input;
 - non-plain object prototype;
 - unpaired surrogate input;
+- negative-zero numeric input wherever a numeric slot is structurally inspected;
 - canonical depth exhaustion;
 - canonical node-count exhaustion.
+
+The deterministic corpus must additionally contain positive-equivalence/order vectors for the normative canonicalization profile; these are not negative cases but are mandatory qualification evidence.
 
 No negative fixture may contain a credential, live provider request, network endpoint requiring access, executable command, or real side-effect instruction.
 
