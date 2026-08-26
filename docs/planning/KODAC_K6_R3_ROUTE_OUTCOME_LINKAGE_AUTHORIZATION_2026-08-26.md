@@ -150,18 +150,18 @@ No alias, floating version, migration fallback, or implicit upgrade is accepted.
 
 ## R3 input envelope
 
-The public R3 creation function accepts exactly one caller-materialized input object containing:
+The public R3 creation function accepts exactly one caller-materialized input object containing these literal field names:
 
 ```text
 routePlanRequest
 routePlan
-executionObservations[]
+executionObservations
 verificationSource
 k5Reconciliation
 doneGateOutcome
 ```
 
-The implementation and public schema must use exactly these six field names.
+`executionObservations` is an array. The implementation and public schema must use exactly these six literal property names.
 
 Before traversing any downstream outcome object, R3 must validate `routePlanRequest` and `routePlan` through the exact canonical K6-R2 validators. A malformed or forged R2 predecessor therefore fails before any K5 or outcome traversal.
 
