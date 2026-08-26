@@ -636,7 +636,7 @@ export function validateK6R1RouteRequest(value: unknown): K6R1RouteRequest {
   const requestIdentity = sha256(record.requestIdentity, "route request.requestIdentity")
   const expected = digest(identityInput)
   if (requestIdentity !== expected) typeError("route request.requestIdentity", "does not match deterministic recomputation")
-  return Object.freeze({ version: identityInput.version, requestIdentity, ...identityInput })
+  return Object.freeze({ requestIdentity, ...identityInput })
 }
 
 export function createK6R1RouteRequest(value: unknown): K6R1RouteRequest {
@@ -668,5 +668,5 @@ export function validateK6R1RouteEligibilityResult(value: unknown): K6R1RouteEli
   const resultIdentity = sha256(record.resultIdentity, "route eligibility result.resultIdentity")
   const expected = digest(identityInput)
   if (resultIdentity !== expected) typeError("route eligibility result.resultIdentity", "does not match deterministic recomputation")
-  return Object.freeze({ version: identityInput.version, resultIdentity, ...identityInput })
+  return Object.freeze({ resultIdentity, ...identityInput })
 }
