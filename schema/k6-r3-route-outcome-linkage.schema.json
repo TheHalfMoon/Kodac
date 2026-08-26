@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json",
+  "title": "Kodac K6-R3 Route Outcome Linkage",
+  "$comment": "The public root is the input+linkage envelope. Runtime validation remains authoritative for predecessor identity recomputation, repository-bound K5 membership, R2 projection, Done Gate/source binding, UTF-8 byte limits, hostile-object rejection, resource budgets, exact output projection, and deterministic linkage identities.",
+  "$ref": "#/$defs/routeOutcomeLinkageEnvelope",
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gitSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "boundedText128": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$",
+      "x-kodacUtf8MaxBytes": 128
+    },
+    "boundedText256": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$",
+      "x-kodacUtf8MaxBytes": 256
+    },
+    "boundedText512": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$",
+      "x-kodacUtf8MaxBytes": 512
+    },
+    "reason": {
+      "type": "string",
+      "pattern": "^[^\\u0000]*$",
+      "x-kodacUtf8MaxBytes": 4096
+    },
+    "evidenceRefText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^\\u0000]+$",
+      "x-kodacUtf8MaxBytes": 4096
+    },
+    "doneGateEvidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": { "enum": ["receipt", "artifact", "event", "workspace"] },
+        "ref": { "$ref": "#/$defs/evidenceRefText" },
+        "digest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "doneGateOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "verificationSourceIdentity", "status", "reasons", "evidence"],
+      "properties": {
+        "version": { "const": "kodac-k6-r3-done-gate-outcome-v1" },
+        "verificationSourceIdentity": { "$ref": "#/$defs/sha256" },
+        "status": { "enum": ["PROVEN_READY", "NOT_READY"] },
+        "reasons": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/reason" }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 16384,
+          "items": { "$ref": "#/$defs/doneGateEvidenceRef" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "PROVEN_READY" } }, "required": ["status"] },
+          "then": { "properties": { "reasons": { "maxItems": 0 } } },
+          "else": { "properties": { "reasons": { "minItems": 1 } } }
+        }
+      ]
+    },
+    "executionObservationInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planStepIndex", "executionReceiptSource"],
+      "properties": {
+        "planStepIndex": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "executionReceiptSource": {
+          "allOf": [
+            { "$ref": "https://kodac.dev/schema/k5-r2-evidence-linkage.schema.json#/$defs/sourceLink" },
+            { "properties": { "sourceKind": { "const": "EXECUTION_RECEIPT" } }, "required": ["sourceKind"] }
+          ]
+        }
+      }
+    },
+    "routeOutcomeLinkageInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routePlanRequest", "routePlan", "executionObservations", "verificationSource", "k5Reconciliation", "doneGateOutcome"],
+      "properties": {
+        "routePlanRequest": { "$ref": "https://kodac.dev/schema/k6-r2-deterministic-route-plan.schema.json#/$defs/routePlanRequest" },
+        "routePlan": {
+          "allOf": [
+            { "$ref": "https://kodac.dev/schema/k6-r2-deterministic-route-plan.schema.json#/$defs/routePlan" },
+            { "properties": { "status": { "const": "ROUTABLE" }, "steps": { "minItems": 1 } }, "required": ["status", "steps"] }
+          ]
+        },
+        "executionObservations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/executionObservationInput" }
+        },
+        "verificationSource": {
+          "allOf": [
+            { "$ref": "https://kodac.dev/schema/k5-r2-evidence-linkage.schema.json#/$defs/sourceLink" },
+            { "properties": { "sourceKind": { "const": "VERIFICATION_REPORT" } }, "required": ["sourceKind"] }
+          ]
+        },
+        "k5Reconciliation": { "$ref": "https://kodac.dev/schema/k5-r4-proof-state-reconciliation.schema.json" },
+        "doneGateOutcome": { "$ref": "#/$defs/doneGateOutcome" }
+      }
+    },
+    "linkedExecutionObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planStepIndex", "candidateId", "candidateKind", "provider", "model", "role", "executionReceiptSourceIdentity", "executionReceiptSourceDigest", "executionReceiptEvidenceId", "receiptId", "executionResultStatus"],
+      "properties": {
+        "planStepIndex": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "candidateId": { "$ref": "#/$defs/boundedText256" },
+        "candidateKind": { "const": "MODEL_PROVIDER" },
+        "provider": { "$ref": "#/$defs/boundedText256" },
+        "model": { "$ref": "#/$defs/boundedText512" },
+        "role": { "enum": ["PRIMARY", "FALLBACK"] },
+        "executionReceiptSourceIdentity": { "$ref": "#/$defs/sha256" },
+        "executionReceiptSourceDigest": { "$ref": "#/$defs/sha256" },
+        "executionReceiptEvidenceId": { "$ref": "#/$defs/boundedText128" },
+        "receiptId": { "$ref": "#/$defs/boundedText128" },
+        "executionResultStatus": { "enum": ["success", "blocked", "failure"] }
+      }
+    },
+    "routeOutcomeLinkage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "linkageIdentity", "routePlanRequestIdentity", "routePlanIdentity", "eligibilityResultIdentity", "requestIdentity", "repositoryId", "canonicalBase", "candidateHead", "taskId", "executionObservations", "verificationSourceIdentity", "verificationSourceDigest", "verificationEvidenceId", "verificationPassed", "k5PackageIdentity", "k5ReconciliationIdentity", "k5Status", "doneGateOutcomeIdentity", "doneGateStatus"],
+      "properties": {
+        "version": { "const": "kodac-k6-r3-route-outcome-linkage-v1" },
+        "linkageIdentity": { "$ref": "#/$defs/sha256" },
+        "routePlanRequestIdentity": { "$ref": "#/$defs/sha256" },
+        "routePlanIdentity": { "$ref": "#/$defs/sha256" },
+        "eligibilityResultIdentity": { "$ref": "#/$defs/sha256" },
+        "requestIdentity": { "$ref": "#/$defs/sha256" },
+        "repositoryId": { "$ref": "#/$defs/boundedText512" },
+        "canonicalBase": { "$ref": "#/$defs/gitSha" },
+        "candidateHead": { "$ref": "#/$defs/gitSha" },
+        "taskId": { "$ref": "#/$defs/boundedText256" },
+        "executionObservations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/linkedExecutionObservation" }
+        },
+        "verificationSourceIdentity": { "$ref": "#/$defs/sha256" },
+        "verificationSourceDigest": { "$ref": "#/$defs/sha256" },
+        "verificationEvidenceId": { "$ref": "#/$defs/boundedText128" },
+        "verificationPassed": { "type": "boolean" },
+        "k5PackageIdentity": { "$ref": "#/$defs/sha256" },
+        "k5ReconciliationIdentity": { "$ref": "#/$defs/sha256" },
+        "k5Status": { "enum": ["NOT_APPLICABLE", "VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"] },
+        "doneGateOutcomeIdentity": { "$ref": "#/$defs/sha256" },
+        "doneGateStatus": { "enum": ["PROVEN_READY", "NOT_READY"] }
+      }
+    },
+    "routeOutcomeLinkageEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input", "linkage"],
+      "properties": {
+        "input": { "$ref": "#/$defs/routeOutcomeLinkageInput" },
+        "linkage": { "$ref": "#/$defs/routeOutcomeLinkage" }
+      },
+      "x-kodacR3EnvelopeInvariant": true
+    }
+  }
+}
