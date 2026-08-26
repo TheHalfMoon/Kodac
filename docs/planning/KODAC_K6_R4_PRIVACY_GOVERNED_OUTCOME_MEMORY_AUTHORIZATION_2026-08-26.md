@@ -942,7 +942,7 @@ No second path is authorized. No source, test, schema, fixture, workflow, depend
 This authorization remains non-canonical unless its exact final candidate proves:
 
 1. PR base ref is exactly `main`;
-2. live protected `main` and PR base remain `84c6a97a02d6e0478a6dbe681e24349cf79df9e7` tree `7c3dd9ca1969833a289b4446e9e3a0a38fce59c4`, unless explicitly reconciled by a normal forward commit and requalified;
+2. live protected `main` and the PR base SHA/tree are exactly the `Canonical base commit` and `Canonical base tree` recorded in this document; there is no stale-base exception;
 3. diff is exactly the one authorized documentation path;
 4. all applicable exact-head repository CI terminal success;
 5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness/security/privacy/retention/governance/authority findings;
@@ -960,7 +960,7 @@ This authorization remains non-canonical unless its exact final candidate proves
 17. a post-merge authorized GitHub control-plane read again proves `bypass_actors = []` and `current_user_can_bypass = never`;
 18. `WAIVER=NO`.
 
-If live main moves, stop stale merge. Reconcile with a normal non-destructive forward commit, update recorded base as required, and requalify the new exact head from scratch.
+If live `main` moves away from the commit/tree recorded above, this candidate is immediately stale and cannot be qualified or merged. Before any further qualification, this authorization document itself must be amended so `Canonical base commit` and `Canonical base tree` equal the exact replacement live `main` SHA/tree; the candidate must then be reconciled forward from that exact replacement base and the resulting new exact head must be requalified from scratch. A stale recorded base SHA/tree may never survive replacement-base reconciliation.
 
 ## Stop boundary
 
