@@ -262,8 +262,8 @@ function k5Member(source: K5R2SourceLink, kind: "VERIFICATION" | "EXECUTION_RECE
   const matches = reconciliation.results.filter((result) => result.evidenceId === source.evidenceId)
   if (matches.length !== 1) bad(label, "must match exactly one K5-R4 result by evidenceId")
   const match = matches[0]
-  if (!match || match.evidenceKind !== kind || match.linkageLayer !== "K5_R2" || match.sourceIdentity === null) {
-    bad(label, "must match K5-R4 evidence kind, K5_R2 linkage layer, and non-null source identity")
+  if (!match || match.evidenceKind !== kind || match.linkageLayer !== "K5_R2" || match.linkStatus !== "LINKED" || match.sourceIdentity === null) {
+    bad(label, "must match K5-R4 evidence kind, K5_R2 linkage layer, LINKED status, and non-null source identity")
   }
   if (match.sourceIdentity !== source.sourceIdentity) bad(label, "sourceIdentity does not match repository-bound K5-R4 membership")
 }
