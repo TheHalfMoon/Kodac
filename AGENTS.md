@@ -4,20 +4,23 @@ This file is the repository entrypoint for coding agents and automated engineeri
 
 ## Start here
 
-Before making any repository mutation:
+Before making any repository mutation, use this exact order:
 
-1. Read `docs/roadmap/NEXT.md`.
-2. Re-read live GitHub truth: `main`, open PRs, exact heads, changed files, CI, review threads, mergeability and the active ruleset.
-3. Read the governing ADRs and the exact canonical authorization record for the one active unit.
-4. Execute only that unit and its explicit allowlist.
+1. Re-read live GitHub truth: `main`, open PRs, exact heads, changed files, CI, review threads, mergeability and the active ruleset.
+2. Read this `AGENTS.md`.
+3. Read `docs/roadmap/NEXT.md`.
+4. Read the governing ADRs and the exact canonical authorization record for the one active unit.
+5. Execute only that unit and its explicit allowlist.
 
 Live GitHub and canonical authorization records override stale handoffs, remembered SHAs, old status prose and planning snapshots.
 
 ## Execution contract
 
 ```text
-LIVE TRUTH
--> ACTIVE AUTHORIZATION
+LIVE GITHUB TRUTH
+-> AGENTS.md
+-> docs/roadmap/NEXT.md
+-> EXACT ACTIVE AUTHORIZATION
 -> BOUNDED IMPLEMENTATION
 -> EXACT-HEAD PROOF
 -> GUARDED MERGE
@@ -57,13 +60,13 @@ Stop and report the exact blocker instead of inventing authority when:
 - a required dependency/tool/provider/model has not been admitted;
 - the work would expand side-effect, persistence, learning, release or completion authority by implication.
 
-## Current navigation
+## Navigation
 
-Use these in order:
+After live GitHub and this file, use:
 
 1. `docs/roadmap/NEXT.md` — concise current state and next action.
-2. `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md` — durable improvement sequence.
-3. The exact authorization record named by the active unit.
+2. The exact authorization record named by the active unit.
+3. `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md` — durable improvement sequence when broader sequencing context is needed.
 4. `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md` — detailed research rationale when needed.
 
-The goal is simple: an agent should be able to identify the next authorized action quickly, execute it narrowly, prove it, and continue without reconstructing hidden history.
+The goal is simple: identify the next authorized action quickly, execute it narrowly, prove it, and continue without reconstructing hidden history.
