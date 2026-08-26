@@ -297,6 +297,8 @@ jobs:
           actual_ref = r2_schema["$defs"]["routePlanRequest"]["properties"]["eligibilityResult"]["$ref"]
           if actual_ref != expected_ref:
               raise SystemExit(f"R2 schema does not reference pinned R1 routeEligibilityResult definition: {actual_ref}")
+          if r2_schema.get("$ref") != "#/$defs/routePlanEnvelope":
+              raise SystemExit("R2 public schema root must require the invariant-bearing request+plan envelope")
           registry = Registry().with_resource(r1_schema["$id"], Resource.from_contents(r1_schema))
           validator = KodacK6R2Validator(r2_schema, registry=registry)
 
@@ -327,9 +329,10 @@ jobs:
               ],
           }
           envelope = {"request":request,"plan":plan}
-          validator.validate(request)
-          validator.validate(plan)
           validator.validate(envelope)
+          for name, standalone in (("standalone request", request), ("standalone plan", plan)):
+              if not list(validator.iter_errors(standalone)):
+                  raise SystemExit(f"public R2 schema incorrectly accepted {name} without invariant-bearing envelope")
 
           zero_result = copy.deepcopy(result)
           for item in zero_result["candidateResults"]:
