@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto"
 import { types as utilTypes } from "node:util"
 
+import { canonicalK6R1Json } from "./contracts.ts"
 import {
-  canonicalK6R1Json,
   validateK6R2RoutePlan,
   validateK6R2RoutePlanRequest,
   type K6R2RoutePlan,
@@ -27,7 +27,6 @@ export const K6_R3_ROUTE_OUTCOME_LINKAGE_VERSION = "kodac-k6-r3-route-outcome-li
 export const K6_R3_DONE_GATE_OUTCOME_VERSION = "kodac-k6-r3-done-gate-outcome-v1" as const
 export const K6_R3_DONE_GATE_STATUSES = Object.freeze(["PROVEN_READY", "NOT_READY"] as const)
 export const K6_R3_EXECUTION_RESULT_STATUSES = Object.freeze(["success", "blocked", "failure"] as const)
-
 export const K6_R3_LIMITS = Object.freeze({
   maxDepth: 32,
   maxNodes: 100_000,
@@ -117,459 +116,246 @@ export interface K6R3RouteOutcomeLinkageEnvelope {
   readonly linkage: K6R3RouteOutcomeLinkage
 }
 
-type UnknownRecord = Record<string, unknown>
-type SafeFrame =
-  | { readonly kind: "value"; readonly value: unknown; readonly label: string; readonly depth: number }
-  | { readonly kind: "leave"; readonly value: object }
-
-interface ParseBudget {
-  nodes: number
-  stringChars: number
-}
+type Rec = Record<string, unknown>
+interface Budget { nodes: number; stringChars: number }
 
 const SHA256 = /^[0-9a-f]{64}$/
 const GIT_SHA = /^[0-9a-f]{40}$/
-const DONE_GATE_STATUS_SET = new Set<string>(K6_R3_DONE_GATE_STATUSES)
-const EXECUTION_RESULT_SET = new Set<string>(K6_R3_EXECUTION_RESULT_STATUSES)
-const K5_STATUS_SET = new Set<string>(K5_R4_RECONCILIATION_STATUSES)
-const EVIDENCE_KIND_SET = new Set<string>(["receipt", "artifact", "event", "workspace"])
+const DONE_GATE_STATUSES = new Set<string>(K6_R3_DONE_GATE_STATUSES)
+const EXECUTION_STATUSES = new Set<string>(K6_R3_EXECUTION_RESULT_STATUSES)
+const K5_STATUSES = new Set<string>(K5_R4_RECONCILIATION_STATUSES)
+const STEP_ROLES = new Set<string>(["PRIMARY", "FALLBACK"])
+const EVIDENCE_KINDS = new Set<string>(["receipt", "artifact", "event", "workspace"])
 
-const INPUT_KEYS = [
-  "routePlanRequest",
-  "routePlan",
-  "executionObservations",
-  "verificationSource",
-  "k5Reconciliation",
-  "doneGateOutcome",
-] as const
-const OBSERVATION_INPUT_KEYS = ["planStepIndex", "executionReceiptSource"] as const
-const DONE_GATE_KEYS = ["version", "verificationSourceIdentity", "status", "reasons", "evidence"] as const
+const INPUT_KEYS = ["routePlanRequest", "routePlan", "executionObservations", "verificationSource", "k5Reconciliation", "doneGateOutcome"] as const
+const OBS_KEYS = ["planStepIndex", "executionReceiptSource"] as const
+const DONE_KEYS = ["version", "verificationSourceIdentity", "status", "reasons", "evidence"] as const
 const EVIDENCE_KEYS = ["kind", "ref"] as const
-const EVIDENCE_WITH_DIGEST_KEYS = ["kind", "ref", "digest"] as const
-const LINKED_OBSERVATION_KEYS = [
-  "planStepIndex",
-  "candidateId",
-  "candidateKind",
-  "provider",
-  "model",
-  "role",
-  "executionReceiptSourceIdentity",
-  "executionReceiptSourceDigest",
-  "executionReceiptEvidenceId",
-  "receiptId",
-  "executionResultStatus",
+const EVIDENCE_DIGEST_KEYS = ["kind", "ref", "digest"] as const
+const LINKED_KEYS = [
+  "planStepIndex", "candidateId", "candidateKind", "provider", "model", "role",
+  "executionReceiptSourceIdentity", "executionReceiptSourceDigest", "executionReceiptEvidenceId",
+  "receiptId", "executionResultStatus",
 ] as const
 const LINKAGE_KEYS = [
-  "version",
-  "linkageIdentity",
-  "routePlanRequestIdentity",
-  "routePlanIdentity",
-  "eligibilityResultIdentity",
-  "requestIdentity",
-  "repositoryId",
-  "canonicalBase",
-  "candidateHead",
-  "taskId",
-  "executionObservations",
-  "verificationSourceIdentity",
-  "verificationSourceDigest",
-  "verificationEvidenceId",
-  "verificationPassed",
-  "k5PackageIdentity",
-  "k5ReconciliationIdentity",
-  "k5Status",
-  "doneGateOutcomeIdentity",
-  "doneGateStatus",
+  "version", "linkageIdentity", "routePlanRequestIdentity", "routePlanIdentity", "eligibilityResultIdentity",
+  "requestIdentity", "repositoryId", "canonicalBase", "candidateHead", "taskId", "executionObservations",
+  "verificationSourceIdentity", "verificationSourceDigest", "verificationEvidenceId", "verificationPassed",
+  "k5PackageIdentity", "k5ReconciliationIdentity", "k5Status", "doneGateOutcomeIdentity", "doneGateStatus",
 ] as const
 const ENVELOPE_KEYS = ["input", "linkage"] as const
 
-function typeError(label: string, detail: string): never {
-  throw new TypeError(`${label} ${detail}`)
+function bad(label: string, detail: string): never { throw new TypeError(`${label} ${detail}`) }
+function tooLarge(label: string, detail: string): never { throw new RangeError(`${label} ${detail}`) }
+function noProxy(value: unknown, label: string): void {
+  if (typeof value === "object" && value !== null && utilTypes.isProxy(value)) bad(label, "must not be a Proxy")
 }
-
-function rangeError(label: string, detail: string): never {
-  throw new RangeError(`${label} ${detail}`)
-}
-
-function assertNoProxy(value: unknown, label: string): void {
-  if (typeof value === "object" && value !== null && utilTypes.isProxy(value)) {
-    typeError(label, "must not be a Proxy")
+function scalars(value: string, label: string): void {
+  for (let i = 0; i < value.length; i += 1) {
+    const c = value.charCodeAt(i)
+    if (c >= 0xd800 && c <= 0xdbff) {
+      if (i + 1 >= value.length) bad(label, "must contain only valid Unicode scalar values")
+      const d = value.charCodeAt(i + 1)
+      if (d < 0xdc00 || d > 0xdfff) bad(label, "must contain only valid Unicode scalar values")
+      i += 1
+    } else if (c >= 0xdc00 && c <= 0xdfff) bad(label, "must contain only valid Unicode scalar values")
   }
 }
-
-function budgetNode(budget: ParseBudget, label: string): void {
+function node(budget: Budget, label: string): void {
   budget.nodes += 1
-  if (budget.nodes > K6_R3_LIMITS.maxNodes) rangeError(label, `exceeds node budget ${K6_R3_LIMITS.maxNodes}`)
+  if (budget.nodes > K6_R3_LIMITS.maxNodes) tooLarge(label, `exceeds node budget ${K6_R3_LIMITS.maxNodes}`)
 }
-
-function validUnicodeScalars(value: string, label: string): void {
-  for (let index = 0; index < value.length; index += 1) {
-    const code = value.charCodeAt(index)
-    if (code >= 0xd800 && code <= 0xdbff) {
-      if (index + 1 >= value.length) typeError(label, "must contain only valid Unicode scalar values")
-      const next = value.charCodeAt(index + 1)
-      if (next < 0xdc00 || next > 0xdfff) typeError(label, "must contain only valid Unicode scalar values")
-      index += 1
-    } else if (code >= 0xdc00 && code <= 0xdfff) {
-      typeError(label, "must contain only valid Unicode scalar values")
-    }
-  }
-}
-
-function budgetString(value: string, label: string, budget: ParseBudget): void {
-  validUnicodeScalars(value, label)
-  budget.stringChars += value.length
-  if (budget.stringChars > K6_R3_LIMITS.maxTotalStringChars) {
-    rangeError(label, `exceeds total string-character budget ${K6_R3_LIMITS.maxTotalStringChars}`)
-  }
-}
-
-function plainRecord(
-  value: unknown,
-  keys: readonly string[],
-  label: string,
-  depth: number,
-  budget: ParseBudget,
-): UnknownRecord {
-  assertNoProxy(value, label)
-  if (depth > K6_R3_LIMITS.maxDepth) rangeError(label, `exceeds depth ${K6_R3_LIMITS.maxDepth}`)
-  if (value === null || typeof value !== "object" || Array.isArray(value)) typeError(label, "must be a plain object")
-  budgetNode(budget, label)
-  const prototype = Object.getPrototypeOf(value)
-  if (prototype !== Object.prototype && prototype !== null) typeError(label, "must be a plain object")
-  if (Object.getOwnPropertySymbols(value).length !== 0) typeError(label, "must not contain symbol fields")
-  const names = Object.getOwnPropertyNames(value)
-  if (names.length !== keys.length) typeError(label, "has an invalid key set")
-  const allowed = new Set(keys)
-  const result = Object.create(null) as UnknownRecord
-  for (const key of names) {
-    if (!allowed.has(key)) typeError(label, `contains unknown field: ${key}`)
-    const descriptor = Object.getOwnPropertyDescriptor(value, key)
-    if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
-      typeError(`${label}.${key}`, "must be an enumerable data property")
-    }
-    if (descriptor.value === undefined) typeError(`${label}.${key}`, "must not be undefined")
-    result[key] = descriptor.value
-  }
-  for (const key of keys) if (!Object.hasOwn(result, key)) typeError(label, `is missing required field: ${key}`)
-  return result
-}
-
-function denseArray(
-  value: unknown,
-  label: string,
-  min: number,
-  max: number,
-  depth: number,
-  budget: ParseBudget,
-): readonly unknown[] {
-  assertNoProxy(value, label)
-  if (depth > K6_R3_LIMITS.maxDepth) rangeError(label, `exceeds depth ${K6_R3_LIMITS.maxDepth}`)
-  if (!Array.isArray(value)) typeError(label, "must be an array")
-  budgetNode(budget, label)
-  if (Object.getPrototypeOf(value) !== Array.prototype) typeError(label, "must be a plain array")
-  if (Object.getOwnPropertySymbols(value).length !== 0) typeError(label, "must not contain symbol fields")
-  const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
-  const length = lengthDescriptor !== undefined && "value" in lengthDescriptor ? lengthDescriptor.value : undefined
-  if (typeof length !== "number" || !Number.isSafeInteger(length) || Object.is(length, -0) || length < min || length > max) {
-    rangeError(label, `must contain ${min} through ${max} entries`)
-  }
-  const result: unknown[] = []
-  for (let index = 0; index < length; index += 1) {
-    const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
-    if (descriptor === undefined) typeError(label, "must be dense")
-    if (!("value" in descriptor) || !descriptor.enumerable) {
-      typeError(`${label}[${index}]`, "must be an enumerable data property")
-    }
-    if (descriptor.value === undefined) typeError(`${label}[${index}]`, "must not be undefined")
-    result.push(descriptor.value)
-  }
-  if (Object.getOwnPropertyNames(value).length !== length + 1) typeError(label, "contains unexpected array fields")
-  return result
-}
-
-function boundedString(
-  value: unknown,
-  label: string,
-  maxBytes: number,
-  budget: ParseBudget,
-  allowEmpty = false,
-): string {
+function text(value: unknown, label: string, maxBytes: number, budget: Budget, allowEmpty = false): string {
   if (typeof value !== "string" || (!allowEmpty && value.length === 0) || value.includes("\0")) {
-    typeError(label, allowEmpty ? "must be a NUL-free string" : "must be a non-empty NUL-free string")
+    bad(label, allowEmpty ? "must be a NUL-free string" : "must be a non-empty NUL-free string")
   }
-  budgetString(value, label, budget)
-  if (Buffer.byteLength(value, "utf8") > maxBytes) rangeError(label, `exceeds ${maxBytes} UTF-8 bytes`)
+  scalars(value, label)
+  budget.stringChars += value.length
+  if (budget.stringChars > K6_R3_LIMITS.maxTotalStringChars) tooLarge(label, `exceeds string-character budget ${K6_R3_LIMITS.maxTotalStringChars}`)
+  if (Buffer.byteLength(value, "utf8") > maxBytes) tooLarge(label, `exceeds ${maxBytes} UTF-8 bytes`)
   return value
 }
-
-function sha256(value: unknown, label: string, budget?: ParseBudget): string {
-  if (typeof value !== "string" || !SHA256.test(value)) typeError(label, "must be 64 lowercase hexadecimal characters")
-  if (budget !== undefined) budgetString(value, label, budget)
+function sha(value: unknown, label: string, budget?: Budget): string {
+  if (typeof value !== "string" || !SHA256.test(value)) bad(label, "must be 64 lowercase hexadecimal characters")
+  if (budget) text(value, label, 64, budget)
   return value
 }
-
-function gitSha(value: unknown, label: string, budget?: ParseBudget): string {
-  if (typeof value !== "string" || !GIT_SHA.test(value)) typeError(label, "must be 40 lowercase hexadecimal characters")
-  if (budget !== undefined) budgetString(value, label, budget)
+function gitSha(value: unknown, label: string, budget?: Budget): string {
+  if (typeof value !== "string" || !GIT_SHA.test(value)) bad(label, "must be 40 lowercase hexadecimal characters")
+  if (budget) text(value, label, 40, budget)
   return value
 }
-
-function exactString<T extends string>(value: unknown, expected: T, label: string): T {
-  if (value !== expected) typeError(label, `must equal ${expected}`)
+function exact<T extends string>(value: unknown, expected: T, label: string): T {
+  if (value !== expected) bad(label, `must equal ${expected}`)
   return expected
 }
-
-function enumString<T extends string>(value: unknown, set: ReadonlySet<string>, label: string): T {
-  if (typeof value !== "string" || !set.has(value)) typeError(label, "is unsupported")
+function en<T extends string>(value: unknown, allowed: ReadonlySet<string>, label: string): T {
+  if (typeof value !== "string" || !allowed.has(value)) bad(label, "is unsupported")
   return value as T
 }
-
-function safeIndex(value: unknown, label: string): number {
-  if (typeof value !== "number" || !Number.isSafeInteger(value) || Object.is(value, -0) || value < 0) {
-    typeError(label, "must be a non-negative safe integer")
-  }
-  return value
-}
-
 function bool(value: unknown, label: string): boolean {
-  if (typeof value !== "boolean") typeError(label, "must be a boolean")
+  if (typeof value !== "boolean") bad(label, "must be a boolean")
   return value
 }
-
+function indexNumber(value: unknown, label: string): number {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || Object.is(value, -0) || value < 0) bad(label, "must be a non-negative safe integer")
+  return value
+}
+function rec(value: unknown, keys: readonly string[], label: string, budget: Budget): Rec {
+  noProxy(value, label)
+  if (value === null || typeof value !== "object" || Array.isArray(value)) bad(label, "must be a plain object")
+  node(budget, label)
+  const proto = Object.getPrototypeOf(value)
+  if (proto !== Object.prototype && proto !== null) bad(label, "must be a plain object")
+  if (Object.getOwnPropertySymbols(value).length) bad(label, "must not contain symbol fields")
+  const names = Object.getOwnPropertyNames(value)
+  if (names.length !== keys.length) bad(label, "has an invalid key set")
+  const allowed = new Set(keys)
+  const out = Object.create(null) as Rec
+  for (const key of names) {
+    if (!allowed.has(key)) bad(label, `contains unknown field: ${key}`)
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)
+    if (!descriptor || !("value" in descriptor) || !descriptor.enumerable) bad(`${label}.${key}`, "must be an enumerable data property")
+    if (descriptor.value === undefined) bad(`${label}.${key}`, "must not be undefined")
+    out[key] = descriptor.value
+  }
+  for (const key of keys) if (!Object.hasOwn(out, key)) bad(label, `is missing required field: ${key}`)
+  return out
+}
+function arr(value: unknown, label: string, min: number, max: number, budget: Budget): readonly unknown[] {
+  noProxy(value, label)
+  if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype) bad(label, "must be a plain array")
+  node(budget, label)
+  if (Object.getOwnPropertySymbols(value).length) bad(label, "must not contain symbol fields")
+  const ld = Object.getOwnPropertyDescriptor(value, "length")
+  const length: unknown = ld && "value" in ld ? ld.value : undefined
+  if (typeof length !== "number" || !Number.isSafeInteger(length) || Object.is(length, -0) || length < min || length > max) {
+    tooLarge(label, `must contain ${min} through ${max} entries`)
+  }
+  const out: unknown[] = []
+  for (let i = 0; i < length; i += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(i))
+    if (!descriptor) bad(label, "must be dense")
+    if (!("value" in descriptor) || !descriptor.enumerable) bad(`${label}[${i}]`, "must be an enumerable data property")
+    if (descriptor.value === undefined) bad(`${label}[${i}]`, "must not be undefined")
+    out.push(descriptor.value)
+  }
+  if (Object.getOwnPropertyNames(value).length !== length + 1) bad(label, "contains unexpected array fields")
+  return out
+}
 function digest(value: unknown): string {
   return createHash("sha256").update(canonicalK6R1Json(value), "utf8").digest("hex")
 }
-
-function assertSafeJson(value: unknown, label: string): void {
-  const active = new WeakSet<object>()
-  const stack: SafeFrame[] = [{ kind: "value", value, label, depth: 0 }]
-  let nodes = 0
-  let stringChars = 0
-
-  while (stack.length !== 0) {
-    const frame = stack.pop() as SafeFrame
-    if (frame.kind === "leave") {
-      active.delete(frame.value)
-      continue
-    }
-    nodes += 1
-    if (nodes > K6_R3_LIMITS.maxNodes) rangeError(frame.label, `exceeds node budget ${K6_R3_LIMITS.maxNodes}`)
-    if (frame.depth > K6_R3_LIMITS.maxDepth) rangeError(frame.label, `exceeds depth ${K6_R3_LIMITS.maxDepth}`)
-    const current = frame.value
-    if (typeof current === "string") {
-      validUnicodeScalars(current, frame.label)
-      stringChars += current.length
-      if (stringChars > K6_R3_LIMITS.maxTotalStringChars) {
-        rangeError(frame.label, `exceeds total string-character budget ${K6_R3_LIMITS.maxTotalStringChars}`)
-      }
-      continue
-    }
-    if (current === null || typeof current === "boolean" || typeof current === "number") {
-      if (typeof current === "number" && (!Number.isSafeInteger(current) || Object.is(current, -0))) {
-        typeError(frame.label, "must be a non-negative-zero safe integer")
-      }
-      continue
-    }
-    if (typeof current !== "object") typeError(frame.label, "must contain only JSON data")
-    assertNoProxy(current, frame.label)
-    if (active.has(current)) typeError(frame.label, "must not contain cycles")
-    active.add(current)
-    stack.push({ kind: "leave", value: current })
-    if (Array.isArray(current)) {
-      if (Object.getPrototypeOf(current) !== Array.prototype) typeError(frame.label, "must be a plain array")
-      if (Object.getOwnPropertySymbols(current).length !== 0) typeError(frame.label, "must not contain symbol fields")
-      const lengthDescriptor = Object.getOwnPropertyDescriptor(current, "length")
-      const length = lengthDescriptor !== undefined && "value" in lengthDescriptor ? lengthDescriptor.value : undefined
-      if (typeof length !== "number" || !Number.isSafeInteger(length) || Object.is(length, -0) || length < 0) {
-        typeError(frame.label, "must have a safe array length")
-      }
-      if (Object.getOwnPropertyNames(current).length !== length + 1) typeError(frame.label, "contains unexpected array fields")
-      for (let index = length - 1; index >= 0; index -= 1) {
-        const descriptor = Object.getOwnPropertyDescriptor(current, String(index))
-        if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
-          typeError(`${frame.label}[${index}]`, "must be an enumerable data property")
-        }
-        stack.push({ kind: "value", value: descriptor.value, label: `${frame.label}[${index}]`, depth: frame.depth + 1 })
-      }
-      continue
-    }
-    const prototype = Object.getPrototypeOf(current)
-    if (prototype !== Object.prototype && prototype !== null) typeError(frame.label, "must be a plain object")
-    if (Object.getOwnPropertySymbols(current).length !== 0) typeError(frame.label, "must not contain symbol fields")
-    const names = Object.getOwnPropertyNames(current)
-    for (let index = names.length - 1; index >= 0; index -= 1) {
-      const key = names[index] as string
-      const descriptor = Object.getOwnPropertyDescriptor(current, key)
-      if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
-        typeError(`${frame.label}.${key}`, "must be an enumerable data property")
-      }
-      stack.push({ kind: "value", value: descriptor.value, label: `${frame.label}.${key}`, depth: frame.depth + 1 })
-    }
-  }
-}
-
 function receiptMetadata(source: K5R2SourceLink, label: string): K5R2ExecutionReceiptMetadata {
-  if (source.sourceKind !== "EXECUTION_RECEIPT") typeError(`${label}.sourceKind`, "must equal EXECUTION_RECEIPT")
+  if (source.sourceKind !== "EXECUTION_RECEIPT") bad(`${label}.sourceKind`, "must equal EXECUTION_RECEIPT")
   return source.metadata as K5R2ExecutionReceiptMetadata
 }
-
 function verificationMetadata(source: K5R2SourceLink, label: string): K5R2VerificationReportMetadata {
-  if (source.sourceKind !== "VERIFICATION_REPORT") typeError(`${label}.sourceKind`, "must equal VERIFICATION_REPORT")
+  if (source.sourceKind !== "VERIFICATION_REPORT") bad(`${label}.sourceKind`, "must equal VERIFICATION_REPORT")
   return source.metadata as K5R2VerificationReportMetadata
 }
+function revisionMatch(source: K5R2SourceLink, plan: K6R2RoutePlan, label: string): void {
+  if (source.canonicalBase !== plan.canonicalBase) bad(`${label}.canonicalBase`, "must match routePlan.canonicalBase")
+  if (source.candidateHead !== plan.candidateHead) bad(`${label}.candidateHead`, "must match routePlan.candidateHead")
+}
+function k5Member(source: K5R2SourceLink, kind: "VERIFICATION" | "EXECUTION_RECEIPT", reconciliation: K5R4ProofStateReconciliation, label: string): void {
+  const matches = reconciliation.results.filter((result) => result.evidenceId === source.evidenceId)
+  if (matches.length !== 1) bad(label, "must match exactly one K5-R4 result by evidenceId")
+  const match = matches[0]
+  if (!match || match.evidenceKind !== kind || match.linkageLayer !== "K5_R2" || match.sourceIdentity === null) {
+    bad(label, "must match K5-R4 evidence kind, K5_R2 linkage layer, and non-null source identity")
+  }
+  if (match.sourceIdentity !== source.sourceIdentity) bad(label, "sourceIdentity does not match repository-bound K5-R4 membership")
+}
 
-function parseDoneGateEvidence(
-  value: unknown,
-  label: string,
-  depth: number,
-  budget: ParseBudget,
-): K6R3DoneGateEvidenceRef {
-  assertNoProxy(value, label)
-  if (value === null || typeof value !== "object" || Array.isArray(value)) typeError(label, "must be a plain object")
+function doneEvidence(value: unknown, label: string, budget: Budget): K6R3DoneGateEvidenceRef {
+  noProxy(value, label)
+  if (value === null || typeof value !== "object" || Array.isArray(value)) bad(label, "must be a plain object")
   const names = Object.getOwnPropertyNames(value)
   const hasDigest = names.includes("digest")
-  const record = plainRecord(value, hasDigest ? EVIDENCE_WITH_DIGEST_KEYS : EVIDENCE_KEYS, label, depth, budget)
-  const kind = enumString<VerificationEvidenceRef["kind"]>(record.kind, EVIDENCE_KIND_SET, `${label}.kind`)
-  const ref = boundedString(record.ref, `${label}.ref`, K6_R3_LIMITS.maxEvidenceRefBytes, budget)
+  const record = rec(value, hasDigest ? EVIDENCE_DIGEST_KEYS : EVIDENCE_KEYS, label, budget)
+  const kind = en<VerificationEvidenceRef["kind"]>(record.kind, EVIDENCE_KINDS, `${label}.kind`)
+  const ref = text(record.ref, `${label}.ref`, K6_R3_LIMITS.maxEvidenceRefBytes, budget)
   if (!hasDigest) return Object.freeze({ kind, ref })
-  return Object.freeze({ kind, ref, digest: sha256(record.digest, `${label}.digest`, budget) })
+  return Object.freeze({ kind, ref, digest: sha(record.digest, `${label}.digest`, budget) })
 }
-
-function parseDoneGateOutcome(
-  value: unknown,
-  verificationSourceIdentity: string,
-  budget: ParseBudget,
-): K6R3DoneGateOutcome {
-  const record = plainRecord(value, DONE_GATE_KEYS, "doneGateOutcome", 2, budget)
-  const version = exactString(record.version, K6_R3_DONE_GATE_OUTCOME_VERSION, "doneGateOutcome.version")
-  const sourceIdentity = sha256(record.verificationSourceIdentity, "doneGateOutcome.verificationSourceIdentity", budget)
-  if (sourceIdentity !== verificationSourceIdentity) {
-    typeError("doneGateOutcome.verificationSourceIdentity", "must match verificationSource.sourceIdentity")
-  }
-  const status = enumString<K6R3DoneGateStatus>(record.status, DONE_GATE_STATUS_SET, "doneGateOutcome.status")
-  const reasons = denseArray(
-    record.reasons,
-    "doneGateOutcome.reasons",
-    0,
-    K6_R3_LIMITS.maxDoneGateReasons,
-    3,
-    budget,
-  ).map((item, index) => boundedString(item, `doneGateOutcome.reasons[${index}]`, K6_R3_LIMITS.maxReasonBytes, budget, true))
-  if (status === "PROVEN_READY" && reasons.length !== 0) typeError("doneGateOutcome.reasons", "must be empty for PROVEN_READY")
-  if (status === "NOT_READY" && reasons.length === 0) typeError("doneGateOutcome.reasons", "must contain at least one reason for NOT_READY")
-  const evidence = denseArray(
-    record.evidence,
-    "doneGateOutcome.evidence",
-    0,
-    K6_R3_LIMITS.maxDoneGateEvidenceRefs,
-    3,
-    budget,
-  ).map((item, index) => parseDoneGateEvidence(item, `doneGateOutcome.evidence[${index}]`, 4, budget))
-  const keys = evidence.map((item) => `${item.kind}:${item.ref}`)
-  if (new Set(keys).size !== keys.length) typeError("doneGateOutcome.evidence", "must not contain duplicate kind:ref entries")
-  return Object.freeze({ version, verificationSourceIdentity: sourceIdentity, status, reasons: Object.freeze(reasons), evidence: Object.freeze(evidence) })
-}
-
-function assertRevisionMatch(source: K5R2SourceLink, plan: K6R2RoutePlan, label: string): void {
-  if (source.canonicalBase !== plan.canonicalBase) typeError(`${label}.canonicalBase`, "must match routePlan.canonicalBase")
-  if (source.candidateHead !== plan.candidateHead) typeError(`${label}.candidateHead`, "must match routePlan.candidateHead")
-}
-
-function assertK5Membership(
-  source: K5R2SourceLink,
-  kind: "VERIFICATION" | "EXECUTION_RECEIPT",
-  reconciliation: K5R4ProofStateReconciliation,
-  label: string,
-): void {
-  const matches = reconciliation.results.filter((result) => result.evidenceId === source.evidenceId)
-  if (matches.length !== 1) typeError(label, "must match exactly one K5-R4 result by evidenceId")
-  const match = matches[0]
-  if (match === undefined || match.evidenceKind !== kind || match.linkageLayer !== "K5_R2" || match.sourceIdentity === null) {
-    typeError(label, "must match K5-R4 evidence kind, K5_R2 linkage layer, and non-null source identity")
-  }
-  if (match.sourceIdentity !== source.sourceIdentity) typeError(label, "sourceIdentity does not match repository-bound K5-R4 membership")
+function doneOutcome(value: unknown, verificationIdentity: string, budget: Budget): K6R3DoneGateOutcome {
+  const record = rec(value, DONE_KEYS, "doneGateOutcome", budget)
+  const version = exact(record.version, K6_R3_DONE_GATE_OUTCOME_VERSION, "doneGateOutcome.version")
+  const verificationSourceIdentity = sha(record.verificationSourceIdentity, "doneGateOutcome.verificationSourceIdentity", budget)
+  if (verificationSourceIdentity !== verificationIdentity) bad("doneGateOutcome.verificationSourceIdentity", "must match verificationSource.sourceIdentity")
+  const status = en<K6R3DoneGateStatus>(record.status, DONE_GATE_STATUSES, "doneGateOutcome.status")
+  const reasons = arr(record.reasons, "doneGateOutcome.reasons", 0, K6_R3_LIMITS.maxDoneGateReasons, budget)
+    .map((item, i) => text(item, `doneGateOutcome.reasons[${i}]`, K6_R3_LIMITS.maxReasonBytes, budget, true))
+  if (status === "PROVEN_READY" && reasons.length !== 0) bad("doneGateOutcome.reasons", "must be empty for PROVEN_READY")
+  if (status === "NOT_READY" && reasons.length === 0) bad("doneGateOutcome.reasons", "must contain at least one reason for NOT_READY")
+  const evidence = arr(record.evidence, "doneGateOutcome.evidence", 0, K6_R3_LIMITS.maxDoneGateEvidenceRefs, budget)
+    .map((item, i) => doneEvidence(item, `doneGateOutcome.evidence[${i}]`, budget))
+  const unique = evidence.map((item) => `${item.kind}:${item.ref}`)
+  if (new Set(unique).size !== unique.length) bad("doneGateOutcome.evidence", "must not contain duplicate kind:ref entries")
+  return Object.freeze({ version, verificationSourceIdentity, status, reasons: Object.freeze(reasons), evidence: Object.freeze(evidence) })
 }
 
 export function normalizeK6R3RouteOutcomeLinkageInput(value: unknown): K6R3RouteOutcomeLinkageInput {
-  const budget: ParseBudget = { nodes: 0, stringChars: 0 }
-  const record = plainRecord(value, INPUT_KEYS, "route outcome linkage input", 1, budget)
-
-  const routePlanRequest = validateK6R2RoutePlanRequest(record.routePlanRequest)
-  const routePlan = validateK6R2RoutePlan(record.routePlan, routePlanRequest)
-  if (routePlan.status !== "ROUTABLE" || routePlan.steps.length === 0) {
-    typeError("routePlan", "must be ROUTABLE with at least one step for K6-R3")
-  }
+  const budget: Budget = { nodes: 0, stringChars: 0 }
+  const root = rec(value, INPUT_KEYS, "route outcome linkage input", budget)
+  const routePlanRequest = validateK6R2RoutePlanRequest(root.routePlanRequest)
+  const routePlan = validateK6R2RoutePlan(root.routePlan, routePlanRequest)
+  if (routePlan.status !== "ROUTABLE" || routePlan.steps.length === 0) bad("routePlan", "must be ROUTABLE with at least one step for K6-R3")
 
   const seenSourceIdentities = new Set<string>()
   const seenReceiptIds = new Set<string>()
-  const executionObservations = denseArray(
-    record.executionObservations,
-    "executionObservations",
-    1,
-    K6_R3_LIMITS.maxExecutionObservations,
-    2,
-    budget,
-  ).map((item, index) => {
-    const label = `executionObservations[${index}]`
-    const observation = plainRecord(item, OBSERVATION_INPUT_KEYS, label, 3, budget)
-    const planStepIndex = safeIndex(observation.planStepIndex, `${label}.planStepIndex`)
-    if (planStepIndex >= routePlan.steps.length) typeError(`${label}.planStepIndex`, "must reference an existing routePlan step")
-    const source = validateK5R2SourceLink(observation.executionReceiptSource)
-    assertRevisionMatch(source, routePlan, `${label}.executionReceiptSource`)
-    const metadata = receiptMetadata(source, `${label}.executionReceiptSource`)
-    if (seenSourceIdentities.has(source.sourceIdentity)) typeError("executionObservations", "must not contain duplicate execution receipt source identities")
-    if (seenReceiptIds.has(metadata.receiptId)) typeError("executionObservations", "must not contain duplicate receiptId values")
-    seenSourceIdentities.add(source.sourceIdentity)
-    seenReceiptIds.add(metadata.receiptId)
-    return Object.freeze({ planStepIndex, executionReceiptSource: source })
-  })
+  const executionObservations = arr(root.executionObservations, "executionObservations", 1, K6_R3_LIMITS.maxExecutionObservations, budget)
+    .map((item, i) => {
+      const label = `executionObservations[${i}]`
+      const record = rec(item, OBS_KEYS, label, budget)
+      const planStepIndex = indexNumber(record.planStepIndex, `${label}.planStepIndex`)
+      if (planStepIndex >= routePlan.steps.length) bad(`${label}.planStepIndex`, "must reference an existing routePlan step")
+      const executionReceiptSource = validateK5R2SourceLink(record.executionReceiptSource)
+      revisionMatch(executionReceiptSource, routePlan, `${label}.executionReceiptSource`)
+      const metadata = receiptMetadata(executionReceiptSource, `${label}.executionReceiptSource`)
+      if (seenSourceIdentities.has(executionReceiptSource.sourceIdentity)) bad("executionObservations", "must not contain duplicate execution receipt source identities")
+      if (seenReceiptIds.has(metadata.receiptId)) bad("executionObservations", "must not contain duplicate receiptId values")
+      seenSourceIdentities.add(executionReceiptSource.sourceIdentity)
+      seenReceiptIds.add(metadata.receiptId)
+      return Object.freeze({ planStepIndex, executionReceiptSource })
+    })
 
-  const verificationSource = validateK5R2SourceLink(record.verificationSource)
-  assertRevisionMatch(verificationSource, routePlan, "verificationSource")
+  const verificationSource = validateK5R2SourceLink(root.verificationSource)
+  revisionMatch(verificationSource, routePlan, "verificationSource")
   verificationMetadata(verificationSource, "verificationSource")
 
-  const k5Reconciliation = validateK5R4ProofStateReconciliation(record.k5Reconciliation)
-  if (k5Reconciliation.revision.repositoryId !== routePlan.repositoryId) {
-    typeError("k5Reconciliation.revision.repositoryId", "must match routePlan.repositoryId")
-  }
-  if (k5Reconciliation.revision.canonicalBase !== routePlan.canonicalBase) {
-    typeError("k5Reconciliation.revision.canonicalBase", "must match routePlan.canonicalBase")
-  }
-  if (k5Reconciliation.revision.candidateHead !== routePlan.candidateHead) {
-    typeError("k5Reconciliation.revision.candidateHead", "must match routePlan.candidateHead")
-  }
-  if (k5Reconciliation.status === "NOT_APPLICABLE") typeError("k5Reconciliation.status", "cannot satisfy required K6-R3 source membership")
+  const k5Reconciliation = validateK5R4ProofStateReconciliation(root.k5Reconciliation)
+  if (k5Reconciliation.revision.repositoryId !== routePlan.repositoryId) bad("k5Reconciliation.revision.repositoryId", "must match routePlan.repositoryId")
+  if (k5Reconciliation.revision.canonicalBase !== routePlan.canonicalBase) bad("k5Reconciliation.revision.canonicalBase", "must match routePlan.canonicalBase")
+  if (k5Reconciliation.revision.candidateHead !== routePlan.candidateHead) bad("k5Reconciliation.revision.candidateHead", "must match routePlan.candidateHead")
+  if (k5Reconciliation.status === "NOT_APPLICABLE") bad("k5Reconciliation.status", "cannot satisfy required K6-R3 source membership")
 
-  assertK5Membership(verificationSource, "VERIFICATION", k5Reconciliation, "verificationSource K5 membership")
-  for (let index = 0; index < executionObservations.length; index += 1) {
-    const observation = executionObservations[index] as K6R3ExecutionObservationInput
-    assertK5Membership(
-      observation.executionReceiptSource,
-      "EXECUTION_RECEIPT",
-      k5Reconciliation,
-      `executionObservations[${index}] K5 membership`,
-    )
-  }
+  k5Member(verificationSource, "VERIFICATION", k5Reconciliation, "verificationSource K5 membership")
+  executionObservations.forEach((observation, i) => k5Member(
+    observation.executionReceiptSource,
+    "EXECUTION_RECEIPT",
+    k5Reconciliation,
+    `executionObservations[${i}] K5 membership`,
+  ))
 
-  const doneGateOutcome = parseDoneGateOutcome(record.doneGateOutcome, verificationSource.sourceIdentity, budget)
-
+  const parsedDoneOutcome = doneOutcome(root.doneGateOutcome, verificationSource.sourceIdentity, budget)
   return Object.freeze({
     routePlanRequest,
     routePlan,
     executionObservations: Object.freeze(executionObservations),
     verificationSource,
     k5Reconciliation,
-    doneGateOutcome,
+    doneGateOutcome: parsedDoneOutcome,
   })
 }
 
-function linkedObservations(input: K6R3RouteOutcomeLinkageInput): readonly K6R3LinkedExecutionObservation[] {
-  return Object.freeze(input.executionObservations.map((observation, index) => {
+function linked(input: K6R3RouteOutcomeLinkageInput): readonly K6R3LinkedExecutionObservation[] {
+  return Object.freeze(input.executionObservations.map((observation, i) => {
     const step = input.routePlan.steps[observation.planStepIndex]
-    if (step === undefined) typeError(`executionObservations[${index}].planStepIndex`, "must reference an existing routePlan step")
+    if (!step) bad(`executionObservations[${i}].planStepIndex`, "must reference an existing routePlan step")
     const source = observation.executionReceiptSource
-    const metadata = receiptMetadata(source, `executionObservations[${index}].executionReceiptSource`)
+    const metadata = receiptMetadata(source, `executionObservations[${i}].executionReceiptSource`)
     return Object.freeze({
       planStepIndex: observation.planStepIndex,
       candidateId: step.candidateId,
@@ -585,8 +371,7 @@ function linkedObservations(input: K6R3RouteOutcomeLinkageInput): readonly K6R3L
     })
   }))
 }
-
-function linkageIdentityInput(input: K6R3RouteOutcomeLinkageInput): K6R3RouteOutcomeLinkageIdentityInput {
+function identityInput(input: K6R3RouteOutcomeLinkageInput): K6R3RouteOutcomeLinkageIdentityInput {
   const verification = verificationMetadata(input.verificationSource, "verificationSource")
   return Object.freeze({
     version: K6_R3_ROUTE_OUTCOME_LINKAGE_VERSION,
@@ -598,7 +383,7 @@ function linkageIdentityInput(input: K6R3RouteOutcomeLinkageInput): K6R3RouteOut
     canonicalBase: input.routePlan.canonicalBase,
     candidateHead: input.routePlan.candidateHead,
     taskId: input.routePlan.taskId,
-    executionObservations: linkedObservations(input),
+    executionObservations: linked(input),
     verificationSourceIdentity: input.verificationSource.sourceIdentity,
     verificationSourceDigest: input.verificationSource.sourceDigest,
     verificationEvidenceId: input.verificationSource.evidenceId,
@@ -613,83 +398,67 @@ function linkageIdentityInput(input: K6R3RouteOutcomeLinkageInput): K6R3RouteOut
 
 export function createK6R3RouteOutcomeLinkage(value: unknown): K6R3RouteOutcomeLinkage {
   const input = normalizeK6R3RouteOutcomeLinkageInput(value)
-  const identityInput = linkageIdentityInput(input)
-  return Object.freeze({ ...identityInput, linkageIdentity: digest(identityInput) })
+  const preimage = identityInput(input)
+  return Object.freeze({ ...preimage, linkageIdentity: digest(preimage) })
 }
 
-function parseLinkedObservation(
-  value: unknown,
-  label: string,
-  depth: number,
-  budget: ParseBudget,
-): K6R3LinkedExecutionObservation {
-  const record = plainRecord(value, LINKED_OBSERVATION_KEYS, label, depth, budget)
+function parsedLinked(value: unknown, label: string, budget: Budget): K6R3LinkedExecutionObservation {
+  const record = rec(value, LINKED_KEYS, label, budget)
   return Object.freeze({
-    planStepIndex: safeIndex(record.planStepIndex, `${label}.planStepIndex`),
-    candidateId: boundedString(record.candidateId, `${label}.candidateId`, 256, budget),
-    candidateKind: exactString(record.candidateKind, "MODEL_PROVIDER", `${label}.candidateKind`),
-    provider: boundedString(record.provider, `${label}.provider`, 256, budget),
-    model: boundedString(record.model, `${label}.model`, 512, budget),
-    role: enumString<K6R2StepRole>(record.role, new Set<string>(["PRIMARY", "FALLBACK"]), `${label}.role`),
-    executionReceiptSourceIdentity: sha256(record.executionReceiptSourceIdentity, `${label}.executionReceiptSourceIdentity`, budget),
-    executionReceiptSourceDigest: sha256(record.executionReceiptSourceDigest, `${label}.executionReceiptSourceDigest`, budget),
-    executionReceiptEvidenceId: boundedString(record.executionReceiptEvidenceId, `${label}.executionReceiptEvidenceId`, 128, budget),
-    receiptId: boundedString(record.receiptId, `${label}.receiptId`, 128, budget),
-    executionResultStatus: enumString<K6R3ExecutionResultStatus>(record.executionResultStatus, EXECUTION_RESULT_SET, `${label}.executionResultStatus`),
+    planStepIndex: indexNumber(record.planStepIndex, `${label}.planStepIndex`),
+    candidateId: text(record.candidateId, `${label}.candidateId`, 256, budget),
+    candidateKind: exact(record.candidateKind, "MODEL_PROVIDER", `${label}.candidateKind`),
+    provider: text(record.provider, `${label}.provider`, 256, budget),
+    model: text(record.model, `${label}.model`, 512, budget),
+    role: en<K6R2StepRole>(record.role, STEP_ROLES, `${label}.role`),
+    executionReceiptSourceIdentity: sha(record.executionReceiptSourceIdentity, `${label}.executionReceiptSourceIdentity`, budget),
+    executionReceiptSourceDigest: sha(record.executionReceiptSourceDigest, `${label}.executionReceiptSourceDigest`, budget),
+    executionReceiptEvidenceId: text(record.executionReceiptEvidenceId, `${label}.executionReceiptEvidenceId`, 128, budget),
+    receiptId: text(record.receiptId, `${label}.receiptId`, 128, budget),
+    executionResultStatus: en<K6R3ExecutionResultStatus>(record.executionResultStatus, EXECUTION_STATUSES, `${label}.executionResultStatus`),
   })
 }
-
 function parseLinkage(value: unknown): K6R3RouteOutcomeLinkage {
-  assertSafeJson(value, "route outcome linkage")
-  const budget: ParseBudget = { nodes: 0, stringChars: 0 }
-  const record = plainRecord(value, LINKAGE_KEYS, "route outcome linkage", 1, budget)
-  const executionObservations = denseArray(
-    record.executionObservations,
-    "route outcome linkage.executionObservations",
-    1,
-    K6_R3_LIMITS.maxExecutionObservations,
-    2,
-    budget,
-  ).map((item, index) => parseLinkedObservation(item, `route outcome linkage.executionObservations[${index}]`, 3, budget))
-  const parsed = Object.freeze({
-    version: exactString(record.version, K6_R3_ROUTE_OUTCOME_LINKAGE_VERSION, "route outcome linkage.version"),
-    routePlanRequestIdentity: sha256(record.routePlanRequestIdentity, "route outcome linkage.routePlanRequestIdentity", budget),
-    routePlanIdentity: sha256(record.routePlanIdentity, "route outcome linkage.routePlanIdentity", budget),
-    eligibilityResultIdentity: sha256(record.eligibilityResultIdentity, "route outcome linkage.eligibilityResultIdentity", budget),
-    requestIdentity: sha256(record.requestIdentity, "route outcome linkage.requestIdentity", budget),
-    repositoryId: boundedString(record.repositoryId, "route outcome linkage.repositoryId", K6_R3_LIMITS.maxRepositoryIdBytes, budget),
+  const budget: Budget = { nodes: 0, stringChars: 0 }
+  const record = rec(value, LINKAGE_KEYS, "route outcome linkage", budget)
+  const executionObservations = arr(record.executionObservations, "route outcome linkage.executionObservations", 1, K6_R3_LIMITS.maxExecutionObservations, budget)
+    .map((item, i) => parsedLinked(item, `route outcome linkage.executionObservations[${i}]`, budget))
+  const preimage = Object.freeze({
+    version: exact(record.version, K6_R3_ROUTE_OUTCOME_LINKAGE_VERSION, "route outcome linkage.version"),
+    routePlanRequestIdentity: sha(record.routePlanRequestIdentity, "route outcome linkage.routePlanRequestIdentity", budget),
+    routePlanIdentity: sha(record.routePlanIdentity, "route outcome linkage.routePlanIdentity", budget),
+    eligibilityResultIdentity: sha(record.eligibilityResultIdentity, "route outcome linkage.eligibilityResultIdentity", budget),
+    requestIdentity: sha(record.requestIdentity, "route outcome linkage.requestIdentity", budget),
+    repositoryId: text(record.repositoryId, "route outcome linkage.repositoryId", K6_R3_LIMITS.maxRepositoryIdBytes, budget),
     canonicalBase: gitSha(record.canonicalBase, "route outcome linkage.canonicalBase", budget),
     candidateHead: gitSha(record.candidateHead, "route outcome linkage.candidateHead", budget),
-    taskId: boundedString(record.taskId, "route outcome linkage.taskId", K6_R3_LIMITS.maxTaskIdBytes, budget),
+    taskId: text(record.taskId, "route outcome linkage.taskId", K6_R3_LIMITS.maxTaskIdBytes, budget),
     executionObservations: Object.freeze(executionObservations),
-    verificationSourceIdentity: sha256(record.verificationSourceIdentity, "route outcome linkage.verificationSourceIdentity", budget),
-    verificationSourceDigest: sha256(record.verificationSourceDigest, "route outcome linkage.verificationSourceDigest", budget),
-    verificationEvidenceId: boundedString(record.verificationEvidenceId, "route outcome linkage.verificationEvidenceId", 128, budget),
+    verificationSourceIdentity: sha(record.verificationSourceIdentity, "route outcome linkage.verificationSourceIdentity", budget),
+    verificationSourceDigest: sha(record.verificationSourceDigest, "route outcome linkage.verificationSourceDigest", budget),
+    verificationEvidenceId: text(record.verificationEvidenceId, "route outcome linkage.verificationEvidenceId", 128, budget),
     verificationPassed: bool(record.verificationPassed, "route outcome linkage.verificationPassed"),
-    k5PackageIdentity: sha256(record.k5PackageIdentity, "route outcome linkage.k5PackageIdentity", budget),
-    k5ReconciliationIdentity: sha256(record.k5ReconciliationIdentity, "route outcome linkage.k5ReconciliationIdentity", budget),
-    k5Status: enumString<K5R4ReconciliationStatus>(record.k5Status, K5_STATUS_SET, "route outcome linkage.k5Status"),
-    doneGateOutcomeIdentity: sha256(record.doneGateOutcomeIdentity, "route outcome linkage.doneGateOutcomeIdentity", budget),
-    doneGateStatus: enumString<K6R3DoneGateStatus>(record.doneGateStatus, DONE_GATE_STATUS_SET, "route outcome linkage.doneGateStatus"),
+    k5PackageIdentity: sha(record.k5PackageIdentity, "route outcome linkage.k5PackageIdentity", budget),
+    k5ReconciliationIdentity: sha(record.k5ReconciliationIdentity, "route outcome linkage.k5ReconciliationIdentity", budget),
+    k5Status: en<K5R4ReconciliationStatus>(record.k5Status, K5_STATUSES, "route outcome linkage.k5Status"),
+    doneGateOutcomeIdentity: sha(record.doneGateOutcomeIdentity, "route outcome linkage.doneGateOutcomeIdentity", budget),
+    doneGateStatus: en<K6R3DoneGateStatus>(record.doneGateStatus, DONE_GATE_STATUSES, "route outcome linkage.doneGateStatus"),
   }) satisfies K6R3RouteOutcomeLinkageIdentityInput
-  const linkageIdentity = sha256(record.linkageIdentity, "route outcome linkage.linkageIdentity", budget)
-  const expectedIdentity = digest(parsed)
-  if (linkageIdentity !== expectedIdentity) typeError("route outcome linkage.linkageIdentity", "does not match deterministic recomputation")
-  return Object.freeze({ ...parsed, linkageIdentity })
+  const linkageIdentity = sha(record.linkageIdentity, "route outcome linkage.linkageIdentity", budget)
+  if (linkageIdentity !== digest(preimage)) bad("route outcome linkage.linkageIdentity", "does not match deterministic recomputation")
+  return Object.freeze({ ...preimage, linkageIdentity })
 }
 
 export function validateK6R3RouteOutcomeLinkage(value: unknown, inputValue: unknown): K6R3RouteOutcomeLinkage {
   const parsed = parseLinkage(value)
   const expected = createK6R3RouteOutcomeLinkage(inputValue)
-  if (canonicalK6R1Json(parsed) !== canonicalK6R1Json(expected)) {
-    typeError("route outcome linkage", "does not exactly project the validated K6-R3 input")
-  }
+  if (canonicalK6R1Json(parsed) !== canonicalK6R1Json(expected)) bad("route outcome linkage", "does not exactly project the validated K6-R3 input")
   return parsed
 }
 
 export function validateK6R3RouteOutcomeLinkageEnvelope(value: unknown): K6R3RouteOutcomeLinkageEnvelope {
-  const budget: ParseBudget = { nodes: 0, stringChars: 0 }
-  const record = plainRecord(value, ENVELOPE_KEYS, "route outcome linkage envelope", 1, budget)
+  const budget: Budget = { nodes: 0, stringChars: 0 }
+  const record = rec(value, ENVELOPE_KEYS, "route outcome linkage envelope", budget)
   const input = normalizeK6R3RouteOutcomeLinkageInput(record.input)
   const linkage = validateK6R3RouteOutcomeLinkage(record.linkage, input)
   return Object.freeze({ input, linkage })
