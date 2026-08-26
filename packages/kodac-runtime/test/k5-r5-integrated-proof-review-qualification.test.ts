@@ -56,7 +56,11 @@ interface Fixture {
       }
     }
   }
-  readonly negativeCases: readonly { readonly name: string; readonly contract: string }[]
+  readonly negativeCases: readonly {
+    readonly name: string
+    readonly contract: string
+    readonly linkage?: unknown
+  }[]
 }
 
 const fixtureUrl = new URL("./fixtures/k5-r5/integrated-proof-review-qualification.json", import.meta.url)
@@ -73,6 +77,12 @@ function clone<T>(value: T): T {
 function record(value: unknown): Rec {
   if (value === null || typeof value !== "object" || Array.isArray(value)) throw new TypeError("test fixture value must be an object")
   return value as Rec
+}
+
+function negativeCase(name: string): Fixture["negativeCases"][number] {
+  const result = fixture.negativeCases.find((item) => item.name === name)
+  if (result === undefined) throw new TypeError(`missing negative fixture: ${name}`)
+  return result
 }
 
 function mutateEvidenceStatus(
@@ -375,7 +385,7 @@ test("malformed R1 package fails before R2 or R3 linkage traversal", () => {
   assert.equal(linkageTraps, 0)
 })
 
-test("foreign package linkage identities and revision tampering fail closed", () => {
+test("foreign package identities and structurally valid outer revision mismatches fail closed", () => {
   const stack = buildStack()
   const foreignInput = clone(fixture.positive.packageInput)
   record(foreignInput.subject).subjectId = "k5-r5-foreign"
@@ -392,9 +402,25 @@ test("foreign package linkage identities and revision tampering fail closed", ()
     /K5-R3 linkage packageIdentity/,
   )
 
-  const tamperedR2 = clone(stack.r2)
-  record(record(tamperedR2).revision).candidateHead = otherHead
-  assert.throws(() => validateK5R2EvidenceLinkage(tamperedR2), /linkageIdentity/)
+  const r2RevisionVector = negativeCase("r2-revision-mismatch").linkage
+  if (r2RevisionVector === undefined) throw new TypeError("missing R2 revision mismatch linkage vector")
+  const r2Revision = validateK5R2EvidenceLinkage(r2RevisionVector)
+  assert.equal(r2Revision.packageIdentity, stack.proofPackage.packageIdentity)
+  assert.notDeepEqual(r2Revision.revision, stack.proofPackage.revision)
+  assert.throws(
+    () => reconcileK5R4ProofState(stack.proofPackage, r2Revision, stack.r3),
+    /K5-R2 linkage revision does not equal the K5-R1 package revision/,
+  )
+
+  const r3RevisionVector = negativeCase("r3-revision-mismatch").linkage
+  if (r3RevisionVector === undefined) throw new TypeError("missing R3 revision mismatch linkage vector")
+  const r3Revision = validateK5R3ReviewAdjudicationLinkage(r3RevisionVector)
+  assert.equal(r3Revision.packageIdentity, stack.proofPackage.packageIdentity)
+  assert.notDeepEqual(r3Revision.revision, stack.proofPackage.revision)
+  assert.throws(
+    () => reconcileK5R4ProofState(stack.proofPackage, stack.r2, r3Revision),
+    /K5-R3 linkage revision does not equal the K5-R1 package revision/,
+  )
 })
 
 test("R2 and R3 membership/complement tampering is rejected without reimplementing identities", () => {
