@@ -1,10 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
 
-import {
-  K6_R1_ROUTE_REQUEST_VERSION,
-  createK6R1RouteRequest,
-} from "../src/evidence-router/contracts.ts"
+import { K6_R1_ROUTE_REQUEST_VERSION, createK6R1RouteRequest } from "../src/evidence-router/contracts.ts"
 import { evaluateK6R1ModelProviderRouteEligibility } from "../src/evidence-router/eligibility.ts"
 import {
   K6_R2_ORDERING_BASIS,
@@ -21,13 +18,12 @@ import {
   type K6R3RouteOutcomeLinkageInput,
 } from "../src/evidence-router/outcome-linkage-contracts.ts"
 import { materializeK6R3RouteOutcomeLinkage } from "../src/evidence-router/outcome-linkage.ts"
-import {
-  createK5R2SourceLink,
-  type K5R2SourceLink,
-} from "../src/proof-review/linkage-contracts.ts"
+import { createK5R2SourceLink, type K5R2SourceLink } from "../src/proof-review/linkage-contracts.ts"
 import {
   K5_R4_PROOF_STATE_RECONCILIATION_VERSION,
   k5R4ReconciliationIdentity,
+  type K5R4Cause,
+  type K5R4EvidenceResult,
   type K5R4EvidenceState,
   type K5R4ProofStateReconciliation,
   type K5R4ProofStateReconciliationInput,
@@ -47,7 +43,7 @@ function clone<T>(value: T): Mutable<T> {
   return JSON.parse(JSON.stringify(value)) as Mutable<T>
 }
 
-function candidate(candidateId: string) {
+function candidate(candidateId: string, pass = true) {
   return {
     candidateId,
     candidateKind: "MODEL_PROVIDER" as const,
@@ -62,13 +58,13 @@ function candidate(candidateId: string) {
       provider: `provider-${candidateId}`,
       model: `model-${candidateId}`,
       workspaceDigest: "d".repeat(64),
-      status: "PASS" as const,
+      status: pass ? "PASS" as const : "FAIL" as const,
       reportDigest: candidateId.repeat(64),
     },
   }
 }
 
-function route() {
+function route(allIneligible = false) {
   const request = createK6R1RouteRequest({
     version: K6_R1_ROUTE_REQUEST_VERSION,
     repositoryId,
@@ -78,19 +74,23 @@ function route() {
     riskClass: "MEDIUM",
     privacyClass: "REPOSITORY_PRIVATE",
     requiredCapabilities: ["repo/search", "model/generate"],
-    candidates: [candidate("b"), candidate("a")],
+    candidates: allIneligible ? [candidate("a", false)] : [candidate("b"), candidate("a")],
   })
   const eligibility = evaluateK6R1ModelProviderRouteEligibility(request)
   const routePlanRequest = createK6R2RoutePlanRequest({
     version: K6_R2_ROUTE_PLAN_REQUEST_VERSION,
     orderingBasis: K6_R2_ORDERING_BASIS,
     eligibilityResult: eligibility,
-    orderedEligibleCandidateIds: ["a", "b"],
+    orderedEligibleCandidateIds: allIneligible ? [] : ["a", "b"],
   })
   return { routePlanRequest, routePlan: materializeK6R2DeterministicRoutePlan(routePlanRequest) }
 }
 
-function receipt(index: number, resultStatus: "success" | "blocked" | "failure" = "success", receiptId = `receipt-${index}`): K5R2SourceLink {
+function receipt(
+  index: number,
+  resultStatus: "success" | "blocked" | "failure" = "success",
+  receiptId = `receipt-${index}`,
+): K5R2SourceLink {
   return createK5R2SourceLink({
     evidenceId: `e-receipt-${index}`,
     sourceKind: "EXECUTION_RECEIPT",
@@ -126,7 +126,10 @@ function verification(passed = true): K5R2SourceLink {
   })
 }
 
-function stateFacts(state: K5R4EvidenceState): { r1Status: "SATISFIED" | "FAILED" | "CONTRADICTORY" | "STALE" | "INVALID"; causes: readonly string[] } {
+function stateFacts(state: K5R4EvidenceState): {
+  r1Status: "SATISFIED" | "FAILED" | "CONTRADICTORY" | "STALE" | "INVALID"
+  causes: readonly K5R4Cause[]
+} {
   switch (state) {
     case "VALID": return { r1Status: "SATISFIED", causes: [] }
     case "INCOMPLETE": return { r1Status: "FAILED", causes: ["R1_EXPLICIT_FAILED"] }
@@ -136,18 +139,23 @@ function stateFacts(state: K5R4EvidenceState): { r1Status: "SATISFIED" | "FAILED
   }
 }
 
-function reconciliation(sources: readonly K5R2SourceLink[], state: K5R4EvidenceState = "VALID", repo = repositoryId): K5R4ProofStateReconciliation {
+function reconciliation(
+  sources: readonly K5R2SourceLink[],
+  state: K5R4EvidenceState = "VALID",
+  repo = repositoryId,
+): K5R4ProofStateReconciliation {
   const facts = stateFacts(state)
-  const results = sources.map((source) => ({
+  const results: K5R4EvidenceResult[] = sources.map((source) => ({
     evidenceId: source.evidenceId,
-    evidenceKind: source.sourceKind === "VERIFICATION_REPORT" ? "VERIFICATION" as const : "EXECUTION_RECEIPT" as const,
+    evidenceKind: source.sourceKind === "VERIFICATION_REPORT" ? "VERIFICATION" : "EXECUTION_RECEIPT",
     r1Status: facts.r1Status,
-    linkageLayer: "K5_R2" as const,
-    linkStatus: "LINKED" as const,
+    linkageLayer: "K5_R2",
+    linkStatus: "LINKED",
     sourceIdentity: source.sourceIdentity,
     state,
     causes: facts.causes,
-  })).sort((left, right) => left.evidenceId < right.evidenceId ? -1 : left.evidenceId > right.evidenceId ? 1 : 0)
+  }))
+  results.sort((left, right) => left.evidenceId < right.evidenceId ? -1 : left.evidenceId > right.evidenceId ? 1 : 0)
   const preimage = {
     version: K5_R4_PROOF_STATE_RECONCILIATION_VERSION,
     packageIdentity: "9".repeat(64),
@@ -176,7 +184,10 @@ function input(options: {
   return {
     routePlanRequest,
     routePlan,
-    executionObservations: observations.map((item) => ({ planStepIndex: item.planStepIndex, executionReceiptSource: item.source })),
+    executionObservations: observations.map((item) => ({
+      planStepIndex: item.planStepIndex,
+      executionReceiptSource: item.source,
+    })),
     verificationSource,
     k5Reconciliation: reconciliation(sources, options.state ?? "VALID", options.repository ?? repositoryId),
     doneGateOutcome: {
@@ -198,9 +209,10 @@ test("materializes exact predecessor projections without execution authority", (
   assert.equal(linkage.repositoryId, repositoryId)
   assert.equal(linkage.routePlanIdentity, source.routePlan.planIdentity)
   assert.equal(linkage.routePlanRequestIdentity, source.routePlanRequest.planRequestIdentity)
-  assert.equal(linkage.executionObservations[0]?.candidateId, "a")
-  assert.equal(linkage.executionObservations[0]?.role, "PRIMARY")
-  assert.equal(linkage.executionObservations[0]?.executionResultStatus, "success")
+  assert.deepEqual(
+    linkage.executionObservations.map((item) => [item.candidateId, item.role, item.executionResultStatus]),
+    [["a", "PRIMARY", "success"]],
+  )
   assert.equal(linkage.verificationPassed, true)
   assert.equal(linkage.k5Status, "VALID")
   assert.equal(linkage.doneGateStatus, "NOT_READY")
@@ -211,47 +223,41 @@ test("materializes exact predecessor projections without execution authority", (
   assert.equal(Object.hasOwn(linkage, "provenReady"), false)
 })
 
-test("observation order is identity-significant and repeated plan steps remain observations only", () => {
+test("observation order is identity-significant and repeated steps do not imply retry", () => {
   const r0 = receipt(0)
   const r1 = receipt(1)
-  const first = input({ observations: [{ planStepIndex: 0, source: r0 }, { planStepIndex: 0, source: r1 }] })
-  const second = input({ observations: [{ planStepIndex: 0, source: r1 }, { planStepIndex: 0, source: r0 }] })
-  const a = createK6R3RouteOutcomeLinkage(first)
-  const b = createK6R3RouteOutcomeLinkage(second)
-  assert.notEqual(a.linkageIdentity, b.linkageIdentity)
-  assert.deepEqual(a.executionObservations.map((item) => item.receiptId), ["receipt-0", "receipt-1"])
-  assert.deepEqual(b.executionObservations.map((item) => item.receiptId), ["receipt-1", "receipt-0"])
-  assert.deepEqual(a.executionObservations.map((item) => item.planStepIndex), [0, 0])
+  const first = createK6R3RouteOutcomeLinkage(input({ observations: [
+    { planStepIndex: 0, source: r0 },
+    { planStepIndex: 0, source: r1 },
+  ] }))
+  const second = createK6R3RouteOutcomeLinkage(input({ observations: [
+    { planStepIndex: 0, source: r1 },
+    { planStepIndex: 0, source: r0 },
+  ] }))
+  assert.notEqual(first.linkageIdentity, second.linkageIdentity)
+  assert.deepEqual(first.executionObservations.map((item) => item.receiptId), ["receipt-0", "receipt-1"])
+  assert.deepEqual(first.executionObservations.map((item) => item.planStepIndex), [0, 0])
 })
 
-test("PRIMARY and FALLBACK plan projections are preserved without automatic fallback semantics", () => {
-  const source = input({ observations: [{ planStepIndex: 1, source: receipt(0) }] })
-  const linkage = createK6R3RouteOutcomeLinkage(source)
-  assert.equal(linkage.executionObservations[0]?.candidateId, "b")
-  assert.equal(linkage.executionObservations[0]?.role, "FALLBACK")
-})
-
-test("execution receipt success, blocked, and failure are preserved without classification", () => {
+test("PRIMARY/FALLBACK and receipt statuses are preserved without policy inference", () => {
+  const fallback = createK6R3RouteOutcomeLinkage(input({ observations: [{ planStepIndex: 1, source: receipt(0) }] }))
+  assert.deepEqual([fallback.executionObservations[0]?.candidateId, fallback.executionObservations[0]?.role], ["b", "FALLBACK"])
   for (const status of ["success", "blocked", "failure"] as const) {
-    const source = input({ observations: [{ planStepIndex: 0, source: receipt(0, status) }] })
-    const linkage = createK6R3RouteOutcomeLinkage(source)
+    const linkage = createK6R3RouteOutcomeLinkage(input({ observations: [{ planStepIndex: 0, source: receipt(0, status) }] }))
     assert.equal(linkage.executionObservations[0]?.executionResultStatus, status)
     assert.equal(Object.hasOwn(linkage.executionObservations[0] as object, "retryable"), false)
   }
 })
 
-test("all five K5 aggregate states are preserved without reinterpretation", () => {
+test("K5 and Done Gate caller outcomes are preserved without reinterpretation", () => {
   for (const state of ["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"] as const) {
     assert.equal(createK6R3RouteOutcomeLinkage(input({ state })).k5Status, state)
   }
-})
-
-test("Done Gate PROVEN_READY and NOT_READY are caller snapshots only", () => {
   assert.equal(createK6R3RouteOutcomeLinkage(input({ doneStatus: "PROVEN_READY" })).doneGateStatus, "PROVEN_READY")
   assert.equal(createK6R3RouteOutcomeLinkage(input({ doneStatus: "NOT_READY" })).doneGateStatus, "NOT_READY")
 })
 
-test("forged R2 request and plan identities fail closed", () => {
+test("forged R2 identities and no-route plans fail closed", () => {
   const forgedRequest = clone(input())
   forgedRequest.routePlanRequest.planRequestIdentity = "0".repeat(64)
   assert.throws(() => createK6R3RouteOutcomeLinkage(forgedRequest), TypeError)
@@ -259,66 +265,39 @@ test("forged R2 request and plan identities fail closed", () => {
   const forgedPlan = clone(input())
   forgedPlan.routePlan.planIdentity = "0".repeat(64)
   assert.throws(() => createK6R3RouteOutcomeLinkage(forgedPlan), TypeError)
-})
 
-test("NO_ELIGIBLE_CANDIDATE is structurally inapplicable", () => {
-  const routeRequest = createK6R1RouteRequest({
-    version: K6_R1_ROUTE_REQUEST_VERSION,
-    repositoryId,
-    canonicalBase: base,
-    candidateHead: head,
-    taskId: "k6-r3/no-route",
-    riskClass: "MEDIUM",
-    privacyClass: "REPOSITORY_PRIVATE",
-    requiredCapabilities: ["repo/search"],
-    candidates: [{ ...candidate("a"), qualification: { ...candidate("a").qualification, status: "FAIL" as const } }],
-  })
-  const eligibility = evaluateK6R1ModelProviderRouteEligibility(routeRequest)
-  const routePlanRequest = createK6R2RoutePlanRequest({
-    version: K6_R2_ROUTE_PLAN_REQUEST_VERSION,
-    orderingBasis: K6_R2_ORDERING_BASIS,
-    eligibilityResult: eligibility,
-    orderedEligibleCandidateIds: [],
-  })
-  const routePlan = materializeK6R2DeterministicRoutePlan(routePlanRequest)
+  const noRoute = route(true)
   const source = input()
-  assert.throws(() => createK6R3RouteOutcomeLinkage({ ...source, routePlanRequest, routePlan }), TypeError)
+  assert.throws(() => createK6R3RouteOutcomeLinkage({ ...source, ...noRoute }), TypeError)
 })
 
-test("revision and repository mismatches fail closed", () => {
-  const wrongRepository = input({ repository: "other/repo" })
-  assert.throws(() => createK6R3RouteOutcomeLinkage(wrongRepository), /repositoryId/)
+test("revision, repository, membership, source identity, and receipt identity drift fail closed", () => {
+  assert.throws(() => createK6R3RouteOutcomeLinkage(input({ repository: "other/repo" })), /repositoryId/)
 
-  const source = clone(input())
-  source.executionObservations[0]!.executionReceiptSource.candidateHead = "3".repeat(40)
-  assert.throws(() => createK6R3RouteOutcomeLinkage(source), TypeError)
-})
+  const revision = clone(input())
+  revision.executionObservations[0]!.executionReceiptSource.candidateHead = "3".repeat(40)
+  assert.throws(() => createK6R3RouteOutcomeLinkage(revision), TypeError)
 
-test("missing or substituted K5 membership fails closed", () => {
-  const source = clone(input())
-  source.k5Reconciliation.results = source.k5Reconciliation.results.filter((item) => item.evidenceKind !== "EXECUTION_RECEIPT")
-  const preimage = { ...source.k5Reconciliation }
+  const missing = clone(input())
+  missing.k5Reconciliation.results = missing.k5Reconciliation.results.filter((item) => item.evidenceKind !== "EXECUTION_RECEIPT")
+  const preimage = { ...missing.k5Reconciliation }
   delete (preimage as Partial<typeof preimage>).reconciliationIdentity
-  source.k5Reconciliation.reconciliationIdentity = k5R4ReconciliationIdentity(preimage as K5R4ProofStateReconciliationInput)
-  assert.throws(() => createK6R3RouteOutcomeLinkage(source), TypeError)
-})
+  missing.k5Reconciliation.reconciliationIdentity = k5R4ReconciliationIdentity(preimage as K5R4ProofStateReconciliationInput)
+  assert.throws(() => createK6R3RouteOutcomeLinkage(missing), TypeError)
 
-test("duplicate source identities and receipt ids fail closed", () => {
   const sameSource = receipt(0)
   assert.throws(() => createK6R3RouteOutcomeLinkage(input({ observations: [
     { planStepIndex: 0, source: sameSource },
     { planStepIndex: 1, source: sameSource },
   ] })), TypeError)
 
-  const sameReceiptIdA = receipt(0, "success", "same")
-  const sameReceiptIdB = receipt(1, "failure", "same")
   assert.throws(() => createK6R3RouteOutcomeLinkage(input({ observations: [
-    { planStepIndex: 0, source: sameReceiptIdA },
-    { planStepIndex: 1, source: sameReceiptIdB },
+    { planStepIndex: 0, source: receipt(0, "success", "same") },
+    { planStepIndex: 1, source: receipt(1, "failure", "same") },
   ] })), TypeError)
 })
 
-test("Done Gate source binding, reason invariant, and duplicate evidence fail closed", () => {
+test("Done Gate binding, reason invariant, duplicate evidence, and linkage tampering fail closed", () => {
   const wrongSource = clone(input())
   wrongSource.doneGateOutcome.verificationSourceIdentity = "0".repeat(64)
   assert.throws(() => createK6R3RouteOutcomeLinkage(wrongSource), TypeError)
@@ -330,20 +309,18 @@ test("Done Gate source binding, reason invariant, and duplicate evidence fail cl
   const duplicate = clone(input())
   duplicate.doneGateOutcome.evidence.push(clone(duplicate.doneGateOutcome.evidence[0]!))
   assert.throws(() => createK6R3RouteOutcomeLinkage(duplicate), TypeError)
-})
 
-test("tampered linkage identity and projections fail closed", () => {
   const source = input()
-  const linkage = clone(createK6R3RouteOutcomeLinkage(source))
-  linkage.linkageIdentity = "0".repeat(64)
-  assert.throws(() => validateK6R3RouteOutcomeLinkage(linkage, source), TypeError)
+  const forged = clone(createK6R3RouteOutcomeLinkage(source))
+  forged.linkageIdentity = "0".repeat(64)
+  assert.throws(() => validateK6R3RouteOutcomeLinkage(forged, source), TypeError)
 
-  const projected = clone(createK6R3RouteOutcomeLinkage(source))
-  projected.executionObservations[0]!.provider = "other-provider"
-  assert.throws(() => validateK6R3RouteOutcomeLinkage(projected, source), TypeError)
+  const projection = clone(createK6R3RouteOutcomeLinkage(source))
+  projection.executionObservations[0]!.provider = "other-provider"
+  assert.throws(() => validateK6R3RouteOutcomeLinkage(projection, source), TypeError)
 })
 
-test("R3-owned hostile object shapes fail closed without invoking accessors or proxy traps", () => {
+test("R3-owned proxy, accessor, symbol, sparse-array, and non-plain inputs fail closed", () => {
   let traps = 0
   const proxy = new Proxy(input(), {
     get() { traps += 1; throw new Error("trap") },
@@ -379,7 +356,7 @@ test("R3-owned hostile object shapes fail closed without invoking accessors or p
   assert.throws(() => createK6R3RouteOutcomeLinkage(nonPlain), /plain object/)
 })
 
-test("invalid Unicode, NUL, bounds, and out-of-range indexes fail closed", () => {
+test("Unicode, NUL, resource bounds, and plan-step bounds fail closed", () => {
   const unicode = clone(input())
   unicode.doneGateOutcome.reasons = ["\ud800"]
   assert.throws(() => createK6R3RouteOutcomeLinkage(unicode), TypeError)
@@ -392,27 +369,23 @@ test("invalid Unicode, NUL, bounds, and out-of-range indexes fail closed", () =>
   over.doneGateOutcome.reasons = Array.from({ length: K6_R3_LIMITS.maxDoneGateReasons + 1 }, () => "x")
   assert.throws(() => createK6R3RouteOutcomeLinkage(over), RangeError)
 
-  const index = clone(input())
-  index.executionObservations[0]!.planStepIndex = 99
-  assert.throws(() => createK6R3RouteOutcomeLinkage(index), TypeError)
+  const outOfRange = clone(input())
+  outOfRange.executionObservations[0]!.planStepIndex = 99
+  assert.throws(() => createK6R3RouteOutcomeLinkage(outOfRange), TypeError)
 })
 
-test("caller input is not mutated and returned structures are immutable", () => {
-  const source = input({ observations: [{ planStepIndex: 0, source: receipt(0) }, { planStepIndex: 1, source: receipt(1) }] })
+test("inputs remain unchanged, output is immutable, and canonical identities are deterministic", () => {
+  const source = input({ observations: [
+    { planStepIndex: 0, source: receipt(0) },
+    { planStepIndex: 1, source: receipt(1) },
+  ] })
   const before = JSON.stringify(source)
-  const linkage = createK6R3RouteOutcomeLinkage(source)
+  const first = createK6R3RouteOutcomeLinkage(source)
+  const second = createK6R3RouteOutcomeLinkage(clone(source))
   assert.equal(JSON.stringify(source), before)
-  assert.equal(Object.isFrozen(linkage), true)
-  assert.equal(Object.isFrozen(linkage.executionObservations), true)
-  assert.equal(Object.isFrozen(linkage.executionObservations[0]), true)
-  assert.equal(Object.isFrozen(source.routePlan), true)
-})
-
-test("semantically identical canonical inputs produce byte-identical identities", () => {
-  const first = input()
-  const second = clone(first)
-  const a = createK6R3RouteOutcomeLinkage(first)
-  const b = createK6R3RouteOutcomeLinkage(second)
-  assert.equal(a.doneGateOutcomeIdentity, b.doneGateOutcomeIdentity)
-  assert.equal(a.linkageIdentity, b.linkageIdentity)
+  assert.equal(Object.isFrozen(first), true)
+  assert.equal(Object.isFrozen(first.executionObservations), true)
+  assert.equal(Object.isFrozen(first.executionObservations[0]), true)
+  assert.equal(first.doneGateOutcomeIdentity, second.doneGateOutcomeIdentity)
+  assert.equal(first.linkageIdentity, second.linkageIdentity)
 })
