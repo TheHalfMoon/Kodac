@@ -8,19 +8,33 @@ This file is a navigation/status view only. It does not authorize implementation
 
 Before any mutation:
 
-1. re-read live GitHub `main`, open PRs, exact heads, CI, reviews, threads and ruleset;
+1. re-read live GitHub `main`, open PRs, exact heads, changed files, CI, reviews, threads, mergeability and active ruleset;
 2. read root `AGENTS.md`;
-3. read the exact canonical authorization record for the active unit;
-4. execute only that unit and its allowlist.
+3. read the governing ADRs and the exact canonical authorization record for the active unit;
+4. execute only that unit and its explicit allowlist.
 
-If this page conflicts with live GitHub, an ADR, or an authorization record, the live/more authoritative source wins.
+If this page conflicts with live GitHub, an ADR, or an exact authorization/evidence record, the more authoritative source wins.
+
+Text on a feature branch or PR is candidate text only. The action below is effective only when this P0 roadmap reconciliation is canonical on `main` and its required post-merge proof has succeeded.
 
 ---
 
-# Canonical state at plan adoption boundary
+# Current canonical truth
+
+Re-read live `main` before acting. The current reconciliation is based on these canonical anchors:
 
 ```text
-CANONICAL_MAIN = 4ed9bed6fdb23643c722298adfba4ae8e72097b2
+K5 closeout       = PR #201 / 06a6e33ca78bc4d0bd68449292161e1e4dc96385
+K6-R1 merge       = PR #204 / 7bc163b9ec0d5d451950542f1feb15e444fbdc6c
+K6-R2 merge       = PR #206 / 90c00cfc01cb874c08b4f7bde1469ccb298b5648
+K6-R3 merge       = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
+Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
+```
+
+Current bounded state:
+
+```text
+K5 = CLOSED FOR CANONICAL R1-R5 BOUNDED PROOF-REVIEW SCOPE
 K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
@@ -29,75 +43,66 @@ K6-R5 = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-K6-R3 closed through PR #208 with guarded merge, exact parent/tree proof, valid GitHub merge signature, and successful post-merge governance and K2 runtime gates.
-
-Always re-read live `main`; do not treat the SHA above as a future merge precondition.
+Engineering milestone state remains separate from public release state.
 
 ---
 
-# NOW
+# NOW — K6-R4 authorization candidate
 
-## P0 — Adopt the improvement plan, then reconcile roadmap truth
-
-The durable plan is:
-
-- `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
-
-The detailed research/gap review is:
-
-- `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
-
-After the plan is canonical, the next repository mutation is **roadmap truth reconciliation only**:
+After this P0 reconciliation is canonical and post-merge proven, the next eligible repository unit is:
 
 ```text
-docs/roadmap/ROADMAP.md
-docs/roadmap/MILESTONES.md
-docs/roadmap/VERSION_PLAN.md
-docs/roadmap/NEXT.md
+K6-R4 AUTHORIZATION-CANDIDATE PREPARATION
+TOPIC = PRIVACY-GOVERNED BOUNDED OUTCOME RECORDS / MEMORY
+K6-R4 IMPLEMENTATION = NOT_AUTHORIZED
 ```
 
-Goal:
+Do **not** implement K6-R4 source/runtime work merely because this roadmap names it next.
 
-```text
-K6-R1/R2/R3 shown as canonical/closed
-K6-R4/R5 shown as not authorized unless a later canonical record says otherwise
-historical authorization records left unchanged
-engineering milestone status kept separate from public release status
-```
+A separate R4 authorization must become canonical before implementation and must define at minimum:
 
-Do not implement K6-R4 as part of roadmap reconciliation.
-
----
-
-# NEXT
-
-## P1 — K6-R4 authorization candidate
-
-Only after roadmap truth is reconciled and a separate authorization record is created/adopted.
-
-R4 topic:
-
-```text
-privacy-governed outcome records / memory
-```
-
-The R4 authorization must define before implementation:
-
-- allowed and forbidden fields;
-- privacy classification;
+- exact allowed fields;
+- exact forbidden fields and prohibited raw/sensitive content;
+- privacy classification and sensitive-data handling;
 - repository/user isolation;
-- local-first storage behavior;
-- provenance;
-- retention/deletion/expiry;
-- conflict/supersession;
-- telemetry/egress rules;
-- cross-repository boundaries.
+- local-first behavior;
+- whether persistence is optional/required and its exact authority boundary;
+- provenance identities;
+- retention;
+- deletion;
+- expiry;
+- conflict and supersession semantics;
+- telemetry rules;
+- network/egress rules;
+- cross-repository boundaries;
+- exact implementation allowlist;
+- required tests and negative/adversarial cases;
+- exact-head CI and review requirements;
+- guarded merge requirements;
+- post-merge proof requirements.
 
-R4 does **not** automatically authorize strategy promotion, provider invocation, model training, telemetry, cross-repository learning, or new K2 authority.
+The R4 authorization must explicitly preserve:
+
+```text
+MODEL / PROVIDER / REVIEWER INVOCATION = NOT_AUTHORIZED
+MODEL TRAINING = NOT_AUTHORIZED
+TELEMETRY / UPLOAD = NOT_AUTHORIZED BY IMPLICATION
+UNCONTROLLED PERSISTENCE = NOT_AUTHORIZED
+CROSS-REPOSITORY LEARNING = NOT_AUTHORIZED
+STRATEGY PROMOTION = NOT_AUTHORIZED
+AUTOFIX = NOT_AUTHORIZED
+EXTERNAL SERVICES = NOT_AUTHORIZED
+K2 AUTHORITY EXPANSION = NOT_AUTHORIZED
+DONE GATE / PROVEN_READY AUTHORITY CHANGE = NOT_AUTHORIZED
+```
+
+The authorization candidate may only grant a future implementation allowlist after that authorization itself has passed exact-head qualification, guarded merge, and required post-merge proof.
 
 ---
 
 # THEN
+
+The canonical dependency order remains:
 
 ```text
 K6-R4 authorization
@@ -105,13 +110,13 @@ K6-R4 authorization
 -> K6-R5 authorization
 -> K6-R5 bounded strategy proposal + R5-specific qualification corpus
 -> K6 bounded closeout
--> KodacBench
--> Context Engine v2
--> Reviewer Intelligence v2
--> Finding Verifier Fabric
--> Security Validation
--> Bounded Autofix
--> Product / Distribution Hardening
+-> P2 KodacBench
+-> P3 Context Engine v2
+-> P4 Reviewer Intelligence v2
+-> P5 Finding Verifier Fabric
+-> P6 Security Validation
+-> P7 Bounded Autofix
+-> P8 Product / Distribution Hardening
 ```
 
 Critical sequencing rule:
@@ -120,43 +125,39 @@ Critical sequencing rule:
 K6-R5 BOUNDED QUALIFICATION CORPUS != GENERAL KODACBENCH
 ```
 
-R5 may use only the minimum corpus/holdout explicitly authorized for R5. Full KodacBench comes after K6 closeout and is required before broad claims about context, review, verification, security or autofix quality.
+General KodacBench comes only after K6 bounded closeout and is required before broad claims about context, reviewer, verifier, security, autofix, or product superiority.
 
 ---
 
-# Improvement principles
+# Navigation
 
-```text
-MORE CONTEXT != BETTER CONTEXT
-AGENT CONSENSUS != TRUTH
-REVIEW != PROOF
-VERIFIER RESULT = EVIDENCE, NOT COMPLETION AUTHORITY
-TESTS GREEN != COMPLETE CORRECTNESS
-PATCH APPLIED != FIXED
-SELF-IMPROVING != SELF-AUTHORIZING
-```
+How to work:
 
-Future direction:
+- `AGENTS.md`
 
-- selective, task-aware context rather than context volume;
-- reviewer + evidence-grounded critic rather than default large swarms;
-- first-class verifier proposals for material findings;
-- frozen benchmark + later-in-time reality-check lane;
-- deterministic security evidence kept visible beside agentic reasoning;
-- any autofix executed only through bounded K2 authority and re-proved afterward.
+Current action:
 
----
+- `docs/roadmap/NEXT.md`
 
-# RESEARCH LATER
+Current engineering roadmap:
 
-Research-only until separately authorized:
+- `docs/roadmap/ROADMAP.md`
 
-- cross-model reviewer diversity;
-- formal verification for high-risk invariants;
-- cross-repository context;
-- repository world models;
-- learned high-level engineering policies;
-- larger specialist multi-agent systems.
+Current milestone ledger:
+
+- `docs/roadmap/MILESTONES.md`
+
+Engineering/public-version separation:
+
+- `docs/roadmap/VERSION_PLAN.md`
+
+Durable ordered plan:
+
+- `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
+
+Research and gap rationale:
+
+- `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
 
 ---
 
@@ -168,10 +169,10 @@ Stop and report the exact blocker when:
 - live `main` or exact head moved after qualification;
 - required CI/review evidence is stale or failing;
 - an unresolved material finding remains;
-- the changed-file set exceeds the authorized allowlist;
+- the changed-file set exceeds the active allowlist;
 - a new dependency/tool/provider/model is needed without admission;
-- persistence/telemetry/learning is needed without privacy authority;
-- work would expand K2, K5 or Done Gate authority by implication;
-- merge would require force-push, rebase, destructive history rewriting or stale evidence reuse.
+- persistence/telemetry/learning is needed without exact privacy authority;
+- work would expand K2, K5, K6, Done Gate, release, or merge authority by implication;
+- merge would require force-push, rebase, destructive history rewriting, stale-head reuse, or silent waiver.
 
-No roadmap sentence can override these rules.
+No roadmap sentence can override these stop rules.
