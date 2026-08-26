@@ -187,7 +187,6 @@ jobs:
           def utf16_units(value):
               encoded = value.encode("utf-16-be", "surrogatepass")
               return tuple((encoded[index] << 8) | encoded[index + 1] for index in range(0, len(encoded), 2))
-
           def validate_ordered_subset_of(validator, allowed_order, instance, schema):
               if not isinstance(instance, list):
                   return
@@ -337,7 +336,7 @@ jobs:
               "":{"name":"k6-r1-typescript-validation","version":"1.0.0","dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
               "node_modules/@types/node":{"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
               "node_modules/typescript":{"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
-              "node_modules/undici-types":{"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+              "node_modules/undici-types":{"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/node-24.3.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
             }
           }
           JSON
@@ -351,7 +350,7 @@ jobs:
           node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/contracts.ts
           node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/eligibility.ts
           node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts
-          npm test --workspace packages/kodac-runtime
+          (cd packages/kodac-runtime && npm test)
           export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r1-schema-venv"
           uv run --frozen --no-sync pytest -p no:cacheprovider
           uv run --frozen --no-sync ruff check --no-cache .
