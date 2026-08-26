@@ -280,10 +280,19 @@ test("revision, repository, membership, source identity, and receipt identity dr
 
   const missing = clone(input())
   missing.k5Reconciliation.results = missing.k5Reconciliation.results.filter((item) => item.evidenceKind !== "EXECUTION_RECEIPT")
-  const preimage = { ...missing.k5Reconciliation }
-  delete (preimage as Partial<typeof preimage>).reconciliationIdentity
-  missing.k5Reconciliation.reconciliationIdentity = k5R4ReconciliationIdentity(preimage as K5R4ProofStateReconciliationInput)
+  const missingPreimage = { ...missing.k5Reconciliation }
+  delete (missingPreimage as Partial<typeof missingPreimage>).reconciliationIdentity
+  missing.k5Reconciliation.reconciliationIdentity = k5R4ReconciliationIdentity(missingPreimage as K5R4ProofStateReconciliationInput)
   assert.throws(() => createK6R3RouteOutcomeLinkage(missing), TypeError)
+
+  const mismatch = clone(input())
+  const mismatchedResult = mismatch.k5Reconciliation.results.find((item) => item.evidenceKind === "EXECUTION_RECEIPT")
+  assert.ok(mismatchedResult)
+  mismatchedResult.linkStatus = "MISMATCH"
+  const mismatchPreimage = { ...mismatch.k5Reconciliation }
+  delete (mismatchPreimage as Partial<typeof mismatchPreimage>).reconciliationIdentity
+  mismatch.k5Reconciliation.reconciliationIdentity = k5R4ReconciliationIdentity(mismatchPreimage as K5R4ProofStateReconciliationInput)
+  assert.throws(() => createK6R3RouteOutcomeLinkage(mismatch), /LINKED/)
 
   const sameSource = receipt(0)
   assert.throws(() => createK6R3RouteOutcomeLinkage(input({ observations: [
