@@ -13,62 +13,120 @@ PERSISTENT LEARNING AUTHORITY: NONE
 PUBLIC RELEASE AUTHORITY: NONE
 ```
 
-This plan is designed to make Kodac's next work easy for a human or coding agent to follow. It organizes existing canonical directions and research-backed improvements. Every implementation slice still requires its own explicit canonical authorization where repository governance requires it.
+This plan makes Kodac's next work easy for a human or coding agent to follow. It organizes existing canonical directions and research-backed improvements. Every implementation slice still requires its own explicit canonical authorization where repository governance requires it.
 
-If this document conflicts with live GitHub, an ADR, a canonical authorization record, or a later accepted planning record, the more authoritative/live source wins.
+If this document conflicts with live GitHub, `AGENTS.md`, a governing ADR, a canonical authorization record, or a later accepted planning record, the live/more authoritative source wins.
 
-## 1. How to use this plan
+---
 
-Every execution session should follow this order:
+# 1. Start here
+
+Every execution session follows this order:
 
 ```text
 1. Read docs/roadmap/NEXT.md
 2. Re-read live main / open PRs / exact heads / CI / reviews
-3. Read the authorization record for the one active unit
-4. Execute only that unit
+3. Read the exact authorization for the one active unit
+4. Execute only that authorized unit and allowlist
 5. Prove exact-head gates
 6. Merge only with the required expected-head guard
 7. Prove post-merge canonical state
-8. Update roadmap truth
-9. Move to the next eligible unit
+8. Reconcile roadmap truth
+9. Move to the next genuinely eligible unit
 ```
 
-Do not skip directly to a later phase because it is technically attractive.
+Do not skip to a later phase because it is technically attractive.
 
-## 2. North-star product direction
+## Global execution invariant
 
-Kodac should evolve from a collection of strong bounded contracts into an integrated **software validation intelligence system**:
+```text
+LIVE TRUTH
+-> ACTIVE AUTHORIZATION
+-> IMPLEMENT
+-> EXACT-HEAD PROOF
+-> GUARDED MERGE
+-> POST-MERGE PROOF
+-> UPDATE ROADMAP TRUTH
+-> CONTINUE
+```
 
-> Kodac understands the change, retrieves only the context that matters, generates evidence-backed review claims, challenges those claims through structured disagreement, verifies material findings with executable or contextual evidence, links the proof chain to exact revisions, and learns only from verified outcomes under explicit privacy and promotion gates.
+---
 
-The architectural invariant remains:
+# 2. North-star product direction
+
+Kodac should evolve from strong bounded contracts into an integrated **software validation intelligence system**:
+
+> Kodac understands the change, retrieves only the context that matters, generates evidence-backed review claims, challenges those claims through structured disagreement, verifies material findings with executable or contextual evidence, links the proof chain to exact revisions, and improves strategies only from verified outcomes under explicit privacy and promotion gates.
+
+The architectural invariants remain:
 
 ```text
 INTELLIGENCE != AUTHORITY
 REVIEW != PROOF
 TEST PASS != COMPLETE CORRECTNESS
-AUTOFIX != FIXED
+PATCH APPLIED != FIXED
 LEARNING != SELF-AUTHORIZATION
+ROUTING EVIDENCE != EXECUTION AUTHORITY
+K5 EVIDENCE != DONE GATE AUTHORITY
 ```
 
-## 3. Program overview
+Kodac's differentiation should be proof-oriented validation, not simply more review comments, more context, or more agents.
 
-The improvement program is intentionally staged.
+---
 
-| Stage | Name | Goal | Implementation status |
+# 3. Program map
+
+The program is intentionally staged.
+
+| Stage | Name | Goal | Current authority |
 | --- | --- | --- | --- |
-| P0 | Canonical truth and navigation | One obvious next-action path | Planning in this record only |
-| P1 | Finish K6 bounded loop | Outcome records and qualified strategy proposals | R3 active; R4/R5 not authorized |
-| P2 | KodacBench foundation | Measure before claiming improvement | Not authorized |
-| P3 | Context Engine v2 | Selective, calibrated context | Not authorized |
-| P4 | Reviewer Intelligence v2 | Evidence-grounded review + disagreement | Not authorized |
-| P5 | Finding Verifier Fabric | Make findings falsifiable/provable | Not authorized |
-| P6 | Bounded Autofix | Propose/execute/re-prove fixes through K2 | Not authorized |
-| P7 | Security Validation | Hybrid deterministic + agentic security evidence | Not authorized |
-| P8 | Product / distribution hardening | Local, CLI, CI and agent-friendly product surface | Not authorized |
-| R | Advanced research | Formal verification, world model, cross-repo, learned policies | Research only |
+| **P0** | Canonical truth & navigation | One obvious next action | Planning only here |
+| **P1** | Finish bounded K6 | Outcome evidence + bounded strategy qualification | R3 active; R4/R5 not authorized |
+| **P2** | KodacBench | General measurement spine | Not authorized |
+| **P3** | Context Engine v2 | Selective calibrated context | Not authorized |
+| **P4** | Reviewer Intelligence v2 | Evidence-grounded review + disagreement | Not authorized |
+| **P5** | Finding Verifier Fabric | Make findings falsifiable | Not authorized |
+| **P6** | Security Validation | Hybrid deterministic + agentic security evidence | Not authorized |
+| **P7** | Bounded Autofix | Propose, execute through K2, re-prove | Not authorized |
+| **P8** | Product & Distribution Hardening | Local/CLI/CI/agent-friendly surfaces | Not authorized |
+| **R** | Advanced Research | World model, formal proof, learned policy, cross-repo | Research only |
 
-The program stages are sequencing labels. They do not mint new canonical milestone IDs by themselves.
+These P-labels are sequencing labels for this plan. They do not create new canonical milestone IDs or implementation authority.
+
+## Dependency summary
+
+```text
+P0: canonical truth / navigation
+ |
+ v
+K6-R3 canonical disposition
+ |
+ v
+P1: K6-R4 -> K6-R5 -> K6 closeout
+ |
+ v
+P2: KodacBench general measurement spine
+ |\
+ | +-------------------------+
+ v                           v
+P3 Context Engine v2      P6 Security Validation
+ |
+ v
+P4 Reviewer Intelligence v2
+ |
+ v
+P5 Finding Verifier Fabric
+ |
+ +--------------------+
+ |                    |
+ v                    v
+P7 Bounded Autofix   stronger security verification
+ |
+ v
+P8 Product / Distribution Hardening
+```
+
+Security research and benchmark design may occur earlier as documentation/research, but executable integration remains separately authorized.
 
 ---
 
@@ -76,31 +134,40 @@ The program stages are sequencing labels. They do not mint new canonical milesto
 
 ## Objective
 
-Make the repository understandable in minutes without requiring reconstruction of dozens of historical gates.
+Make the repository understandable in minutes without reconstructing dozens of historical gates.
 
-## P0.1 — Close or explicitly stop PR #208
+## P0.1 — Resolve K6-R3 / PR #208
 
-Current planning snapshot:
+Planning snapshot when this plan was authored:
 
 ```text
+CANONICAL_MAIN = 13348e3efa1cfa5a71eda692e1f1ea428882c763
 PR = #208
 HEAD = 3e84a6a831206d2f2f7364cc46024fb6e160575e
 TREE = 38cc441d60ba11749fe290e3ec9570267a05ddbd
 K6-R3 = NOT YET CLOSED_CANONICAL
+WAIVER = NO
 ```
 
-Required decision gate:
+Always re-read live GitHub before relying on this snapshot.
 
-- fresh exact-head CodeRabbit and Qodo material findings must be fully adjudicated;
-- no waiver;
-- no merge while one material review finding has unresolved disposition;
-- if the candidate changes, all prior exact-head evidence is stale;
-- merge must use the exact expected-head precondition;
-- ordered parent/tree/blob/signature/main proof is required after merge.
+Required gate:
+
+- every fresh exact-head CodeRabbit/Qodo material finding has a settled evidence-backed disposition;
+- no review waiver;
+- zero unresolved actionable review threads;
+- exact six-path scope remains intact;
+- required CI remains terminal green on the exact candidate;
+- immediate pre-merge re-read of main, PR head, scope, reviews, ruleset, checks, mergeability;
+- merge uses normal GitHub merge-commit semantics with exact expected-head precondition;
+- ordered parent/tree/blob/signature/main proof after merge;
+- applicable post-merge checks terminal green.
+
+If the candidate head changes, earlier exact-head evidence is stale.
 
 ### Exit
 
-Exactly one:
+Exactly one state:
 
 ```text
 K6-R3 = CLOSED_CANONICAL
@@ -109,54 +176,51 @@ K6-R3 = CLOSED_CANONICAL
 or
 
 ```text
-K6-R3 = BLOCKED_AT_EXPLICIT_REVIEW_OR_AUTHORITY_BOUNDARY
+K6-R3 = EXPLICITLY_BLOCKED_WITH_EVIDENCE
 ```
 
-No ambiguous state.
+No ambiguous middle state.
 
-## P0.2 — Roadmap truth reconciliation
+## P0.2 — Reconcile roadmap truth
 
-After the K6-R3 disposition is canonical, reconcile:
+After the K6-R3 disposition becomes canonical, reconcile:
 
 - `docs/roadmap/ROADMAP.md`
 - `docs/roadmap/MILESTONES.md`
 - `docs/roadmap/VERSION_PLAN.md`
 - `docs/roadmap/NEXT.md`
 
-Required improvement:
+Rules:
 
-- current K6 state must match canonical merge evidence;
-- historical status prose must not imply K6 is merely proposed if R1/R2/R3 are canonical;
-- preserve engineering milestone vs product release separation;
-- never retroactively imply authority not granted at the time.
+- current K6 status must match canonical merge evidence;
+- historical authorization text remains historical and must not be rewritten to imply authority that did not exist;
+- engineering milestone status remains separate from public release/version status.
 
-## P0.3 — One obvious execution front door
+## P0.3 — Keep one execution front door
 
-`docs/roadmap/NEXT.md` becomes the concise navigation page.
+`docs/roadmap/NEXT.md` is the concise status/navigation page.
 
-It must contain only:
+It should contain only:
 
-1. current canonical main snapshot;
-2. current active unit;
-3. blockers;
-4. next authorized/planned unit;
+1. current canonical snapshot;
+2. active unit;
+3. current blockers;
+4. next permitted/planned unit;
 5. later sequence;
-6. exact links to authoritative records;
-7. stop rules.
+6. links to authoritative records;
+7. stop conditions.
 
-It should not duplicate full contracts.
+`NEXT.md` never replaces the full authorization contract.
 
-## P0.4 — Future machine-readable state index
+## P0.4 — Consider a machine-readable state view later
 
-**Planning proposal only.**
-
-Consider a later generated or tightly governed machine-readable state file, for example:
+Planning idea only:
 
 ```text
 docs/roadmap/state.json
 ```
 
-Potential fields:
+Potential shape:
 
 ```json
 {
@@ -170,41 +234,41 @@ Potential fields:
 }
 ```
 
-Do not implement this unless its update authority and stale-state handling are explicitly defined. Human-readable authorization records remain controlling.
+Do not implement until update authority, generation source, stale-state handling, and consistency checks are explicitly defined.
 
 ### P0 exit criteria
 
-- an agent can identify the correct next unit from `NEXT.md` without guessing;
-- roadmap documents no longer contradict canonical K6 state;
-- no implementation authority is inferred from navigation text.
+- a new agent can find the current unit from `NEXT.md` without guessing;
+- roadmap views no longer contradict canonical K6 state;
+- navigation text cannot be interpreted as implementation authority.
 
 ---
 
-# P1 — Finish the bounded K6 outcome / improvement loop
+# P1 — Finish the bounded K6 outcome/improvement loop
 
 ## Objective
 
-Complete K6's planned path from routing evidence to privacy-governed outcome evidence and controlled strategy proposals without creating execution or self-promotion authority.
+Complete the already-planned K6 chain from route evidence to privacy-governed outcome evidence and controlled strategy proposals without creating a second execution authority, completion authority, or self-promotion path.
 
-## P1.1 — K6-R4 authorization: privacy-governed outcome record
+## P1.1 — K6-R4 authorization candidate: privacy-governed outcome record
 
 Only after K6-R3 canonical closeout and a separate authorization record.
 
-Required contract questions:
+The later R4 gate must define at least:
 
-- what exact fields may be persisted;
-- what raw repository/provider/reviewer content is forbidden;
-- repository and user isolation;
+- exact allowed stored fields;
+- forbidden raw/sensitive fields;
+- repository/user isolation;
 - privacy classification;
 - exact provenance identities;
 - retention / deletion / expiration;
 - conflict / supersession;
-- local-only vs user-configured storage;
+- local-first behavior;
 - whether persistence is optional and fail-closed;
-- no telemetry or upload by implication;
+- no telemetry/upload by implication;
 - no cross-repository learning by default.
 
-Minimum proposed record families:
+Possible record families for later contract design:
 
 ```text
 RouteOutcomeRecord
@@ -214,26 +278,28 @@ VerifierOutcomeRecord
 StrategyTrialOutcome
 ```
 
-Names remain contract decisions.
+Names are not authorized schemas.
 
 ### R4 non-grants
 
-- no strategy promotion;
-- no model training;
-- no cross-repo aggregation;
-- no provider invocation;
-- no new K2 authority.
+```text
+STRATEGY PROMOTION = NOT AUTHORIZED
+MODEL TRAINING = NOT AUTHORIZED
+CROSS-REPOSITORY AGGREGATION = NOT AUTHORIZED
+PROVIDER INVOCATION = NOT AUTHORIZED
+NEW K2 AUTHORITY = NOT AUTHORIZED
+```
 
-## P1.2 — K6-R5 authorization: strategy proposal and qualification
+## P1.2 — K6-R5 authorization candidate: bounded strategy proposal & qualification
 
 Goal:
 
 ```text
-verified historical outcomes
--> candidate strategy proposal
--> controlled benchmark comparison
+verified K6 outcomes
+-> immutable candidate strategy proposal
+-> bounded K6-R5 comparative qualification
 -> qualification evidence
--> human/canonical promotion gate
+-> external human/canonical promotion decision
 ```
 
 Candidate strategy dimensions may include:
@@ -241,47 +307,64 @@ Candidate strategy dimensions may include:
 - context retrieval strategy;
 - reviewer/critic composition;
 - model/provider choice;
-- static vs agentic lane choice;
+- deterministic/static vs agentic lane choice;
 - test-generation strategy;
 - compute budget allocation;
 - fallback strategy.
 
-Required safeguards:
+### Critical sequencing boundary: R5 qualification corpus != KodacBench
 
-- proposal is immutable and versioned;
-- incumbent remains explicit;
-- frozen benchmark + temporal holdout;
+K6-R5 comes before the later general KodacBench stage in the current roadmap direction. Therefore R5 **must not depend on a future full KodacBench implementation**.
+
+A later R5 authorization may define only the minimum bounded qualification corpus/fixtures needed to compare one candidate strategy against one incumbent under the exact K6-R5 scope.
+
+That R5-specific corpus must be:
+
+- explicitly defined by the R5 authorization;
+- deterministic/reproducible where applicable;
+- provenance-bound;
+- isolated from the later general KodacBench authority;
+- incapable of supporting broad claims such as “best reviewer”, “best context engine”, or “production-ready”.
+
+If R5 uses a temporal holdout, that holdout is part of the bounded R5 qualification gate only. It is not automatically the later KodacBench temporal lane.
+
+### R5 safeguards
+
+- strategy proposal is immutable and versioned;
+- incumbent is explicit;
+- qualification evidence is exact-scope and exact-version;
 - no self-reported reward as truth;
 - no automatic promotion;
-- regression guardrails by task family;
-- cost/latency/privacy/security tracked separately from accuracy;
-- rollback identity preserved.
+- relevant regressions fail the proposal even if one aggregate score improves;
+- compute/latency/privacy/security behavior remains independently visible;
+- rollback identity is preserved;
+- promotion remains outside the strategy itself.
 
 ## P1.3 — K6 closeout
 
-Separate closeout evidence must prove each bounded R1-R5 surface and preserve all non-grants.
+A separate closeout gate must prove the explicitly authorized R1-R5 bounded surfaces and preserve all non-grants.
 
-### P1 exit criteria
+### P1 exit
 
 ```text
 K6 = CLOSED FOR ITS EXPLICITLY AUTHORIZED BOUNDED SCOPE
 ```
 
-This still does not mean public release or autonomous self-improvement.
+This still does not establish public release, universal strategy quality, or autonomous self-improvement.
 
 ---
 
-# P2 — KodacBench foundation
+# P2 — KodacBench: general measurement spine
 
 ## Objective
 
-Make every future “better” claim measurable.
+Make every later broad “better” claim measurable and reproducible.
 
-This should become the central qualification spine before major Reviewer Intelligence, Context Engine, autofix, or strategy promotion work.
+KodacBench is intentionally **after bounded K6 closeout** in this plan. It is the general benchmark foundation for later Context Engine v2, Reviewer Intelligence v2, verifier, security, and autofix claims. It is broader than the minimum K6-R5 qualification corpus.
 
-## P2.1 — Benchmark contract
+## P2.1 — Benchmark manifest contract
 
-Define an immutable benchmark manifest with:
+Define an immutable benchmark manifest with at least:
 
 - benchmark identity/version;
 - task identity;
@@ -290,72 +373,96 @@ Define an immutable benchmark manifest with:
 - task family;
 - allowed tools/context;
 - expected evidence;
-- evaluator identity;
-- timeout/compute budget;
+- evaluator identity/version;
+- time/compute budget;
 - contamination status;
 - gold/held-out evidence separation.
 
-## P2.2 — Frozen regression corpus
+## P2.2 — Frozen reproducible corpus
 
-Families should include at least:
+Task families should include at least:
 
 ### Context
 
-- code -> test;
-- comment/error -> context;
-- trace -> code;
-- edit -> ripple;
-- issue -> edit localization;
-- no-gold / abstention.
+```text
+code -> test
+comment/error -> context
+trace -> code
+edit -> ripple
+issue -> edit localization
+no-gold / abstention
+```
 
 ### Review
 
-- blocking correctness;
-- severe/security;
-- contextual architecture;
-- provenance/identity;
-- CI/workflow self-bypass;
-- stale/revision mismatch;
-- prompt/instruction injection;
-- duplicate / superseded findings.
+```text
+blocking correctness
+severe/security
+architecture/context
+provenance/identity
+CI/workflow self-bypass
+stale/revision mismatch
+prompt/instruction injection
+duplicate/superseded finding
+```
 
 ### Verification
 
-- regression-test generation;
-- patch-overfit detection;
-- negative cases;
-- environment reconstruction;
-- original-test survival;
-- contract/schema invariants.
+```text
+regression-test generation
+patch-overfit detection
+negative/edge cases
+environment reconstruction
+original-test survival
+contract/schema invariants
+```
 
 ### Routing
 
-- eligible candidate selection;
-- context/reviewer/tool strategy choice;
-- fallback ordering;
-- abstention;
-- provider unavailable / quota / privacy constraints.
+```text
+candidate eligibility
+context/reviewer/tool strategy choice
+fallback ordering
+abstention
+provider unavailable / privacy / budget constraints
+```
 
-## P2.3 — Temporal live holdout
+### Full-cycle engineering
 
-A frozen corpus alone is vulnerable to benchmark contamination and strategy overfitting.
+```text
+environment readiness
+issue/spec understanding
+localization/context
+planning/decomposition
+implementation
+verification generation
+review/adjudication
+proof-chain completion
+integrated outcome
+```
 
-Define a living evaluation lane using later-in-time, rights-cleared tasks not available during strategy construction.
+## P2.3 — Temporal/live reality-check lane
+
+A frozen corpus alone is vulnerable to contamination, Goodhart effects, and strategy overfitting.
+
+Define a versioned later-in-time holdout/reality-check lane using rights-cleared tasks not available during strategy construction.
 
 Rules:
 
 - no training/prompt tuning on holdout;
-- rotate/append by explicit version;
-- keep historical results immutable;
-- separate private holdout evidence from public benchmark artifacts if needed.
+- append/rotate only through explicit version change;
+- historical results remain immutable;
+- private holdout artifacts may remain private when necessary while identities/evaluation rules remain auditable.
+
+This mirrors the useful **frozen benchmark + refreshed reality check** pattern seen in current code-review benchmarking work without importing external authority or code.
 
 ## P2.4 — Metric families
 
-Do not reduce KodacBench to one score.
+Do not collapse everything into one score.
 
-### Review metrics
+### Review
 
-- valid material finding recall;
+- valid material-finding recall;
 - precision / false-positive rate;
 - severe/security recall;
 - duplicate rate;
@@ -364,7 +471,7 @@ Do not reduce KodacBench to one score.
 - fix survival after re-review;
 - false-consensus rate.
 
-### Context metrics
+### Context
 
 - Recall@K / Precision@K;
 - file F1;
@@ -373,34 +480,35 @@ Do not reduce KodacBench to one score.
 - explored vs utilized context;
 - context dilution delta.
 
-### Verification metrics
+### Verification
 
 - defect reproduction rate;
 - verifier precision;
 - regression coverage;
-- hidden/held-out test survival;
+- held-out test survival;
 - environment reconstruction success;
-- false “fixed” rate.
+- false-`FIXED` rate.
 
-### System metrics
+### System
 
 - latency;
 - tokens/compute;
 - provider cost when applicable;
-- local-only capability;
-- deterministic/static fallback coverage;
+- local-only/static fallback coverage;
 - privacy/egress behavior;
-- failure recovery.
+- failure recovery;
+- cross-platform reproducibility where applicable.
 
-## P2.5 — Evaluation reports
+## P2.5 — Immutable evaluation reports
 
-Every benchmark run should produce an immutable evidence report, not only dashboard numbers.
+Every qualification run should emit an evidence report with exact benchmark/config/model/provider/strategy identities, not only dashboard numbers.
 
 ### P2 exit criteria
 
-- benchmark protocol has accepted reproducibility and contamination controls;
-- future strategy gates can reference exact benchmark identities;
-- no “best” claim without evidence.
+- reproducibility/contamination controls are accepted;
+- task-family metrics are explicit;
+- later strategy gates can reference exact benchmark identities;
+- no broad “best” claim without accepted evidence.
 
 ---
 
@@ -408,27 +516,28 @@ Every benchmark run should produce an immutable evidence report, not only dashbo
 
 ## Objective
 
-Move from “retrieve more context” to “retrieve the minimum sufficient evidence for this task.”
+Optimize **minimum sufficient evidence**, not maximum context volume.
+
+Recent repository-review research indicates that more context can reduce quality through attention dilution. Kodac should measure context selection as a process.
 
 ## P3.1 — Task-aware retrieval planner
 
-Input includes caller-materialized task class and risk context.
-
-Candidate retrieval lanes:
+Input includes caller-materialized task/risk context. Candidate evidence lanes may include:
 
 - lexical/symbol search;
 - AST/symbol graph;
 - dependency/import graph;
-- test relation graph;
-- history/PR evidence;
+- test relations;
+- architecture/spec records;
+- PR/history evidence;
 - runtime trace evidence;
-- optional embeddings only if qualified.
+- optional embeddings only after benchmark qualification.
 
-No single lane is assumed globally superior.
+No retrieval family is assumed universally superior.
 
 ## P3.2 — Context selection evidence
 
-Each selected item should have machine-readable rationale, for example:
+Every selected item should have a bounded inclusion rationale. Future contract examples:
 
 ```text
 DIRECT_DIFF
@@ -443,49 +552,50 @@ RUNTIME_TRACE
 SECURITY_POLICY
 ```
 
-Exact vocabulary requires a contract gate.
+Exact vocabulary requires a later gate.
 
-## P3.3 — Context budgets and dilution control
+## P3.3 — Dilution control
 
-Measure:
+Measure at least:
 
 - bytes/tokens selected;
 - relevant evidence density;
 - duplicate context;
 - low-value context;
 - result quality as budget grows;
-- selective abstention when no useful context is found.
+- no-gold abstention;
+- explored vs actually utilized context.
 
-## P3.4 — Experience retrieval
+## P3.4 — Repository-local experience retrieval
 
-Later, after K6-R4 privacy semantics exist, allow repository-local prior outcomes to be proposed as context.
+Only after K6-R4 privacy semantics exist and the relevant context slice is authorized.
 
-Rules:
+Requirements:
 
 - provenance visible;
 - recency/supersession visible;
 - no silent policy promotion;
-- unfiltered old experience must not flood the context;
-- benchmark summarized vs full trajectory reuse.
+- old experience is filtered rather than dumped into context;
+- summarized vs full-trajectory reuse is benchmarked.
 
 ## P3.5 — Cross-repository context
 
 Research only until separately authorized.
 
-If introduced:
+If later admitted:
 
 - read-only;
 - explicit repository allowlist;
-- exact snapshot identities;
-- no secret/credential crossover;
+- exact snapshot identity;
+- no credential/secret crossover;
 - no implicit transitive access;
-- benchmark proof that it improves target tasks.
+- benchmark evidence of utility.
 
 ### P3 exit criteria
 
-- selective context beats or matches current Context Engine on accepted task families;
+- selective context beats or matches the current baseline on accepted task families;
 - no-gold behavior is calibrated;
-- increased context cannot be called improvement if it reduces review quality.
+- increasing context cannot be called improvement if review/verification quality declines.
 
 ---
 
@@ -493,29 +603,29 @@ If introduced:
 
 ## Objective
 
-Increase recall without recreating noisy consensus-based swarms.
+Increase useful defect discovery without turning Kodac into a noisy large-swarm consensus system.
 
 ## P4.1 — Hypothesis-focused reviewer lanes
 
-Instead of “five generic reviewers”, risk planning may create narrow hypotheses:
+Risk planning may spawn narrow hypotheses such as:
 
-- authorization drift;
-- state/identity mismatch;
-- concurrency/race;
-- data loss;
-- security exploitability;
-- compatibility break;
-- CI self-bypass;
-- performance/resource bound;
-- spec/intent mismatch.
+```text
+authorization drift
+state/identity mismatch
+concurrency/race
+data loss
+security exploitability
+compatibility break
+CI self-bypass
+resource/performance bound
+spec/intent mismatch
+```
 
-A lane must be justified by change/risk evidence.
+Every lane must be justified by change/risk evidence.
 
-## P4.2 — Structured critic protocol
+## P4.2 — Structured critic/disagreement protocol
 
-For material findings, a critic receives the frozen finding + evidence and returns a structured disagreement state.
-
-Planned semantic states:
+For material findings, a critic receives the frozen finding/evidence and returns a structured evidence-backed disposition proposal. Planning vocabulary:
 
 ```text
 SUPPORTED
@@ -524,18 +634,26 @@ UNVERIFIED_CONCERN
 DUPLICATE_OR_SUPERSEDED
 ```
 
-Exact names require a contract gate.
+Exact names require a future contract.
 
-The critic must provide evidence references. Silence or agreement is not proof.
+Rules:
 
-## P4.3 — Finding contract v2
+- critic cites evidence;
+- silence/agreement is not proof;
+- majority vote is not truth;
+- reviewed artifact/revision is frozen for the round;
+- adjudication remains separate from reviewer/critic voting.
 
-Extend/qualify the Kodac-owned finding model with:
+Large swarms are benchmark experiments, not default architecture.
+
+## P4.3 — Finding contract v2 direction
+
+Future finding evidence may include:
 
 - exact review-run identity;
-- immutable policy identity;
+- immutable policy/instruction identity;
 - risk hypothesis;
-- evidence refs;
+- evidence references;
 - claimed violated invariant;
 - confidence/calibration;
 - verifier proposal;
@@ -549,20 +667,22 @@ Extend/qualify the Kodac-owned finding model with:
 
 Future bounded rule semantics:
 
-- source/provenance;
-- scope;
-- precedence;
-- conflict;
-- duplicate;
-- superseded;
-- stale;
-- inferred-proposal vs canonical rule distinction.
+```text
+source/provenance
+scope
+precedence
+conflict
+duplicate
+superseded
+stale
+inferred-proposal vs canonical-rule
+```
 
-Never promote a learned/inferred rule automatically.
+Never promote inferred rules automatically into trust policy.
 
-## P4.5 — Incremental vs cumulative review
+## P4.5 — Explicit review modes
 
-Expose explicit modes:
+Planning direction:
 
 ```text
 INCREMENTAL
@@ -570,13 +690,13 @@ CUMULATIVE
 RISK_ESCALATED_CUMULATIVE
 ```
 
-Every mode remains exact-head bound. Incremental review cannot implicitly certify untouched but transitively affected context.
+Every mode remains exact-head bound. Incremental review does not implicitly certify untouched but transitively affected surfaces.
 
 ### P4 exit criteria
 
-- benchmarked recall/precision improves without unacceptable false-consensus increase;
+- accepted KodacBench review metrics improve without unacceptable false-consensus/false-positive regressions;
 - critic disagreement is evidence-grounded;
-- candidate-controlled instructions cannot redefine reviewer trust policy.
+- candidate-controlled instructions cannot redefine reviewer authority.
 
 ---
 
@@ -584,11 +704,11 @@ Every mode remains exact-head bound. Incremental review cannot implicitly certif
 
 ## Objective
 
-Turn high-value findings into falsifiable claims.
+Turn material findings into falsifiable claims where technically possible.
 
 ## P5.1 — Verifier proposal contract
 
-A finding may propose one or more verifier types:
+Future verifier proposal families may include:
 
 ```text
 STATIC_RULE
@@ -603,158 +723,93 @@ CONTEXTUAL_RUBRIC
 FORMAL_PROOF
 ```
 
-Exact vocabulary remains future contract work.
+This list is planning vocabulary only.
 
-## P5.2 — Execution separation
+## P5.2 — Execution authority remains separate
 
-Reviewer Intelligence does not execute verifiers directly.
+Reviewer Intelligence does not execute privileged verifiers directly.
 
-Any side-effecting execution remains behind K2 or another already-canonical execution boundary.
+Any side-effecting action remains behind K2 or another already-canonical execution boundary.
 
-## P5.3 — Generated tests
+## P5.3 — Generated regression evidence
 
-Generated test requirements:
+Requirements for a later generated-test slice:
 
-- test target and claimed defect explicit;
-- generated test source identity recorded;
-- do not overwrite existing tests silently;
-- run against exact candidate;
-- distinguish test-generation failure from finding invalidity;
-- store logs/evidence under existing evidence rules only if separately authorized.
+- claimed defect/target explicit;
+- generator/model/config identity recorded when applicable;
+- generated test does not silently overwrite existing tests;
+- exact candidate revision is recorded;
+- test-generation failure != finding invalidity;
+- generated test success != universal patch correctness;
+- original tests/verification remain independently visible.
 
 ## P5.4 — Contextual rubric verifier
 
-Use only as supplemental evidence when direct execution is unavailable or insufficient.
+Use only as supplemental evidence when direct executable proof is unavailable or incomplete.
 
-Rubric must be:
+Rubrics must be:
 
 - repository-context grounded;
 - versioned;
-- specific and checkable;
-- independent from the candidate's self-description;
-- never stronger than executable proof merely because an agent generated it.
+- specific/checkable;
+- independent from candidate self-description;
+- never treated as stronger than available executable proof by implication.
 
-## P5.5 — Verification confidence hierarchy
-
-Planning direction:
+## P5.5 — Evidence hierarchy direction
 
 ```text
 unsupported reviewer assertion
 < context-grounded claim
 < deterministic/static evidence
 < focused reproduction
-< independent generated regression + original tests
-< execution under relevant environment
+< independent regression + original tests
+< relevant environment execution
 < machine-checked formal proof where applicable
 ```
 
-This is an evidence ordering concept, not a universal severity formula.
+This is an evidence-ordering concept, not a universal severity formula.
 
 ### P5 exit criteria
 
-- material findings can be associated with repeatable verifier evidence where technically possible;
-- “fixed” cannot be asserted from patch text alone.
+- material findings can reference repeatable verifier evidence where possible;
+- `FIXED` cannot be established from patch text alone.
 
 ---
 
-# P6 — Bounded Autofix
+# P6 — Security Validation
 
 ## Objective
 
-Allow safe fix execution only after review/adjudication/verifier foundations are mature.
+Make security a specialized evidence program rather than one generic LLM prompt.
 
-## P6.1 — Patch proposal only
+## P6.1 — Deterministic security lanes
 
-First bounded slice should produce an immutable patch proposal without writing the repository.
+Research/qualification candidates include:
 
-Required fields:
-
-- source finding identity;
-- exact base/head;
-- intended paths;
-- intended semantic change;
-- verifier plan;
-- expected contract impact;
-- risk class.
-
-## P6.2 — Write-scope gate
-
-Before any actual edit:
-
-- exact allowed files;
-- no hidden generated files;
-- no dependency/lockfile change unless explicitly authorized;
-- no workflow/ruleset/policy mutation unless explicitly authorized;
-- maximum semantic scope is policy-governed, not an arbitrary product quota.
-
-## P6.3 — K2-only execution
-
-Autofix never gets its own side-effect authority.
-
-```text
-Autofix planner -> bounded patch intent -> K2 -> execution receipt
-```
-
-## P6.4 — Mandatory re-proof
-
-After patch execution:
-
-1. original verifier reruns;
-2. original tests remain green;
-3. regression/negative tests run;
-4. Reviewer Intelligence performs exact-head re-review;
-5. critic/adjudication is refreshed;
-6. K5 evidence is reconciled;
-7. Done Gate remains the completion authority.
-
-### Failure rule
-
-```text
-PATCH_APPLIED + VERIFIER_FAILED != FIXED
-PATCH_APPLIED + TESTS_GREEN != PROVEN_READY
-```
-
-### P6 exit criteria
-
-- benchmark false-fixed rate is within accepted threshold;
-- no reviewer or autofix component bypasses K2/K5/Done Gate.
-
----
-
-# P7 — Security Validation
-
-## Objective
-
-Make security a specialized evidence program, not just another LLM prompt.
-
-## P7.1 — Deterministic security lanes
-
-Research/qualification candidates:
-
-- Semgrep/OpenGrep-style rule evidence;
-- CodeQL where available;
-- SCA / vulnerable dependency evidence;
+- SAST/rule evidence;
+- CodeQL where applicable;
+- SCA/vulnerable dependency evidence;
 - secret scanning;
 - IaC/config policy checks;
 - unsafe workflow/action checks.
 
-No dependency/tool is admitted by this plan.
+No tool/dependency is admitted by this plan.
 
-## P7.2 — Agentic security reasoning
+## P6.2 — Agentic security reasoning
 
-Use AI for:
+AI may later produce claims about:
 
-- exploit-chain reasoning;
-- authorization-flow analysis;
+- exploit chains;
+- authorization-flow defects;
 - cross-file vulnerability context;
 - false-positive adjudication;
-- missing-defense / unsafe-default hypotheses.
+- missing defenses / unsafe defaults.
 
-AI conclusions remain finding claims.
+AI conclusions remain finding claims and cannot erase deterministic scanner evidence.
 
-## P7.3 — Candidate-controlled review-policy attacks
+## P6.3 — Candidate-controlled review-policy attacks
 
-Required benchmark cases:
+KodacBench/security fixtures should cover:
 
 - malicious `AGENTS.md` change;
 - malicious reviewer instructions;
@@ -764,41 +819,110 @@ Required benchmark cases:
 - disabled security query;
 - fake test entrypoint;
 - provenance substitution;
-- stale check producer identity.
+- stale/wrong check-producer identity.
 
-## P7.4 — High-risk escalation
+## P6.4 — High-risk escalation
 
-High-risk surfaces may require stronger reviewer/critic/verifier bundles:
+Potential high-risk categories:
 
-- authentication/authorization;
-- secrets;
-- payments;
-- database migrations;
-- CI/trust policy;
-- process/network/filesystem authority;
-- cryptography;
-- public APIs;
-- release infrastructure.
+```text
+authentication / authorization
+secrets
+payments
+database migrations
+CI / trust policy
+process / network / filesystem authority
+cryptography
+public APIs
+release infrastructure
+```
 
-### P7 exit criteria
+High-risk lanes may require stronger reviewer + critic + verifier evidence than ordinary changes.
 
-- deterministic evidence and AI reasoning are both independently visible;
-- reviewer cannot suppress scanner evidence by assertion;
-- security benchmark shows accepted severe-finding recall/precision.
+### P6 exit criteria
+
+- deterministic and agentic evidence remain separately visible;
+- AI cannot suppress scanner evidence by assertion;
+- accepted severe-finding precision/recall gates are met.
 
 ---
 
-# P8 — Product and distribution hardening
+# P7 — Bounded Autofix
 
 ## Objective
 
-Turn the proof system into something developers and coding agents can use continuously.
+Allow fix execution only after review/adjudication/verifier foundations are proven.
 
-This remains separate from public release authorization.
+## P7.1 — Patch proposal first
 
-## P8.1 — Local review
+The first future autofix slice should produce an immutable patch proposal without repository mutation.
 
-Potential product surface:
+Possible fields:
+
+- source finding identity;
+- exact base/head;
+- intended paths;
+- intended semantic change;
+- verifier plan;
+- expected contract impact;
+- risk class.
+
+## P7.2 — Exact write-scope gate
+
+Before any write:
+
+- exact allowed paths;
+- no hidden generated files;
+- no dependency/lockfile change unless authorized;
+- no workflow/ruleset/policy mutation unless explicitly authorized;
+- scope is policy-governed rather than an arbitrary product quota.
+
+## P7.3 — K2-only execution
+
+Autofix never receives independent side-effect authority.
+
+```text
+Autofix planner
+-> bounded patch intent
+-> K2 / ExecutionGateway
+-> execution receipt
+```
+
+## P7.4 — Mandatory re-proof
+
+After patch execution:
+
+1. original verifier reruns;
+2. original tests remain green;
+3. regression/negative tests run where applicable;
+4. exact-head Reviewer Intelligence re-review;
+5. critic/adjudication refreshed;
+6. K5 evidence reconciled;
+7. Done Gate retains completion authority.
+
+Failure invariant:
+
+```text
+PATCH_APPLIED + VERIFIER_FAILED != FIXED
+PATCH_APPLIED + TESTS_GREEN != PROVEN_READY
+```
+
+### P7 exit criteria
+
+- accepted KodacBench false-`FIXED` threshold is met;
+- no reviewer/autofix component bypasses K2/K5/Done Gate.
+
+---
+
+# P8 — Product & Distribution Hardening
+
+## Objective
+
+Turn the proof system into a usable developer/agent workflow without conflating engineering readiness with release authority.
+
+## P8.1 — Local/pre-PR review
+
+Potential future CLI surface:
 
 ```text
 kodac review --base main
@@ -806,23 +930,24 @@ kodac review --working-tree
 kodac verify-finding <id>
 ```
 
-Exact CLI is future design work.
+Exact CLI is not authorized here.
 
-Goal: shift review before PR without changing the later exact-head PR gate.
+Goal: shift useful review earlier while preserving later exact-head PR proof gates.
 
 ## P8.2 — Agent-friendly output
 
-Every major operation should have:
+Every major operation should provide:
 
-- human-readable summary;
+- concise human summary;
 - stable machine-readable output;
 - exact identities;
-- actionable next step;
-- no hidden completion claims.
+- next actionable step;
+- explicit unknown/blocked state;
+- no hidden completion claim.
 
-## P8.3 — Plan handoff
+## P8.3 — Standard plan handoff format
 
-Plans should preserve a consistent structure:
+Use a consistent planning structure:
 
 ```text
 Summary
@@ -837,35 +962,34 @@ Agent Prompt
 Version / Change Log
 ```
 
-## P8.4 — Benchmark reporting
+## P8.4 — Transparent benchmark reporting
 
-Expose benchmark evidence transparently:
+Expose:
 
-- versioned benchmark identity;
+- benchmark version;
 - task-family results;
-- error bars/repeated-run variance where relevant;
-- cost/latency;
+- repeated-run variance/error bars where relevant;
+- latency/compute/cost;
 - model/provider/config identities;
 - known limitations;
 - no cherry-picked aggregate claim.
 
-## P8.5 — Distribution / public release gate
+## P8.5 — Separate release/distribution gate
 
-Separate future decision must cover:
+A later public-release decision must separately cover at least:
 
-- installation;
-- upgrades;
+- installation/upgrades;
 - supported platforms;
 - package signing/provenance;
-- release notes;
-- compatibility;
+- compatibility/versioning;
 - security reporting;
-- trademark/name status;
+- release notes;
+- name/trademark state;
 - support expectations.
 
 ### P8 exit criteria
 
-Product surfaces are usable and evidence-backed, but public publication remains separately authorized.
+Product surfaces may be usable and evidence-backed while public release remains separately authorized.
 
 ---
 
@@ -875,11 +999,11 @@ These are not default implementation work.
 
 ## R1 — Author/reviewer model diversity
 
-Benchmark whether a different model family catches more defects than same-family review after controlling for model capability and context.
+Benchmark same-family vs cross-family reviewers while controlling for model capability/context. Diversity alone is never correctness evidence.
 
 ## R2 — Repository world model / engineering surprise
 
-Preserve existing future research:
+Preserve the existing research abstraction:
 
 ```text
 current repository state + proposed action
@@ -888,112 +1012,97 @@ current repository state + proposed action
 -> surprise
 ```
 
-Use only as a routing/escalation signal until calibrated. Prediction is not evidence of what happened.
+Prediction may route/escalate verification only after calibration. Prediction is not evidence of what actually happened.
 
 ## R3 — Formal verification lane
 
-Evaluate for high-risk code with existing proof ecosystems. Do not make formal proof a universal requirement.
+Evaluate for high-risk code that already fits available proof ecosystems. Do not make formal proof a universal requirement.
 
 ## R4 — Cross-repository context
 
-Read-only, explicit allowlist, exact snapshot, privacy-controlled, benchmark-proven.
+Future properties if separately authorized:
 
-## R5 — Learned routing / high-level engineer policy
+- read-only;
+- explicit allowlist;
+- exact snapshots;
+- privacy isolation;
+- no implicit transitive access;
+- benchmark-proven value.
 
-Only after K6-R4/R5 and KodacBench exist. Learned policy proposes strategy; canonical promotion remains external.
+## R5 — Learned high-level engineering policy
+
+Only after K6 outcome/strategy foundations and general KodacBench exist. A learned policy may propose a strategy; it cannot promote itself or change trust authority.
 
 ---
 
-# 4. Dependency graph
+# 4. Priority order
+
+If resources are constrained:
 
 ```text
-P0 truth/navigation
-   |
-   v
-K6-R3 disposition
-   |
-   v
-P1 K6-R4 -> K6-R5 -> K6 closeout
-   |
-   +---------------------------+
-   |                           |
-   v                           v
-P2 KodacBench              planning research
-   |
-   +------------+--------------+
-   |            |              |
-   v            v              v
-P3 Context v2  P4 Review v2   P7 Security validation
-   |            |
-   +------+- ----+
-          |
-          v
-P5 Finding Verifier Fabric
-          |
-          v
-P6 Bounded Autofix
-          |
-          v
-P8 Product / distribution hardening
-```
-
-Security work can begin as benchmark/planning earlier, but executable integration remains subject to exact authorization/dependency gates.
-
-# 5. Priority order
-
-If resources are constrained, execute in this order:
-
-```text
-1. Canonical truth / NEXT navigation
-2. Finish K6 safely
-3. KodacBench
-4. Context Engine v2
-5. Reviewer Intelligence v2
-6. Finding Verifier Fabric
-7. Security Validation integration
-8. Bounded Autofix
-9. Product / distribution hardening
+1. P0 canonical truth / NEXT navigation
+2. P1 finish K6 safely
+3. P2 KodacBench
+4. P3 Context Engine v2
+5. P4 Reviewer Intelligence v2
+6. P5 Finding Verifier Fabric
+7. P6 Security Validation
+8. P7 Bounded Autofix
+9. P8 Product / Distribution Hardening
 10. Advanced research
 ```
 
-Why benchmark comes early:
+Why KodacBench comes before broad intelligence improvements:
 
-Without a measurement spine, every later “improvement” risks becoming preference, marketing, or benchmark overfitting rather than evidence-backed progress.
+Without a general measurement spine, “improvements” risk becoming preference, marketing, benchmark leakage, or unmeasured complexity. The only exception before P2 is the **narrow, explicitly scoped K6-R5 qualification corpus** required to close K6; it cannot substitute for KodacBench or support general superiority claims.
 
-# 6. Definition of an improvement
+---
 
-A change is not an improvement because:
+# 5. Definition of an improvement
 
-- it uses a newer model;
+A change is not an improvement merely because:
+
+- it uses a newer/larger model;
 - it uses more agents;
 - it uses more context;
-- it has more rules;
+- it adds more rules;
 - it produces more comments;
-- it writes a fix automatically;
+- it writes a patch automatically;
 - it passes one test suite;
-- a reviewer says it is better.
+- one reviewer says it is better.
 
-A future change may be called an improvement only when the relevant accepted benchmark/evidence gate demonstrates the intended gain without violating guardrails.
+A future change may be called an improvement only when the applicable accepted benchmark/evidence gate demonstrates the intended gain without violating task-family guardrails, authority boundaries, privacy constraints, or reproducibility requirements.
 
-# 7. Global stop rules
+---
+
+# 6. Global stop rules
 
 Stop instead of guessing when:
 
-- live `main` moves and exact-base evidence matters;
-- active PR head moves;
-- a material review finding is unresolved;
+- live `main` moved and exact-base evidence matters;
+- active PR head moved;
+- a material review finding has unsettled disposition;
 - implementation authority for the next slice is absent;
-- required predecessor blobs drift;
-- a new dependency or donor source would be needed without authorization;
+- required predecessor identities drift;
+- a new dependency/donor/provider/tool is needed without authority;
 - provider/network/secret access is needed without authority;
-- a benchmark result is ambiguous or data quality is insufficient;
-- privacy classification for stored outcome data is not defined;
+- benchmark data quality is insufficient;
+- privacy classification for stored outcome data is undefined;
 - an autofix cannot be independently verified;
-- a proposed learning strategy would silently alter trust policy.
+- a learning strategy tries to promote itself or alter trust policy;
+- a reviewer attempts to become Done Gate, approval, merge, or execution authority.
 
-# 8. Agent handoff template
+```text
+NO FORCE-PUSH
+NO REBASE
+NO DESTRUCTIVE HISTORY REWRITE
+NO REVIEW WAIVER
+NO SILENT SCOPE EXPANSION
+```
 
-Use this template when starting any future unit:
+---
+
+# 7. Agent handoff template
 
 ```text
 CONTINUE KODAC FROM LIVE REPOSITORY TRUTH
@@ -1010,9 +1119,11 @@ CONTINUE KODAC FROM LIVE REPOSITORY TRUTH
 10. If the next implementation unit is not authorized, stop at that exact authorization boundary and prepare only planning/authorization work that is explicitly permitted.
 ```
 
-# 9. Plan maintenance
+---
 
-This plan should be revised when research or canonical architecture changes materially.
+# 8. Plan maintenance
+
+Revise this plan only when canonical architecture or research evidence changes materially.
 
 Each revision should record:
 
@@ -1023,4 +1134,4 @@ Each revision should record:
 - whether authority changed (normally: no);
 - superseded assumptions.
 
-Do not silently rewrite history to make an old plan appear as if it always contained the new decision.
+Do not silently rewrite repository history to make an older plan appear to have always contained a later decision.
