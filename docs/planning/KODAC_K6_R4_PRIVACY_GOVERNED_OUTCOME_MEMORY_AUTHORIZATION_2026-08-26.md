@@ -240,6 +240,7 @@ R4 memory uses exact-key closed records. No extension bag, metadata map, note fi
 R4 memory output must not retain raw:
 
 - repository IDs or task IDs;
+- canonical Git base/head revision SHAs;
 - candidate IDs, provider names or model names;
 - R1 required-capability strings or candidate declarations;
 - source code, file contents, diffs or patches;
@@ -268,6 +269,19 @@ repositoryIdentity = SHA256(canonicalK6R1Json({
   repositoryId: validatedR3.linkage.repositoryId
 }))
 ```
+
+### Revision identity
+
+```text
+revisionIdentity = SHA256(canonicalK6R1Json({
+  kind: "K6_R4_REVISION",
+  repositoryId: validatedR3.linkage.repositoryId,
+  canonicalBase: validatedR3.linkage.canonicalBase,
+  candidateHead: validatedR3.linkage.candidateHead
+}))
+```
+
+Raw repository/base/head values are transient predecessor-validation and identity-derivation inputs only. Raw `canonicalBase` and `candidateHead` are not retained in R4 memory.
 
 ### Task identity
 
@@ -338,12 +352,11 @@ privacyClass
 routeOutcomeLinkageIdentity
 routePlanIdentity
 requestIdentity
-canonicalBase
-candidateHead
+revisionIdentity
 taskIdentity
 ```
 
-Every source field is projected from the validated R3 linkage except `taskIdentity`, which is the digest defined above. R1 raw request fields are not retained.
+`routeOutcomeLinkageIdentity`, `routePlanIdentity` and `requestIdentity` are exact projections from the validated R3 linkage. `revisionIdentity` and `taskIdentity` are the minimized digests defined above. Raw R1 request fields and raw Git base/head revision SHAs are not retained.
 
 ### `outcome`
 
@@ -481,7 +494,7 @@ Requirements:
 
 1. validate and bind R1+R3 exactly as specified above;
 2. derive privacy class from validated R1 request only;
-3. derive repository/task/candidate identities;
+3. derive repository/revision/task/candidate identities;
 4. require derived scope to equal memory scope;
 5. reject a different active record with the same `taskIdentity`;
 6. reject an exact record identity protected by a retained tombstone;
@@ -731,6 +744,7 @@ The implementation may expose only pure helpers equivalent to:
 
 ```text
 deriveK6R4RepositoryIdentity(repositoryId)
+deriveK6R4RevisionIdentity(repositoryId, canonicalBase, candidateHead)
 deriveK6R4TaskIdentity(taskId)
 deriveK6R4CandidateIdentity(candidateProjection)
 createK6R4EmptyOutcomeMemory(scopeInput)
@@ -782,7 +796,7 @@ No repository dependency, lockfile, administration permission or ruleset-write a
 ### Positive/determinism
 
 - exact minimized R3-to-R4 projection;
-- repository/task/candidate digest derivation;
+- repository/revision/task/candidate digest derivation;
 - deterministic record/tombstone/memory identities;
 - canonical sorting;
 - exact APPEND idempotency;
@@ -795,7 +809,7 @@ No repository dependency, lockfile, administration permission or ruleset-write a
 - cross-owner admission rejection;
 - cross-privacy admission rejection;
 - duplicate active task rejection;
-- raw repository/task/candidate/provider/model sentinel absence;
+- raw repository/task/canonicalBase/candidateHead/candidate/provider/model sentinel absence;
 - prompt/code/diff/secret/command/stdout/stderr/reason/finding/output sentinel absence;
 - unknown-field rejection at every R4-owned object layer;
 - explicit proof that `ownerScopeId` equality grants no execution/authorization behavior;
