@@ -2,12 +2,8 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kodac.dev/schema/k6-r2-deterministic-route-plan.schema.json",
   "title": "Kodac K6-R2 Deterministic Route Plan",
-  "$comment": "The dedicated K6-R2 validator extends Draft 2020-12 with x-kodacUtf8MaxBytes and x-kodacR2EnvelopeInvariant. The R2 schema references the pinned K6-R1 routeEligibilityResult definition instead of copying it. Cross-field eligible-permutation and exact request-to-plan projection are enforced by the dedicated validator layer.",
-  "oneOf": [
-    { "$ref": "#/$defs/routePlanRequest" },
-    { "$ref": "#/$defs/routePlan" },
-    { "$ref": "#/$defs/routePlanEnvelope" }
-  ],
+  "$comment": "The public R2 schema artifact is the request+plan envelope so executable validation always has both sides required for exact eligible-permutation and request-to-plan projection invariants. Request and plan shapes remain reusable under $defs, but are not standalone semantically validated root artifacts. The dedicated validator extends Draft 2020-12 with x-kodacUtf8MaxBytes and x-kodacR2EnvelopeInvariant and references the pinned K6-R1 routeEligibilityResult definition instead of copying it.",
+  "$ref": "#/$defs/routePlanEnvelope",
   "$defs": {
     "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "gitSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
