@@ -249,6 +249,11 @@ jobs:
             "https://api.github.com/repos/TheHalfMoon/Kodac/rulesets/20707483" > "$RUNNER_TEMP/k6-r3-ruleset.json"
           python - "$RUNNER_TEMP/k6-r3-ruleset.json" <<'PY'
           import json, os, sys
+          from datetime import datetime, timezone
+
+          def instant(value: str):
+              return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
           r = json.load(open(sys.argv[1]))
           assert r["id"] == 20707483
           assert r["name"] == "Kodac canonical main protection v1"
@@ -256,7 +261,7 @@ jobs:
           assert r["source_type"] == "Repository"
           assert r["source"] == "TheHalfMoon/Kodac"
           assert r["node_id"] == os.environ["RULESET_TRUSTED_NODE_ID"]
-          assert r["updated_at"] == os.environ["RULESET_TRUSTED_SNAPSHOT_UPDATED_AT"]
+          assert instant(r["updated_at"]) == instant(os.environ["RULESET_TRUSTED_SNAPSHOT_UPDATED_AT"])
           assert r["enforcement"] == "active"
           assert r["conditions"]["ref_name"] == {"exclude": [], "include": ["refs/heads/main"]}
           if "bypass_actors" in r:
