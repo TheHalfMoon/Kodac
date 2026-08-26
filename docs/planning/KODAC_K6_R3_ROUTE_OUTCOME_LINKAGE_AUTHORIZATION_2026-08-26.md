@@ -485,21 +485,28 @@ The authorized workflow must fail closed on at least:
 
 Historical branch/base-pinned K5/K6 implementation workflows are not automatically applicable to the R3 branch. The dedicated R3 workflow must execute the required focused predecessor regressions directly and must not relabel a historical expected branch/base failure as green.
 
-## Repository-enforced base advancement guard
+## Merge integrity and base advancement guard
 
-Ruleset `20707483` is a mandatory part of the merge protocol, not background metadata. Its active `strict_required_status_checks_policy = true` means the PR branch must be up to date with the protected base before GitHub may merge it. There are no bypass actors. Each required status context is bound to trusted producer `integration_id = 15368`. Therefore an advancement of `main` after qualification makes the branch stale against the base and the protected merge must be rejected until the authorization-defined forward reconciliation and full requalification are completed.
+Ruleset `20707483` is a mandatory preflight control and a server-side base-freshness control, not background metadata. Under the ruleset state GitHub actually evaluates at merge time, its active `strict_required_status_checks_policy = true` requires the PR branch to be up to date with the protected base before GitHub may merge it. The recorded ruleset has no bypass actors, and each required status context is bound to trusted producer `integration_id = 15368`. This record does not claim that a client-side snapshot of those ruleset properties is atomically bound to the merge request.
 
 Immediately before either authorization merge or future R3 implementation merge:
 
 1. re-read `refs/heads/main` and require the exact authorized base SHA;
 2. re-read ruleset `20707483` and require it to remain active, targeted only as recorded, with no bypass actors, strict required status checks enabled, and the exact three required check contexts `provenance`, `legacy-tests`, and `k2-runtime-gate`, each with `integration_id = 15368`;
-3. require the PR to remain mergeable, non-draft, and up to date with `main` under that strict ruleset;
-4. invoke only normal GitHub merge-commit semantics with the exact expected PR head SHA;
-5. treat any base movement, ruleset drift, required-check context or producer drift, required-check invalidation, merge rejection, or parent mismatch as STOP — never retry with stale evidence and never waive the guard.
+3. re-read the PR review/thread state and require the exact-head review gates to remain satisfied;
+4. require the PR to remain mergeable, non-draft, and up to date with `main` under the currently observed strict ruleset;
+5. invoke only normal GitHub merge-commit semantics with the exact expected PR head SHA;
+6. treat any observed base movement, ruleset drift, required-check context or producer drift, review-gate invalidation, required-check invalidation, merge rejection, or parent mismatch as STOP — never retry with stale evidence and never waive the guard.
 
 Merge-field mapping is normative: `expected_head_sha` is the internal connector/wrapper field used by repository automation. The wrapper MUST serialize it to GitHub REST `PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge` request-body field `sha` using the exact qualified PR head SHA. The literal key `expected_head_sha` MUST NOT be sent to GitHub REST, and no merge call may omit the resulting REST `sha` precondition.
 
-This protected strict-status rule is the repository-enforced base-ref lease for this protocol. If it is removed, loosened, bypassed, inaccessible for verification, or otherwise cannot be proven at merge time, the merge is not authorized.
+### Atomicity boundary
+
+GitHub's REST merge operation server-enforces the PR-head precondition through request-body `sha`. The protected ruleset also server-enforces whatever base-freshness and required-check policy is active when GitHub evaluates the merge. This workflow does **not** have one server-side transaction that compare-and-swap binds the previously read ruleset configuration, check-producer bindings, review/thread state, and base-ref snapshot to that same merge operation.
+
+Therefore the ruleset, base, and review re-reads above are preflight evidence, not an atomic lease, and this authorization does not present those client-side reads plus the REST `sha` precondition as sufficient by themselves to prove merge integrity. Canonical closure additionally requires post-merge proof of the actual ordered parents, qualified tree and blob identities, GitHub merge signature, exact qualified CI evidence, and review/thread evidence. The authorization makes no claim that an unobservable transient ruleset mutation can be cryptographically proven absent.
+
+If the required ruleset or review state is removed, loosened, bypassed, inaccessible for preflight verification, or otherwise cannot be proven immediately before merge, the merge is not authorized. If GitHub rejects the protected merge, no stale-evidence retry is authorized.
 
 ## Review and merge gate for the future implementation PR
 
@@ -515,14 +522,15 @@ K6-R3 implementation must not merge until all of the following are proven on the
 8. fresh exact-head Qodo review has zero unresolved material correctness/security/governance findings;
 9. zero unresolved actionable review threads remain;
 10. no review waiver is taken;
-11. protected `main` and ruleset `20707483` are re-read immediately before merge and satisfy the repository-enforced base advancement guard above;
-12. PR is open, non-draft, mergeable, up to date under the strict ruleset, and still has exactly six changed files;
-13. merge uses normal GitHub merge-commit semantics through the connected wrapper with `expected_head_sha = <exact qualified head>`, which MUST map to GitHub REST request-body `sha = <same exact qualified head>`, while the strict ruleset concurrently guards base freshness;
+11. protected `main`, ruleset `20707483`, and review/thread state are re-read as preflight evidence immediately before merge and satisfy the merge-integrity guard above;
+12. PR is open, non-draft, mergeable, up to date under the currently observed strict ruleset, and still has exactly six changed files;
+13. merge uses normal GitHub merge-commit semantics through the connected wrapper with `expected_head_sha = <exact qualified head>`, which MUST map to GitHub REST request-body `sha = <same exact qualified head>`; the merge must also be accepted by GitHub under the protection state GitHub evaluates at merge time, without claiming that the earlier preflight snapshot is atomically bound to that transaction;
 14. ordered merge parent 1 equals pre-merge canonical `main` and parent 2 equals the exact qualified candidate head;
 15. merge tree equals the qualified candidate tree;
 16. GitHub merge signature is valid;
-17. `main` points to the merge commit and the six merged blobs equal the qualified blobs; and
-18. applicable post-merge governance/shared/runtime gates reach terminal success.
+17. `main` points to the merge commit and the six merged blobs equal the qualified blobs;
+18. applicable post-merge governance/shared/runtime gates reach terminal success; and
+19. the final closure record distinguishes server-enforced merge facts from non-atomic preflight observations and does not claim stronger atomicity than GitHub provides.
 
 Only then may K6-R3 become `CLOSED_CANONICAL` for this bounded linkage-only scope.
 
@@ -574,23 +582,24 @@ It may not change source, tests, schemas, workflows, dependencies, lockfiles, pa
 K6-R3 implementation authority becomes effective only if this exact one-path authorization record is canonically adopted with all of the following proven:
 
 1. PR base ref is exactly `main`;
-2. live protected `main` remains exactly `90c00cfc01cb874c08b4f7bde1469ccb298b5648` with tree `018ec040cb82c1a6c4d8370f69ffbf46fdca8534` before merge;
+2. live protected `main` remains exactly `90c00cfc01cb874c08b4f7bde1469ccb298b5648` with tree `018ec040cb82c1a6c4d8370f69ffbf46fdca8534` in the final preflight read;
 3. the PR diff is exactly the one authorization-document path;
 4. all applicable exact-head CI is terminal green;
 5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness, security, or governance findings;
 6. zero unresolved actionable review threads remain;
 7. final candidate head/tree/document blob are captured;
 8. no waiver is taken;
-9. protected `main` and ruleset `20707483` are re-read immediately before merge and satisfy the repository-enforced base advancement guard above;
-10. merge uses normal GitHub merge-commit semantics through the connected wrapper with `expected_head_sha = <exact qualified head>`, which MUST map to GitHub REST request-body `sha = <same exact qualified head>`, while the strict ruleset concurrently guards base freshness;
-11. ordered merge parent 1 equals the pre-merge canonical main and parent 2 equals the exact qualified candidate head;
+9. protected `main`, ruleset `20707483`, and review/thread state are re-read as non-atomic preflight evidence immediately before merge and satisfy the merge-integrity guard above;
+10. merge uses normal GitHub merge-commit semantics through the connected wrapper with `expected_head_sha = <exact qualified head>`, which MUST map to GitHub REST request-body `sha = <same exact qualified head>`; GitHub must accept the merge under the protection state it evaluates at merge time, without any claim that the earlier preflight snapshot is atomically bound to the merge;
+11. ordered merge parent 1 equals the final preflight canonical main and parent 2 equals the exact qualified candidate head;
 12. merge tree equals the qualified candidate tree and the authorization document blob equals the qualified candidate blob;
-13. protected `main` equals the merge commit/tree and introduces exactly the authorized one path; and
-14. applicable post-merge governance/shared/runtime checks reach terminal success.
+13. protected `main` equals the merge commit/tree and introduces exactly the authorized one path;
+14. applicable post-merge governance/shared/runtime gates reach terminal success; and
+15. canonical closeout records the atomicity boundary explicitly and does not claim that a transient ruleset/review mutation can be proven absent when GitHub exposes no transaction binding that snapshot to the merge.
 
-If `main` advances before merge: STOP. Amend this authorization record to the replacement canonical base SHA/tree, forward-merge that exact `main` into the authorization branch using normal non-destructive history, and requalify the new exact head from scratch for scope, CI, CodeRabbit, Qodo, threads, mergeability, tree, document blob, and ruleset guard.
+If `main` advances before merge and is observed in preflight: STOP. Amend this authorization record to the replacement canonical base SHA/tree, forward-merge that exact `main` into the authorization branch using normal non-destructive history, and requalify the new exact head from scratch for scope, CI, CodeRabbit, Qodo, threads, mergeability, tree, document blob, and ruleset guard.
 
-If ruleset `20707483` drifts from the pinned properties before this authorization merges, STOP. Amend this candidate to record the replacement canonical protection truth and requalify from a new exact head. No merge may rely on a looser or unverified base-freshness policy.
+If ruleset `20707483` or the review state is observed to drift from the pinned properties before this authorization merges, STOP. Amend this candidate where canonical truth changed, or otherwise restore a fully qualified exact-head state, and requalify from a new exact head if content changes. No merge may rely on a looser or unverified preflight state.
 
 No rebase, force-push, destructive history rewrite, stale-base exception, or review waiver is permitted.
 
