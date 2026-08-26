@@ -9,6 +9,9 @@
 - Canonical base tree: `7c3dd9ca1969833a289b4446e9e3a0a38fce59c4`
 - P0 roadmap-truth reconciliation merge: `84c6a97a02d6e0478a6dbe681e24349cf79df9e7` (PR #210)
 - K6-R3 canonical merge: `4ed9bed6fdb23643c722298adfba4ae8e72097b2` (PR #208)
+- Canonical protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
+- Ruleset trusted node ID: `RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js`
+- Ruleset trusted snapshot `updated_at`: `2026-08-11T21:30:21.316+03:00`
 - Governing K6 planning authorization: `docs/planning/KODAC_K6_DEFINITION_AND_PLANNING_AUTHORIZATION_2026-08-26.md`
 - Governing improvement plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Governing constitution: `docs/adr/ADR-0001-kodac-product-constitution-done-means-proven.md`
@@ -16,6 +19,32 @@
 - Mandatory side-effect trust boundary: `docs/adr/ADR-0006-mandatory-trust-hook-side-effects.md`
 - Canonical K6-R1 contract: `packages/kodac-runtime/src/evidence-router/contracts.ts`
 - Canonical K6-R3 contract: `packages/kodac-runtime/src/evidence-router/outcome-linkage-contracts.ts`
+
+## Protected-main ruleset requirement
+
+This record does not authorize any repository ruleset or branch-protection mutation.
+
+For this authorization adoption, the later R4 implementation qualification, guarded merge and post-merge proof, ruleset `20707483` must remain exactly the trusted Kodac main-protection ruleset with:
+
+```text
+id = 20707483
+name = Kodac canonical main protection v1
+target = branch
+source_type = Repository
+source = TheHalfMoon/Kodac
+enforcement = active
+conditions.ref_name.include = ["refs/heads/main"]
+conditions.ref_name.exclude = []
+bypass_actors = []
+current_user_can_bypass = never
+strict_required_status_checks_policy = true
+required_status_checks =
+  provenance      / integration_id 15368
+  legacy-tests    / integration_id 15368
+  k2-runtime-gate / integration_id 15368
+```
+
+The pull-request rule must continue to require review-thread resolution. A different ruleset ID, changed trusted node/snapshot identity, bypass actor, disabled enforcement, changed target, non-strict status policy, missing required check, or different trusted producer is a material governance drift and fails qualification closed.
 
 ## Authority reconciliation
 
@@ -714,8 +743,9 @@ The sole new workflow path must:
 12. run canonical R3, R2 and R1 focused regressions;
 13. run full runtime tests;
 14. run canonical Python tests, Ruff and provenance validation;
-15. prove checkout cleanliness before and after;
-16. fail closed on any predecessor, authorization, scope, action-pin, schema/runtime or workspace drift.
+15. fetch ruleset `20707483` read-only and prove the exact trusted node/snapshot identity, active target, no bypass actors, strict required-status policy and exact trusted checks/producers stated above;
+16. prove checkout cleanliness before and after;
+17. fail closed on any predecessor, authorization, scope, action-pin, ruleset, schema/runtime or workspace drift.
 
 No repository dependency or lockfile change is authorized.
 
@@ -786,12 +816,12 @@ A later R4 implementation PR is not qualified unless the exact final head proves
 2. exactly six authorized paths changed;
 3. authorization and every pinned predecessor match exactly;
 4. dedicated R4 workflow terminal success;
-5. repository-required `provenance`, `legacy-tests`, `k2-runtime-gate` terminal success;
+5. repository-required `provenance`, `legacy-tests`, `k2-runtime-gate` terminal success from trusted producer `integration_id = 15368`;
 6. fresh exact-head CodeRabbit review has zero unresolved material correctness/security/privacy/retention/authority findings;
 7. fresh exact-head Qodo review has zero unresolved material correctness/security/privacy/retention/authority findings;
 8. zero unresolved actionable review threads;
 9. open, non-draft, mergeable and `behind_by = 0`;
-10. protected-main ruleset unchanged;
+10. ruleset `20707483` matches the exact trusted active/no-bypass/strict/required-check configuration stated in this record;
 11. final head/tree/six blobs captured;
 12. `WAIVER=NO`.
 
@@ -807,7 +837,7 @@ expected_head_sha = exact qualified implementation head
 
 No squash, rebase, force-push, destructive history rewrite, stale-head reuse or review waiver.
 
-Post-merge prove canonical main, ordered parents, candidate/merge tree equality where applicable, all six blobs, valid GitHub signature, active ruleset, applicable post-merge governance/R4 gates, no unauthorized path, and `WAIVER=NO` before declaring R4 implementation canonical.
+Post-merge prove canonical main, ordered parents, candidate/merge tree equality where applicable, all six blobs, valid GitHub signature, exact ruleset `20707483`, applicable post-merge governance/R4 gates, no unauthorized path, and `WAIVER=NO` before declaring R4 implementation canonical.
 
 ## R4 bounded closeout meaning
 
@@ -860,6 +890,7 @@ DONE GATE / PROVEN_READY AUTHORITY CHANGE = NOT AUTHORIZED
 GIT / GITHUB / REVIEW / APPROVAL / MERGE AUTHORITY FROM R4 = NOT AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT AUTHORIZED
 PR #163 / Z0-FAMILY MUTATION = NOT AUTHORIZED
+RULESET / BRANCH-PROTECTION MUTATION = NOT AUTHORIZED
 ```
 
 ## Exact scope of this authorization-candidate gate
@@ -883,14 +914,15 @@ This authorization remains non-canonical unless its exact final candidate proves
 5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness/security/privacy/retention/governance/authority findings;
 6. zero unresolved actionable threads;
 7. PR open, non-draft, mergeable and `behind_by = 0`;
-8. active protected-main ruleset unchanged;
+8. ruleset `20707483` exactly matches the trusted active main-target/no-bypass/strict-required-status configuration and trusted check producers stated above;
 9. final candidate head/tree/document blob captured;
 10. guarded normal merge uses exact qualified `expected_head_sha`;
 11. ordered merge parent 1 equals pre-merge canonical main and parent 2 equals qualified candidate head;
 12. merge tree equals qualified candidate tree and document blob equals qualified blob;
 13. protected main equals merge commit/tree and introduces exactly the one path;
 14. applicable post-merge governance/shared checks terminal success;
-15. `WAIVER=NO`.
+15. post-merge ruleset `20707483` still matches the exact trusted configuration;
+16. `WAIVER=NO`.
 
 If live main moves, stop stale merge. Reconcile with a normal non-destructive forward commit, update recorded base as required, and requalify the new exact head from scratch.
 
