@@ -274,3 +274,5 @@ export {
   type K5R4ReconciliationStatus,
 } from "./proof-review/reconciliation-contracts.ts"
 export { reconcileK5R4ProofState } from "./proof-review/reconciliation.ts"
+export * from "./evidence-router/contracts.ts"
+export * from "./evidence-router/eligibility.ts"
