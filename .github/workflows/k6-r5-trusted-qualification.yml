@@ -290,7 +290,19 @@ jobs:
 
           trusted_text, trusted_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH, "canonical R5 trusted workflow unavailable on protected base")
           require(trusted_text.startswith("name: k6-r5-trusted-qualification\n") and "pull_request_target:" in trusted_text, "canonical R5 trusted workflow boundary drift")
-          require("permissions:\n  contents: read" in trusted_text and "actions/checkout@" not in trusted_text, "trusted inspector gained candidate checkout/action execution")
+          require("permissions:\n  contents: read" in trusted_text, "canonical R5 trusted workflow permissions drift")
+          trusted_lines = trusted_text.splitlines()
+          trusted_step_markers = [i for i, line in enumerate(trusted_lines) if line == "    steps:"]
+          require(len(trusted_step_markers) == 1, "canonical R5 trusted workflow steps section count drift")
+          trusted_step_headers = [
+              line.strip()
+              for line in trusted_lines[trusted_step_markers[0] + 1:]
+              if re.match(r"^      - \S", line)
+          ]
+          require(
+              trusted_step_headers == ["- name: Inspect exact R5 candidate as untrusted data"],
+              "trusted inspector gained executable or additional top-level steps",
+          )
 
           for path, expected_blob in PREDECESSOR_BLOBS.items():
               require(file_at(event_base_sha, path)[1] == expected_blob, f"predecessor blob drift: {path}")
@@ -380,8 +392,8 @@ jobs:
               "required_reviewers": [],
               "require_code_owner_review": False,
               "require_last_push_approval": False,
-              "required_review_thread_resolution": True,
               "require_extra_approval_for_unattributed_changes": True,
+              "required_review_thread_resolution": True,
               "allowed_merge_methods": ["merge", "squash", "rebase"],
           }, "ruleset pull-request semantics drift")
           status_params = rules[3].get("parameters", {})
