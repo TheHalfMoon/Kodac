@@ -584,7 +584,7 @@ test("caller inputs are not mutated and ownerScopeId remains isolation data only
 })
 
 test("schema declares pseudonymous isolation and exact runtime enums/bounds without claiming semantic proof", () => {
-  const schema = JSON.parse(fs.readFileSync("schema/k6-r4-privacy-governed-outcome-memory.schema.json", "utf8")) as any
+  const schema = JSON.parse(fs.readFileSync(new URL("../../../schema/k6-r4-privacy-governed-outcome-memory.schema.json", import.meta.url), "utf8")) as any
   assert.equal(schema.$id, "https://kodac.dev/schema/k6-r4-privacy-governed-outcome-memory.schema.json")
   assert.equal(schema.$ref, "#/$defs/outcomeMemory")
   assert.deepEqual(schema.$defs.scope.properties.privacyClass.enum, ["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"])
@@ -601,8 +601,8 @@ test("schema declares pseudonymous isolation and exact runtime enums/bounds with
 })
 
 test("R4 production modules contain no side-effect authority", () => {
-  const contracts = fs.readFileSync("packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts", "utf8")
-  const runtime = fs.readFileSync("packages/kodac-runtime/src/evidence-router/outcome-memory.ts", "utf8")
+  const contracts = fs.readFileSync(new URL("../src/evidence-router/outcome-memory-contracts.ts", import.meta.url), "utf8")
+  const runtime = fs.readFileSync(new URL("../src/evidence-router/outcome-memory.ts", import.meta.url), "utf8")
   assert.equal(/\bimport\b/.test(contracts), false)
   for (const forbidden of [
     "node:fs", "node:http", "node:https", "node:net", "node:tls", "node:child_process",
