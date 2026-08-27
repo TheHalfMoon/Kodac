@@ -375,7 +375,8 @@ function parseEvidence(value: unknown, label = "R5 strategy evidence"): K6R5Stra
   }, label)
   const evidenceIdentity = sha256(record.evidenceIdentity, `${label}.evidenceIdentity`)
   if (evidenceIdentity !== digest(input)) bad(`${label}.evidenceIdentity`, "does not match deterministic recomputation")
-  return Object.freeze({ version: input.version, evidenceIdentity, ...input })
+  const { version, ...fields } = input
+  return Object.freeze({ version, evidenceIdentity, ...fields })
 }
 
 function parseResultIdentityInput(value: unknown, label = "R5 qualification result"): K6R5QualificationResultIdentityInput {
@@ -501,7 +502,8 @@ export function k6R5StrategyEvidenceIdentity(value: unknown): string {
 
 export function createK6R5StrategyEvidence(value: unknown): K6R5StrategyEvidence {
   const input = parseEvidenceIdentityInput(value)
-  return Object.freeze({ version: input.version, evidenceIdentity: digest(input), ...input })
+  const { version, ...fields } = input
+  return Object.freeze({ version, evidenceIdentity: digest(input), ...fields })
 }
 
 export function validateK6R5StrategyEvidence(value: unknown): K6R5StrategyEvidence {
@@ -528,7 +530,8 @@ export function validateK6R5QualificationResult(value: unknown): K6R5Qualificati
   })
   const resultIdentity = sha256(record.resultIdentity, "R5 qualification result.resultIdentity")
   if (resultIdentity !== digest(input)) bad("R5 qualification result.resultIdentity", "does not match deterministic recomputation")
-  return Object.freeze({ version: input.version, resultIdentity, ...input })
+  const { version, ...fields } = input
+  return Object.freeze({ version, resultIdentity, ...fields })
 }
 
 export function compareK6R5Strategies(
@@ -575,5 +578,6 @@ export function compareK6R5Strategies(
     trialCount: incumbentEvidence.trialCount,
     outcome: qualificationOutcome(incumbentEvidence, candidateEvidence),
   })
-  return Object.freeze({ version: input.version, resultIdentity: digest(input), ...input })
+  const { version, ...fields } = input
+  return Object.freeze({ version, resultIdentity: digest(input), ...fields })
 }

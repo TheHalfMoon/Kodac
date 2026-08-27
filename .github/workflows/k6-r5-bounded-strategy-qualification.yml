@@ -276,4 +276,3 @@ jobs:
           cmp "$RUNNER_TEMP/k6-r5-diff-before" "$RUNNER_TEMP/k6-r5-diff-after"
           test ! -s "$RUNNER_TEMP/k6-r5-status-after"
           test ! -s "$RUNNER_TEMP/k6-r5-diff-after"
-
