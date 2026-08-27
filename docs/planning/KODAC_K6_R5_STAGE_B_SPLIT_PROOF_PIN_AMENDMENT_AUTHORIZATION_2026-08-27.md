@@ -19,7 +19,7 @@
 - Stage B reconciliation checkpoint head: `b950d8a4a04eac25ab4b213ad8a529d2efed1d00`
 - Protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
 - Existing unrecoverable Stage B proof-body pin: `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c`
-- Replacement exact Stage B proof-body pin: `f06ab03cdca4df294ea72735790f60ddca04b4cba8bb38c31fe12e55f1f89e43`
+- Replacement exact Stage B proof-body pin: `cb0a62a376601a96435561aa5d0369acc89276c62747629c5a3da90b5e8e136e`
 - `WAIVER=NO`
 
 This record is candidate authority only until it is merged to protected `main` through normal repository governance and its post-merge proof succeeds. It grants no trusted-workflow or Stage B implementation authority before that point.
@@ -73,7 +73,7 @@ The repair has three strictly ordered units:
 
 ```text
 A. THIS DOCS-ONLY AUTHORIZATION
--> B. ONE-PATH TRUSTED PIN/LIFECYCLE REPAIR
+-> B. ONE-PATH TRUSTED PIN/LIFECYCLE/PR-IDENTITY REPAIR
 -> C. PR #226 FORWARD RECONCILIATION + EXACT STAGE B BODY
 ```
 
@@ -87,7 +87,7 @@ PR #228 MERGE 0c151b3db8ab1487c5fcf1553060b4743ede155d
 -> REGISTERED ONE-PATH PIN-REPAIR MERGE
 ```
 
-PR #232 MUST have base SHA exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d`. Its merge commit MUST have ordered parent 1 equal to `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 equal to the exact qualified final PR #232 head. No intermediate protected-main merge is authorized between PR #228 and PR #232.
+PR #232 MUST have base SHA exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d`. Protected `main` MUST still equal that exact SHA immediately before the #232 guarded merge. Its merge commit MUST have ordered parent 1 equal to `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 equal to the exact qualified final PR #232 head. No intermediate protected-main merge is authorized between PR #228 and PR #232.
 
 ## Exact replacement Stage B run body
 
@@ -100,7 +100,7 @@ Hashing contract:
 - hash input starts with `set -euo pipefail`;
 - hash input contains no YAML indentation;
 - hash input ends with exactly one terminal LF after the final `PY`;
-- SHA-256 of the exact bytes below MUST equal `f06ab03cdca4df294ea72735790f60ddca04b4cba8bb38c31fe12e55f1f89e43`.
+- SHA-256 of the exact bytes below MUST equal `cb0a62a376601a96435561aa5d0369acc89276c62747629c5a3da90b5e8e136e`.
 
 ```text
 set -euo pipefail
@@ -112,6 +112,7 @@ const imports = [...runtime.matchAll(/\bimport(?:\s+type)?[\s\S]*?\sfrom\s+["'](
 if ((contracts.match(/\bimport\b/g) ?? []).length !== 0) throw new Error("R5 contracts gained imports")
 if (JSON.stringify(imports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts", "./strategy-proposal-contracts.ts"])) throw new Error("R5 runtime import allowlist drift")
 if (/\bimport\s*\(/.test(runtime)) throw new Error("dynamic import forbidden")
+if ((runtime.match(/\bimport\b/g) ?? []).length !== imports.length) throw new Error("unrecognized import form forbidden")
 const combined = `${contracts}\n${runtime}`
 for (const pattern of [
   /\bExecutionGateway\b/i, /child_process/i, /node:fs/i, /node:path/i, /node:http/i, /node:https/i,
@@ -211,7 +212,7 @@ print(
 PY
 ```
 
-The body preserves the existing runtime authority negative-space scan. The ruleset portion implements the split-proof model already adopted by PR #227:
+The body preserves the existing runtime authority negative-space scan and additionally rejects unrecognized import forms, including side-effect imports that do not contain `from`. The ruleset portion implements the split-proof model already adopted by PR #227:
 
 - every visible pinned ruleset field is validated;
 - each visible bypass field must equal its canonical fail-closed value;
@@ -219,7 +220,7 @@ The body preserves the existing runtime authority negative-space scan. The rules
 - it never fabricates absent owner-level evidence;
 - external owner-level no-bypass proof remains mandatory.
 
-## Authorized Unit B — one-path trusted pin/lifecycle repair
+## Authorized Unit B — one-path trusted pin/lifecycle/PR-identity repair
 
 After and only after this authorization is canonical and post-merge proven, authorize one additional PR on branch:
 
@@ -235,25 +236,26 @@ That PR may modify exactly one path:
 
 It may only:
 
-1. replace the expected SHA-256 for `Prove forbidden R5 authority surfaces and live ruleset` from `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c` to `f06ab03cdca4df294ea72735790f60ddca04b4cba8bb38c31fe12e55f1f89e43`;
-2. extend protected-base evolution by exactly one authorization merge and one registered one-path pin-repair merge;
-3. preserve the complete immutable chain:
+1. replace the expected SHA-256 for `Prove forbidden R5 authority surfaces and live ruleset` from `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c` to `cb0a62a376601a96435561aa5d0369acc89276c62747629c5a3da90b5e8e136e`;
+2. add an immutable Stage B PR identity constant equal to `226` and require `EVENT_PR_NUMBER` / the fetched live PR identity to equal exactly PR #226 before any Stage B candidate qualification can pass;
+3. extend protected-base evolution by exactly one authorization merge and one registered one-path pin-repair merge;
+4. preserve the complete immutable chain:
    - original R5 authorization;
    - Stage A PR #225/head/merge/tree/workflow blob;
    - PR #227 authorization/head/merge/document blob;
    - PR #228 repair/head/merge/tree/workflow blob;
    - this PR #232 authorization exact qualified head/merge/tree/document blob;
    - the registered one-path pin-repair PR/head/merge/tree/workflow blob;
-4. require current protected `main` to equal exactly the registered pin-repair merge before qualifying PR #226;
-5. verify before accepting the pin-repair merge that the PR #232 authorization merge has ordered parent 1 exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 exactly the final qualified PR #232 head, with no intermediate merge;
-6. require ordered merge parents, merge-tree=head-tree equality, valid GitHub merge verification, exact one-path scope and exact branch/PR identity for both the authorization merge and pin-repair merge;
-7. preserve `pull_request_target` protected-base execution and `permissions: contents: read`;
-8. preserve no candidate-head checkout or candidate-head execution;
-9. preserve the exact Stage B six-path/status allowlist;
-10. preserve every other Stage B run-body fingerprint unchanged;
-11. preserve every action pin, candidate job/step/env/control-surface check and predecessor blob check;
-12. preserve the split ruleset visibility semantics and external owner-level proof requirement;
-13. add no product/runtime/persistence/network/provider/model/training/autofix/release authority.
+5. require current protected `main` to equal exactly the registered pin-repair merge before qualifying PR #226;
+6. verify before accepting the pin-repair merge that the PR #232 authorization merge has ordered parent 1 exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 exactly the final qualified PR #232 head, with no intermediate merge;
+7. require ordered merge parents, merge-tree=head-tree equality, valid GitHub merge verification, exact one-path scope and exact branch/PR identity for both the authorization merge and pin-repair merge;
+8. preserve `pull_request_target` protected-base execution and `permissions: contents: read`;
+9. preserve no candidate-head checkout or candidate-head execution;
+10. preserve the exact Stage B six-path/status allowlist;
+11. preserve every other Stage B run-body fingerprint unchanged;
+12. preserve every action pin, candidate job/step/env/control-surface check and predecessor blob check;
+13. preserve the split ruleset visibility semantics and external owner-level proof requirement;
+14. add no product/runtime/persistence/network/provider/model/training/autofix/release authority.
 
 No generic descendant-main acceptance is authorized.
 
@@ -284,7 +286,7 @@ Within the existing Stage B workflow path only:
 authorize exactly two changes relative to the pre-amendment Stage B workflow:
 
 1. `K6_R5_TRUSTED_WORKFLOW_BLOB` must become the exact canonical trusted-workflow blob produced by Unit B;
-2. the complete run body for `Prove forbidden R5 authority surfaces and live ruleset` must equal byte-for-byte the body specified in this record and therefore hash to `f06ab03cdca4df294ea72735790f60ddca04b4cba8bb38c31fe12e55f1f89e43`.
+2. the complete run body for `Prove forbidden R5 authority surfaces and live ruleset` must equal byte-for-byte the body specified in this record and therefore hash to `cb0a62a376601a96435561aa5d0369acc89276c62747629c5a3da90b5e8e136e`.
 
 No other job-level environment key/value, trigger, permission, action metadata, step metadata or run body may drift.
 
@@ -292,23 +294,24 @@ No other job-level environment key/value, trigger, permission, action metadata, 
 
 This documentation authorization is not canonical unless its exact final head proves:
 
-1. base SHA is exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d`; descendant-but-not-equal bases are forbidden;
-2. changed-file set is exactly this one documentation path;
-3. `behind_by=0`;
-4. PR is open, non-draft and mergeable;
-5. applicable repository-required checks are terminal success from the required GitHub Actions integration;
-6. fresh substantive exact-head Qodo review is terminal clean;
-7. fresh substantive exact-head CodeRabbit review is terminal clean;
-8. zero unresolved actionable review threads;
-9. owner-level ruleset proof confirms active/no-bypass/exact required checks;
-10. merge uses normal GitHub merge-commit semantics with exact expected-head precondition;
-11. the authorization merge has ordered parent 1 exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 exactly the exact qualified final PR #232 head;
-12. post-merge main/tree/blob/signature/check/ruleset proof succeeds;
-13. `WAIVER=NO`.
+1. PR #232 base SHA is exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d`; descendant-but-not-equal bases are forbidden;
+2. live protected `main` still equals exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` immediately before guarded merge; any intervening main movement invalidates qualification;
+3. changed-file set is exactly this one documentation path;
+4. `behind_by=0`;
+5. PR is open, non-draft and mergeable;
+6. applicable repository-required checks are terminal success from the required GitHub Actions integration;
+7. fresh substantive exact-head Qodo review is terminal clean;
+8. fresh substantive exact-head CodeRabbit review is terminal clean;
+9. zero unresolved actionable review threads;
+10. owner-level ruleset proof confirms active/no-bypass/exact required checks;
+11. merge uses normal GitHub merge-commit semantics with exact expected-head precondition;
+12. the authorization merge has ordered parent 1 exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 exactly the exact qualified final PR #232 head;
+13. post-merge main/tree/blob/signature/check/ruleset proof succeeds;
+14. `WAIVER=NO`.
 
 ## Unit B qualification gate
 
-The trusted pin/lifecycle repair is not merge-qualified unless its exact final head proves:
+The trusted pin/lifecycle/PR-identity repair is not merge-qualified unless its exact final head proves:
 
 1. base is exactly the canonical merge of PR #232 and that merge itself proves parent 1=`0c151b3db8ab1487c5fcf1553060b4743ede155d`, parent 2=the exact qualified PR #232 head, and no intermediate merge;
 2. changed-file set is exactly `.github/workflows/k6-r5-trusted-qualification.yml`;
@@ -318,19 +321,21 @@ The trusted pin/lifecycle repair is not merge-qualified unless its exact final h
 6. permissions remain exactly `contents: read`;
 7. candidate head is never checked out or executed;
 8. current/future protected-base evolution is restricted to the exact chain authorized above;
-9. only the dedicated Stage B proof hash changes and every other Stage B fingerprint remains exact;
-10. Qodo and CodeRabbit fresh exact-head substantive review are terminal clean;
-11. repository-required exact-head checks succeed;
-12. zero unresolved actionable review threads;
-13. owner-level ruleset proof is active/no-bypass/exact-checks;
-14. guarded normal merge uses exact expected head;
-15. post-merge parent/tree/blob/signature/check/ruleset proof succeeds;
-16. `WAIVER=NO`.
+9. the trusted inspector requires the event PR number and live PR identity to equal exactly `226` before Stage B qualification;
+10. only the dedicated Stage B proof hash changes among Stage B run-body fingerprints and every other Stage B fingerprint remains exact;
+11. Qodo and CodeRabbit fresh exact-head substantive review are terminal clean;
+12. repository-required exact-head checks succeed;
+13. zero unresolved actionable review threads;
+14. owner-level ruleset proof is active/no-bypass/exact-checks;
+15. guarded normal merge uses exact expected head;
+16. post-merge parent/tree/blob/signature/check/ruleset proof succeeds;
+17. `WAIVER=NO`.
 
 ## PR #226 final requalification gate
 
 After Unit B and forward reconciliation, PR #226 must satisfy the original R5 Stage B acceptance gate plus:
 
+- Stage B identity is exactly PR #226, not merely a matching branch name;
 - base is exactly the canonical Unit B merge;
 - compare contains exactly six authorized Stage B paths;
 - `behind_by=0`;
