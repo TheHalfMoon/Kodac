@@ -77,6 +77,26 @@ jobs:
           }
           EXPECTED_PATHS = sorted(EXPECTED_PATH_STATUS)
           NON_WORKFLOW_R4_PATHS = sorted(path for path in EXPECTED_PATHS if path != R4_WORKFLOW_PATH)
+          EXPECTED_WORKFLOW_PREAMBLE = """name: k6-r4-privacy-governed-outcome-memory
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k6-r4-privacy-governed-outcome-memory.yml"
+      - "schema/k6-r4-privacy-governed-outcome-memory.schema.json"
+      - "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
+      - "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  privacy-governed-outcome-memory:
+"""
           NAMED_STEPS = [
               "Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions",
               "Sync locked validation environment outside the checkout",
@@ -297,8 +317,8 @@ jobs:
               require(isinstance(expected_blob, str) and SHA_RE.fullmatch(expected_blob) is not None and candidate_blob[path] == expected_blob, "candidate non-workflow R4 blob drift")
 
           workflow = candidate_text[R4_WORKFLOW_PATH]
-          require(workflow.count("pull_request_target") == 0 and workflow.count("pull_request:") == 1, "candidate workflow trigger drift")
-          require("permissions:\n  contents: read\n\njobs:" in workflow and workflow.count("permissions:") == 1, "candidate workflow permission boundary drift")
+          require(workflow.startswith(EXPECTED_WORKFLOW_PREAMBLE), "candidate workflow preamble/trigger/permission/job identity drift")
+          require(workflow.count("jobs:\n") == 1, "candidate workflow jobs key count drift")
           for forbidden in ["continue-on-error:", "workflow_dispatch:", "schedule:", "container:", "services:", "defaults:", "id-token:", "contents: write", "pull-requests: write", "actions: write", "checks: write", "NODE_OPTIONS:", "BASH_ENV:", "LD_PRELOAD:", "PYTHONPATH:", "working-directory:", "|| true", "GITHUB_ENV", "GITHUB_PATH", "::add-path", "::set-env"]:
               require(forbidden not in workflow, "candidate workflow contains prohibited control surface")
           jobs_suffix = workflow.split("jobs:\n", 1)[1]
