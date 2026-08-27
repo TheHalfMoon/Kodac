@@ -108,9 +108,20 @@ jobs:
               "jobs:\n"
               "  bounded-strategy-qualification:\n"
           )
-          CANDIDATE_HEAD_EXPRESSION = "$" + "{{ github.event.pull_request.head.sha }}"
+
+          def github_expression(body: str) -> str:
+              return "$" + "{{ " + body + " }}"
+
+          PR_BASE_REF_EXPRESSION = github_expression("github.event.pull_request.base.ref")
+          PR_BASE_SHA_EXPRESSION = github_expression("github.event.pull_request.base.sha")
+          PR_HEAD_SHA_EXPRESSION = github_expression("github.event.pull_request.head.sha")
+          PR_HEAD_REF_EXPRESSION = github_expression("github.event.pull_request.head.ref")
+          PR_HEAD_REPOSITORY_EXPRESSION = github_expression("github.event.pull_request.head.repo.full_name")
+          REPOSITORY_EXPRESSION = github_expression("github.repository")
+          GITHUB_TOKEN_EXPRESSION = github_expression("github.token")
+          ALWAYS_EXPRESSION = github_expression("always()")
           ACTION_BLOCKS = [
-              ["- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4", "with:", "ref: " + CANDIDATE_HEAD_EXPRESSION, "persist-credentials: false", "fetch-depth: 0"],
+              ["- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4", "with:", "ref: " + PR_HEAD_SHA_EXPRESSION, "persist-credentials: false", "fetch-depth: 0"],
               ["- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4", "with:", 'node-version: "24.18.0"'],
               ["- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6", "with:", 'version: "0.12.1"', "enable-cache: false"],
           ]
@@ -127,15 +138,32 @@ jobs:
           }
           NAMED_STEPS = list(EXPECTED_RUN_SHA256)
           EXPECTED_NAMED_PREFIXES = {
-              'Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions': '- name: Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions\n  shell: bash\n  env:\n    PR_BASE_REF: ${{ github.event.pull_request.base.ref }}\n    PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}\n    PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}\n    PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}\n    PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}\n    REPOSITORY: ${{ github.repository }}\n  run: |',
+              'Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions': (
+                  '- name: Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions\n'
+                  '  shell: bash\n'
+                  '  env:\n'
+                  f'    PR_BASE_REF: {PR_BASE_REF_EXPRESSION}\n'
+                  f'    PR_BASE_SHA: {PR_BASE_SHA_EXPRESSION}\n'
+                  f'    PR_HEAD_SHA: {PR_HEAD_SHA_EXPRESSION}\n'
+                  f'    PR_HEAD_REF: {PR_HEAD_REF_EXPRESSION}\n'
+                  f'    PR_HEAD_REPOSITORY: {PR_HEAD_REPOSITORY_EXPRESSION}\n'
+                  f'    REPOSITORY: {REPOSITORY_EXPRESSION}\n'
+                  '  run: |'
+              ),
               'Sync locked validation environment outside the checkout': '- name: Sync locked validation environment outside the checkout\n  shell: bash\n  run: |',
               'Validate R5 schema/runtime parity and closed vocabularies': '- name: Validate R5 schema/runtime parity and closed vocabularies\n  shell: bash\n  run: |',
               'Recompute R5 fixture strategy, trial-set, and qualification corpus identities': '- name: Recompute R5 fixture strategy, trial-set, and qualification corpus identities\n  shell: bash\n  run: |',
-              'Prove forbidden R5 authority surfaces and live ruleset': '- name: Prove forbidden R5 authority surfaces and live ruleset\n  shell: bash\n  env:\n    GH_TOKEN: ${{ github.token }}\n  run: |',
+              'Prove forbidden R5 authority surfaces and live ruleset': (
+                  '- name: Prove forbidden R5 authority surfaces and live ruleset\n'
+                  '  shell: bash\n'
+                  '  env:\n'
+                  f'    GH_TOKEN: {GITHUB_TOKEN_EXPRESSION}\n'
+                  '  run: |'
+              ),
               'Install integrity-locked TypeScript validation tooling outside the checkout': '- name: Install integrity-locked TypeScript validation tooling outside the checkout\n  shell: bash\n  run: |',
               'Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates': '- name: Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates\n  shell: bash\n  run: |',
-              'Remove ephemeral TypeScript validation tooling': '- name: Remove ephemeral TypeScript validation tooling\n  if: ${{ always() }}\n  shell: bash\n  run: |',
-              'Attest checkout unchanged after K6-R5 validation': '- name: Attest checkout unchanged after K6-R5 validation\n  if: ${{ always() }}\n  shell: bash\n  run: |',
+              'Remove ephemeral TypeScript validation tooling': f'- name: Remove ephemeral TypeScript validation tooling\n  if: {ALWAYS_EXPRESSION}\n  shell: bash\n  run: |',
+              'Attest checkout unchanged after K6-R5 validation': f'- name: Attest checkout unchanged after K6-R5 validation\n  if: {ALWAYS_EXPRESSION}\n  shell: bash\n  run: |',
           }
           EXPECTED_STEP_HEADERS = [
               ACTION_BLOCKS[0][0],
