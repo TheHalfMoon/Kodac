@@ -54,6 +54,7 @@ jobs:
           REPOSITORY = "TheHalfMoon/Kodac"
           AUTHORIZED_PR = 212
           AUTHORIZED_HEAD_REF = "feat/k6-r4-privacy-governed-outcome-memory"
+          HARDENING_MERGE_SHA = "34aa910bb72856ee138e64e47354d8d93072052d"
           HARDENING_PATH = "docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_HARDENING_AUTHORIZATION_2026-08-27.md"
           HARDENING_BLOB = "9e21684993b8ef3940434560787b63c00d55866b"
           ORIGINAL_R4_AUTH_PATH = "docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md"
@@ -74,6 +75,14 @@ jobs:
               R4_INDEX_PATH,
               R4_TEST_PATH,
           ])
+          EXPECTED_FILE_STATUS = {
+              R4_WORKFLOW_PATH: "added",
+              R4_SCHEMA_PATH: "added",
+              R4_CONTRACTS_PATH: "added",
+              R4_RUNTIME_PATH: "added",
+              R4_INDEX_PATH: "modified",
+              R4_TEST_PATH: "added",
+          }
           NON_WORKFLOW_R4_PATHS = sorted([
               R4_SCHEMA_PATH,
               R4_CONTRACTS_PATH,
@@ -113,6 +122,7 @@ jobs:
           MANIFEST_BEGIN = "K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_BEGIN"
           MANIFEST_END = "K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_END"
           SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+          SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
           TOKEN = os.environ.get("READ_ONLY_GITHUB_TOKEN", "")
 
           def fail(label: str) -> None:
@@ -170,6 +180,14 @@ jobs:
                   fail("candidate file is not UTF-8")
               return text, blob
 
+          def unique_json_object(pairs: list[tuple[str, object]]) -> dict:
+              result: dict[str, object] = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError(f"duplicate JSON key: {key}")
+                  result[key] = value
+              return result
+
           def extract_manifest(text: str) -> dict:
               require(text.count(MANIFEST_BEGIN) == 1 and text.count(MANIFEST_END) == 1, "replacement authorization manifest markers invalid")
               start = text.index(MANIFEST_BEGIN) + len(MANIFEST_BEGIN)
@@ -177,9 +195,9 @@ jobs:
               payload = text[start:end].strip()
               require(0 < len(payload) <= 100_000, "replacement authorization manifest size invalid")
               try:
-                  manifest = json.loads(payload)
+                  manifest = json.loads(payload, object_pairs_hook=unique_json_object)
               except Exception:
-                  fail("replacement authorization manifest is not valid JSON")
+                  fail("replacement authorization manifest is not valid unique-key JSON")
               require(isinstance(manifest, dict), "replacement authorization manifest shape invalid")
               require(manifest.get("version") == "kodac-k6-r4-trusted-inspector-manifest-v1", "replacement authorization manifest version invalid")
               return manifest
@@ -232,6 +250,16 @@ jobs:
                   i = j
               return step_names, blocks, action_lines, step_if_lines
 
+          def require_descendant(ancestor: str, descendant: str, label: str, *, require_ahead: bool = False) -> dict:
+              require(SHA_RE.fullmatch(ancestor) is not None and SHA_RE.fullmatch(descendant) is not None, f"{label} revision invalid")
+              relation = api_json(f"/repos/{REPOSITORY}/compare/{ancestor}...{descendant}")
+              require(relation.get("base_commit", {}).get("sha") == ancestor, f"{label} base mismatch")
+              require(relation.get("merge_base_commit", {}).get("sha") == ancestor, f"{label} ancestry mismatch")
+              require(relation.get("behind_by") == 0, f"{label} descendant is behind ancestor")
+              if require_ahead:
+                  require(relation.get("ahead_by", 0) > 0, f"{label} descendant must be ahead")
+              return relation
+
           event_repo = env("EVENT_REPOSITORY")
           event_pr_raw = env("EVENT_PR_NUMBER")
           event_base_ref = env("EVENT_BASE_REF")
@@ -260,6 +288,7 @@ jobs:
 
           main_ref = api_json(f"/repos/{REPOSITORY}/git/ref/heads/main")
           require(main_ref.get("object", {}).get("sha") == event_base_sha, "protected main moved after event")
+          require_descendant(HARDENING_MERGE_SHA, event_base_sha, "hardening-to-event-base lineage", require_ahead=True)
 
           comparison = api_json(f"/repos/{REPOSITORY}/compare/{event_base_sha}...{event_head_sha}")
           require(comparison.get("base_commit", {}).get("sha") == event_base_sha, "compare base mismatch")
@@ -267,9 +296,20 @@ jobs:
           require(comparison.get("behind_by") == 0, "candidate is behind protected base")
           require(comparison.get("ahead_by", 0) > 0, "candidate has no commits over base")
           files = comparison.get("files")
-          require(isinstance(files, list), "compare file list unavailable")
-          changed_paths = sorted(item.get("filename") for item in files if isinstance(item, dict) and isinstance(item.get("filename"), str))
-          require(changed_paths == EXPECTED_PATHS, "candidate changed-file set is not the exact six-path allowlist")
+          require(isinstance(files, list) and len(files) == len(EXPECTED_PATHS), "compare file list unavailable or wrong length")
+          compare_blob: dict[str, str] = {}
+          for item in files:
+              require(isinstance(item, dict), "compare file entry has unexpected shape")
+              path = item.get("filename")
+              status = item.get("status")
+              blob = item.get("sha")
+              require(isinstance(path, str) and path in EXPECTED_FILE_STATUS, "compare contains unauthorized path")
+              require(status == EXPECTED_FILE_STATUS[path], "compare file status is not authorized")
+              require(item.get("previous_filename") is None, "rename/copy source path is not authorized")
+              require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "compare file blob identity unavailable")
+              require(path not in compare_blob, "compare contains duplicate path")
+              compare_blob[path] = blob
+          require(sorted(compare_blob.keys()) == EXPECTED_PATHS, "candidate changed-file set is not the exact six-path allowlist")
 
           hardening_text, hardening_blob = file_at(event_base_sha, HARDENING_PATH)
           require(hardening_blob == HARDENING_BLOB, "hardening authorization blob drift")
@@ -281,10 +321,25 @@ jobs:
           replacement_text, replacement_blob = file_at(event_base_sha, REPLACEMENT_AUTH_PATH)
           manifest = extract_manifest(replacement_text)
 
+          require(manifest.get("authorized_pr") == AUTHORIZED_PR, "replacement manifest authorized PR drift")
+          require(manifest.get("hardening_merge_sha") == HARDENING_MERGE_SHA, "replacement manifest hardening merge drift")
+          require(manifest.get("trusted_workflow_path") == TRUSTED_WORKFLOW_PATH, "replacement manifest trusted workflow path drift")
+          trusted_workflow_merge_sha = manifest.get("trusted_workflow_merge_sha")
+          expected_trusted_workflow_blob = manifest.get("trusted_workflow_blob")
+          require(isinstance(trusted_workflow_merge_sha, str) and SHA_RE.fullmatch(trusted_workflow_merge_sha) is not None, "replacement manifest trusted workflow merge invalid")
+          require(isinstance(expected_trusted_workflow_blob, str) and SHA_RE.fullmatch(expected_trusted_workflow_blob) is not None, "replacement manifest trusted workflow blob invalid")
+          require_descendant(HARDENING_MERGE_SHA, trusted_workflow_merge_sha, "hardening-to-trusted-workflow lineage", require_ahead=True)
+          require_descendant(trusted_workflow_merge_sha, event_base_sha, "trusted-workflow-to-event-base lineage", require_ahead=True)
+          canonical_trusted_workflow_text, canonical_trusted_workflow_blob = file_at(trusted_workflow_merge_sha, TRUSTED_WORKFLOW_PATH)
+          require(canonical_trusted_workflow_blob == expected_trusted_workflow_blob, "trusted workflow merge blob does not match replacement manifest")
+          require(trusted_workflow_blob == expected_trusted_workflow_blob, "event base trusted workflow blob drift")
+          require(trusted_workflow_text == canonical_trusted_workflow_text, "event base trusted workflow bytes drift")
+
           candidate_text: dict[str, str] = {}
           candidate_blob: dict[str, str] = {}
           for path in EXPECTED_PATHS:
               text, blob = file_at(event_head_sha, path)
+              require(blob == compare_blob[path], "candidate file blob differs from immutable compare entry")
               candidate_text[path] = text
               candidate_blob[path] = blob
 
@@ -335,7 +390,7 @@ jobs:
           require(sorted(run_hashes.keys()) == sorted(MIN_STEP_NAMES), "replacement manifest run-block hash scope invalid")
           for name in MIN_STEP_NAMES:
               expected_hash = run_hashes[name]
-              require(isinstance(expected_hash, str) and re.fullmatch(r"[0-9a-f]{64}", expected_hash) is not None, "replacement manifest run-block hash invalid")
+              require(isinstance(expected_hash, str) and SHA256_RE.fullmatch(expected_hash) is not None, "replacement manifest run-block hash invalid")
               actual_hash = hashlib.sha256(run_blocks[name].encode("utf-8")).hexdigest()
               require(actual_hash == expected_hash, "candidate workflow protected run block drift")
 
@@ -349,7 +404,9 @@ jobs:
           for dynamic_pin in [
               event_base_sha,
               replacement_blob,
-              trusted_workflow_blob,
+              expected_trusted_workflow_blob,
+              trusted_workflow_merge_sha,
+              HARDENING_MERGE_SHA,
               HARDENING_BLOB,
               ORIGINAL_R4_AUTH_BLOB,
               REPLACEMENT_AUTH_PATH,
