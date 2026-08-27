@@ -70,7 +70,7 @@ jobs:
           REPAIR_AUTHORIZATION_MERGE_TREE = "4f325ce4b3c6aff664849dc33db7e2d9ff6e2954"
           REPAIR_AUTHORIZATION_PATH = "docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md"
           REPAIR_AUTHORIZATION_BLOB = "e01639b284a9788d0cd1118c0ffd998271a087f0"
-          TRUSTED_REPAIR_PR_NUMBER = 0
+          TRUSTED_REPAIR_PR_NUMBER = 228
           TRUSTED_REPAIR_HEAD_REF = "ci/k6-r5-trusted-qualification-observability-repair"
           TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
           STAGE_B_WORKFLOW_PATH = ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
