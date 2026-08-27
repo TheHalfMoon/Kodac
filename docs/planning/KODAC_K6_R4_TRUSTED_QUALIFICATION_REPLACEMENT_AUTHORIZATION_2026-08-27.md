@@ -2,24 +2,23 @@
 
 ## Record identity
 
-- Date: 2026-08-27
+- Date: `2026-08-27`
 - Founder authority: `KODAC-FOUNDER-REPO-LOCAL-CONTINUATION-2026-08-27`
-- Authority class: DOCUMENTATION / REPLACEMENT K6-R4 AUTHORIZATION CANDIDATE
-- Candidate base commit: `ab737bb95459f2c68069009e686b2f3805f3e6d3`
-- Candidate base tree: `990169816e8c86d43679e33a3a9d747cd37751b7`
+- Authority class: DOCUMENTATION / FORWARD REPLACEMENT-AUTHORIZATION AMENDMENT CANDIDATE
+- Candidate base commit: `b09ad8498759c93807c853e5f24bd401f3a66da2`
+- Candidate base tree: `125848a51aa42396a6bb6974ecfc11dd279d9368`
+- Immediate canonical predecessor document blob: `5af9c06324db3e91a4a6915df968c9f6d066196d`
 - Protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
 - Ruleset node ID: `RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js`
 - Ruleset snapshot `updated_at`: `2026-08-11T21:30:21.316+03:00`
-- Canonical review-provider-neutrality amendment merge: `ab737bb95459f2c68069009e686b2f3805f3e6d3`
-- Canonical review-provider-neutrality amendment tree: `990169816e8c86d43679e33a3a9d747cd37751b7`
-- Canonical review-provider-neutrality document blob: `5ad8768353786336d016acb32de483d53e34a83e`
 - Active implementation PR: `#212`
 - Active implementation branch: `feat/k6-r4-privacy-governed-outcome-memory`
-- Pre-reconciliation PR #212 head: `19a76ac90f5a753656e7c7703a3c8f01a690a62f`
-- Pre-reconciliation dedicated-workflow blob: `868271fdca52f67d91e967a694ded6bd93cd466b`
+- Defective reviewed candidate head: `774e507bddf463a75ec4b1372fce0e204ab51d77`
 - `WAIVER=NO`
 
-This record is a candidate until its exact final head passes the adoption gate, is merged by a guarded normal merge commit, and post-merge canonical proof succeeds.
+This forward amendment exists only because a fresh independent semantic review found one material hostile-input resource-bound defect after the previous replacement authorization had become canonical. It does not broaden K6-R4 product scope, implementation paths, runtime authority, dependencies, services, persistence, network access, learning, or Done Gate authority.
+
+Until this exact amendment candidate passes its adoption gate, merges by guarded normal merge commit, and receives post-merge canonical proof, the predecessor authorization remains canonical and PR #212 must remain unmerged and must not receive the repair blobs.
 
 ## Canonical predecessor chain
 
@@ -30,14 +29,14 @@ ORIGINAL_R4_AUTHORIZATION_MERGE=1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372
 ORIGINAL_R4_AUTHORIZATION_DOCUMENT_BLOB=db0cd6f5484494c1fcacb37570465059a0484c63
 ```
 
-The independent trusted-inspector hardening authorization is canonical:
+The trusted-inspector hardening authorization remains canonical:
 
 ```text
 HARDENING_AUTHORIZATION_MERGE=34aa910bb72856ee138e64e47354d8d93072052d
 HARDENING_AUTHORIZATION_DOCUMENT_BLOB=9e21684993b8ef3940434560787b63c00d55866b
 ```
 
-The final protected-base binding repair is canonical at:
+The protected trusted workflow remains canonical and unchanged:
 
 ```text
 TRUSTED_WORKFLOW_CANONICAL_MERGE=87f9a3dbe9d15d0b1573b50fe74487ca83562ba2
@@ -46,9 +45,7 @@ TRUSTED_WORKFLOW_CANONICAL_BLOB=c5c005aaa9e77ea177020e6ee4033feda5b29520
 TRUSTED_WORKFLOW_PATH=.github/workflows/k6-r4-trusted-qualification.yml
 ```
 
-PR #217 / merge `5440c32f06148f5ec7f3d2880321323176546546` authorized the protected-base binding repair. PR #218 then merged the exact one-path repair as `87f9a3dbe9d15d0b1573b50fe74487ca83562ba2`.
-
-The repository-wide review-provider-neutrality and evidence-quorum amendment is canonical at:
+The repository-wide provider-neutral review policy remains canonical:
 
 ```text
 REVIEW_PROVIDER_NEUTRALITY_MERGE=ab737bb95459f2c68069009e686b2f3805f3e6d3
@@ -57,75 +54,64 @@ REVIEW_PROVIDER_NEUTRALITY_DOCUMENT_BLOB=5ad8768353786336d016acb32de483d53e34a83
 REVIEW_PROVIDER_NEUTRALITY_PATH=docs/planning/KODAC_REVIEW_PROVIDER_NEUTRALITY_AND_EVIDENCE_QUORUM_AMENDMENT_2026-08-27.md
 ```
 
-That amendment removes provider-name authority without reducing historical review cardinality. Any K6 gate that historically required both CodeRabbit and Qodo now requires two distinct independent external semantic reviewer channels on the exact final head. Skipped, stale, rate-limited, status-only, billing-only, failed-to-start, or duplicate-channel responses do not count. `WAIVER=NO` remains binding.
-
-## Positive trusted-workflow registration proof
-
-The mandatory state-only probe on PR #212 proved that the canonical protected-base workflow is registered and can instantiate its real inspector job:
+The immediately preceding replacement authorization became canonical at:
 
 ```text
-PROBE_RUN_ID=33039466613
-PROBE_JOB_ID=98409535479
-EVENT=pull_request_target
-EVENT_BASE_SHA=87f9a3dbe9d15d0b1573b50fe74487ca83562ba2
-EVENT_HEAD_SHA=19a76ac90f5a753656e7c7703a3c8f01a690a62f
-JOB_COUNT=1
-JOB_NAME=k6-r4-trusted-qualification
-INSPECTOR_STEP=Inspect exact R4 candidate as untrusted data
-INSPECTOR_STARTED=true
-ACTUAL_TERMINAL_DIAGNOSTIC=K6-R4 trusted qualification failed: replacement authorization unavailable
-WAIVER=NO
+PREDECESSOR_REPLACEMENT_AUTHORIZATION_MERGE=b09ad8498759c93807c853e5f24bd401f3a66da2
+PREDECESSOR_REPLACEMENT_AUTHORIZATION_TREE=125848a51aa42396a6bb6974ecfc11dd279d9368
+PREDECESSOR_REPLACEMENT_AUTHORIZATION_DOCUMENT_BLOB=5af9c06324db3e91a4a6915df968c9f6d066196d
+PREDECESSOR_REPLACEMENT_AUTHORIZATION_PATH=docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
 ```
 
-That expected job failure is not an R4 qualification PASS. It positively proves exactly:
+The provider-neutral review rule remains binding: any K6 gate that historically required both CodeRabbit and Qodo requires two distinct independent external semantic reviewer channels on the exact final head. Skipped, stale, rate-limited, status-only, billing-only, failed-to-start, or duplicate-channel responses do not count. Review cardinality may not be reduced. `WAIVER=NO` remains binding.
+
+## Post-review defect and bounded repair authority
+
+Fresh full semantic review of PR #212 exact head `774e507bddf463a75ec4b1372fce0e204ab51d77` produced CodeRabbit issue comment `5436159692` and one current material finding:
 
 ```text
-WORKFLOW_REGISTERED
-JOB_INSTANTIATED
-INSPECTOR_STARTED
-FAIL_CLOSED_AT_INTENTIONAL_STAGING_BOUNDARY
+DEFECT=ARRAY_OWN_PROPERTY_NAMES_BYPASS_PRE_SCAN_STRING_BUDGET
+AFFECTED_PATH=packages/kodac-runtime/src/evidence-router/outcome-memory.ts
+REGRESSION_PATH=packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts
 ```
 
-The earlier zero-job registration defect and historical pull-request base-SHA binding defect are therefore no longer the active blockers. The intentionally absent replacement authorization became the exact staging boundary.
+The predecessor runtime correctly validated and charged plain-object property names, but the array branch used `Object.getOwnPropertyNames(value).length` only for structural rejection. A hostile non-index own-property name could therefore be enumerated without first consuming the configured aggregate string-character budget, causing structural `TypeError` rather than bounded `RangeError` when the name itself exceeded the configured resource ceiling.
 
-## Decision after canonical adoption only
-
-After and only after this replacement authorization becomes canonical and post-merge proven, authorize non-destructive forward reconciliation and fresh qualification of PR #212 under the preserved six-path K6-R4 v1 implementation scope.
+This amendment authorizes exactly the following two non-workflow blob substitutions and no others:
 
 ```text
-NO REBASE
-NO FORCE-PUSH
-NO HISTORY REWRITE
-NORMAL FORWARD MERGE FROM EXACT LIVE main
+RUNTIME_OLD=ec8ccae0bd7ede40ebef4060e104da79e7d5f90a
+RUNTIME_NEW=9f9d0769c5ffab2d482574ea59418144d6dc49a6
+TEST_OLD=2b793a0ef18df035892d7bd97c39be9ba0c44cfe
+TEST_NEW=56d7d27287567f22b84b234b23311862451e279c
 ```
 
-PR #212 must descend from the canonical merge of this replacement authorization and must then be qualified from scratch on its exact final head.
+The authorized runtime semantic change is exactly bounded to the existing `safeGraph()` array branch:
 
-No seventh R4 implementation path is authorized.
+1. call `Object.getOwnPropertyNames(value)` once and retain the returned names;
+2. before length validation, dense-index traversal, value descent, or structural extra-field rejection, validate every own property name with the existing Unicode-scalar validator;
+3. charge every own property name's `key.length` to the existing aggregate `budget.stringChars` counter;
+4. raise the existing `RangeError` resource-bound failure if the aggregate exceeds `LIMITS.maxTotalStringChars`;
+5. reuse the captured `names.length` for the existing `length + 1` structural rule;
+6. make no other runtime semantic or authority change.
 
-## Fresh implementation-base contract
-
-This candidate cannot self-pin its own future canonical merge SHA, merge tree, or document blob. External exact-head qualification and post-merge proof must capture those identities.
-
-After canonical adoption, the reconciled dedicated workflow must set:
+The authorized regression change is exactly bounded to the existing configured-resource-bounds test:
 
 ```text
-K6_R4_AUTHORIZATION_MERGE_SHA=<exact canonical merge of this replacement authorization>
-K6_R4_AUTHORIZATION_MERGE_TREE=<tree of that canonical merge>
-K6_R4_AUTHORIZATION_DOCUMENT_BLOB=<canonical blob of this replacement authorization>
+ARRAY_BUILTIN_PROPERTY_NAME=length
+BOUNDARY_EXTRA_KEY_LENGTH=maxTotalStringChars - "length".length
+BOUNDARY_EXPECTATION=TypeError after budget remains within bound and structural rejection occurs
+OVER_BOUND_EXTRA_KEY_LENGTH=maxTotalStringChars - "length".length + 1
+OVER_BOUND_EXPECTATION=RangeError before structural rejection
 ```
 
-It must also change its authorization-document lookup from the historical original R4 authorization path to exactly:
+The repaired runtime and test blobs were created as unreferenced Git blobs before this authorization mutation. Publishing those blob objects did not mutate any branch, PR, workflow, ruleset, or protected ref.
 
-```text
-docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
-```
-
-Those corrections occur only inside the already-authorized candidate-owned R4 workflow path. All other protected named-step blocks must remain byte-identical to the fingerprints in the manifest below unless separately canonical authority supersedes this record.
+No schema, public contract, index, dedicated-workflow named step, protected trusted workflow, predecessor artifact, dependency, or external-service change is authorized by this repair.
 
 ## Exact R4 implementation allowlist preserved
 
-PR #212 may change exactly these six implementation paths relative to the fresh implementation base:
+After this amendment is canonical and post-merge proven, PR #212 may still differ from its fresh canonical base at exactly these six paths:
 
 ```text
 .github/workflows/k6-r4-privacy-governed-outcome-memory.yml
@@ -136,27 +122,45 @@ packages/kodac-runtime/src/index.ts
 packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts
 ```
 
-The trusted inspector is already canonical on protected `main` and must not appear in the PR #212 candidate diff.
+No seventh R4 implementation path is authorized. The protected trusted inspector remains on canonical `main` and must not appear in PR #212's candidate diff.
 
 ## Pinned non-workflow candidate blobs
 
-The five non-workflow R4 implementation blobs are pinned exactly:
+The five non-workflow R4 candidate blobs are now pinned exactly:
 
 ```text
 schema/k6-r4-privacy-governed-outcome-memory.schema.json=e38479681a1df5787caae8b4baf4153dc2205d96
 packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts=6411a42e6fc0074e60edc10eaa27e00b3b197fca
-packages/kodac-runtime/src/evidence-router/outcome-memory.ts=ec8ccae0bd7ede40ebef4060e104da79e7d5f90a
+packages/kodac-runtime/src/evidence-router/outcome-memory.ts=9f9d0769c5ffab2d482574ea59418144d6dc49a6
 packages/kodac-runtime/src/index.ts=74b9d62501ffce8f2cb053e3b72827de11c203d9
-packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts=2b793a0ef18df035892d7bd97c39be9ba0c44cfe
+packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts=56d7d27287567f22b84b234b23311862451e279c
 ```
 
-Forward reconciliation may not silently alter any of these five blobs. If any must change, this replacement authorization is invalid for that candidate and separately canonical replacement authority is required.
+Any further non-workflow blob change invalidates this authority for that candidate and requires separately canonical replacement authority. Forward reconciliation may not silently alter these pins.
 
-The candidate-owned dedicated-workflow blob is intentionally not pinned whole because the fresh authorization SHA/tree/document blob and replacement authorization path must be updated after this record's canonical merge. Its protected structure is instead pinned by named-step SHA-256 fingerprints, required fragments, forbidden fragments, immutable actions, exact step order, exact environment/control surface, and the protected inspector's additional checks.
+## Fresh implementation-base contract
+
+After and only after this amendment becomes canonical and post-merge proven, PR #212 must be forward-reconciled with exact live protected `main` without rebase, force-push, or history rewrite.
+
+Its candidate-owned dedicated workflow must then bind the canonical merge identities of this amended authorization record:
+
+```text
+K6_R4_AUTHORIZATION_MERGE_SHA=<exact canonical merge containing this amended record>
+K6_R4_AUTHORIZATION_MERGE_TREE=<tree of that canonical merge>
+K6_R4_AUTHORIZATION_DOCUMENT_BLOB=<canonical blob of this amended record>
+```
+
+Its authorization-document lookup remains exactly:
+
+```text
+docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
+```
+
+The candidate workflow's eight protected named-step blocks and all their SHA-256 fingerprints remain unchanged. The only workflow mutation authorized after canonical adoption is the already-bounded dynamic rebinding of the three authorization identity environment values required by the new canonical base.
 
 ## Trusted inspector manifest
 
-The text between the two manifest markers is intentionally **raw JSON without Markdown code fences**. The canonical trusted inspector passes that exact trimmed byte sequence directly to a duplicate-key-rejecting JSON parser.
+The text between the two markers is intentionally raw JSON without Markdown code fences. The canonical trusted inspector passes the exact trimmed bytes directly to a duplicate-key-rejecting JSON parser.
 
 K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_BEGIN
 {
@@ -167,9 +171,9 @@ K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_BEGIN
   "trusted_workflow_blob": "c5c005aaa9e77ea177020e6ee4033feda5b29520",
   "required_candidate_blobs": {
     "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts": "6411a42e6fc0074e60edc10eaa27e00b3b197fca",
-    "packages/kodac-runtime/src/evidence-router/outcome-memory.ts": "ec8ccae0bd7ede40ebef4060e104da79e7d5f90a",
+    "packages/kodac-runtime/src/evidence-router/outcome-memory.ts": "9f9d0769c5ffab2d482574ea59418144d6dc49a6",
     "packages/kodac-runtime/src/index.ts": "74b9d62501ffce8f2cb053e3b72827de11c203d9",
-    "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts": "2b793a0ef18df035892d7bd97c39be9ba0c44cfe",
+    "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts": "56d7d27287567f22b84b234b23311862451e279c",
     "schema/k6-r4-privacy-governed-outcome-memory.schema.json": "e38479681a1df5787caae8b4baf4153dc2205d96"
   },
   "required_named_step_sha256": {
@@ -212,22 +216,7 @@ K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_END
 
 The raw JSON object between the markers, after trimming surrounding whitespace, must parse with duplicate-key rejection and exactly the key set required by the canonical trusted inspector.
 
-## Named-step fingerprint interpretation
-
-The first named-step hash intentionally describes the reconciled form, not the stale pre-reconciliation PR #212 form. The exact allowed transformation inside that protected named block is:
-
-```diff
-- authorization_path="docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md"
-+ authorization_path="docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md"
-```
-
-No other line in that named-step block is authorized to change.
-
-The three fresh authorization identity values are job-level environment values outside the named-step hash blocks and are dynamically bound by the trusted inspector to the canonical replacement-authorization merge/tree/document blob.
-
 ## R4 v1 product/runtime contract preserved
-
-This replacement authorization does not broaden the R4 implementation contract.
 
 ```text
 R4_RUNTIME_STORAGE=CALLER_MANAGED_IN_PROCESS_VALUE_ONLY
@@ -256,7 +245,7 @@ Deterministic digests remain pseudonymous identifiers, not anonymous data. `owne
 
 ## Trusted-inspector boundary preserved
 
-The base-controlled trusted workflow must remain:
+The base-controlled trusted workflow remains:
 
 ```text
 EVENT=pull_request_target
@@ -268,17 +257,15 @@ AUTHORIZED_HEAD_BRANCH=feat/k6-r4-privacy-governed-outcome-memory
 AUTHORIZED_BASE_REF=main
 ```
 
-It must continue to bind the protected workflow revision to protected-base `github.sha`, independently require live protected-main equality, bind live PR #212 head equality to the event head, compute scope from immutable SHAs, retrieve candidate blobs by immutable revisions, enforce the exact six-path allowlist, reject rename/copy drift, reject candidate mutation of the trusted inspector, and treat all candidate bytes as untrusted data.
+It must remain protected-base controlled and treat all PR #212 candidate bytes as untrusted data. It must not execute candidate-controlled scripts or gain repository, PR, review, check, ruleset, secret, id-token, cache, or artifact write authority.
 
-It must not checkout or execute candidate-controlled scripts, JavaScript, TypeScript, Python, shell, actions, dynamic evaluation, cache, artifacts, repository writes, PR writes, review writes, checks writes, ruleset writes, secrets, or id-token authority.
+It must retain duplicate-key-rejecting manifest parsing, manifest-pinned non-workflow blobs, protected named-step fingerprints, immutable action pins, exact step order, exact environment/control surface, production import restrictions, additive-only index projection, schema bounds, predecessor checks, ruleset identity, bounded inputs, and fail-closed behavior.
 
-It must retain bounded API/file/manifest inputs, duplicate-key rejecting JSON, manifest-pinned non-workflow blobs, protected step fingerprints, immutable action pins, exact step order, exact environment/control surface, production import restrictions, additive-only index projection, schema bounds, predecessor checks, ruleset identity, and fail-closed behavior.
-
-The trusted inspector is qualification evidence only. It is not K2, K5, or Done Gate authority.
+The trusted inspector is qualification evidence only. It is not K2, K5, model/provider, persistence, learning, or Done Gate authority.
 
 ## Candidate-owned dedicated execution boundary preserved
 
-After reconciliation, `.github/workflows/k6-r4-privacy-governed-outcome-memory.yml` remains responsible for executing the exact-head runtime/regression qualification workload. It must retain these immutable actions and versions:
+`.github/workflows/k6-r4-privacy-governed-outcome-memory.yml` remains responsible for exact-head execution qualification and must retain:
 
 ```text
 actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -288,25 +275,27 @@ Node 24.18.0
 uv 0.12.1
 ```
 
-Required execution evidence includes strict TypeScript; focused K6-R4 tests; K6-R3/R2/R1 regressions; full `kodac-runtime` tests; Python tests; Ruff; provenance validation; checkout-integrity proof; and live ruleset identity validation.
+Required execution evidence remains strict TypeScript; focused K6-R4 tests; K6-R3/R2/R1 regressions; full `kodac-runtime` tests; Python tests; Ruff; provenance validation; checkout-integrity proof; and live ruleset identity validation.
 
-Dedicated-workflow success is insufficient unless the base-controlled trusted inspector independently passes on the same exact candidate head.
+Dedicated-workflow success remains insufficient unless the protected trusted inspector independently succeeds on the same exact PR #212 head.
 
 ## Forward reconciliation contract for PR #212
 
-After this replacement authorization is canonical and post-merge proven:
+After this amendment is canonical and post-merge proven:
 
 1. re-read exact live protected `main`;
-2. prove it equals the canonical replacement-authorization merge expected for reconciliation;
-3. verify PR #212 remains open, non-draft, on exact repository/branch and exact six implementation paths;
-4. create a normal forward merge of exact live `main` into `feat/k6-r4-privacy-governed-outcome-memory`;
-5. do not rebase and do not force-push;
-6. update only the already-authorized dedicated workflow path as required to bind the fresh replacement authorization SHA/tree/document blob and replacement authorization path;
-7. preserve all five non-workflow blobs pinned above;
-8. prove the resulting diff against fresh `main` is still exactly the six-path R4 allowlist;
-9. capture exact final head/tree/workflow blob;
-10. invalidate all prior PR #212 exact-head qualification evidence;
-11. qualify the exact reconciled head from scratch.
+2. verify PR #212 is still open, non-draft, in `TheHalfMoon/Kodac`, on branch `feat/k6-r4-privacy-governed-outcome-memory`;
+3. invalidate every earlier exact-head PR #212 review/check/identity claim;
+4. create a normal forward merge of exact live `main` into the PR #212 branch, without rebase, force-push, or destructive history rewrite;
+5. install exact runtime blob `9f9d0769c5ffab2d482574ea59418144d6dc49a6` at `packages/kodac-runtime/src/evidence-router/outcome-memory.ts`;
+6. install exact test blob `56d7d27287567f22b84b234b23311862451e279c` at `packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts`;
+7. preserve schema blob `e38479681a1df5787caae8b4baf4153dc2205d96`;
+8. preserve contracts blob `6411a42e6fc0074e60edc10eaa27e00b3b197fca`;
+9. preserve index blob `74b9d62501ffce8f2cb053e3b72827de11c203d9`;
+10. rebind only the candidate workflow's three authorization identity environment values to this amendment's canonical merge/tree/document blob;
+11. preserve all eight named-step fingerprints and all other candidate-workflow protected structure;
+12. prove the fresh diff against live `main` is still exactly the six-path R4 allowlist with no rename/copy source;
+13. capture exact final head/tree/workflow blob and qualify that exact head from scratch.
 
 If protected `main` moves, stop stale qualification, forward-reconcile again, and recompute exact base.
 
@@ -314,36 +303,62 @@ If protected `main` moves, stop stale qualification, forward-reconcile again, an
 
 Before PR #212 may merge, prove on one exact final head:
 
-- PR is open and non-draft;
-- base ref is exactly `main`;
-- head repository is exactly `TheHalfMoon/Kodac`;
-- head branch is exactly `feat/k6-r4-privacy-governed-outcome-memory`;
-- exact live protected-main ancestry is present and `behind_by=0`;
-- changed-file set is exactly the six authorized R4 paths;
-- no rename/copy source exists;
-- all five non-workflow blobs equal this record's pins;
-- candidate dedicated workflow satisfies the exact manifest/fingerprint contract;
-- `k6-r4-trusted-qualification` is terminal `SUCCESS` for the exact final head;
-- `k6-r4-privacy-governed-outcome-memory` is terminal `SUCCESS` for the exact final head;
-- required `provenance`, `legacy-tests`, and `k2-runtime-gate` from trusted integration `15368` are terminal `SUCCESS`;
-- at least two distinct independent external semantic reviewer channels each provide a fresh terminal-clean assessment bound to the exact final head, with zero unresolved material correctness/security/governance/authority/scope findings;
-- skipped, stale, rate-limited, status-only, failed-to-start, billing-only, or duplicate-channel responses do not count toward the two-review quorum;
-- zero unresolved actionable review threads remain;
-- ruleset `20707483` remains active and unchanged in accepted identity/required-check semantics;
+- open, non-draft, base ref exactly `main`;
+- head repository exactly `TheHalfMoon/Kodac` and head branch exactly `feat/k6-r4-privacy-governed-outcome-memory`;
+- exact live protected-main ancestry and `behind_by=0`;
+- exact six-path diff with no rename/copy source;
+- all five non-workflow blobs equal this amendment's pins;
+- candidate dedicated workflow satisfies this manifest/fingerprint contract;
+- `k6-r4-trusted-qualification` terminal `SUCCESS` on the exact final head;
+- `k6-r4-privacy-governed-outcome-memory` terminal `SUCCESS` on the exact final head;
+- required `provenance`, `legacy-tests`, and `k2-runtime-gate` from trusted integration `15368` terminal `SUCCESS`;
+- at least two distinct independent external semantic reviewer channels each provide a fresh substantive terminal-clean assessment bound to the exact final head;
+- zero unresolved material correctness/security/governance/authority/privacy/scope findings;
+- zero unresolved actionable review threads;
+- ruleset `20707483` active with accepted strict required-check/review-thread semantics;
 - independent control-plane reads expose `bypass_actors=[]` and `current_user_can_bypass=never`;
-- no waiver exists;
-- exact final `HEAD_SHA`, `HEAD_TREE`, and candidate-workflow blob are captured.
+- no waiver;
+- exact final `HEAD_SHA`, `HEAD_TREE`, and candidate-workflow blob captured.
 
 Any head movement invalidates the entire exact-head qualification set.
 
+## Exact scope and adoption gate for this forward amendment
+
+This amendment candidate may change exactly one path relative to its canonical base:
+
+```text
+docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
+```
+
+No second path is authorized.
+
+This amendment remains non-canonical unless its exact final candidate proves all of the following:
+
+1. base ref exactly `main`;
+2. candidate PR base SHA exactly `b09ad8498759c93807c853e5f24bd401f3a66da2` and base tree exactly `125848a51aa42396a6bb6974ecfc11dd279d9368`, unless live protected `main` moves and the candidate is forward-amended/requalified to the new exact base;
+3. changed-file set exactly this one documentation path with no rename/copy source;
+4. the document contains one valid duplicate-key-free trusted-inspector manifest with the exact key set above and the two repaired candidate blob pins;
+5. applicable repository-required exact-head CI terminal success;
+6. at least two distinct independent external semantic reviewer channels each provide a fresh substantive terminal-clean review bound to the exact final head, with zero unresolved material findings;
+7. skipped, stale, rate-limited, status-only, failed-to-start, billing-only, or duplicate-channel responses do not count;
+8. zero unresolved actionable review threads;
+9. candidate open, non-draft, mergeable, and `behind_by=0`;
+10. ruleset `20707483` remains active with strict required status checks and required review-thread resolution;
+11. independent control-plane proof exposes `bypass_actors=[]` and `current_user_can_bypass=never`;
+12. exact final head/tree/document blob captured;
+13. guarded normal merge uses exact qualified `expected_head_sha`;
+14. post-merge protected-main, ordered-parent, tree, document-blob, GitHub-signature, required-check, and ruleset/no-bypass proof succeeds;
+15. `WAIVER=NO`.
+
+If live protected `main` moves before merge, do not merge stale authority. Forward-reconcile this amendment to the new exact canonical base and requalify from scratch.
+
 ## Guarded R4 merge and post-merge proof
 
-If and only if PR #212 satisfies every exact-head qualification requirement, merge by normal GitHub merge commit using exact `expected_head_sha`. Do not squash or rebase the canonical R4 merge.
+If and only if PR #212 later satisfies every fresh exact-head qualification requirement, merge by normal GitHub merge commit using exact `expected_head_sha`; never squash or rebase the canonical R4 merge.
 
 After merge, prove at minimum:
 
 ```text
-returned merge SHA
 protected main == returned merge SHA
 ordered parent 1 == exact qualified canonical base
 ordered parent 2 == exact qualified PR #212 head
@@ -359,89 +374,39 @@ WAIVER=NO
 
 Only after those facts are directly proven may K6-R4 be recorded as `CLOSED_CANONICAL`.
 
-## K6-R5 boundary
-
-This replacement authorization does not authorize K6-R5.
+## K6-R5 boundary and preserved non-grants
 
 ```text
 K6-R5=NOT_AUTHORIZED
-```
-
-After K6-R4 is genuinely `CLOSED_CANONICAL`, re-read live roadmap/governance. Prepare a separately bounded K6-R5 authorization candidate only if canonical repository authority permits that preparation.
-
-## Preserved non-grants
-
-This record does not authorize:
-
-```text
-SEVENTH R4 IMPLEMENTATION PATH
-R4 PRODUCT SCOPE EXPANSION
-DURABLE PERSISTENCE
-FILESYSTEM OR DATABASE STORAGE
-NETWORK FALLBACK OR EGRESS
-TELEMETRY OR UPLOAD
-MODEL / PROVIDER / REVIEWER / EVALUATOR EXECUTION
-MODEL TRAINING OR FINETUNING
-CROSS-REPOSITORY OR CROSS-USER LEARNING
-STRATEGY SCORING / RANKING / PROMOTION
-AUTOFIX
-NEW DEPENDENCIES
-NEW EXTERNAL SERVICES
-K2 AUTHORITY EXPANSION
-K5 AUTHORITY EXPANSION
-DONE GATE AUTHORITY CHANGE
-RULESET MUTATION
-TRUSTED-INSPECTOR WRITE AUTHORITY
-PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND CLAIMS
-K6-R5 IMPLEMENTATION
+SEVENTH_R4_IMPLEMENTATION_PATH=NO
+R4_PRODUCT_SCOPE_EXPANSION=NO
+DURABLE_PERSISTENCE=NO
+FILESYSTEM_OR_DATABASE_STORAGE=NO
+NETWORK_FALLBACK_OR_EGRESS=NO
+TELEMETRY_OR_UPLOAD=NO
+MODEL_PROVIDER_REVIEWER_EVALUATOR_EXECUTION=NO
+MODEL_TRAINING_OR_FINETUNING=NO
+CROSS_REPOSITORY_OR_CROSS_USER_LEARNING=NO
+STRATEGY_SCORING_RANKING_PROMOTION=NO
+AUTOFIX=NO
+NEW_DEPENDENCIES=NO
+NEW_EXTERNAL_SERVICES=NO
+K2_AUTHORITY_EXPANSION=NO
+K5_AUTHORITY_EXPANSION=NO
+DONE_GATE_AUTHORITY_CHANGE=NO
+RULESET_MUTATION=NO
+TRUSTED_INSPECTOR_WRITE_AUTHORITY=NO
+PUBLIC_RELEASE_OR_PACKAGE_PUBLICATION=NO
 ```
 
 `SELF-IMPROVING != SELF-AUTHORIZING` remains binding.
 
-## Exact scope of this replacement-authorization candidate
-
-This authorization PR may change exactly one path relative to its canonical base:
-
-```text
-docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
-```
-
-No second path is authorized. The provider-neutrality amendment is already canonical in the base and therefore must not appear as a #219 candidate change.
-
-## Adoption gate for this replacement authorization
-
-This record remains non-canonical unless its exact final candidate proves all of the following:
-
-1. base ref is exactly `main`;
-2. candidate PR base SHA is exactly `ab737bb95459f2c68069009e686b2f3805f3e6d3`;
-3. candidate PR base tree is exactly `990169816e8c86d43679e33a3a9d747cd37751b7`;
-4. live protected `main` SHA is exactly `ab737bb95459f2c68069009e686b2f3805f3e6d3` and live protected-main tree is exactly `990169816e8c86d43679e33a3a9d747cd37751b7`;
-5. if candidate-base or live-main identity drifts, this record is forward-amended/reconciled to the new exact canonical base and the entire candidate is requalified from scratch;
-6. changed-file set is exactly this one documentation path with no rename/copy source;
-7. the record pins the exact canonical trusted-workflow merge/tree/blob, governing original/hardening authorization identities, and canonical provider-neutral review-policy merge/tree/blob;
-8. the record contains one valid duplicate-key-free trusted-inspector manifest with the exact required key set and raw JSON bytes between its markers;
-9. applicable repository-required exact-head CI is terminal success;
-10. at least two distinct independent external semantic reviewer channels each give a substantive terminal-clean review bound to the exact final head with zero unresolved material correctness/security/governance/authority/scope findings;
-11. skipped, stale, rate-limited, status-only, failed-to-start, billing-only, or duplicate-channel responses do not count toward the two-review quorum;
-12. zero unresolved actionable review threads remain;
-13. candidate is open, non-draft, mergeable, and `behind_by=0`;
-14. ruleset `20707483` remains active with strict required status checks and required review-thread resolution;
-15. independent control-plane proof exposes `bypass_actors=[]` and `current_user_can_bypass=never`;
-16. exact final head/tree/document blob are captured;
-17. guarded normal merge uses exact qualified `expected_head_sha`;
-18. post-merge ordered-parent/tree/blob/protected-main/signature proof succeeds;
-19. applicable post-merge required checks are terminal success;
-20. `WAIVER=NO`.
-
-This gate preserves the historical two-review semantic quorum while removing permanent authority from any reviewer vendor. Provider substitution is permitted; review bypass and cardinality reduction are not.
-
-If live protected `main` moves before merge, do not merge stale authority. Amend this record through a forward commit to the new exact canonical base and requalify from scratch.
-
 ## Stop boundary
 
-Until this replacement authorization is canonical and post-merge proven:
+Until this forward amendment is canonical and post-merge proven:
 
 ```text
+DO NOT APPLY THE REPAIR BLOBS TO PR #212
 DO NOT RECONCILE OR MERGE PR #212
 DO NOT ADD A SEVENTH R4 PATH
 DO NOT MUTATE RULESET 20707483
