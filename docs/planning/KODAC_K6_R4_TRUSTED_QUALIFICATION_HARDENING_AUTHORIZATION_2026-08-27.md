@@ -179,7 +179,26 @@ base ref = main
 
 The PR-number check is mandatory and exact. A later or replacement pull request that reuses the same head branch must not inherit this authorization; any different PR identity requires separately canonical replacement authority.
 
-A path trigger may list the six R4 paths, but trigger filtering is not admission proof. The base-controlled job must use the GitHub API/event identities to compute the exact base-to-head changed-file set and require exact equality with the six implementation paths.
+### Immutable event revision binding
+
+The event's immutable revision pair is authoritative for the entire trusted-inspector run:
+
+```text
+eventBaseSha = github.event.pull_request.base.sha
+eventHeadSha = github.event.pull_request.head.sha
+```
+
+Before any candidate diff/blob inspection, the trusted inspector must use a read-only PR metadata call for PR #212 and require the PR's current head SHA to equal `eventHeadSha`. If PR #212 has moved since the event was emitted, the run is stale and must fail closed; it may not qualify the newer head and may not continue by substituting the current mutable branch/PR head.
+
+Every candidate-dependent API read must be explicitly revision-addressed:
+
+- the compare/diff must be computed from exact `eventBaseSha` to exact `eventHeadSha`;
+- every inspected candidate file/blob must be fetched with `ref = eventHeadSha` or by an exact blob identity derived from that exact head;
+- any protected-base comparison input must be fetched from exact `eventBaseSha` or a separately pinned canonical base SHA;
+- no candidate file, blob, diff, tree or workflow content may be fetched through the mutable branch name, an unqualified `pulls/212/files` result without exact-head verification, repository default branch, or a newly observed PR head;
+- any API response whose revision cannot be proven to correspond to `eventBaseSha` / `eventHeadSha` is `UNKNOWN` and fails qualification.
+
+A path trigger may list the six R4 paths, but trigger filtering is not admission proof. The base-controlled job must use the immutable event SHA pair to compute the exact base-to-head changed-file set and require exact equality with the six implementation paths.
 
 The trusted workflow path itself must not appear in the candidate diff.
 
@@ -206,8 +225,11 @@ The base-controlled workflow must independently inspect the following properties
 - exact pull request number `212` from event metadata;
 - exact event head SHA;
 - exact event base SHA;
+- current PR #212 head SHA equals the exact event head SHA before candidate inspection;
 - event base SHA is the protected candidate base for the run;
+- exact compare is `eventBaseSha...eventHeadSha`, never mutable refs;
 - exact six changed paths, no seventh path;
+- every inspected candidate blob is fetched from exact `eventHeadSha` or verified exact blob identity;
 - candidate does not modify the trusted inspector;
 - no manifest/lockfile/dependency/script/action helper path changes.
 
@@ -221,7 +243,7 @@ The trusted inspector must retrieve the exact candidate blob for:
 .github/workflows/k6-r4-privacy-governed-outcome-memory.yml
 ```
 
-and fail closed unless base-controlled inspection proves the exact required R4 workflow structure, including at minimum:
+from exact `eventHeadSha` (or an exact blob identity proven from that head) and fail closed unless base-controlled inspection proves the exact required R4 workflow structure, including at minimum:
 
 - PR-to-main trigger and exact R4 path filter;
 - least-privilege permissions;
@@ -248,7 +270,7 @@ The later replacement authorization may provide exact normalized command/step fi
 
 ## Production/static inspection
 
-Using exact candidate blob bytes as data only, the trusted inspector must independently fail closed on at least:
+Using exact candidate blob bytes addressed by `eventHeadSha` as data only, the trusted inspector must independently fail closed on at least:
 
 - unauthorized imports in `outcome-memory.ts` / `outcome-memory-contracts.ts`;
 - filesystem/database/network/TLS/process/child-process imports;
@@ -326,15 +348,17 @@ The one-path trusted-workflow candidate is not canonical unless its exact final 
 7. candidate blobs are consumed only as data by base-controlled logic;
 8. action references are immutable full SHAs;
 9. exact PR #212 identity and exact six-path admission are enforced in-job;
-10. dedicated-workflow integrity and required-command inspection is fail-closed;
-11. production/schema/index static inspection is fail-closed;
-12. workflow does not mutate repository/ruleset/PR/check state;
-13. applicable repository-required CI is terminal success;
-14. fresh exact-head CodeRabbit and Qodo report zero unresolved material correctness/security/governance findings;
-15. zero unresolved actionable threads;
-16. candidate is open, non-draft, mergeable and `behind_by = 0`;
-17. final head/tree/workflow blob are captured;
-18. `WAIVER=NO`.
+10. current PR #212 head equality to immutable event head SHA is enforced before candidate inspection;
+11. all candidate diff/blob reads are addressed by exact immutable event base/head SHAs, never mutable refs;
+12. dedicated-workflow integrity and required-command inspection is fail-closed;
+13. production/schema/index static inspection is fail-closed;
+14. workflow does not mutate repository/ruleset/PR/check state;
+15. applicable repository-required CI is terminal success;
+16. fresh exact-head CodeRabbit and Qodo report zero unresolved material correctness/security/governance findings;
+17. zero unresolved actionable threads;
+18. candidate is open, non-draft, mergeable and `behind_by = 0`;
+19. final head/tree/workflow blob are captured;
+20. `WAIVER=NO`.
 
 Merge only by normal GitHub merge commit guarded with exact qualified `expected_head_sha`.
 
