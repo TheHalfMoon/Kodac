@@ -1,0 +1,420 @@
+name: k6-r4-trusted-qualification
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    paths:
+      - ".github/workflows/k6-r4-privacy-governed-outcome-memory.yml"
+      - "schema/k6-r4-privacy-governed-outcome-memory.schema.json"
+      - "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
+      - "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  trusted-r4-qualification:
+    name: k6-r4-trusted-qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      EVENT_REPOSITORY: ${{ github.repository }}
+      EVENT_PR_NUMBER: ${{ github.event.number }}
+      EVENT_BASE_REF: ${{ github.event.pull_request.base.ref }}
+      EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      EVENT_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      EVENT_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+      READ_ONLY_GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - name: Inspect exact R4 candidate as untrusted data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import json
+          import os
+          import re
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          REPOSITORY = "TheHalfMoon/Kodac"
+          AUTHORIZED_PR = 212
+          AUTHORIZED_HEAD_REF = "feat/k6-r4-privacy-governed-outcome-memory"
+          HARDENING_PATH = "docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_HARDENING_AUTHORIZATION_2026-08-27.md"
+          HARDENING_BLOB = "9e21684993b8ef3940434560787b63c00d55866b"
+          ORIGINAL_R4_AUTH_PATH = "docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md"
+          ORIGINAL_R4_AUTH_BLOB = "db0cd6f5484494c1fcacb37570465059a0484c63"
+          REPLACEMENT_AUTH_PATH = "docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md"
+          TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r4-trusted-qualification.yml"
+          R4_WORKFLOW_PATH = ".github/workflows/k6-r4-privacy-governed-outcome-memory.yml"
+          R4_SCHEMA_PATH = "schema/k6-r4-privacy-governed-outcome-memory.schema.json"
+          R4_CONTRACTS_PATH = "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
+          R4_RUNTIME_PATH = "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
+          R4_INDEX_PATH = "packages/kodac-runtime/src/index.ts"
+          R4_TEST_PATH = "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
+          EXPECTED_PATHS = sorted([
+              R4_WORKFLOW_PATH,
+              R4_SCHEMA_PATH,
+              R4_CONTRACTS_PATH,
+              R4_RUNTIME_PATH,
+              R4_INDEX_PATH,
+              R4_TEST_PATH,
+          ])
+          NON_WORKFLOW_R4_PATHS = sorted([
+              R4_SCHEMA_PATH,
+              R4_CONTRACTS_PATH,
+              R4_RUNTIME_PATH,
+              R4_INDEX_PATH,
+              R4_TEST_PATH,
+          ])
+          EXPECTED_ACTION_LINES = [
+              "- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4",
+              "- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4",
+              "- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6",
+          ]
+          MIN_STEP_NAMES = [
+              "Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions",
+              "Sync locked validation environment outside the checkout",
+              "Validate R4 schema registration, predecessor references, and runtime parity",
+              "Prove pure authority-bounded production surface and live ruleset",
+              "Install integrity-locked TypeScript validation tooling outside the checkout",
+              "Run strict TypeScript, focused R4 and predecessor regressions, full runtime, Python, Ruff, and provenance gates",
+              "Remove ephemeral TypeScript validation tooling",
+              "Attest checkout unchanged after K6-R4 validation",
+          ]
+          MIN_EXECUTABLE_LINES = [
+              'uv sync --frozen --dev',
+              'node "$RUNNER_TEMP/k6-r4-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k6-r4-typescript/node_modules/@types"',
+              'node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts',
+              'node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory.ts',
+              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts',
+              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r3-route-outcome-linkage.test.ts',
+              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts',
+              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts',
+              '(cd packages/kodac-runtime && npm test)',
+              'uv run --frozen --no-sync pytest -p no:cacheprovider',
+              'uv run --frozen --no-sync ruff check --no-cache .',
+              'uv run --frozen --no-sync python tools/validate_provenance.py',
+          ]
+          MANIFEST_BEGIN = "K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_BEGIN"
+          MANIFEST_END = "K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_END"
+          SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+          TOKEN = os.environ.get("READ_ONLY_GITHUB_TOKEN", "")
+
+          def fail(label: str) -> None:
+              raise SystemExit(f"K6-R4 trusted qualification failed: {label}")
+
+          def require(condition: bool, label: str) -> None:
+              if not condition:
+                  fail(label)
+
+          def env(name: str) -> str:
+              value = os.environ.get(name, "")
+              require(bool(value), f"missing event field {name}")
+              return value
+
+          def api_json(path: str) -> dict:
+              url = "https://api.github.com" + path
+              headers = {
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "kodac-k6-r4-trusted-qualification",
+              }
+              if TOKEN:
+                  headers["Authorization"] = f"Bearer {TOKEN}"
+              request = urllib.request.Request(url, headers=headers, method="GET")
+              try:
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      payload = response.read(8_000_001)
+              except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError):
+                  fail("read-only GitHub API request failed")
+              require(len(payload) <= 8_000_000, "GitHub API response exceeds inspector bound")
+              try:
+                  value = json.loads(payload)
+              except Exception:
+                  fail("GitHub API response is not valid JSON")
+              require(isinstance(value, dict), "GitHub API response has unexpected shape")
+              return value
+
+          def file_at(ref: str, path: str) -> tuple[str, str]:
+              require(SHA_RE.fullmatch(ref) is not None, "file ref is not an immutable SHA")
+              quoted = urllib.parse.quote(path, safe="/")
+              value = api_json(f"/repos/{REPOSITORY}/contents/{quoted}?ref={ref}")
+              blob = value.get("sha")
+              encoding = value.get("encoding")
+              content = value.get("content")
+              require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "file blob identity unavailable")
+              require(encoding == "base64" and isinstance(content, str), "file content is not inline base64")
+              try:
+                  raw = base64.b64decode(content, validate=False)
+              except Exception:
+                  fail("file content base64 decode failed")
+              require(len(raw) <= 2_000_000, "candidate file exceeds inspector bound")
+              try:
+                  text = raw.decode("utf-8", errors="strict")
+              except UnicodeDecodeError:
+                  fail("candidate file is not UTF-8")
+              return text, blob
+
+          def extract_manifest(text: str) -> dict:
+              require(text.count(MANIFEST_BEGIN) == 1 and text.count(MANIFEST_END) == 1, "replacement authorization manifest markers invalid")
+              start = text.index(MANIFEST_BEGIN) + len(MANIFEST_BEGIN)
+              end = text.index(MANIFEST_END, start)
+              payload = text[start:end].strip()
+              require(0 < len(payload) <= 100_000, "replacement authorization manifest size invalid")
+              try:
+                  manifest = json.loads(payload)
+              except Exception:
+                  fail("replacement authorization manifest is not valid JSON")
+              require(isinstance(manifest, dict), "replacement authorization manifest shape invalid")
+              require(manifest.get("version") == "kodac-k6-r4-trusted-inspector-manifest-v1", "replacement authorization manifest version invalid")
+              return manifest
+
+          def safe_string_list(value: object, label: str, *, minimum: int = 0, maximum: int = 256) -> list[str]:
+              require(isinstance(value, list), f"{label} is not a list")
+              require(minimum <= len(value) <= maximum, f"{label} length invalid")
+              out: list[str] = []
+              for item in value:
+                  require(isinstance(item, str) and 0 < len(item) <= 4096, f"{label} contains invalid string")
+                  out.append(item)
+              require(len(set(out)) == len(out), f"{label} contains duplicates")
+              return out
+
+          def named_run_blocks(text: str) -> tuple[list[str], dict[str, str], list[str], list[str]]:
+              lines = text.splitlines()
+              step_names: list[str] = []
+              blocks: dict[str, str] = {}
+              action_lines: list[str] = []
+              step_if_lines: list[str] = []
+              i = 0
+              while i < len(lines):
+                  line = lines[i]
+                  if re.match(r"^      - uses:\s*", line):
+                      action_lines.append(line.strip())
+                  if re.match(r"^        if:\s*", line):
+                      step_if_lines.append(line.strip())
+                  match = re.match(r"^      - name: (.+)$", line)
+                  if not match:
+                      i += 1
+                      continue
+                  name = match.group(1)
+                  step_names.append(name)
+                  j = i + 1
+                  run_at = None
+                  while j < len(lines) and not re.match(r"^      - (?:name:|uses:)", lines[j]):
+                      if lines[j] == "        run: |":
+                          run_at = j
+                      j += 1
+                  require(run_at is not None, "named validation step lacks literal run block")
+                  body: list[str] = []
+                  k = run_at + 1
+                  while k < j:
+                      current = lines[k]
+                      if current and not current.startswith("          "):
+                          fail("run block indentation is not canonical")
+                      body.append(current[10:] if current else "")
+                      k += 1
+                  blocks[name] = "\n".join(body) + "\n"
+                  i = j
+              return step_names, blocks, action_lines, step_if_lines
+
+          event_repo = env("EVENT_REPOSITORY")
+          event_pr_raw = env("EVENT_PR_NUMBER")
+          event_base_ref = env("EVENT_BASE_REF")
+          event_base_sha = env("EVENT_BASE_SHA")
+          event_head_ref = env("EVENT_HEAD_REF")
+          event_head_sha = env("EVENT_HEAD_SHA")
+          event_head_repo = env("EVENT_HEAD_REPOSITORY")
+          require(event_repo == REPOSITORY, "repository identity mismatch")
+          require(event_pr_raw == str(AUTHORIZED_PR), "pull request identity mismatch")
+          require(event_base_ref == "main", "base ref mismatch")
+          require(event_head_ref == AUTHORIZED_HEAD_REF, "head branch mismatch")
+          require(event_head_repo == REPOSITORY, "head repository mismatch")
+          require(SHA_RE.fullmatch(event_base_sha) is not None, "event base SHA invalid")
+          require(SHA_RE.fullmatch(event_head_sha) is not None, "event head SHA invalid")
+          require(event_base_sha != event_head_sha, "event revisions unexpectedly identical")
+
+          current_pr = api_json(f"/repos/{REPOSITORY}/pulls/{AUTHORIZED_PR}")
+          require(current_pr.get("number") == AUTHORIZED_PR, "current PR identity mismatch")
+          require(current_pr.get("state") == "open", "authorized PR is not open")
+          require(current_pr.get("draft") is False, "authorized PR is draft")
+          require(current_pr.get("head", {}).get("sha") == event_head_sha, "authorized PR moved after event")
+          require(current_pr.get("head", {}).get("ref") == AUTHORIZED_HEAD_REF, "current PR head branch mismatch")
+          require(current_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "current PR head repository mismatch")
+          require(current_pr.get("base", {}).get("ref") == "main", "current PR base ref mismatch")
+          require(current_pr.get("base", {}).get("sha") == event_base_sha, "authorized PR base moved after event")
+
+          main_ref = api_json(f"/repos/{REPOSITORY}/git/ref/heads/main")
+          require(main_ref.get("object", {}).get("sha") == event_base_sha, "protected main moved after event")
+
+          comparison = api_json(f"/repos/{REPOSITORY}/compare/{event_base_sha}...{event_head_sha}")
+          require(comparison.get("base_commit", {}).get("sha") == event_base_sha, "compare base mismatch")
+          require(comparison.get("merge_base_commit", {}).get("sha") == event_base_sha, "candidate is not based on exact protected base")
+          require(comparison.get("behind_by") == 0, "candidate is behind protected base")
+          require(comparison.get("ahead_by", 0) > 0, "candidate has no commits over base")
+          files = comparison.get("files")
+          require(isinstance(files, list), "compare file list unavailable")
+          changed_paths = sorted(item.get("filename") for item in files if isinstance(item, dict) and isinstance(item.get("filename"), str))
+          require(changed_paths == EXPECTED_PATHS, "candidate changed-file set is not the exact six-path allowlist")
+
+          hardening_text, hardening_blob = file_at(event_base_sha, HARDENING_PATH)
+          require(hardening_blob == HARDENING_BLOB, "hardening authorization blob drift")
+          require("K6-R4 Trusted Qualification Hardening Authorization" in hardening_text, "hardening authorization identity drift")
+          _, original_auth_blob = file_at(event_base_sha, ORIGINAL_R4_AUTH_PATH)
+          require(original_auth_blob == ORIGINAL_R4_AUTH_BLOB, "original R4 authorization blob drift")
+          trusted_workflow_text, trusted_workflow_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH)
+          require("pull_request_target:" in trusted_workflow_text, "trusted inspector base workflow identity drift")
+          replacement_text, replacement_blob = file_at(event_base_sha, REPLACEMENT_AUTH_PATH)
+          manifest = extract_manifest(replacement_text)
+
+          candidate_text: dict[str, str] = {}
+          candidate_blob: dict[str, str] = {}
+          for path in EXPECTED_PATHS:
+              text, blob = file_at(event_head_sha, path)
+              candidate_text[path] = text
+              candidate_blob[path] = blob
+
+          required_blobs = manifest.get("required_candidate_blobs")
+          require(isinstance(required_blobs, dict), "replacement manifest candidate blob map missing")
+          require(sorted(required_blobs.keys()) == NON_WORKFLOW_R4_PATHS, "replacement manifest candidate blob scope invalid")
+          for path in NON_WORKFLOW_R4_PATHS:
+              expected_blob = required_blobs[path]
+              require(isinstance(expected_blob, str) and SHA_RE.fullmatch(expected_blob) is not None, "replacement manifest candidate blob invalid")
+              require(candidate_blob[path] == expected_blob, "candidate non-workflow R4 blob drift")
+
+          workflow = candidate_text[R4_WORKFLOW_PATH]
+          require(workflow.count("pull_request_target") == 0, "candidate-owned workflow uses privileged pull_request_target")
+          require(workflow.count("pull_request:") == 1, "candidate-owned workflow trigger drift")
+          require("permissions:\n  contents: read\n\njobs:" in workflow, "candidate-owned workflow permission boundary drift")
+          require(re.search(r"(?m)^    runs-on: ubuntu-latest$", workflow) is not None, "candidate workflow runner drift")
+          require(re.search(r"(?m)^    timeout-minutes: 30$", workflow) is not None, "candidate workflow timeout drift")
+          for forbidden in [
+              "continue-on-error:", "workflow_dispatch:", "schedule:", "container:", "services:", "defaults:",
+              "id-token:", "contents: write", "pull-requests: write", "actions: write", "checks: write",
+              "NODE_OPTIONS:", "BASH_ENV:", "LD_PRELOAD:", "PYTHONPATH:", "working-directory:", "|| true",
+          ]:
+              require(forbidden not in workflow, "candidate workflow contains prohibited control surface")
+          require(len(re.findall(r"(?m)^  [A-Za-z0-9_-]+:\s*$", workflow.split("jobs:\n", 1)[1])) >= 1, "candidate workflow job structure unavailable")
+          job_headers = re.findall(r"(?m)^  ([A-Za-z0-9_-]+):\s*$", workflow.split("jobs:\n", 1)[1])
+          require(job_headers == ["privacy-governed-outcome-memory"], "candidate workflow job set drift")
+          require(workflow.count("steps:") == 1, "candidate workflow steps structure drift")
+          require(workflow.count("permissions:") == 1, "candidate workflow permission block count drift")
+          require(workflow.count("shell: bash") == len(MIN_STEP_NAMES), "candidate workflow shell structure drift")
+          require("ref: ${{ github.event.pull_request.head.sha }}" in workflow, "candidate workflow exact-head checkout ref missing")
+          require("persist-credentials: false" in workflow, "candidate workflow credential persistence boundary missing")
+          require("fetch-depth: 0" in workflow, "candidate workflow full-history qualification boundary missing")
+          require('node-version: "24.18.0"' in workflow, "candidate workflow Node pin drift")
+          require('version: "0.12.1"' in workflow, "candidate workflow uv pin drift")
+          require("enable-cache: false" in workflow, "candidate workflow uv cache boundary drift")
+
+          step_names, run_blocks, action_lines, step_if_lines = named_run_blocks(workflow)
+          require(step_names == MIN_STEP_NAMES, "candidate workflow named validation step sequence drift")
+          require(action_lines == EXPECTED_ACTION_LINES, "candidate workflow immutable action sequence drift")
+          require(step_if_lines == ["if: ${{ always() }}", "if: ${{ always() }}"], "candidate workflow conditional step set drift")
+          require(re.search(r"(?m)^    if:\s*", workflow) is None, "candidate workflow job-level conditional is prohibited")
+          require(len(step_names) + len(action_lines) == 11, "candidate workflow step count drift")
+          stripped_lines = {line.strip() for line in workflow.splitlines() if line.strip() and not line.lstrip().startswith("#")}
+          for required_line in MIN_EXECUTABLE_LINES:
+              require(required_line in stripped_lines, "candidate workflow mandatory executable command missing")
+
+          run_hashes = manifest.get("required_run_block_sha256")
+          require(isinstance(run_hashes, dict), "replacement manifest run-block hash map missing")
+          require(sorted(run_hashes.keys()) == sorted(MIN_STEP_NAMES), "replacement manifest run-block hash scope invalid")
+          for name in MIN_STEP_NAMES:
+              expected_hash = run_hashes[name]
+              require(isinstance(expected_hash, str) and re.fullmatch(r"[0-9a-f]{64}", expected_hash) is not None, "replacement manifest run-block hash invalid")
+              actual_hash = hashlib.sha256(run_blocks[name].encode("utf-8")).hexdigest()
+              require(actual_hash == expected_hash, "candidate workflow protected run block drift")
+
+          required_fragments = safe_string_list(manifest.get("required_workflow_fragments"), "required workflow fragments", minimum=4)
+          forbidden_fragments = safe_string_list(manifest.get("forbidden_workflow_fragments"), "forbidden workflow fragments")
+          for fragment in required_fragments:
+              require(fragment in workflow, "candidate workflow required protected fragment missing")
+          for fragment in forbidden_fragments:
+              require(fragment not in workflow, "candidate workflow contains protected forbidden fragment")
+
+          for dynamic_pin in [
+              event_base_sha,
+              replacement_blob,
+              trusted_workflow_blob,
+              HARDENING_BLOB,
+              ORIGINAL_R4_AUTH_BLOB,
+              REPLACEMENT_AUTH_PATH,
+              HARDENING_PATH,
+              TRUSTED_WORKFLOW_PATH,
+          ]:
+              require(dynamic_pin in workflow, "candidate workflow missing canonical dynamic authorization pin")
+
+          contracts = candidate_text[R4_CONTRACTS_PATH]
+          runtime = candidate_text[R4_RUNTIME_PATH]
+          import_sources = re.findall(r"\bimport(?:\s+type)?[\s\S]*?\sfrom\s+[\"']([^\"']+)[\"']", runtime)
+          require(len(re.findall(r"\bimport\b", contracts)) == 0, "R4 contracts gained imports")
+          require(len(re.findall(r"\bimport\b", runtime)) == len(import_sources), "R4 runtime contains unsupported import form")
+          require(import_sources == ["node:crypto", "node:util", "./contracts.ts", "./outcome-linkage-contracts.ts"], "R4 runtime import allowlist drift")
+          require(re.search(r"\bimport\s*\(", runtime) is None, "R4 runtime dynamic import detected")
+          combined = contracts + "\n" + runtime
+          for pattern in [
+              r"ExecutionGateway", r"child_process", r"node:fs", r"node:path", r"node:http", r"node:https", r"node:net", r"node:tls",
+              r"\bfetch\s*\(", r"\bprocess\.(?:env|cwd|chdir)", r"Math\.random", r"Date\.now", r"new\s+Date\s*\(",
+              r"\b(?:exec|spawn|fork)\s*\(", r"localeCompare", r"Intl\.", r"telemetry", r"database",
+          ]:
+              require(re.search(pattern, combined, flags=re.IGNORECASE if pattern in {"telemetry", "database"} else 0) is None, "R4 production authority surface drift")
+          util_members = re.findall(r"\butilTypes\.([A-Za-z_$][\w$]*)", runtime)
+          require(all(member == "isProxy" for member in util_members), "R4 node:util authority drift")
+          hash_algorithms = re.findall(r"createHash\([\"']([^\"']+)[\"']\)", runtime)
+          require(hash_algorithms == ["sha256"], "R4 hash algorithm drift")
+          require("canonicalK6R1Json" in runtime, "R4 canonical JSON dependency missing")
+          require("validateK6R1RouteRequest" in runtime, "R4 R1 validation dependency missing")
+          require("validateK6R3RouteOutcomeLinkageEnvelope" in runtime, "R4 R3 validation dependency missing")
+
+          base_index, _ = file_at(event_base_sha, R4_INDEX_PATH)
+          expected_index = base_index + 'export * from "./evidence-router/outcome-memory-contracts.ts"\nexport * from "./evidence-router/outcome-memory.ts"\n'
+          require(candidate_text[R4_INDEX_PATH] == expected_index, "R4 public index is not exact additive-only projection")
+
+          try:
+              schema = json.loads(candidate_text[R4_SCHEMA_PATH])
+          except Exception:
+              fail("R4 schema is not valid JSON")
+          require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "R4 schema draft drift")
+          require(schema.get("$id") == "https://kodac.dev/schema/k6-r4-privacy-governed-outcome-memory.schema.json", "R4 schema id drift")
+          require(schema.get("$ref") == "#/$defs/outcomeMemory", "R4 schema root drift")
+          defs = schema.get("$defs")
+          require(isinstance(defs, dict), "R4 schema defs missing")
+          require(defs.get("scope", {}).get("properties", {}).get("privacyClass", {}).get("enum") == ["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"], "R4 privacy enum drift")
+          require(defs.get("outcome", {}).get("properties", {}).get("k5Status", {}).get("enum") == ["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"], "R4 K5 enum drift")
+          require(defs.get("outcome", {}).get("properties", {}).get("doneGateStatus", {}).get("enum") == ["PROVEN_READY", "NOT_READY"], "R4 Done Gate enum drift")
+          require(defs.get("executionOutcome", {}).get("properties", {}).get("executionResultStatus", {}).get("enum") == ["success", "blocked", "failure"], "R4 execution status enum drift")
+          require(defs.get("executionOutcome", {}).get("properties", {}).get("role", {}).get("enum") == ["PRIMARY", "FALLBACK"], "R4 role enum drift")
+          require(defs.get("tombstone", {}).get("properties", {}).get("transition", {}).get("enum") == ["SUPERSEDED", "DELETED", "EXPIRED"], "R4 tombstone enum drift")
+          require(defs.get("outcomeMemory", {}).get("properties", {}).get("records", {}).get("maxItems") == 4096, "R4 active-record bound drift")
+          require(defs.get("outcomeMemory", {}).get("properties", {}).get("tombstones", {}).get("maxItems") == 8192, "R4 tombstone bound drift")
+          require(defs.get("outcome", {}).get("properties", {}).get("executionOutcomes", {}).get("maxItems") == 4096, "R4 execution-outcome bound drift")
+          require(defs.get("ownerScopeId", {}).get("maxLength") == 64, "R4 owner-scope bound drift")
+          require("does not prove" in str(schema.get("$comment", "")), "R4 schema semantic disclaimer drift")
+          for name, definition in defs.items():
+              if isinstance(definition, dict) and definition.get("type") == "object":
+                  require(definition.get("additionalProperties") is False, "R4 schema closed-object invariant drift")
+
+          append_ref = defs.get("appendOperation", {}).get("properties", {})
+          supersede_ref = defs.get("supersedeOperation", {}).get("properties", {})
+          require(append_ref.get("routeRequest", {}).get("$ref") == "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest", "R4 append R1 schema ref drift")
+          require(append_ref.get("routeOutcomeLinkageEnvelope", {}).get("$ref") == "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope", "R4 append R3 schema ref drift")
+          require(supersede_ref.get("routeRequest", {}).get("$ref") == "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest", "R4 supersede R1 schema ref drift")
+          require(supersede_ref.get("routeOutcomeLinkageEnvelope", {}).get("$ref") == "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope", "R4 supersede R3 schema ref drift")
+
+          print("K6-R4 trusted qualification: PASS")
+          PY
