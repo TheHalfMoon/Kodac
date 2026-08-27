@@ -171,10 +171,13 @@ The trusted inspector must run only for pull requests targeting `main` and must 
 
 ```text
 repository = TheHalfMoon/Kodac
+pull request number = 212
 head repository = TheHalfMoon/Kodac
 head branch = feat/k6-r4-privacy-governed-outcome-memory
 base ref = main
 ```
+
+The PR-number check is mandatory and exact. A later or replacement pull request that reuses the same head branch must not inherit this authorization; any different PR identity requires separately canonical replacement authority.
 
 A path trigger may list the six R4 paths, but trigger filtering is not admission proof. The base-controlled job must use the GitHub API/event identities to compute the exact base-to-head changed-file set and require exact equality with the six implementation paths.
 
@@ -200,6 +203,7 @@ The base-controlled workflow must independently inspect the following properties
 ### Exact repository and scope admission
 
 - exact repository/head repository/base ref/head branch;
+- exact pull request number `212` from event metadata;
 - exact event head SHA;
 - exact event base SHA;
 - event base SHA is the protected candidate base for the run;
@@ -321,7 +325,7 @@ The one-path trusted-workflow candidate is not canonical unless its exact final 
 6. no cache/artifact/upload/check/comment/review write path exists;
 7. candidate blobs are consumed only as data by base-controlled logic;
 8. action references are immutable full SHAs;
-9. exact six-path admission is enforced in-job;
+9. exact PR #212 identity and exact six-path admission are enforced in-job;
 10. dedicated-workflow integrity and required-command inspection is fail-closed;
 11. production/schema/index static inspection is fail-closed;
 12. workflow does not mutate repository/ruleset/PR/check state;
