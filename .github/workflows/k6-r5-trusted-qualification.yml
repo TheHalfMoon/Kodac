@@ -60,6 +60,18 @@ jobs:
           AUTHORIZATION_PATH = "docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md"
           AUTHORIZATION_BLOB = "8747754cc8563f2506869393221a4dac084e4805"
           STAGE_A_PR_NUMBER = 225
+          STAGE_A_QUALIFIED_HEAD_SHA = "0d004e51732ca10c67eae7305bd291898257053e"
+          STAGE_A_MERGE_SHA = "76f8639a329d9f168fea9d71f78711d612075619"
+          STAGE_A_MERGE_TREE = "03041afd20e677992e57b7210cd20bd804539ab0"
+          STAGE_A_TRUSTED_WORKFLOW_BLOB = "fbbb2a6f61d2b6e1d7390eebb85338bc467df6fb"
+          REPAIR_AUTHORIZATION_PR_NUMBER = 227
+          REPAIR_AUTHORIZATION_HEAD_SHA = "283f9b8f556984c5c0b92d5a746ed56f114c8582"
+          REPAIR_AUTHORIZATION_MERGE_SHA = "06f2dc2df5eb432107313932a16079edc4912a38"
+          REPAIR_AUTHORIZATION_MERGE_TREE = "4f325ce4b3c6aff664849dc33db7e2d9ff6e2954"
+          REPAIR_AUTHORIZATION_PATH = "docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md"
+          REPAIR_AUTHORIZATION_BLOB = "e01639b284a9788d0cd1118c0ffd998271a087f0"
+          TRUSTED_REPAIR_PR_NUMBER = 0
+          TRUSTED_REPAIR_HEAD_REF = "ci/k6-r5-trusted-qualification-observability-repair"
           TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
           STAGE_B_WORKFLOW_PATH = ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
           STAGE_B_SCHEMA_PATH = "schema/k6-r5-bounded-strategy-proposal.schema.json"
@@ -130,7 +142,7 @@ jobs:
               'Sync locked validation environment outside the checkout': '288ae30bbb3ccc1c71de1a69bbc5d0f899237dadd71b7c66dba026edcf6323a3',
               'Validate R5 schema/runtime parity and closed vocabularies': 'e6760c1cfe96344a4429ba1f8a9e4deaab4fb3025c29646a96bad9346eb95082',
               'Recompute R5 fixture strategy, trial-set, and qualification corpus identities': '1a53aaa2bd8335c26dcde5a0c489b41731ab5a8e1f69dfe08edc7617161b6e41',
-              'Prove forbidden R5 authority surfaces and live ruleset': '1fe2646b12feb5aa4d6efb899e0712fc89e46f7e702f14748a2e63358cf8dd1e',
+              'Prove forbidden R5 authority surfaces and live ruleset': 'ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c',
               'Install integrity-locked TypeScript validation tooling outside the checkout': '4b8ee02309647b7e4f023e874574f5c971573a4a8336daa7b972f7bf3ec0b125',
               'Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates': '046f5bd1ec60241cd04d92b911ebe27f52fd659f6cf8aad353532b6a01f053c9',
               'Remove ephemeral TypeScript validation tooling': '7d7717cbae28f3c319b74d96168c76464c8e5064e8aca1827b919081cafbe748',
@@ -330,35 +342,94 @@ jobs:
           require(stage_a_pr.get("number") == STAGE_A_PR_NUMBER and stage_a_pr.get("merged") is True, "canonical Stage A adoption PR is not merged")
           require(stage_a_pr.get("base", {}).get("ref") == "main" and stage_a_pr.get("base", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "canonical Stage A adoption base drift")
           stage_a_head_sha = stage_a_pr.get("head", {}).get("sha")
-          require(isinstance(stage_a_head_sha, str) and SHA_RE.fullmatch(stage_a_head_sha) is not None, "canonical Stage A adoption head unavailable")
+          require(stage_a_head_sha == STAGE_A_QUALIFIED_HEAD_SHA, "canonical Stage A qualified head drift")
           require(stage_a_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY and stage_a_pr.get("changed_files") == 1, "canonical Stage A adoption PR scope drift")
-          require(stage_a_pr.get("merge_commit_sha") == event_base_sha, "protected base is not exact canonical Stage A adoption merge")
+          require(stage_a_pr.get("merge_commit_sha") == STAGE_A_MERGE_SHA, "canonical Stage A adoption merge identity drift")
 
-          adoption_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{event_base_sha}")
-          adoption_verification = adoption_commit.get("verification", {})
-          require(adoption_verification.get("verified") is True and adoption_verification.get("reason") == "valid", "canonical Stage A adoption merge verification drift")
-          adoption_parents = adoption_commit.get("parents")
-          require(isinstance(adoption_parents, list) and len(adoption_parents) == 2, "canonical Stage A adoption merge parent count drift")
-          require(adoption_parents[0].get("sha") == AUTHORIZATION_MERGE_SHA and adoption_parents[1].get("sha") == stage_a_head_sha, "canonical Stage A adoption merge parent identity drift")
-          stage_a_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{stage_a_head_sha}")
-          require(adoption_commit.get("tree", {}).get("sha") == stage_a_head_commit.get("tree", {}).get("sha"), "canonical Stage A adoption merge tree differs from qualified head tree")
+          stage_a_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{STAGE_A_MERGE_SHA}")
+          stage_a_verification = stage_a_merge.get("verification", {})
+          require(stage_a_merge.get("tree", {}).get("sha") == STAGE_A_MERGE_TREE, "canonical Stage A adoption merge tree drift")
+          require(stage_a_verification.get("verified") is True and stage_a_verification.get("reason") == "valid", "canonical Stage A adoption merge verification drift")
+          stage_a_parents = stage_a_merge.get("parents")
+          require(isinstance(stage_a_parents, list) and len(stage_a_parents) == 2, "canonical Stage A adoption merge parent count drift")
+          require(stage_a_parents[0].get("sha") == AUTHORIZATION_MERGE_SHA and stage_a_parents[1].get("sha") == STAGE_A_QUALIFIED_HEAD_SHA, "canonical Stage A adoption merge parent identity drift")
+          stage_a_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{STAGE_A_QUALIFIED_HEAD_SHA}")
+          require(stage_a_merge.get("tree", {}).get("sha") == stage_a_head_commit.get("tree", {}).get("sha"), "canonical Stage A adoption merge tree differs from qualified head tree")
 
-          stage_a_scope = compare(AUTHORIZATION_MERGE_SHA, stage_a_head_sha)
+          stage_a_scope = compare(AUTHORIZATION_MERGE_SHA, STAGE_A_QUALIFIED_HEAD_SHA)
           require(stage_a_scope.get("base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA and stage_a_scope.get("merge_base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "canonical Stage A adoption ancestry drift")
           require(stage_a_scope.get("behind_by") == 0 and stage_a_scope.get("ahead_by", 0) > 0, "canonical Stage A adoption candidate ancestry drift")
           stage_a_files = stage_a_scope.get("files")
           require(isinstance(stage_a_files, list) and len(stage_a_files) == 1, "canonical Stage A adoption path count drift")
           stage_a_file = stage_a_files[0]
           require(isinstance(stage_a_file, dict) and stage_a_file.get("filename") == TRUSTED_WORKFLOW_PATH and stage_a_file.get("status") == "added" and stage_a_file.get("previous_filename") in (None, ""), "canonical Stage A adoption path/status drift")
+          stage_a_text, stage_a_blob = file_at(STAGE_A_MERGE_SHA, TRUSTED_WORKFLOW_PATH, "canonical Stage A trusted workflow unavailable")
+          stage_a_head_text, stage_a_head_blob = file_at(STAGE_A_QUALIFIED_HEAD_SHA, TRUSTED_WORKFLOW_PATH, "qualified Stage A workflow unavailable on adoption head")
+          require(stage_a_text == stage_a_head_text and stage_a_blob == STAGE_A_TRUSTED_WORKFLOW_BLOB and stage_a_head_blob == STAGE_A_TRUSTED_WORKFLOW_BLOB and stage_a_file.get("sha") == STAGE_A_TRUSTED_WORKFLOW_BLOB, "canonical Stage A trusted workflow root identity drift")
 
-          trusted_text, trusted_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH, "canonical R5 trusted workflow unavailable on protected base")
-          stage_a_head_text, stage_a_head_blob = file_at(stage_a_head_sha, TRUSTED_WORKFLOW_PATH, "qualified Stage A workflow unavailable on adoption head")
-          require(stage_a_head_text == trusted_text and stage_a_head_blob == trusted_blob and stage_a_file.get("sha") == trusted_blob, "canonical Stage A trusted workflow blob is not exact adopted head identity")
-          require(trusted_text.startswith("name: k6-r5-trusted-qualification\n") and "pull_request_target:" in trusted_text, "canonical R5 trusted workflow boundary drift")
-          require("permissions:\n  contents: read" in trusted_text, "canonical R5 trusted workflow permissions drift")
+          repair_authorization_pr = api_json(f"/repos/{REPOSITORY}/pulls/{REPAIR_AUTHORIZATION_PR_NUMBER}")
+          require(repair_authorization_pr.get("number") == REPAIR_AUTHORIZATION_PR_NUMBER and repair_authorization_pr.get("merged") is True, "R5 observability repair authorization PR is not merged")
+          require(repair_authorization_pr.get("base", {}).get("ref") == "main" and repair_authorization_pr.get("base", {}).get("sha") == STAGE_A_MERGE_SHA, "R5 observability repair authorization base drift")
+          require(repair_authorization_pr.get("head", {}).get("sha") == REPAIR_AUTHORIZATION_HEAD_SHA and repair_authorization_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "R5 observability repair authorization head drift")
+          require(repair_authorization_pr.get("changed_files") == 1 and repair_authorization_pr.get("merge_commit_sha") == REPAIR_AUTHORIZATION_MERGE_SHA, "R5 observability repair authorization PR scope/merge drift")
+
+          repair_authorization_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{REPAIR_AUTHORIZATION_MERGE_SHA}")
+          repair_authorization_verification = repair_authorization_merge.get("verification", {})
+          require(repair_authorization_merge.get("tree", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_TREE, "R5 observability repair authorization merge tree drift")
+          require(repair_authorization_verification.get("verified") is True and repair_authorization_verification.get("reason") == "valid", "R5 observability repair authorization merge verification drift")
+          repair_authorization_parents = repair_authorization_merge.get("parents")
+          require(isinstance(repair_authorization_parents, list) and len(repair_authorization_parents) == 2, "R5 observability repair authorization merge parent count drift")
+          require(repair_authorization_parents[0].get("sha") == STAGE_A_MERGE_SHA and repair_authorization_parents[1].get("sha") == REPAIR_AUTHORIZATION_HEAD_SHA, "R5 observability repair authorization merge parent identity drift")
+          repair_authorization_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{REPAIR_AUTHORIZATION_HEAD_SHA}")
+          require(repair_authorization_merge.get("tree", {}).get("sha") == repair_authorization_head_commit.get("tree", {}).get("sha"), "R5 observability repair authorization merge tree differs from exact head tree")
+
+          repair_authorization_scope = compare(STAGE_A_MERGE_SHA, REPAIR_AUTHORIZATION_HEAD_SHA)
+          require(repair_authorization_scope.get("base_commit", {}).get("sha") == STAGE_A_MERGE_SHA and repair_authorization_scope.get("merge_base_commit", {}).get("sha") == STAGE_A_MERGE_SHA, "R5 observability repair authorization ancestry drift")
+          require(repair_authorization_scope.get("behind_by") == 0 and repair_authorization_scope.get("ahead_by", 0) > 0, "R5 observability repair authorization candidate ancestry drift")
+          repair_authorization_files = repair_authorization_scope.get("files")
+          require(isinstance(repair_authorization_files, list) and len(repair_authorization_files) == 1, "R5 observability repair authorization path count drift")
+          repair_authorization_file = repair_authorization_files[0]
+          require(isinstance(repair_authorization_file, dict) and repair_authorization_file.get("filename") == REPAIR_AUTHORIZATION_PATH and repair_authorization_file.get("status") == "added" and repair_authorization_file.get("previous_filename") in (None, ""), "R5 observability repair authorization path/status drift")
+          repair_authorization_text, repair_authorization_blob_at_merge = file_at(REPAIR_AUTHORIZATION_MERGE_SHA, REPAIR_AUTHORIZATION_PATH)
+          require(repair_authorization_blob_at_merge == REPAIR_AUTHORIZATION_BLOB and "Kodac K6-R5 Trusted Qualification Ruleset Observability Repair Authorization" in repair_authorization_text, "R5 observability repair authorization identity drift")
+          require(file_at(event_base_sha, REPAIR_AUTHORIZATION_PATH)[1] == REPAIR_AUTHORIZATION_BLOB, "R5 observability repair authorization document drift on protected base")
+          require(file_at(REPAIR_AUTHORIZATION_MERGE_SHA, TRUSTED_WORKFLOW_PATH)[1] == STAGE_A_TRUSTED_WORKFLOW_BLOB, "trusted workflow changed before registered one-path repair")
+
+          require(TRUSTED_REPAIR_PR_NUMBER > 0, "trusted repair PR is not registered")
+          trusted_repair_pr = api_json(f"/repos/{REPOSITORY}/pulls/{TRUSTED_REPAIR_PR_NUMBER}")
+          require(trusted_repair_pr.get("number") == TRUSTED_REPAIR_PR_NUMBER and trusted_repair_pr.get("merged") is True, "registered R5 trusted repair PR is not merged")
+          require(trusted_repair_pr.get("base", {}).get("ref") == "main" and trusted_repair_pr.get("base", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA, "registered R5 trusted repair base drift")
+          trusted_repair_head_sha = trusted_repair_pr.get("head", {}).get("sha")
+          require(isinstance(trusted_repair_head_sha, str) and SHA_RE.fullmatch(trusted_repair_head_sha) is not None, "registered R5 trusted repair head unavailable")
+          require(trusted_repair_pr.get("head", {}).get("ref") == TRUSTED_REPAIR_HEAD_REF and trusted_repair_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "registered R5 trusted repair head boundary drift")
+          require(trusted_repair_pr.get("changed_files") == 1 and trusted_repair_pr.get("merge_commit_sha") == event_base_sha, "protected base is not exact registered R5 trusted repair merge")
+
+          trusted_repair_scope = compare(REPAIR_AUTHORIZATION_MERGE_SHA, trusted_repair_head_sha)
+          require(trusted_repair_scope.get("base_commit", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA and trusted_repair_scope.get("merge_base_commit", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA, "registered R5 trusted repair ancestry drift")
+          require(trusted_repair_scope.get("behind_by") == 0 and trusted_repair_scope.get("ahead_by", 0) > 0, "registered R5 trusted repair candidate ancestry drift")
+          trusted_repair_files = trusted_repair_scope.get("files")
+          require(isinstance(trusted_repair_files, list) and len(trusted_repair_files) == 1, "registered R5 trusted repair path count drift")
+          trusted_repair_file = trusted_repair_files[0]
+          require(isinstance(trusted_repair_file, dict) and trusted_repair_file.get("filename") == TRUSTED_WORKFLOW_PATH and trusted_repair_file.get("status") == "modified" and trusted_repair_file.get("previous_filename") in (None, ""), "registered R5 trusted repair path/status drift")
+
+          trusted_repair_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{event_base_sha}")
+          trusted_repair_verification = trusted_repair_merge.get("verification", {})
+          require(trusted_repair_verification.get("verified") is True and trusted_repair_verification.get("reason") == "valid", "registered R5 trusted repair merge verification drift")
+          trusted_repair_parents = trusted_repair_merge.get("parents")
+          require(isinstance(trusted_repair_parents, list) and len(trusted_repair_parents) == 2, "registered R5 trusted repair merge parent count drift")
+          require(trusted_repair_parents[0].get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA and trusted_repair_parents[1].get("sha") == trusted_repair_head_sha, "registered R5 trusted repair merge parent identity drift")
+          trusted_repair_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{trusted_repair_head_sha}")
+          require(trusted_repair_merge.get("tree", {}).get("sha") == trusted_repair_head_commit.get("tree", {}).get("sha"), "registered R5 trusted repair merge tree differs from exact head tree")
+
+          trusted_text, trusted_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH, "canonical repaired R5 trusted workflow unavailable on protected base")
+          trusted_repair_head_text, trusted_repair_head_blob = file_at(trusted_repair_head_sha, TRUSTED_WORKFLOW_PATH, "registered R5 trusted repair workflow unavailable on exact head")
+          require(trusted_text == trusted_repair_head_text and trusted_blob == trusted_repair_head_blob and trusted_repair_file.get("sha") == trusted_blob, "canonical repaired R5 trusted workflow blob is not exact registered repair head identity")
+          require(trusted_blob != STAGE_A_TRUSTED_WORKFLOW_BLOB, "registered R5 trusted repair did not change trusted workflow identity")
+          require(trusted_text.startswith("name: k6-r5-trusted-qualification\n") and "pull_request_target:" in trusted_text, "canonical repaired R5 trusted workflow boundary drift")
+          require("permissions:\n  contents: read" in trusted_text, "canonical repaired R5 trusted workflow permissions drift")
           trusted_lines = trusted_text.splitlines()
           trusted_step_markers = [i for i, line in enumerate(trusted_lines) if line == "    steps:"]
-          require(len(trusted_step_markers) == 1, "canonical R5 trusted workflow steps section count drift")
+          require(len(trusted_step_markers) == 1, "canonical repaired R5 trusted workflow steps section count drift")
           trusted_step_headers = [
               line.strip()
               for line in trusted_lines[trusted_step_markers[0] + 1:]
@@ -442,12 +513,27 @@ jobs:
               require(actual_hash == EXPECTED_RUN_SHA256[name], f"candidate named-step fingerprint drift: {name}")
 
           ruleset = api_json(f"/repos/{REPOSITORY}/rulesets/{RULESET_ID}")
-          require(ruleset.get("id") == RULESET_ID and ruleset.get("node_id") == RULESET_NODE_ID, "ruleset identity drift")
+          require(ruleset.get("id") == RULESET_ID, "ruleset identity drift")
+          if "node_id" in ruleset:
+              require(ruleset.get("node_id") == RULESET_NODE_ID, "visible ruleset node identity drift")
           require(parse_instant(ruleset.get("updated_at"), "ruleset updated_at") == parse_instant(RULESET_UPDATED_AT, "trusted ruleset updated_at"), "ruleset snapshot instant drift")
           require(ruleset.get("name") == "Kodac canonical main protection v1" and ruleset.get("target") == "branch" and ruleset.get("enforcement") == "active", "ruleset activation drift")
-          require(ruleset.get("source_type") == "Repository" and ruleset.get("source") == REPOSITORY, "ruleset source drift")
+          if "source_type" in ruleset:
+              require(ruleset.get("source_type") == "Repository", "visible ruleset source type drift")
+          if "source" in ruleset:
+              require(ruleset.get("source") == REPOSITORY, "visible ruleset source drift")
           require(ruleset.get("conditions", {}).get("ref_name") == {"exclude": [], "include": ["refs/heads/main"]}, "ruleset target drift")
-          require(ruleset.get("bypass_actors") == [] and ruleset.get("current_user_can_bypass") == "never", "ruleset bypass state is not fail-closed")
+          bypass_actors_visible = "bypass_actors" in ruleset
+          current_user_can_bypass_visible = "current_user_can_bypass" in ruleset
+          if bypass_actors_visible:
+              require(ruleset.get("bypass_actors") == [], "visible ruleset bypass actor state drift")
+          if current_user_can_bypass_visible:
+              require(ruleset.get("current_user_can_bypass") == "never", "visible current-user bypass state drift")
+          bypass_state_visibility = (
+              "AVAILABLE"
+              if bypass_actors_visible and current_user_can_bypass_visible
+              else "UNAVAILABLE_UNDER_ACTIONS_TOKEN"
+          )
           rules = ruleset.get("rules")
           require(isinstance(rules, list), "ruleset rules unavailable")
           require([rule.get("type") for rule in rules if isinstance(rule, dict)] == ["deletion", "non_fast_forward", "pull_request", "required_status_checks"], "ruleset rule set/order drift")
@@ -472,6 +558,7 @@ jobs:
 
           manifest = {
               "version": "kodac-k6-r5-trusted-inspector-proof-v1",
+              "proof_model": "split-workflow-owner-v1",
               "pr": event_pr,
               "base_sha": event_base_sha,
               "head_sha": event_head_sha,
@@ -479,15 +566,30 @@ jobs:
               "authorization_tree": AUTHORIZATION_MERGE_TREE,
               "authorization_blob": AUTHORIZATION_BLOB,
               "stage_a_pr": STAGE_A_PR_NUMBER,
-              "stage_a_head_sha": stage_a_head_sha,
+              "stage_a_head_sha": STAGE_A_QUALIFIED_HEAD_SHA,
+              "stage_a_merge_sha": STAGE_A_MERGE_SHA,
+              "stage_a_trusted_workflow_blob": STAGE_A_TRUSTED_WORKFLOW_BLOB,
+              "repair_authorization_pr": REPAIR_AUTHORIZATION_PR_NUMBER,
+              "repair_authorization_merge_sha": REPAIR_AUTHORIZATION_MERGE_SHA,
+              "repair_authorization_blob": REPAIR_AUTHORIZATION_BLOB,
+              "trusted_repair_pr": TRUSTED_REPAIR_PR_NUMBER,
+              "trusted_repair_head_sha": trusted_repair_head_sha,
               "trusted_workflow_blob": trusted_blob,
               "candidate_workflow_blob": workflow_blob,
               "stage_b_paths": EXPECTED_PATHS,
               "named_run_sha256": {name: hashlib.sha256(body.encode("utf-8")).hexdigest() for name, body in named_runs.items()},
               "ruleset_id": RULESET_ID,
-              "bypass_actors": [],
-              "current_user_can_bypass": "never",
+              "bypass_state_visibility": bypass_state_visibility,
+              "visible_bypass_fields_validated": [
+                  name
+                  for name, visible in [
+                      ("bypass_actors", bypass_actors_visible),
+                      ("current_user_can_bypass", current_user_can_bypass_visible),
+                  ]
+                  if visible
+              ],
+              "external_owner_no_bypass_proof_required": True,
           }
           print(json.dumps(manifest, sort_keys=True, separators=(",", ":")))
-          print("K6-R5 trusted qualification: PASS")
+          print("K6-R5 trusted workflow-visible qualification: PASS; owner-level no-bypass proof remains mandatory")
           PY
