@@ -342,7 +342,7 @@ No source, test, schema, workflow, dependency, lockfile, candidate-owned R4 work
 
 This record remains non-canonical unless its exact final candidate proves:
 
-1. base ref is exactly `main`;
+1. candidate PR base ref/SHA/tree are exactly `main` / `2450101ab94beb98ce9a857510feec2d5ba8489b` / `9e4afe1f769fd4484073425fe83a8deb927af1d3`;
 2. live protected `main` SHA/tree remain exactly `2450101ab94beb98ce9a857510feec2d5ba8489b` / `9e4afe1f769fd4484073425fe83a8deb927af1d3` at final preflight;
 3. changed-file set is exactly this one documentation path;
 4. applicable repository-required exact-head CI is terminal success;
@@ -356,7 +356,7 @@ This record remains non-canonical unless its exact final candidate proves:
 12. applicable post-merge required checks succeed;
 13. `WAIVER=NO`.
 
-If `main` or the ruleset changes before merge, stop, reconcile this documentation-only candidate forward non-destructively, update exact base evidence if required and requalify from scratch.
+If the candidate PR base identity, live protected `main`, or the ruleset changes before merge, stop, reconcile this documentation-only candidate forward non-destructively, update exact base evidence if required and requalify from scratch.
 
 ## Stop boundary
 
