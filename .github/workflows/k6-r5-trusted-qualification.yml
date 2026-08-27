@@ -113,7 +113,7 @@ jobs:
             z=par[z]
             if isinstance(z,ast.FunctionDef):return z.name
           def ch(z):return z.id if isinstance(z,ast.Name) else (ch(z.value)+"."+z.attr if isinstance(z,ast.Attribute) else "")
-          ap=[z for z in ast.walk(tree) if isinstance(z,ast.FunctionDef) and z.name=="api"];q(len(ap)==1 and hashlib.sha256(ast.dump(ap[0],include_attributes=False).encode()).hexdigest()=="e78a573bbbd6d6c047fb98fc2397d70e775d5f544db6e263fe6f00d64518fa65","E-self-api")
+          ap=[z for z in ast.walk(tree) if isinstance(z,ast.FunctionDef) and z.name=="api"];q(len(ap)==1 and hashlib.sha256((ast.get_source_segment(src,ap[0]) or "").encode()).hexdigest()=="e1c9af94db328e3d2c8f5c4635aedca1b3b73566e74c48884b5074cf9f9f0742","E-self-api")
           allow={"ast","base64","hashlib","json","os","re","urllib.error","urllib.parse","urllib.request"};danger={"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input","__builtins__"}
           for z in ast.walk(tree):
            if isinstance(z,ast.Import):q(all(x.name in allow and x.asname is None for x in z.names),"E-self-import")
