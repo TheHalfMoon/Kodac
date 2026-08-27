@@ -52,12 +52,14 @@ jobs:
           import urllib.error
           import urllib.parse
           import urllib.request
+          from datetime import datetime, timezone
 
           REPOSITORY = "TheHalfMoon/Kodac"
           AUTHORIZATION_MERGE_SHA = "31f5f9f3e05dd0feeda2b96b3221374c4bfe0032"
           AUTHORIZATION_MERGE_TREE = "8f319e2e4238ffdcbd91dd6651a90e90c88abedb"
           AUTHORIZATION_PATH = "docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md"
           AUTHORIZATION_BLOB = "8747754cc8563f2506869393221a4dac084e4805"
+          STAGE_A_PR_NUMBER = 225
           TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
           STAGE_B_WORKFLOW_PATH = ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
           STAGE_B_SCHEMA_PATH = "schema/k6-r5-bounded-strategy-proposal.schema.json"
@@ -172,6 +174,16 @@ jobs:
               except Exception:
                   fail(f"{label} is not valid JSON")
 
+          def parse_instant(value: object, label: str) -> datetime:
+              require(isinstance(value, str) and bool(value), f"{label} missing")
+              normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+              try:
+                  parsed = datetime.fromisoformat(normalized)
+              except ValueError:
+                  fail(f"{label} is not a valid offset timestamp")
+              require(parsed.tzinfo is not None and parsed.utcoffset() is not None, f"{label} lacks timezone")
+              return parsed.astimezone(timezone.utc)
+
           def api_json(path: str, missing_label: str | None = None) -> dict:
               require(path.startswith("/repos/TheHalfMoon/Kodac/"), "GitHub API path escaped repository boundary")
               request = urllib.request.Request(
@@ -282,13 +294,38 @@ jobs:
           require(authorization_commit.get("tree", {}).get("sha") == AUTHORIZATION_MERGE_TREE, "canonical R5 authorization merge tree drift")
           verification = authorization_commit.get("verification", {})
           require(verification.get("verified") is True and verification.get("reason") == "valid", "canonical R5 authorization merge verification drift")
-          lineage = compare(AUTHORIZATION_MERGE_SHA, event_base_sha)
-          require(lineage.get("merge_base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "protected base does not descend from canonical R5 authorization")
           authorization_text, authorization_blob_at_merge = file_at(AUTHORIZATION_MERGE_SHA, AUTHORIZATION_PATH)
           require(authorization_blob_at_merge == AUTHORIZATION_BLOB and "Kodac K6-R5 Bounded Strategy Proposal and Qualification Authorization" in authorization_text, "canonical R5 authorization identity drift")
           require(file_at(event_base_sha, AUTHORIZATION_PATH)[1] == AUTHORIZATION_BLOB, "canonical R5 authorization document drift on protected base")
 
+          stage_a_pr = api_json(f"/repos/{REPOSITORY}/pulls/{STAGE_A_PR_NUMBER}")
+          require(stage_a_pr.get("number") == STAGE_A_PR_NUMBER and stage_a_pr.get("merged") is True, "canonical Stage A adoption PR is not merged")
+          require(stage_a_pr.get("base", {}).get("ref") == "main" and stage_a_pr.get("base", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "canonical Stage A adoption base drift")
+          stage_a_head_sha = stage_a_pr.get("head", {}).get("sha")
+          require(isinstance(stage_a_head_sha, str) and SHA_RE.fullmatch(stage_a_head_sha) is not None, "canonical Stage A adoption head unavailable")
+          require(stage_a_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY and stage_a_pr.get("changed_files") == 1, "canonical Stage A adoption PR scope drift")
+          require(stage_a_pr.get("merge_commit_sha") == event_base_sha, "protected base is not exact canonical Stage A adoption merge")
+
+          adoption_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{event_base_sha}")
+          adoption_verification = adoption_commit.get("verification", {})
+          require(adoption_verification.get("verified") is True and adoption_verification.get("reason") == "valid", "canonical Stage A adoption merge verification drift")
+          adoption_parents = adoption_commit.get("parents")
+          require(isinstance(adoption_parents, list) and len(adoption_parents) == 2, "canonical Stage A adoption merge parent count drift")
+          require(adoption_parents[0].get("sha") == AUTHORIZATION_MERGE_SHA and adoption_parents[1].get("sha") == stage_a_head_sha, "canonical Stage A adoption merge parent identity drift")
+          stage_a_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{stage_a_head_sha}")
+          require(adoption_commit.get("tree", {}).get("sha") == stage_a_head_commit.get("tree", {}).get("sha"), "canonical Stage A adoption merge tree differs from qualified head tree")
+
+          stage_a_scope = compare(AUTHORIZATION_MERGE_SHA, stage_a_head_sha)
+          require(stage_a_scope.get("base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA and stage_a_scope.get("merge_base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "canonical Stage A adoption ancestry drift")
+          require(stage_a_scope.get("behind_by") == 0 and stage_a_scope.get("ahead_by", 0) > 0, "canonical Stage A adoption candidate ancestry drift")
+          stage_a_files = stage_a_scope.get("files")
+          require(isinstance(stage_a_files, list) and len(stage_a_files) == 1, "canonical Stage A adoption path count drift")
+          stage_a_file = stage_a_files[0]
+          require(isinstance(stage_a_file, dict) and stage_a_file.get("filename") == TRUSTED_WORKFLOW_PATH and stage_a_file.get("status") == "added" and stage_a_file.get("previous_filename") in (None, ""), "canonical Stage A adoption path/status drift")
+
           trusted_text, trusted_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH, "canonical R5 trusted workflow unavailable on protected base")
+          stage_a_head_text, stage_a_head_blob = file_at(stage_a_head_sha, TRUSTED_WORKFLOW_PATH, "qualified Stage A workflow unavailable on adoption head")
+          require(stage_a_head_text == trusted_text and stage_a_head_blob == trusted_blob and stage_a_file.get("sha") == trusted_blob, "canonical Stage A trusted workflow blob is not exact adopted head identity")
           require(trusted_text.startswith("name: k6-r5-trusted-qualification\n") and "pull_request_target:" in trusted_text, "canonical R5 trusted workflow boundary drift")
           require("permissions:\n  contents: read" in trusted_text, "canonical R5 trusted workflow permissions drift")
           trusted_lines = trusted_text.splitlines()
@@ -377,7 +414,8 @@ jobs:
               require(actual_hash == EXPECTED_RUN_SHA256[name], f"candidate named-step fingerprint drift: {name}")
 
           ruleset = api_json(f"/repos/{REPOSITORY}/rulesets/{RULESET_ID}")
-          require(ruleset.get("id") == RULESET_ID and ruleset.get("node_id") == RULESET_NODE_ID and ruleset.get("updated_at") == RULESET_UPDATED_AT, "ruleset identity/snapshot drift")
+          require(ruleset.get("id") == RULESET_ID and ruleset.get("node_id") == RULESET_NODE_ID, "ruleset identity drift")
+          require(parse_instant(ruleset.get("updated_at"), "ruleset updated_at") == parse_instant(RULESET_UPDATED_AT, "trusted ruleset updated_at"), "ruleset snapshot instant drift")
           require(ruleset.get("name") == "Kodac canonical main protection v1" and ruleset.get("target") == "branch" and ruleset.get("enforcement") == "active", "ruleset activation drift")
           require(ruleset.get("source_type") == "Repository" and ruleset.get("source") == REPOSITORY, "ruleset source drift")
           require(ruleset.get("conditions", {}).get("ref_name") == {"exclude": [], "include": ["refs/heads/main"]}, "ruleset target drift")
@@ -412,6 +450,8 @@ jobs:
               "authorization_merge_sha": AUTHORIZATION_MERGE_SHA,
               "authorization_tree": AUTHORIZATION_MERGE_TREE,
               "authorization_blob": AUTHORIZATION_BLOB,
+              "stage_a_pr": STAGE_A_PR_NUMBER,
+              "stage_a_head_sha": stage_a_head_sha,
               "trusted_workflow_blob": trusted_blob,
               "candidate_workflow_blob": workflow_blob,
               "stage_b_paths": EXPECTED_PATHS,
