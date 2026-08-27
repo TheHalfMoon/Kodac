@@ -41,6 +41,11 @@ K6-R3 route-outcome linkage:
   PR #208
   merge = 4ed9bed6fdb23643c722298adfba4ae8e72097b2
 
+K6-R4 privacy-governed outcome memory:
+  authorization root = PR #211 / 1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372
+  final authorization amendment = PR #221 / 93c197cb6f88409dd406694fe4614ecf0fb6ba00
+  implementation merge = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
+
 Kodac intelligence improvement plan adoption:
   PR #209
   merge = 3650b81ea926a066fcc7029b5b1e2f186d2ed616
@@ -59,7 +64,7 @@ Always re-read live `main`; these identities are evidence anchors, not future me
 | **KRI-R1 through KRI-R4** | Bounded Reviewer Intelligence | **CANONICAL / COMPLETE for separately authorized scopes** | KRI-R5+ not authorized |
 | **K4** | Ecosystem Compatibility & Capability Registry | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not required for closeout / not authorized |
 | **K5** | Proof Review & Judge | **CLOSED for canonical K5-R1 through K5-R5 bounded proof-review scope** | K5-R6+ not required for closeout / not authorized; Done Gate unchanged |
-| **K6** | Evidence Router & Outcome Learning | **IN PROGRESS: K6-R1/R2/R3 CLOSED_CANONICAL; K6-R4/R5 NOT_AUTHORIZED** | Only already-canonical R1-R3 scopes exist; later slices require separate authorization |
+| **K6** | Evidence Router & Outcome Learning | **IN PROGRESS: K6-R1/R2/R3/R4 CLOSED_CANONICAL; K6-R5 NOT_AUTHORIZED** | Only already-canonical R1-R4 scopes exist; R5 requires separate authorization |
 | **P2 KodacBench** | General measurement spine | **NOT_AUTHORIZED** | No broad quality/superiority claims before accepted evidence |
 | **P3-P8** | Context v2, Reviewer v2, Verifier, Security, Autofix, Product/Distribution | **NOT_AUTHORIZED** | Each stage requires dependency readiness and separate canonical authority |
 
@@ -92,7 +97,7 @@ K6 is defined and in progress. The current accepted bounded surface is:
 K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
-K6-R4 = NOT_AUTHORIZED
+K6-R4 = CLOSED_CANONICAL
 K6-R5 = NOT_AUTHORIZED
 K6 BOUNDED CLOSEOUT = NOT YET ELIGIBLE
 ```
@@ -121,34 +126,28 @@ Authorization record:
 
 - `docs/planning/KODAC_K6_R3_ROUTE_OUTCOME_LINKAGE_AUTHORIZATION_2026-08-26.md`
 
-### K6-R4 — next authorization candidate only
+### K6-R4 — canonical privacy-governed bounded outcome memory
 
-The next planned unit is privacy-governed bounded outcome records / memory. **No K6-R4 implementation is authorized by this roadmap.**
+R4 is closed canonical for its pure deterministic caller-managed in-process outcome-record and memory lifecycle contract through PR #212.
 
-Before implementation, a separate canonical R4 authorization must define at minimum:
+Canonical authority chain:
 
-- exact allowed and forbidden fields;
-- privacy classification and sensitive-data handling;
-- repository/user isolation;
-- local-first behavior and persistence authority;
-- provenance;
-- retention, deletion, expiry, conflict and supersession;
-- telemetry and egress rules;
-- cross-repository boundaries;
-- exact implementation allowlist;
-- CI, review, guarded-merge and post-merge proof gates.
+- `docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md`
+- `docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md`
 
-R4 must not implicitly grant provider/model invocation, training, telemetry, uncontrolled persistence, cross-repository learning, strategy promotion, autofix, external-service authority, K2 expansion, or Done Gate authority.
+R4 validates canonical R1/R3 lineage, retains minimized pseudonymous identities, enforces repository/owner/privacy isolation, and provides deterministic APPEND, SUPERSEDE, DELETE, EXPIRE and PURGE_TOMBSTONE value transitions. It does not authorize durable persistence, filesystem/database I/O, telemetry, network egress, provider/model/reviewer execution, training/learning, cross-repository aggregation, strategy promotion, K2 expansion, K5 expansion or Done Gate authority.
 
-### K6-R5 — later, separately authorized
+### K6-R5 — next authorization candidate only
 
-R5 is a bounded strategy proposal/qualification direction only after R4 has completed its required lifecycle. Any R5 qualification must use only an explicitly authorized **R5-specific** corpus/holdout.
+R5 is the next bounded strategy proposal/qualification direction. **No K6-R5 implementation is authorized by this roadmap.** Any later R5 qualification must use only an explicitly authorized **R5-specific** corpus/holdout.
 
 ```text
 R5-SPECIFIC QUALIFICATION CORPUS != GENERAL KODACBENCH
 ```
 
-R5 may not self-promote and may not use its bounded evidence to support broad quality claims.
+Its separate authorization must pin immutable candidate/incumbent identities, exact corpus identity/provenance and task-family guardrails; keep latency/compute/privacy/security visible independently; reject self-reported reward as truth; retain rollback identity; prohibit automatic promotion; and define the exact implementation/test/workflow/schema allowlist and adoption gate.
+
+R5 may not invoke providers/models/reviewers, execute a strategy, mutate trust policy, learn online, persist or upload outcomes, self-promote, or use bounded evidence to support broad quality claims.
 
 ## Ordered improvement program
 
@@ -187,7 +186,7 @@ K2 SIDE-EFFECT EXECUTION AUTHORITY = UNCHANGED
 K5 PROOF EVIDENCE != DONE GATE COMPLETION AUTHORITY
 REVIEWER / MODEL OUTPUT = CLAIM / EVIDENCE, NOT COMPLETION TRUTH
 K6 ROUTING / OUTCOME EVIDENCE != EXECUTION AUTHORITY
-K6-R4 IMPLEMENTATION = NOT_AUTHORIZED
+K6-R4 CLOSED SCOPE != PERSISTENCE / LEARNING / PROMOTION AUTHORITY
 K6-R5 IMPLEMENTATION = NOT_AUTHORIZED
 KODACBENCH IMPLEMENTATION = NOT_AUTHORIZED
 NEW DEPENDENCIES = NOT_AUTHORIZED BY THIS ROADMAP

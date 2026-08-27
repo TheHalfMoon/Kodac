@@ -15,7 +15,7 @@ Before any mutation:
 
 If this page conflicts with live GitHub, an ADR, or an exact authorization/evidence record, the more authoritative source wins.
 
-Text on a feature branch or PR is candidate text only. The action below is effective only when this P0 roadmap reconciliation is canonical on `main` and its required post-merge proof has succeeded.
+Text on a feature branch or PR is candidate text only. The action below is effective only when this roadmap reconciliation is canonical on `main` and its required post-merge proof has succeeded.
 
 ---
 
@@ -28,6 +28,9 @@ K5 closeout       = PR #201 / 06a6e33ca78bc4d0bd68449292161e1e4dc96385
 K6-R1 merge       = PR #204 / 7bc163b9ec0d5d451950542f1feb15e444fbdc6c
 K6-R2 merge       = PR #206 / 90c00cfc01cb874c08b4f7bde1469ccb298b5648
 K6-R3 merge       = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
+K6-R4 auth root   = PR #211 / 1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372
+K6-R4 final auth  = PR #221 / 93c197cb6f88409dd406694fe4614ecf0fb6ba00
+K6-R4 merge       = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
 Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -38,7 +41,7 @@ K5 = CLOSED FOR CANONICAL R1-R5 BOUNDED PROOF-REVIEW SCOPE
 K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
-K6-R4 = NOT_AUTHORIZED
+K6-R4 = CLOSED_CANONICAL
 K6-R5 = NOT_AUTHORIZED
 WAIVER = NO
 ```
@@ -47,53 +50,51 @@ Engineering milestone state remains separate from public release state.
 
 ---
 
-# NOW — K6-R4 authorization candidate
+# NOW — K6-R5 authorization candidate
 
-After this P0 reconciliation is canonical and post-merge proven, the next eligible repository unit is:
+After this reconciliation is canonical and post-merge proven, the next eligible repository unit is:
 
 ```text
-K6-R4 AUTHORIZATION-CANDIDATE PREPARATION
-TOPIC = PRIVACY-GOVERNED BOUNDED OUTCOME RECORDS / MEMORY
-K6-R4 IMPLEMENTATION = NOT_AUTHORIZED
+K6-R5 AUTHORIZATION-CANDIDATE PREPARATION
+TOPIC = BOUNDED STRATEGY PROPOSAL / R5-SPECIFIC QUALIFICATION
+K6-R5 IMPLEMENTATION = NOT_AUTHORIZED
 ```
 
-Do **not** implement K6-R4 source/runtime work merely because this roadmap names it next.
+Do **not** implement K6-R5 source/runtime work merely because this roadmap names it next.
 
-A separate R4 authorization must become canonical before implementation and must define at minimum:
+A separate R5 authorization must become canonical before implementation and must define at minimum:
 
-- exact allowed fields;
-- exact forbidden fields and prohibited raw/sensitive content;
-- privacy classification and sensitive-data handling;
-- repository/user isolation;
-- local-first behavior;
-- whether persistence is optional/required and its exact authority boundary;
-- provenance identities;
-- retention;
-- deletion;
-- expiry;
-- conflict and supersession semantics;
-- telemetry rules;
-- network/egress rules;
-- cross-repository boundaries;
+- immutable/versioned candidate and incumbent strategy identities;
+- exact strategy fields, closed proposal vocabulary and deterministic identity rules;
+- exact bounded R5-specific qualification corpus/holdout identity, contents and provenance;
+- explicit task-family, repository, revision and privacy guardrails;
+- deterministic comparison metrics, directionality, ties and invalid-result precedence;
+- independently visible latency, compute, privacy and security evidence;
+- rejection of self-reported reward as completion or quality truth;
+- exact rollback/incumbent identity retention;
+- explicit human/canonical promotion boundary with no automatic promotion;
+- hostile-input, resource-bound and caller-mutation behavior;
 - exact implementation allowlist;
 - required tests and negative/adversarial cases;
 - exact-head CI and review requirements;
 - guarded merge requirements;
 - post-merge proof requirements.
 
-The R4 authorization must explicitly preserve:
+The R5 authorization must explicitly preserve:
 
 ```text
 MODEL / PROVIDER / REVIEWER INVOCATION = NOT_AUTHORIZED
 MODEL TRAINING = NOT_AUTHORIZED
 TELEMETRY / UPLOAD = NOT_AUTHORIZED BY IMPLICATION
-UNCONTROLLED PERSISTENCE = NOT_AUTHORIZED
+PERSISTENCE / NETWORK EGRESS = NOT_AUTHORIZED BY IMPLICATION
 CROSS-REPOSITORY LEARNING = NOT_AUTHORIZED
-STRATEGY PROMOTION = NOT_AUTHORIZED
+AUTOMATIC STRATEGY PROMOTION = NOT_AUTHORIZED
+TRUST-POLICY MUTATION = NOT_AUTHORIZED
 AUTOFIX = NOT_AUTHORIZED
 EXTERNAL SERVICES = NOT_AUTHORIZED
 K2 AUTHORITY EXPANSION = NOT_AUTHORIZED
 DONE GATE / PROVEN_READY AUTHORITY CHANGE = NOT_AUTHORIZED
+GENERAL KODACBENCH CLAIMS = NOT_AUTHORIZED
 ```
 
 The authorization candidate may only grant a future implementation allowlist after that authorization itself has passed exact-head qualification, guarded merge, and required post-merge proof.
@@ -105,9 +106,7 @@ The authorization candidate may only grant a future implementation allowlist aft
 The canonical dependency order remains:
 
 ```text
-K6-R4 authorization
--> K6-R4 bounded implementation / qualification / canonical closeout
--> K6-R5 authorization
+K6-R5 authorization
 -> K6-R5 bounded strategy proposal + R5-specific qualification corpus
 -> K6 bounded closeout
 -> P2 KodacBench
