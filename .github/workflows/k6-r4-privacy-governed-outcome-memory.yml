@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      K6_R4_AUTHORIZATION_MERGE_SHA: "1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372"
-      K6_R4_AUTHORIZATION_MERGE_TREE: "a75da9d57827e0967319fb5495dc7e6cac9a23f8"
-      K6_R4_AUTHORIZATION_DOCUMENT_BLOB: "db0cd6f5484494c1fcacb37570465059a0484c63"
+      K6_R4_AUTHORIZATION_MERGE_SHA: "b09ad8498759c93807c853e5f24bd401f3a66da2"
+      K6_R4_AUTHORIZATION_MERGE_TREE: "125848a51aa42396a6bb6974ecfc11dd279d9368"
+      K6_R4_AUTHORIZATION_DOCUMENT_BLOB: "5af9c06324db3e91a4a6915df968c9f6d066196d"
       K6_R4_IMPLEMENTATION_BRANCH: "feat/k6-r4-privacy-governed-outcome-memory"
       PRE_R4_INDEX_BLOB: "f5f5c68de90e23ad07af4a0489cf85e57fe46cfe"
       R3_AUTHORIZATION_BLOB: "b7c68a4e963a0d082fd966b2cfdab44095d107dd"
@@ -73,7 +73,7 @@ jobs:
           test ! -s "$RUNNER_TEMP/k6-r4-diff-before"
 
           test "$(git rev-parse "$K6_R4_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K6_R4_AUTHORIZATION_MERGE_TREE"
-          authorization_path="docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md"
+          authorization_path="docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md"
           test "$(git rev-parse "$K6_R4_AUTHORIZATION_MERGE_SHA:$authorization_path")" = "$K6_R4_AUTHORIZATION_DOCUMENT_BLOB"
           test "$(git rev-parse "HEAD:$authorization_path")" = "$K6_R4_AUTHORIZATION_DOCUMENT_BLOB"
 
