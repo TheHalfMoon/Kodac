@@ -68,7 +68,7 @@ function candidate(candidateId: string, pass = true) {
     candidateKind: "MODEL_PROVIDER" as const,
     provider: `provider-${candidateId}-raw-sentinel`,
     model: `model-${candidateId}-raw-sentinel`,
-    declaredCapabilities: ["model/generate", "repo/search", "prompt/raw_sentinel"],
+    declaredCapabilities: ["model/generate", "repo/search", "prompt/raw_sentinel", "secret/raw_sentinel"],
     maximumRiskClass: "HIGH" as const,
     supportedPrivacyClasses: ["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"] as const,
     qualification: {
