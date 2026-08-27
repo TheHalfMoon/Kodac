@@ -484,10 +484,10 @@ test("configured resource bounds distinguish boundary acceptance from over-bound
   const active = append()
 
   const atRecords = clone(active)
-  atRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords).fill(clone(active.records[0]!))
+  atRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords).fill(null)
   assert.throws(() => validateK6R4OutcomeMemory(atRecords), TypeError)
   const overRecords = clone(active)
-  overRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords + 1).fill(clone(active.records[0]!))
+  overRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords + 1).fill(null)
   assert.throws(() => validateK6R4OutcomeMemory(overRecords), RangeError)
 
   const deleted = applyK6R4OutcomeMemoryOperation(active, {
@@ -498,19 +498,19 @@ test("configured resource bounds distinguish boundary acceptance from over-bound
     tombstoneExpiresAtUnixMs: 250,
   })
   const atTombstones = clone(deleted)
-  atTombstones.tombstones = new Array(K6_R4_LIMITS.maxTombstones).fill(clone(deleted.tombstones[0]!))
+  atTombstones.tombstones = new Array(K6_R4_LIMITS.maxTombstones).fill(null)
   assert.throws(() => validateK6R4OutcomeMemory(atTombstones), TypeError)
   const overTombstones = clone(deleted)
-  overTombstones.tombstones = new Array(K6_R4_LIMITS.maxTombstones + 1).fill(clone(deleted.tombstones[0]!))
+  overTombstones.tombstones = new Array(K6_R4_LIMITS.maxTombstones + 1).fill(null)
   assert.throws(() => validateK6R4OutcomeMemory(overTombstones), RangeError)
 
   const atOutcomes = clone(active)
   atOutcomes.records[0]!.outcome.executionOutcomes =
-    new Array(K6_R4_LIMITS.maxExecutionOutcomesPerRecord).fill(clone(active.records[0]!.outcome.executionOutcomes[0]!))
+    new Array(K6_R4_LIMITS.maxExecutionOutcomesPerRecord).fill(null)
   assert.throws(() => validateK6R4OutcomeMemory(atOutcomes), TypeError)
   const overOutcomes = clone(active)
   overOutcomes.records[0]!.outcome.executionOutcomes =
-    new Array(K6_R4_LIMITS.maxExecutionOutcomesPerRecord + 1).fill(clone(active.records[0]!.outcome.executionOutcomes[0]!))
+    new Array(K6_R4_LIMITS.maxExecutionOutcomesPerRecord + 1).fill(null)
   assert.throws(() => validateK6R4OutcomeMemory(overOutcomes), RangeError)
 
   const atDepth: Record<string, unknown> = { x: null }
