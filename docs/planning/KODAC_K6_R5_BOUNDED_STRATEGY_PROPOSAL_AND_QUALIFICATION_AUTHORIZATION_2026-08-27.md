@@ -324,6 +324,14 @@ CANDIDATE_STRATEGY_ID = b65be214400b10d1e3e633ad142f7f4fe6199d2a9b4a97ef465cbcbe
 PROVENANCE = SYNTHETIC / REPOSITORY-LOCAL / CONTRACT-CONFORMANCE ONLY
 ```
 
+The fixed corpus identity is defined exactly as:
+
+```text
+K6_R5_QUALIFICATION_CORPUS_ID = SHA256(canonicalK6R1Json(<the exact corpus JSON object embedded below>))
+```
+
+No field is omitted from the corpus identity input. The complete object beginning with `candidateStrategy` and ending with `version` in the JSON block below is the hash input after parsing and validation, and `canonicalK6R1Json()` provides the only canonical key ordering/serialization. The surrounding Markdown, code fence, whitespace outside the JSON value, and the separately printed digest/provenance lines above are not hash input.
+
 The identities are independently recomputable with `canonicalK6R1Json()` and SHA-256.
 
 Exact corpus JSON:
