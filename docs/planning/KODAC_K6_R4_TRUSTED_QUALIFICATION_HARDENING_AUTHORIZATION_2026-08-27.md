@@ -51,6 +51,8 @@ No other path is authorized by the workflow-hardening PR.
 
 The trusted workflow becomes a canonical preimplementation prerequisite. It is not part of the later R4 six-path implementation diff.
 
+The workflow-hardening PR must start from the canonical merge of this hardening authorization, not from the pre-authorization base recorded above.
+
 After that trusted workflow itself is canonically merged and post-merge proven, authorize preparation of one later documentation-only replacement R4 authorization candidate at exactly:
 
 ```text
@@ -142,10 +144,13 @@ The base-controlled workflow must independently perform at least the following c
 
 - checkout exact `github.event.pull_request.head.sha` with credentials disabled;
 - require exact repository/head repository/base ref/head branch;
-- require base SHA to be the exact canonical replacement-R4 authorization merge recorded by the later replacement authorization;
-- require `behind_by = 0` semantics by proving the base SHA is the exact merge base for the candidate;
+- treat `github.event.pull_request.base.sha` as the exact protected-base identity for that run and require it to be the candidate merge base;
+- require the protected base to contain the fixed-path canonical replacement R4 authorization record before an R4 implementation candidate may qualify;
+- do not hardcode a future replacement-authorization merge SHA into the earlier trusted-workflow commit;
 - require exact six-path diff and `git diff --check`;
 - prove the trusted workflow itself is not changed by the candidate.
+
+The later replacement authorization and external canonical preflight bind the exact base SHA/tree/document blob for the implementation candidate. The trusted workflow independently proves the candidate is exactly based on the protected base presented by the event and that its own definition is not candidate-controlled.
 
 ### Canonical prerequisite binding
 
@@ -153,11 +158,12 @@ The later replacement authorization must provide immutable pins that the trusted
 
 - trusted-workflow hardening authorization document blob;
 - trusted workflow blob;
-- replacement R4 authorization document blob;
 - canonical R1/R3 predecessor blobs needed by R4;
 - pre-R4 `index.ts` bytes or blob;
 - canonical provenance validator blob;
 - protected ruleset identity/snapshot information when readable under least privilege.
+
+The replacement authorization record itself cannot self-pin its own future merge SHA or blob. Its exact candidate blob and canonical merge identity are captured by the external authorization qualification/merge proof, while the trusted workflow requires the fixed replacement-authorization path to exist on protected base and consumes only non-self-referential pins declared by that canonical base record.
 
 No candidate-controlled value may be accepted as a substitute for a required protected-base pin.
 
@@ -286,7 +292,7 @@ It must not modify:
 
 The one-path trusted-workflow candidate is not canonical unless its exact final head proves:
 
-1. base ref is `main` and base SHA/tree equal the exact canonical base recorded in the canonical version of this authorization or a separately canonical replacement base;
+1. base ref is `main` and base SHA/tree equal the canonical merge of this hardening authorization, or a later separately canonical replacement-hardening base if main moved before workflow implementation;
 2. changed-file set is exactly `.github/workflows/k6-r4-trusted-qualification.yml`;
 3. workflow uses `pull_request_target` only for the intended R4 qualification boundary and `permissions: contents: read`;
 4. no secrets/write/admin/id-token permissions exist;
