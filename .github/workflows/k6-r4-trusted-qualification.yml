@@ -77,26 +77,28 @@ jobs:
           }
           EXPECTED_PATHS = sorted(EXPECTED_PATH_STATUS)
           NON_WORKFLOW_R4_PATHS = sorted(path for path in EXPECTED_PATHS if path != R4_WORKFLOW_PATH)
-          EXPECTED_WORKFLOW_PREAMBLE = """name: k6-r4-privacy-governed-outcome-memory
-
-on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/k6-r4-privacy-governed-outcome-memory.yml"
-      - "schema/k6-r4-privacy-governed-outcome-memory.schema.json"
-      - "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"
-      - "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
-      - "packages/kodac-runtime/src/index.ts"
-      - "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
-
-permissions:
-  contents: read
-
-jobs:
-  privacy-governed-outcome-memory:
-"""
+          EXPECTED_WORKFLOW_PREAMBLE = (
+              "name: k6-r4-privacy-governed-outcome-memory\n"
+              "\n"
+              "on:\n"
+              "  pull_request:\n"
+              "    branches:\n"
+              "      - main\n"
+              "    paths:\n"
+              "      - \".github/workflows/k6-r4-privacy-governed-outcome-memory.yml\"\n"
+              "      - \"schema/k6-r4-privacy-governed-outcome-memory.schema.json\"\n"
+              "      - \"packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts\"\n"
+              "      - \"packages/kodac-runtime/src/evidence-router/outcome-memory.ts\"\n"
+              "      - \"packages/kodac-runtime/src/index.ts\"\n"
+              "      - \"packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts\"\n"
+              "\n"
+              "permissions:\n"
+              "  contents: read\n"
+              "\n"
+              "jobs:\n"
+              "  privacy-governed-outcome-memory:\n"
+          )
+          CANDIDATE_HEAD_EXPRESSION = "$" + "{{ github.event.pull_request.head.sha }}"
           NAMED_STEPS = [
               "Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions",
               "Sync locked validation environment outside the checkout",
@@ -108,7 +110,7 @@ jobs:
               "Attest checkout unchanged after K6-R4 validation",
           ]
           ACTION_BLOCKS = [
-              ["- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4", "with:", "ref: ${{ github.event.pull_request.head.sha }}", "persist-credentials: false", "fetch-depth: 0"],
+              ["- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4", "with:", "ref: " + CANDIDATE_HEAD_EXPRESSION, "persist-credentials: false", "fetch-depth: 0"],
               ["- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4", "with:", 'node-version: "24.18.0"'],
               ["- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6", "with:", 'version: "0.12.1"', "enable-cache: false"],
           ]
@@ -164,7 +166,7 @@ jobs:
               except Exception:
                   fail(f"{label} is not valid JSON")
 
-          def api_json(path: str) -> dict:
+          def api_json(path: str, missing_label: str | None = None) -> dict:
               require(path.startswith("/repos/TheHalfMoon/Kodac/"), "GitHub API path escaped repository boundary")
               request = urllib.request.Request(
                   "https://api.github.com" + path,
@@ -174,7 +176,11 @@ jobs:
               try:
                   with urllib.request.urlopen(request, timeout=20) as response:
                       payload = response.read(8_000_001)
-              except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError):
+              except urllib.error.HTTPError as exc:
+                  if exc.code == 404 and missing_label is not None:
+                      fail(missing_label)
+                  fail("read-only GitHub API request failed")
+              except (urllib.error.URLError, TimeoutError):
                   fail("read-only GitHub API request failed")
               require(len(payload) <= 8_000_000, "GitHub API response exceeds inspector bound")
               value = parse_json(payload, "GitHub API response")
@@ -185,9 +191,9 @@ jobs:
               require(SHA_RE.fullmatch(base) is not None and SHA_RE.fullmatch(head) is not None, "compare refs are not immutable SHAs")
               return api_json(f"/repos/{REPOSITORY}/compare/{base}...{head}")
 
-          def file_at(ref: str, path: str) -> tuple[str, str]:
+          def file_at(ref: str, path: str, missing_label: str | None = None) -> tuple[str, str]:
               require(SHA_RE.fullmatch(ref) is not None, "file ref is not an immutable SHA")
-              value = api_json(f"/repos/{REPOSITORY}/contents/{urllib.parse.quote(path, safe='/')}?ref={ref}")
+              value = api_json(f"/repos/{REPOSITORY}/contents/{urllib.parse.quote(path, safe='/')}?ref={ref}", missing_label=missing_label)
               blob = value.get("sha")
               require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "file blob identity unavailable")
               require(value.get("encoding") == "base64" and isinstance(value.get("content"), str), "file content is not inline base64")
@@ -274,7 +280,7 @@ jobs:
           require(hardening_blob == HARDENING_BLOB and "K6-R4 Trusted Qualification Hardening Authorization" in hardening_text, "hardening authorization drift")
           require(file_at(event_base_sha, ORIGINAL_R4_AUTH_PATH)[1] == ORIGINAL_R4_AUTH_BLOB, "original R4 authorization drift")
 
-          replacement_text, replacement_blob = file_at(event_base_sha, REPLACEMENT_AUTH_PATH)
+          replacement_text, replacement_blob = file_at(event_base_sha, REPLACEMENT_AUTH_PATH, "replacement authorization unavailable")
           manifest = extract_manifest(replacement_text)
           trusted_merge, trusted_blob = manifest["trusted_workflow_merge_sha"], manifest["trusted_workflow_blob"]
           require(isinstance(trusted_merge, str) and SHA_RE.fullmatch(trusted_merge) is not None and isinstance(trusted_blob, str) and SHA_RE.fullmatch(trusted_blob) is not None, "trusted workflow identity invalid")
