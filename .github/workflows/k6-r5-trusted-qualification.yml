@@ -44,7 +44,7 @@ jobs:
           R="TheHalfMoon/Kodac"; TOK=os.environ.get("READ_ONLY_GITHUB_TOKEN",""); S=re.compile(r"^[0-9a-f]{40}$")
           A="31f5f9f3e05dd0feeda2b96b3221374c4bfe0032"; AT="8f319e2e4238ffdcbd91dd6651a90e90c88abedb"; AP="docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md"; AB="8747754cc8563f2506869393221a4dac084e4805"
           SA=225; SH="0d004e51732ca10c67eae7305bd291898257053e"; SM="76f8639a329d9f168fea9d71f78711d612075619"; ST="03041afd20e677992e57b7210cd20bd804539ab0"; SB="fbbb2a6f61d2b6e1d7390eebb85338bc467df6fb"
-          RA=227; RH="283f9b8f556984c5c0b92d5a746ed56f114c8582"; RM="06f2dc2df5eb432107313932a16079edc4912a38"; RT="4f325ce4b3c6aff664849dc33db7e2d9ff6e2954"; RP="docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md"; RB="e01639b284a9788d0cd1118c0ffd998271a087f0"
+          RA=227; RAH="283f9b8f556984c5c0b92d5a746ed56f114c8582"; RM="06f2dc2df5eb432107313932a16079edc4912a38"; RT="4f325ce4b3c6aff664849dc33db7e2d9ff6e2954"; RP="docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md"; RB="e01639b284a9788d0cd1118c0ffd998271a087f0"
           TR=228; TRF="ci/k6-r5-trusted-qualification-observability-repair"; TW=".github/workflows/k6-r5-trusted-qualification.yml"; BR="feat/k6-r5-bounded-strategy-proposal"
           W=".github/workflows/k6-r5-bounded-strategy-qualification.yml"; SC="schema/k6-r5-bounded-strategy-proposal.schema.json"; CO="packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts"; RU="packages/kodac-runtime/src/evidence-router/strategy-proposal.ts"; IX="packages/kodac-runtime/src/index.ts"; TE="packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts"
           PS={W:"added",SC:"added",CO:"added",RU:"added",IX:"modified",TE:"added"}; PATHS=sorted(PS)
@@ -60,7 +60,7 @@ jobs:
            return d
           def api(p):
            q(p.startswith("/repos/TheHalfMoon/Kodac/"),"E-api-boundary")
-           x=urllib.request.Request("https://api.github.com"+p,headers={"Accept":"application/vnd.github+json","Authorization":"Bearer "+TOK,"X-GitHub-Api-Version":"2022-11-28","User-Agent":"kodac-k6-r5-trusted-qualification"})
+           x=urllib.request.Request("https://api.github.com"+p,headers={"Accept":"application/vnd.github+json","Authorization":"Bearer "+TOK,"X-GitHub-Api-Version":"2022-11-28","User-Agent":"kodac-k6-r5-trusted-qualification"},method="GET")
            try:
             with urllib.request.urlopen(x,timeout=20) as r:b=r.read(8_000_001)
            except Exception: raise SystemExit("K6-R5 trusted qualification failed: E-api")
@@ -94,9 +94,10 @@ jobs:
           # Immutable authority roots and bounded base evolution.
           am=api(f"/repos/{R}/git/commits/{A}");q(am.get("tree",{}).get("sha")==AT and am.get("verification",{}).get("verified") is True and am.get("verification",{}).get("reason")=="valid" and file(A,AP)[1]==AB and file(bs,AP)[1]==AB,"E-auth")
           _,_,sf=merge(SA,A,SH,SM,ST,TW,"added");q(file(SM,TW)[1]==SB and file(SH,TW)[1]==SB and sf.get("sha")==SB,"E-stage-a")
-          _,_,rf=merge(RA,SM,RH,RM,RT,RP,"added");q(file(RM,RP)[1]==RB and file(bs,RP)[1]==RB and file(RM,TW)[1]==SB,"E-repair-auth")
-          tr=api(f"/repos/{R}/pulls/{TR}");th=tr.get("head",{}).get("sha");q(tr.get("merged") is True and tr.get("base",{}).get("sha")==RM and tr.get("head",{}).get("ref")==TRF and tr.get("head",{}).get("repo",{}).get("full_name")==R and tr.get("changed_files")==1 and tr.get("merge_commit_sha")==bs and isinstance(th,str) and S.fullmatch(th),"E-repair-pr")
-          tm=api(f"/repos/{R}/git/commits/{bs}");pa=tm.get("parents",[]);q(tm.get("verification",{}).get("verified") is True and tm.get("verification",{}).get("reason")=="valid" and len(pa)==2 and pa[0].get("sha")==RM and pa[1].get("sha")==th and tm.get("tree",{}).get("sha")==api(f"/repos/{R}/git/commits/{th}").get("tree",{}).get("sha"),"E-repair-merge")
+          _,_,rf=merge(RA,SM,RAH,RM,RT,RP,"added");q(file(RM,RP)[1]==RB and file(bs,RP)[1]==RB and file(RM,TW)[1]==SB,"E-repair-auth")
+          tm=api(f"/repos/{R}/git/commits/{bs}");pa=tm.get("parents",[]);q(tm.get("verification",{}).get("verified") is True and tm.get("verification",{}).get("reason")=="valid" and len(pa)==2 and pa[0].get("sha")==RM,"E-repair-merge")
+          th=pa[1].get("sha");q(isinstance(th,str) and S.fullmatch(th) and tm.get("tree",{}).get("sha")==api(f"/repos/{R}/git/commits/{th}").get("tree",{}).get("sha"),"E-repair-head")
+          tr=api(f"/repos/{R}/pulls/{TR}");q(tr.get("merged") is True and tr.get("base",{}).get("sha")==RM and tr.get("head",{}).get("sha")==th and tr.get("head",{}).get("ref")==TRF and tr.get("head",{}).get("repo",{}).get("full_name")==R and tr.get("changed_files")==1 and tr.get("merge_commit_sha")==bs,"E-repair-pr")
           c=cmp(RM,th);fs=c.get("files",[]);q(c.get("merge_base_commit",{}).get("sha")==RM and c.get("behind_by")==0 and c.get("ahead_by",0)>0 and len(fs)==1 and fs[0].get("filename")==TW and fs[0].get("status")=="modified" and fs[0].get("previous_filename") in (None,""),"E-repair-scope")
           txt,tb=file(bs,TW);ht,hb=file(th,TW);q(txt==ht and tb==hb and fs[0].get("sha")==tb and tb!=SB,"E-repair-blob")
           # Exact repaired trusted workflow semantic allowlist.
@@ -106,13 +107,21 @@ jobs:
           step_tail=txt.split("    steps:\n",1)[1];q(len(re.findall(r"(?m)^      - ",step_tail))==1,"E-self-step")
           body=txt.split("python3 - <<'PYCODE'\n",1)[1].rsplit("          PYCODE\n",1)[0];src="\n".join(x[10:] if x.startswith("          ") else x for x in body.splitlines())
           q(("$"+"{{") not in src,"E-self-expression")
-          tree=ast.parse(src)
+          tree=ast.parse(src);par={c:n for n in ast.walk(tree) for c in ast.iter_child_nodes(n)}
+          def own(z):
+           while z in par:
+            z=par[z]
+            if isinstance(z,ast.FunctionDef):return z.name
+          def ch(z):return z.id if isinstance(z,ast.Name) else (ch(z.value)+"."+z.attr if isinstance(z,ast.Attribute) else "")
+          ap=[z for z in ast.walk(tree) if isinstance(z,ast.FunctionDef) and z.name=="api"];q(len(ap)==1 and hashlib.sha256(ast.dump(ap[0],include_attributes=False).encode()).hexdigest()=="e78a573bbbd6d6c047fb98fc2397d70e775d5f544db6e263fe6f00d64518fa65","E-self-api")
           allow={"ast","base64","hashlib","json","os","re","urllib.error","urllib.parse","urllib.request"}
           for z in ast.walk(tree):
            if isinstance(z,ast.Import):q(all(x.name in allow for x in z.names),"E-self-import")
            if isinstance(z,ast.ImportFrom):q(z.module in {"__future__","datetime"},"E-self-from")
            if isinstance(z,ast.Call) and isinstance(z.func,ast.Name):q(z.func.id not in {"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input"},"E-self-exec")
            if isinstance(z,ast.Call) and isinstance(z.func,ast.Attribute) and isinstance(z.func.value,ast.Name) and z.func.value.id=="os":q(False,"E-self-process")
+           if isinstance(z,ast.Call) and ch(z.func).startswith("urllib.request."):q(own(z)=="api","E-self-network")
+           if isinstance(z,ast.Call) and ch(z.func)=="urllib.parse.quote":q(own(z)=="file","E-self-network")
            if isinstance(z,ast.Attribute):q(not z.attr.startswith("__"),"E-self-dunder")
           # Predecessor and exact six-path candidate.
           for x,h in PB.items():q(file(bs,x)[1]==h,"E-predecessor")
