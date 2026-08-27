@@ -5,6 +5,8 @@
 - Date: `2026-08-27`
 - Founder authority: `KODAC-FOUNDER-REPO-LOCAL-CONTINUATION-2026-08-27`
 - Authority class: DOCUMENTATION / GOVERNANCE-REPAIR AUTHORIZATION CANDIDATE
+- Authorization candidate PR: `#232`
+- Authorization candidate branch: `docs/k6-r5-stage-b-split-proof-pin-amendment`
 - Canonical base commit: `0c151b3db8ab1487c5fcf1553060b4743ede155d`
 - Canonical base tree: `dbd3a571ebc4e4adaf91c911dfa5763fd7636039`
 - Canonical trusted-repair PR: `#228`
@@ -76,6 +78,16 @@ A. THIS DOCS-ONLY AUTHORIZATION
 ```
 
 No unit self-authorizes the next before its own canonical merge and post-merge proof.
+
+The lifecycle is exact, not merely descendant-based:
+
+```text
+PR #228 MERGE 0c151b3db8ab1487c5fcf1553060b4743ede155d
+-> PR #232 AUTHORIZATION MERGE
+-> REGISTERED ONE-PATH PIN-REPAIR MERGE
+```
+
+PR #232 MUST have base SHA exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d`. Its merge commit MUST have ordered parent 1 equal to `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 equal to the exact qualified final PR #232 head. No intermediate protected-main merge is authorized between PR #228 and PR #232.
 
 ## Exact replacement Stage B run body
 
@@ -230,17 +242,18 @@ It may only:
    - Stage A PR #225/head/merge/tree/workflow blob;
    - PR #227 authorization/head/merge/document blob;
    - PR #228 repair/head/merge/tree/workflow blob;
-   - this authorization exact head/merge/tree/document blob;
+   - this PR #232 authorization exact qualified head/merge/tree/document blob;
    - the registered one-path pin-repair PR/head/merge/tree/workflow blob;
 4. require current protected `main` to equal exactly the registered pin-repair merge before qualifying PR #226;
-5. require ordered merge parents, merge-tree=head-tree equality, valid GitHub merge verification, exact one-path scope and exact branch/PR identity for both the authorization merge and pin-repair merge;
-6. preserve `pull_request_target` protected-base execution and `permissions: contents: read`;
-7. preserve no candidate-head checkout or candidate-head execution;
-8. preserve the exact Stage B six-path/status allowlist;
-9. preserve every other Stage B run-body fingerprint unchanged;
-10. preserve every action pin, candidate job/step/env/control-surface check and predecessor blob check;
-11. preserve the split ruleset visibility semantics and external owner-level proof requirement;
-12. add no product/runtime/persistence/network/provider/model/training/autofix/release authority.
+5. verify before accepting the pin-repair merge that the PR #232 authorization merge has ordered parent 1 exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 exactly the final qualified PR #232 head, with no intermediate merge;
+6. require ordered merge parents, merge-tree=head-tree equality, valid GitHub merge verification, exact one-path scope and exact branch/PR identity for both the authorization merge and pin-repair merge;
+7. preserve `pull_request_target` protected-base execution and `permissions: contents: read`;
+8. preserve no candidate-head checkout or candidate-head execution;
+9. preserve the exact Stage B six-path/status allowlist;
+10. preserve every other Stage B run-body fingerprint unchanged;
+11. preserve every action pin, candidate job/step/env/control-surface check and predecessor blob check;
+12. preserve the split ruleset visibility semantics and external owner-level proof requirement;
+13. add no product/runtime/persistence/network/provider/model/training/autofix/release authority.
 
 No generic descendant-main acceptance is authorized.
 
@@ -279,7 +292,7 @@ No other job-level environment key/value, trigger, permission, action metadata, 
 
 This documentation authorization is not canonical unless its exact final head proves:
 
-1. base is exactly the live protected `main` descended from canonical PR #228;
+1. base SHA is exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d`; descendant-but-not-equal bases are forbidden;
 2. changed-file set is exactly this one documentation path;
 3. `behind_by=0`;
 4. PR is open, non-draft and mergeable;
@@ -289,14 +302,15 @@ This documentation authorization is not canonical unless its exact final head pr
 8. zero unresolved actionable review threads;
 9. owner-level ruleset proof confirms active/no-bypass/exact required checks;
 10. merge uses normal GitHub merge-commit semantics with exact expected-head precondition;
-11. post-merge main/parents/tree/blob/signature/check/ruleset proof succeeds;
-12. `WAIVER=NO`.
+11. the authorization merge has ordered parent 1 exactly `0c151b3db8ab1487c5fcf1553060b4743ede155d` and ordered parent 2 exactly the exact qualified final PR #232 head;
+12. post-merge main/tree/blob/signature/check/ruleset proof succeeds;
+13. `WAIVER=NO`.
 
 ## Unit B qualification gate
 
 The trusted pin/lifecycle repair is not merge-qualified unless its exact final head proves:
 
-1. base is exactly the canonical merge of this authorization;
+1. base is exactly the canonical merge of PR #232 and that merge itself proves parent 1=`0c151b3db8ab1487c5fcf1553060b4743ede155d`, parent 2=the exact qualified PR #232 head, and no intermediate merge;
 2. changed-file set is exactly `.github/workflows/k6-r5-trusted-qualification.yml`;
 3. `behind_by=0`;
 4. PR is open, non-draft and mergeable;
