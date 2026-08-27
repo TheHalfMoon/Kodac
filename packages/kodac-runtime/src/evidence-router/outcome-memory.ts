@@ -225,6 +225,14 @@ function safeGraph(value: unknown, label: string, budget: GraphBudget, depth = 1
     if (Array.isArray(value)) {
       if (Object.getPrototypeOf(value) !== Array.prototype) bad(label, "must be a plain array")
       if (Object.getOwnPropertySymbols(value).length !== 0) bad(label, "must not contain symbol fields")
+      const names = Object.getOwnPropertyNames(value)
+      for (const key of names) {
+        validUnicodeScalars(key, `${label} property name`)
+        budget.stringChars += key.length
+        if (budget.stringChars > LIMITS.maxTotalStringChars) {
+          tooLarge(label, `exceeds string-character budget ${LIMITS.maxTotalStringChars}`)
+        }
+      }
       const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
       const length = lengthDescriptor && "value" in lengthDescriptor ? lengthDescriptor.value : undefined
       if (typeof length !== "number" || !Number.isSafeInteger(length) || Object.is(length, -0) || length < 0) {
@@ -238,7 +246,7 @@ function safeGraph(value: unknown, label: string, budget: GraphBudget, depth = 1
         }
         safeGraph(descriptor.value, `${label}[${index}]`, budget, depth + 1)
       }
-      if (Object.getOwnPropertyNames(value).length !== length + 1) bad(label, "contains unexpected array fields")
+      if (names.length !== length + 1) bad(label, "contains unexpected array fields")
       return
     }
     const prototype = Object.getPrototypeOf(value)

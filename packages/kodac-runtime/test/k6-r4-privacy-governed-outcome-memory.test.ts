@@ -540,6 +540,15 @@ test("configured resource bounds distinguish boundary acceptance from over-bound
   const overKey = "k".repeat(K6_R4_LIMITS.maxTotalStringChars + 1)
   assert.throws(() => validateK6R4OutcomeMemory({ [overKey]: null }), RangeError)
 
+  const atArrayKey = "k".repeat(K6_R4_LIMITS.maxTotalStringChars - "length".length)
+  const atArray: unknown[] = []
+  Object.defineProperty(atArray, atArrayKey, { value: null, enumerable: true, configurable: true, writable: true })
+  assert.throws(() => validateK6R4OutcomeMemory(atArray), TypeError)
+  const overArrayKey = "k".repeat(K6_R4_LIMITS.maxTotalStringChars - "length".length + 1)
+  const overArray: unknown[] = []
+  Object.defineProperty(overArray, overArrayKey, { value: null, enumerable: true, configurable: true, writable: true })
+  assert.throws(() => validateK6R4OutcomeMemory(overArray), RangeError)
+
   const boundaryScope = createK6R4EmptyOutcomeMemory({
     repositoryIdentity: deriveK6R4RepositoryIdentity(defaultRepository),
     ownerScopeId: "f".repeat(K6_R4_LIMITS.maxOwnerScopeIdBytes),
