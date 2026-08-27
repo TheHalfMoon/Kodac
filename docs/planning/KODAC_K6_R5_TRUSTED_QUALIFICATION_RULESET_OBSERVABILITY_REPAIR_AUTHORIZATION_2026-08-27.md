@@ -240,6 +240,20 @@ may update the existing live-ruleset proof step to the same split-proof semantic
 
 The repaired trusted workflow must pin the exact new run-body SHA-256 for that dedicated proof step. All other protected Stage B run-body fingerprints remain unchanged unless a later canonical authorization explicitly says otherwise.
 
+Because the dedicated Stage B workflow binds itself to the canonical trusted inspector, the same forward reconciliation is also authorized to replace only:
+
+```text
+K6_R5_TRUSTED_WORKFLOW_BLOB=<historical Stage A trusted blob>
+```
+
+with:
+
+```text
+K6_R5_TRUSTED_WORKFLOW_BLOB=<exact canonical repaired trusted-workflow blob>
+```
+
+No other job-level environment key, value, permission, action metadata, trigger, step metadata, or run-body may drift except the one separately authorized ruleset proof run-body above. The repaired base-controlled inspector must require this env pin to equal the exact trusted-workflow blob it independently reads from the canonical repaired protected base.
+
 The dedicated workflow may report that bypass visibility is unavailable under the Actions token, but Stage B cannot merge until the separate owner-level no-bypass proof is captured at its exact final head and again immediately before merge.
 
 No source/runtime/schema/test behavior is authorized to change merely to support this governance repair.
