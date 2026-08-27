@@ -28,7 +28,16 @@ const LIMITS = Object.freeze({
   maxIdentityBytes: 64,
 } as const)
 
-const SHA256 = /^[0-9a-f]{64}$/
+const SHA256_PATTERN = /^[0-9a-f]{64}$/
+const SHA256 = Object.freeze({
+  test(value: string): boolean {
+    validUnicodeScalars(value, "identity")
+    if (Buffer.byteLength(value, "utf8") > LIMITS.maxIdentityBytes) {
+      tooLarge("identity", `exceeds ${LIMITS.maxIdentityBytes} UTF-8 bytes`)
+    }
+    return SHA256_PATTERN.test(value)
+  },
+})
 const GIT_SHA = /^[0-9a-f]{40}$/
 const PRIVACY = new Set<string>(["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"])
 const K5_STATUS = new Set<string>(["NOT_APPLICABLE", "VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"])
@@ -236,6 +245,11 @@ function safeGraph(value: unknown, label: string, budget: GraphBudget, depth = 1
     if (prototype !== Object.prototype && prototype !== null) bad(label, "must be a plain object")
     if (Object.getOwnPropertySymbols(value).length !== 0) bad(label, "must not contain symbol fields")
     for (const key of Object.getOwnPropertyNames(value)) {
+      validUnicodeScalars(key, `${label} property name`)
+      budget.stringChars += key.length
+      if (budget.stringChars > LIMITS.maxTotalStringChars) {
+        tooLarge(label, `exceeds string-character budget ${LIMITS.maxTotalStringChars}`)
+      }
       const descriptor = Object.getOwnPropertyDescriptor(value, key)
       if (!descriptor || !("value" in descriptor) || !descriptor.enumerable || descriptor.value === undefined) {
         bad(`${label}.${key}`, "must be an enumerable defined data property")
@@ -264,7 +278,7 @@ function plain(value: unknown, keys: readonly string[], label: string): Rec {
   const allowed = new Set(keys)
   const output = Object.create(null) as Rec
   for (const key of names) {
-    if (!allowed.has(key)) bad(label, `contains unknown field: ${key}`)
+    if (!allowed.has(key)) bad(label, "contains an unknown field")
     output[key] = data(value, key, label)
   }
   for (const key of keys) if (!Object.hasOwn(output, key)) bad(label, `is missing required field: ${key}`)

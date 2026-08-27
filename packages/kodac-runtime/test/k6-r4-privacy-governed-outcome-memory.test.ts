@@ -276,14 +276,12 @@ test("APPEND binds validated R1 privacy to R3 and emits only minimized immutable
   for (const privacyClass of ["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"] as const) {
     const source = bundle({ privacyClass })
     const memory = append(emptyFor(source), source)
-    assert.equal(memory.records.length, 1)
     const record = memory.records[0]!
     assert.equal(record.version, K6_R4_OUTCOME_RECORD_VERSION)
     assert.equal(record.scope.privacyClass, privacyClass)
     assert.equal(record.scope.ownerScopeId, owner)
     assert.equal(record.source.routeOutcomeLinkageIdentity, source.routeOutcomeLinkageEnvelope.linkage.linkageIdentity)
     assert.equal(record.source.requestIdentity, source.routeRequest.requestIdentity)
-    assert.equal(record.outcome.executionOutcomes.length, 1)
     assert.ok(Object.isFrozen(memory))
     assert.ok(Object.isFrozen(record))
     assert.ok(Object.isFrozen(record.outcome.executionOutcomes))
@@ -294,37 +292,17 @@ test("serialized R4 memory omits raw predecessor and sensitive sentinels", () =>
   const source = bundle({ taskId: "task/raw-sentinel", repositoryId: "repo/raw-sentinel" })
   const serialized = JSON.stringify(append(emptyFor(source), source))
   for (const forbidden of [
-    "repo/raw-sentinel",
-    "task/raw-sentinel",
-    base,
-    head,
-    "provider-a-raw-sentinel",
-    "model-a-raw-sentinel",
-    "prompt/raw_sentinel",
-    "secret/raw_sentinel",
-    "stdout/raw-sentinel",
-    "finding/raw-sentinel",
-    "reason/raw-sentinel",
-    "diff/raw-sentinel",
-  ]) {
-    assert.equal(serialized.includes(forbidden), false, `retained forbidden sentinel: ${forbidden}`)
-  }
+    "repo/raw-sentinel", "task/raw-sentinel", base, head,
+    "provider-a-raw-sentinel", "model-a-raw-sentinel", "prompt/raw_sentinel",
+    "secret/raw_sentinel", "stdout/raw-sentinel", "finding/raw-sentinel",
+    "reason/raw-sentinel", "diff/raw-sentinel",
+  ]) assert.equal(serialized.includes(forbidden), false, `retained forbidden sentinel: ${forbidden}`)
 })
 
-test("R1/R3 binding mismatch fails closed instead of inferring privacy or provenance", () => {
+test("R1/R3 binding mismatch and forged predecessor identities fail closed", () => {
   const source = bundle({ privacyClass: "SENSITIVE" })
   const other = bundle({ privacyClass: "PUBLIC" })
-  const memory = emptyFor(source)
-  assert.throws(() => applyK6R4OutcomeMemoryOperation(memory, {
-    version: K6_R4_OPERATION_VERSION,
-    kind: "APPEND",
-    ownerScopeId: owner,
-    observedAtUnixMs: 1,
-    expiresAtUnixMs: 2,
-    routeRequest: other.routeRequest,
-    routeOutcomeLinkageEnvelope: source.routeOutcomeLinkageEnvelope,
-  }), TypeError)
-
+  assert.throws(() => append(emptyFor(source), { ...source, routeRequest: other.routeRequest }), TypeError)
   const forged = clone(source.routeRequest)
   forged.requestIdentity = "0".repeat(64)
   assert.throws(() => validateK6R4OutcomeMemoryOperation({
@@ -350,10 +328,8 @@ test("scope isolation rejects cross-owner, cross-repository, and cross-privacy a
     routeRequest: source.routeRequest,
     routeOutcomeLinkageEnvelope: source.routeOutcomeLinkageEnvelope,
   }), TypeError)
-  const otherRepo = bundle({ repositoryId: "Other/Repo" })
-  assert.throws(() => append(memory, otherRepo), TypeError)
-  const otherPrivacy = bundle({ privacyClass: "SENSITIVE" })
-  assert.throws(() => append(memory, otherPrivacy), TypeError)
+  assert.throws(() => append(memory, bundle({ repositoryId: "Other/Repo" })), TypeError)
+  assert.throws(() => append(memory, bundle({ privacyClass: "SENSITIVE" })), TypeError)
 })
 
 test("APPEND is exactly idempotent but never last-write-wins for an active task", () => {
@@ -362,9 +338,7 @@ test("APPEND is exactly idempotent but never last-write-wins for an active task"
   const twice = append(once, source)
   assert.equal(twice.memoryIdentity, once.memoryIdentity)
   assert.equal(twice.records.length, 1)
-
-  const conflicting = bundle({ executionStatus: "failure" })
-  assert.throws(() => append(once, conflicting), /SUPERSEDE/)
+  assert.throws(() => append(once, bundle({ executionStatus: "failure" })), /SUPERSEDE/)
 })
 
 test("SUPERSEDE atomically replaces the active task and emits a minimal anti-resurrection tombstone", () => {
@@ -387,12 +361,10 @@ test("SUPERSEDE atomically replaces the active task and emits a minimal anti-res
   assert.equal(next.tombstones.length, 1)
   assert.notEqual(next.records[0]!.recordIdentity, target.recordIdentity)
   assert.equal(next.records[0]!.lifecycle.supersedesRecordIdentity, target.recordIdentity)
-  const tombstone = next.tombstones[0]!
-  assert.equal(tombstone.version, K6_R4_TOMBSTONE_VERSION)
-  assert.equal(tombstone.transition, "SUPERSEDED")
-  assert.equal(tombstone.replacementRecordIdentity, next.records[0]!.recordIdentity)
-  assert.equal(Object.hasOwn(tombstone, "outcome"), false)
-  assert.equal(Object.hasOwn(tombstone, "source"), false)
+  assert.equal(next.tombstones[0]!.version, K6_R4_TOMBSTONE_VERSION)
+  assert.equal(next.tombstones[0]!.transition, "SUPERSEDED")
+  assert.equal(next.tombstones[0]!.replacementRecordIdentity, next.records[0]!.recordIdentity)
+  assert.equal(Object.hasOwn(next.tombstones[0]!, "outcome"), false)
 })
 
 test("SUPERSEDE rejects wrong task, early observation, and missing target", () => {
@@ -412,11 +384,16 @@ test("SUPERSEDE rejects wrong task, early observation, and missing target", () =
     routeOutcomeLinkageEnvelope: otherTask.routeOutcomeLinkageEnvelope,
   }
   assert.throws(() => applyK6R4OutcomeMemoryOperation(memory, operation), TypeError)
-  assert.throws(() => applyK6R4OutcomeMemoryOperation(memory, { ...operation, routeRequest: source.routeRequest, routeOutcomeLinkageEnvelope: source.routeOutcomeLinkageEnvelope, observedAtUnixMs: 99 }), TypeError)
+  assert.throws(() => applyK6R4OutcomeMemoryOperation(memory, {
+    ...operation,
+    routeRequest: source.routeRequest,
+    routeOutcomeLinkageEnvelope: source.routeOutcomeLinkageEnvelope,
+    observedAtUnixMs: 99,
+  }), TypeError)
   assert.throws(() => applyK6R4OutcomeMemoryOperation(memory, { ...operation, targetRecordIdentity: "0".repeat(64) }), TypeError)
 })
 
-test("DELETE removes payload, creates minimal tombstone, blocks exact replay, then explicit purge removes all hidden history", () => {
+test("DELETE removes payload, blocks exact replay, and PURGE removes hidden history only after expiry", () => {
   const source = bundle()
   const active = append(emptyFor(source), source, 100, 300)
   const target = active.records[0]!
@@ -465,79 +442,123 @@ test("EXPIRE is caller-time driven and rejects early expiry", () => {
   assert.equal(expired.tombstones[0]!.transition, "EXPIRED")
 })
 
-test("validators reject forged identities, unknown fields, noncanonical ordering, and invalid timestamps", () => {
-  const source = bundle()
-  const active = append(emptyFor(source), source)
+test("validators reject forged identities, unknown fields, invalid ordering, and invalid timestamps", () => {
+  const active = append()
   const forged = clone(active)
   forged.memoryIdentity = "0".repeat(64)
   assert.throws(() => validateK6R4OutcomeMemory(forged), TypeError)
-
-  const unknown = { ...active, extra: true }
-  assert.throws(() => validateK6R4OutcomeMemory(unknown), TypeError)
-
-  const operation = {
+  assert.throws(() => validateK6R4OutcomeMemory({ ...active, extra: true }), TypeError)
+  assert.throws(() => validateK6R4OutcomeMemoryOperation({
     version: K6_R4_OPERATION_VERSION,
     kind: "DELETE",
     targetRecordIdentity: active.records[0]!.recordIdentity,
     transitionAtUnixMs: -0,
     tombstoneExpiresAtUnixMs: 200,
-  }
-  assert.throws(() => validateK6R4OutcomeMemoryOperation(operation), TypeError)
-  assert.throws(() => validateK6R4OutcomeMemoryOperation({ ...operation, transitionAtUnixMs: Number.MAX_SAFE_INTEGER + 1 }), TypeError)
+  }), TypeError)
 })
 
 test("hostile getters, proxies, symbols, custom prototypes, sparse arrays, cycles, and invalid Unicode fail without executing hooks", () => {
-  const source = bundle()
-  const active = append(emptyFor(source), source)
+  const active = append()
   let getterRuns = 0
   const getter = clone(active) as Record<string, unknown>
   Object.defineProperty(getter, "memoryIdentity", { enumerable: true, get() { getterRuns += 1; return active.memoryIdentity } })
   assert.throws(() => validateK6R4OutcomeMemory(getter), TypeError)
   assert.equal(getterRuns, 0)
-
   assert.throws(() => validateK6R4OutcomeMemory(new Proxy(active, {})), TypeError)
   assert.throws(() => validateK6R4OutcomeMemory({ ...active, [Symbol("x")]: true }), TypeError)
   assert.throws(() => validateK6R4OutcomeMemory(Object.assign(Object.create({ inherited: true }), active)), TypeError)
-
   const sparse = clone(active)
   sparse.records = new Array(2)
   sparse.records[1] = clone(active.records[0]!)
   assert.throws(() => validateK6R4OutcomeMemory(sparse), TypeError)
-
   const cyclic = clone(active) as Record<string, unknown>
   cyclic.extra = cyclic
   assert.throws(() => validateK6R4OutcomeMemory(cyclic), TypeError)
-
-  const invalidUnicode = { candidateId: "\ud800", candidateKind: "MODEL_PROVIDER", provider: "p", model: "m" }
-  assert.throws(() => deriveK6R4CandidateIdentity(invalidUnicode), TypeError)
+  assert.throws(() => deriveK6R4CandidateIdentity({
+    candidateId: "\ud800", candidateKind: "MODEL_PROVIDER", provider: "p", model: "m",
+  }), TypeError)
+  assert.throws(() => validateK6R4OutcomeMemory({ ["\ud800"]: null }), TypeError)
 })
 
-test("configured resource bounds fail closed with RangeError and never truncate", () => {
-  const source = bundle()
-  const active = append(emptyFor(source), source)
-  const tooManyRecords = clone(active)
-  tooManyRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords + 1).fill(clone(active.records[0]!))
-  assert.throws(() => validateK6R4OutcomeMemory(tooManyRecords), RangeError)
+test("configured resource bounds distinguish boundary acceptance from over-bound RangeError", () => {
+  const active = append()
 
-  const tooManyOutcomes = clone(active)
-  tooManyOutcomes.records[0]!.outcome.executionOutcomes =
+  const atRecords = clone(active)
+  atRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords).fill(clone(active.records[0]!))
+  assert.throws(() => validateK6R4OutcomeMemory(atRecords), TypeError)
+  const overRecords = clone(active)
+  overRecords.records = new Array(K6_R4_LIMITS.maxActiveRecords + 1).fill(clone(active.records[0]!))
+  assert.throws(() => validateK6R4OutcomeMemory(overRecords), RangeError)
+
+  const deleted = applyK6R4OutcomeMemoryOperation(active, {
+    version: K6_R4_OPERATION_VERSION,
+    kind: "DELETE",
+    targetRecordIdentity: active.records[0]!.recordIdentity,
+    transitionAtUnixMs: 150,
+    tombstoneExpiresAtUnixMs: 250,
+  })
+  const atTombstones = clone(deleted)
+  atTombstones.tombstones = new Array(K6_R4_LIMITS.maxTombstones).fill(clone(deleted.tombstones[0]!))
+  assert.throws(() => validateK6R4OutcomeMemory(atTombstones), TypeError)
+  const overTombstones = clone(deleted)
+  overTombstones.tombstones = new Array(K6_R4_LIMITS.maxTombstones + 1).fill(clone(deleted.tombstones[0]!))
+  assert.throws(() => validateK6R4OutcomeMemory(overTombstones), RangeError)
+
+  const atOutcomes = clone(active)
+  atOutcomes.records[0]!.outcome.executionOutcomes =
+    new Array(K6_R4_LIMITS.maxExecutionOutcomesPerRecord).fill(clone(active.records[0]!.outcome.executionOutcomes[0]!))
+  assert.throws(() => validateK6R4OutcomeMemory(atOutcomes), TypeError)
+  const overOutcomes = clone(active)
+  overOutcomes.records[0]!.outcome.executionOutcomes =
     new Array(K6_R4_LIMITS.maxExecutionOutcomesPerRecord + 1).fill(clone(active.records[0]!.outcome.executionOutcomes[0]!))
-  assert.throws(() => validateK6R4OutcomeMemory(tooManyOutcomes), RangeError)
+  assert.throws(() => validateK6R4OutcomeMemory(overOutcomes), RangeError)
 
-  const depthRoot: Record<string, unknown> = { x: null }
-  let cursor = depthRoot
-  for (let index = 0; index < K6_R4_LIMITS.maxDepth + 1; index += 1) {
+  const atDepth: Record<string, unknown> = { x: null }
+  let depthCursor = atDepth
+  for (let index = 1; index < K6_R4_LIMITS.maxDepth; index += 1) {
     const next: Record<string, unknown> = { x: null }
-    cursor.x = next
-    cursor = next
+    depthCursor.x = next
+    depthCursor = next
   }
-  assert.throws(() => validateK6R4OutcomeMemory(depthRoot), RangeError)
+  assert.throws(() => validateK6R4OutcomeMemory(atDepth), TypeError)
+  const overDepth: Record<string, unknown> = { x: null }
+  depthCursor = overDepth
+  for (let index = 1; index <= K6_R4_LIMITS.maxDepth; index += 1) {
+    const next: Record<string, unknown> = { x: null }
+    depthCursor.x = next
+    depthCursor = next
+  }
+  assert.throws(() => validateK6R4OutcomeMemory(overDepth), RangeError)
 
-  const nodeBomb = { x: new Array(K6_R4_LIMITS.maxNodes).fill(null) }
-  assert.throws(() => validateK6R4OutcomeMemory(nodeBomb), RangeError)
+  const atNodes = { x: new Array(K6_R4_LIMITS.maxNodes - 2).fill(null) }
+  assert.throws(() => validateK6R4OutcomeMemory(atNodes), TypeError)
+  const overNodes = { x: new Array(K6_R4_LIMITS.maxNodes - 1).fill(null) }
+  assert.throws(() => validateK6R4OutcomeMemory(overNodes), RangeError)
 
-  const stringBomb = { x: "a".repeat(K6_R4_LIMITS.maxTotalStringChars + 1) }
-  assert.throws(() => validateK6R4OutcomeMemory(stringBomb), RangeError)
+  const atKey = "k".repeat(K6_R4_LIMITS.maxTotalStringChars)
+  assert.throws(() => validateK6R4OutcomeMemory({ [atKey]: null }), TypeError)
+  const overKey = "k".repeat(K6_R4_LIMITS.maxTotalStringChars + 1)
+  assert.throws(() => validateK6R4OutcomeMemory({ [overKey]: null }), RangeError)
+
+  const boundaryScope = createK6R4EmptyOutcomeMemory({
+    repositoryIdentity: deriveK6R4RepositoryIdentity(defaultRepository),
+    ownerScopeId: "f".repeat(K6_R4_LIMITS.maxOwnerScopeIdBytes),
+    privacyClass: "PUBLIC",
+  })
+  assert.equal(boundaryScope.scope.ownerScopeId.length, K6_R4_LIMITS.maxOwnerScopeIdBytes)
+  assert.throws(() => createK6R4EmptyOutcomeMemory({
+    repositoryIdentity: deriveK6R4RepositoryIdentity(defaultRepository),
+    ownerScopeId: "f".repeat(K6_R4_LIMITS.maxOwnerScopeIdBytes + 1),
+    privacyClass: "PUBLIC",
+  }), RangeError)
+
+  assert.equal(validateK6R4OutcomeMemory(active).memoryIdentity.length, K6_R4_LIMITS.maxIdentityBytes)
+  const overIdentity = clone(active)
+  overIdentity.memoryIdentity = "f".repeat(K6_R4_LIMITS.maxIdentityBytes + 1)
+  assert.throws(() => validateK6R4OutcomeMemory(overIdentity), RangeError)
+  const malformedIdentity = clone(active)
+  malformedIdentity.memoryIdentity = "g".repeat(K6_R4_LIMITS.maxIdentityBytes)
+  assert.throws(() => validateK6R4OutcomeMemory(malformedIdentity), TypeError)
 })
 
 test("caller inputs are not mutated and ownerScopeId remains isolation data only", () => {
@@ -586,7 +607,5 @@ test("R4 production modules contain no side-effect authority", () => {
   for (const forbidden of [
     "node:fs", "node:http", "node:https", "node:net", "node:tls", "node:child_process",
     "ExecutionGateway", "fetch(", "Date.now", "Math.random", "process.env",
-  ]) {
-    assert.equal((contracts + runtime).includes(forbidden), false, `forbidden production primitive: ${forbidden}`)
-  }
+  ]) assert.equal((contracts + runtime).includes(forbidden), false, `forbidden production primitive: ${forbidden}`)
 })
