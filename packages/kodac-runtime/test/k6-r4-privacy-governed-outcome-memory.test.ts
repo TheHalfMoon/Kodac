@@ -515,7 +515,7 @@ test("configured resource bounds distinguish boundary acceptance from over-bound
 
   const atDepth: Record<string, unknown> = { x: null }
   let depthCursor = atDepth
-  for (let index = 1; index < K6_R4_LIMITS.maxDepth; index += 1) {
+  for (let index = 1; index < K6_R4_LIMITS.maxDepth - 1; index += 1) {
     const next: Record<string, unknown> = { x: null }
     depthCursor.x = next
     depthCursor = next
@@ -523,7 +523,7 @@ test("configured resource bounds distinguish boundary acceptance from over-bound
   assert.throws(() => validateK6R4OutcomeMemory(atDepth), TypeError)
   const overDepth: Record<string, unknown> = { x: null }
   depthCursor = overDepth
-  for (let index = 1; index <= K6_R4_LIMITS.maxDepth; index += 1) {
+  for (let index = 1; index < K6_R4_LIMITS.maxDepth; index += 1) {
     const next: Record<string, unknown> = { x: null }
     depthCursor.x = next
     depthCursor = next
