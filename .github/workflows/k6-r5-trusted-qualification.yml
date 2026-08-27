@@ -4,11 +4,7 @@ on:
   pull_request_target:
     branches:
       - main
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
+    types: [opened, reopened, synchronize, ready_for_review]
     paths:
       - ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
       - "schema/k6-r5-bounded-strategy-proposal.schema.json"
@@ -41,555 +37,120 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          python3 - <<'PYCODE'
           from __future__ import annotations
-
-          import base64
-          import hashlib
-          import json
-          import os
-          import re
-          import urllib.error
-          import urllib.parse
-          import urllib.request
-          from datetime import datetime, timezone
-
-          REPOSITORY = "TheHalfMoon/Kodac"
-          AUTHORIZATION_MERGE_SHA = "31f5f9f3e05dd0feeda2b96b3221374c4bfe0032"
-          AUTHORIZATION_MERGE_TREE = "8f319e2e4238ffdcbd91dd6651a90e90c88abedb"
-          AUTHORIZATION_PATH = "docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md"
-          AUTHORIZATION_BLOB = "8747754cc8563f2506869393221a4dac084e4805"
-          STAGE_A_PR_NUMBER = 225
-          STAGE_A_QUALIFIED_HEAD_SHA = "0d004e51732ca10c67eae7305bd291898257053e"
-          STAGE_A_MERGE_SHA = "76f8639a329d9f168fea9d71f78711d612075619"
-          STAGE_A_MERGE_TREE = "03041afd20e677992e57b7210cd20bd804539ab0"
-          STAGE_A_TRUSTED_WORKFLOW_BLOB = "fbbb2a6f61d2b6e1d7390eebb85338bc467df6fb"
-          REPAIR_AUTHORIZATION_PR_NUMBER = 227
-          REPAIR_AUTHORIZATION_HEAD_SHA = "283f9b8f556984c5c0b92d5a746ed56f114c8582"
-          REPAIR_AUTHORIZATION_MERGE_SHA = "06f2dc2df5eb432107313932a16079edc4912a38"
-          REPAIR_AUTHORIZATION_MERGE_TREE = "4f325ce4b3c6aff664849dc33db7e2d9ff6e2954"
-          REPAIR_AUTHORIZATION_PATH = "docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md"
-          REPAIR_AUTHORIZATION_BLOB = "e01639b284a9788d0cd1118c0ffd998271a087f0"
-          TRUSTED_REPAIR_PR_NUMBER = 228
-          TRUSTED_REPAIR_HEAD_REF = "ci/k6-r5-trusted-qualification-observability-repair"
-          TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
-          STAGE_B_WORKFLOW_PATH = ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
-          STAGE_B_SCHEMA_PATH = "schema/k6-r5-bounded-strategy-proposal.schema.json"
-          STAGE_B_CONTRACTS_PATH = "packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts"
-          STAGE_B_RUNTIME_PATH = "packages/kodac-runtime/src/evidence-router/strategy-proposal.ts"
-          STAGE_B_INDEX_PATH = "packages/kodac-runtime/src/index.ts"
-          STAGE_B_TEST_PATH = "packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts"
-          AUTHORIZED_STAGE_B_HEAD_REF = "feat/k6-r5-bounded-strategy-proposal"
-          RULESET_ID = 20707483
-          RULESET_NODE_ID = "RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js"
-          RULESET_UPDATED_AT = "2026-08-11T21:30:21.316+03:00"
-          PRE_R5_INDEX_BLOB = "74b9d62501ffce8f2cb053e3b72827de11c203d9"
-          PREDECESSOR_BLOBS = {
-              "packages/kodac-runtime/src/evidence-router/contracts.ts": "dc29c4ce85340312f28b67604cac01c1d775e370",
-              "packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts": "4ee85d8c0163d5318d0d900d733ba75afa814f7c",
-              "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts": "6411a42e6fc0074e60edc10eaa27e00b3b197fca",
-              "packages/kodac-runtime/src/evidence-router/outcome-memory.ts": "9f9d0769c5ffab2d482574ea59418144d6dc49a6",
-          }
-          EXPECTED_PATH_STATUS = {
-              STAGE_B_WORKFLOW_PATH: "added",
-              STAGE_B_SCHEMA_PATH: "added",
-              STAGE_B_CONTRACTS_PATH: "added",
-              STAGE_B_RUNTIME_PATH: "added",
-              STAGE_B_INDEX_PATH: "modified",
-              STAGE_B_TEST_PATH: "added",
-          }
-          EXPECTED_PATHS = sorted(EXPECTED_PATH_STATUS)
-          EXPECTED_WORKFLOW_PREAMBLE = (
-              "name: k6-r5-bounded-strategy-qualification\n"
-              "\n"
-              "on:\n"
-              "  pull_request:\n"
-              "    branches:\n"
-              "      - main\n"
-              "    paths:\n"
-              "      - \".github/workflows/k6-r5-bounded-strategy-qualification.yml\"\n"
-              "      - \"schema/k6-r5-bounded-strategy-proposal.schema.json\"\n"
-              "      - \"packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts\"\n"
-              "      - \"packages/kodac-runtime/src/evidence-router/strategy-proposal.ts\"\n"
-              "      - \"packages/kodac-runtime/src/index.ts\"\n"
-              "      - \"packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts\"\n"
-              "\n"
-              "permissions:\n"
-              "  contents: read\n"
-              "\n"
-              "jobs:\n"
-              "  bounded-strategy-qualification:\n"
-          )
-
-          def github_expression(body: str) -> str:
-              return "$" + "{{ " + body + " }}"
-
-          PR_BASE_REF_EXPRESSION = github_expression("github.event.pull_request.base.ref")
-          PR_BASE_SHA_EXPRESSION = github_expression("github.event.pull_request.base.sha")
-          PR_HEAD_SHA_EXPRESSION = github_expression("github.event.pull_request.head.sha")
-          PR_HEAD_REF_EXPRESSION = github_expression("github.event.pull_request.head.ref")
-          PR_HEAD_REPOSITORY_EXPRESSION = github_expression("github.event.pull_request.head.repo.full_name")
-          REPOSITORY_EXPRESSION = github_expression("github.repository")
-          GITHUB_TOKEN_EXPRESSION = github_expression("github.token")
-          ALWAYS_EXPRESSION = github_expression("always()")
-          ACTION_BLOCKS = [
-              ["- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4", "with:", "ref: " + PR_HEAD_SHA_EXPRESSION, "persist-credentials: false", "fetch-depth: 0"],
-              ["- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4", "with:", 'node-version: "24.18.0"'],
-              ["- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6", "with:", 'version: "0.12.1"', "enable-cache: false"],
-          ]
-          EXPECTED_RUN_SHA256 = {
-              'Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions': 'edf519e39311133151b5a13830ca1b6b26ec375a8358158b7589d051918a27ca',
-              'Sync locked validation environment outside the checkout': '288ae30bbb3ccc1c71de1a69bbc5d0f899237dadd71b7c66dba026edcf6323a3',
-              'Validate R5 schema/runtime parity and closed vocabularies': 'e6760c1cfe96344a4429ba1f8a9e4deaab4fb3025c29646a96bad9346eb95082',
-              'Recompute R5 fixture strategy, trial-set, and qualification corpus identities': '1a53aaa2bd8335c26dcde5a0c489b41731ab5a8e1f69dfe08edc7617161b6e41',
-              'Prove forbidden R5 authority surfaces and live ruleset': 'ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c',
-              'Install integrity-locked TypeScript validation tooling outside the checkout': '4b8ee02309647b7e4f023e874574f5c971573a4a8336daa7b972f7bf3ec0b125',
-              'Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates': '046f5bd1ec60241cd04d92b911ebe27f52fd659f6cf8aad353532b6a01f053c9',
-              'Remove ephemeral TypeScript validation tooling': '7d7717cbae28f3c319b74d96168c76464c8e5064e8aca1827b919081cafbe748',
-              'Attest checkout unchanged after K6-R5 validation': '1d9d18c40564400c5655731ecbc792fae7261d6c66ddf4779bb678a3afbb93e5',
-          }
-          NAMED_STEPS = list(EXPECTED_RUN_SHA256)
-          EXPECTED_NAMED_PREFIXES = {
-              'Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions': (
-                  '- name: Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions\n'
-                  '  shell: bash\n'
-                  '  env:\n'
-                  f'    PR_BASE_REF: {PR_BASE_REF_EXPRESSION}\n'
-                  f'    PR_BASE_SHA: {PR_BASE_SHA_EXPRESSION}\n'
-                  f'    PR_HEAD_SHA: {PR_HEAD_SHA_EXPRESSION}\n'
-                  f'    PR_HEAD_REF: {PR_HEAD_REF_EXPRESSION}\n'
-                  f'    PR_HEAD_REPOSITORY: {PR_HEAD_REPOSITORY_EXPRESSION}\n'
-                  f'    REPOSITORY: {REPOSITORY_EXPRESSION}\n'
-                  '  run: |'
-              ),
-              'Sync locked validation environment outside the checkout': '- name: Sync locked validation environment outside the checkout\n  shell: bash\n  run: |',
-              'Validate R5 schema/runtime parity and closed vocabularies': '- name: Validate R5 schema/runtime parity and closed vocabularies\n  shell: bash\n  run: |',
-              'Recompute R5 fixture strategy, trial-set, and qualification corpus identities': '- name: Recompute R5 fixture strategy, trial-set, and qualification corpus identities\n  shell: bash\n  run: |',
-              'Prove forbidden R5 authority surfaces and live ruleset': (
-                  '- name: Prove forbidden R5 authority surfaces and live ruleset\n'
-                  '  shell: bash\n'
-                  '  env:\n'
-                  f'    GH_TOKEN: {GITHUB_TOKEN_EXPRESSION}\n'
-                  '  run: |'
-              ),
-              'Install integrity-locked TypeScript validation tooling outside the checkout': '- name: Install integrity-locked TypeScript validation tooling outside the checkout\n  shell: bash\n  run: |',
-              'Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates': '- name: Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates\n  shell: bash\n  run: |',
-              'Remove ephemeral TypeScript validation tooling': f'- name: Remove ephemeral TypeScript validation tooling\n  if: {ALWAYS_EXPRESSION}\n  shell: bash\n  run: |',
-              'Attest checkout unchanged after K6-R5 validation': f'- name: Attest checkout unchanged after K6-R5 validation\n  if: {ALWAYS_EXPRESSION}\n  shell: bash\n  run: |',
-          }
-          EXPECTED_STEP_HEADERS = [
-              ACTION_BLOCKS[0][0],
-              f"- name: {NAMED_STEPS[0]}",
-              ACTION_BLOCKS[1][0],
-              ACTION_BLOCKS[2][0],
-              *[f"- name: {name}" for name in NAMED_STEPS[1:]],
-          ]
-          SHA_RE = re.compile(r"^[0-9a-f]{40}$")
-          TOKEN = os.environ.get("READ_ONLY_GITHUB_TOKEN", "")
-
-          def fail(label: str) -> None:
-              raise SystemExit(f"K6-R5 trusted qualification failed: {label}")
-
-          def require(condition: bool, label: str) -> None:
-              if not condition:
-                  fail(label)
-
-          def env(name: str) -> str:
-              value = os.environ.get(name, "")
-              require(bool(value), f"missing event field {name}")
-              return value
-
-          def unique_object(pairs: list[tuple[str, object]]) -> dict:
-              out: dict[str, object] = {}
-              for key, value in pairs:
-                  require(key not in out, "JSON object contains duplicate keys")
-                  out[key] = value
-              return out
-
-          def parse_json(raw: bytes, label: str) -> object:
-              try:
-                  return json.loads(raw, object_pairs_hook=unique_object)
-              except SystemExit:
-                  raise
-              except Exception:
-                  fail(f"{label} is not valid JSON")
-
-          def parse_instant(value: object, label: str) -> datetime:
-              require(isinstance(value, str) and bool(value), f"{label} missing")
-              normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
-              try:
-                  parsed = datetime.fromisoformat(normalized)
-              except ValueError:
-                  fail(f"{label} is not a valid offset timestamp")
-              require(parsed.tzinfo is not None and parsed.utcoffset() is not None, f"{label} lacks timezone")
-              return parsed.astimezone(timezone.utc)
-
-          def api_json(path: str, missing_label: str | None = None) -> dict:
-              require(path.startswith("/repos/TheHalfMoon/Kodac/"), "GitHub API path escaped repository boundary")
-              request = urllib.request.Request(
-                  "https://api.github.com" + path,
-                  headers={
-                      "Accept": "application/vnd.github+json",
-                      "Authorization": f"Bearer {TOKEN}",
-                      "X-GitHub-Api-Version": "2022-11-28",
-                      "User-Agent": "kodac-k6-r5-trusted-qualification",
-                  },
-                  method="GET",
-              )
-              try:
-                  with urllib.request.urlopen(request, timeout=20) as response:
-                      payload = response.read(8_000_001)
-              except urllib.error.HTTPError as exc:
-                  if exc.code == 404 and missing_label is not None:
-                      fail(missing_label)
-                  fail("read-only GitHub API request failed")
-              except (urllib.error.URLError, TimeoutError):
-                  fail("read-only GitHub API request failed")
-              require(len(payload) <= 8_000_000, "GitHub API response exceeds inspector bound")
-              value = parse_json(payload, "GitHub API response")
-              require(isinstance(value, dict), "GitHub API response has unexpected shape")
-              return value
-
-          def compare(base: str, head: str) -> dict:
-              require(SHA_RE.fullmatch(base) is not None and SHA_RE.fullmatch(head) is not None, "compare refs are not immutable SHAs")
-              return api_json(f"/repos/{REPOSITORY}/compare/{base}...{head}")
-
-          def file_at(ref: str, path: str, missing_label: str | None = None) -> tuple[str, str]:
-              require(SHA_RE.fullmatch(ref) is not None, "file ref is not an immutable SHA")
-              value = api_json(f"/repos/{REPOSITORY}/contents/{urllib.parse.quote(path, safe='/')}?ref={ref}", missing_label)
-              blob = value.get("sha")
-              require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "file blob identity unavailable")
-              require(value.get("encoding") == "base64" and isinstance(value.get("content"), str), "file content is not inline base64")
-              try:
-                  raw = base64.b64decode(value["content"], validate=False)
-              except Exception:
-                  fail("file content base64 decode failed")
-              require(len(raw) <= 2_000_000, "candidate file exceeds inspector bound")
-              try:
-                  return raw.decode("utf-8", errors="strict"), blob
-              except UnicodeDecodeError:
-                  fail("candidate file is not UTF-8")
-
-          def inspect_steps(workflow: str) -> tuple[dict[str, str], list[list[str]]]:
-              lines = workflow.splitlines()
-              step_markers = [i for i, line in enumerate(lines) if line == "    steps:"]
-              require(len(step_markers) == 1, "candidate workflow steps section count drift")
-              positions = [i for i in range(step_markers[0] + 1, len(lines)) if re.match(r"^      - ", lines[i])]
-              require(len(positions) == len(EXPECTED_STEP_HEADERS), "candidate workflow top-level step count drift")
-              require([lines[i].strip() for i in positions] == EXPECTED_STEP_HEADERS, "candidate workflow top-level step sequence drift")
-              positions.append(len(lines))
-              named: dict[str, str] = {}
-              actions: list[list[str]] = []
-              for n in range(len(positions) - 1):
-                  raw = lines[positions[n]:positions[n + 1]]
-                  header = raw[0].strip()
-                  normalized = [line.strip() for line in raw if line.strip()]
-                  if header.startswith("- uses:"):
-                      actions.append(normalized)
-                      continue
-                  require(header.startswith("- name: "), "candidate workflow contains unrecognized step form")
-                  name = header[len("- name: "):]
-                  require(name in EXPECTED_NAMED_PREFIXES and name not in named, "candidate workflow named-step identity drift")
-                  run_positions = [i for i, line in enumerate(raw) if line == "        run: |"]
-                  require(len(run_positions) == 1, "candidate named-step run-block drift")
-                  run_position = run_positions[0]
-                  prefix_lines = raw[:run_position + 1]
-                  expected_prefix = EXPECTED_NAMED_PREFIXES[name].splitlines()
-                  actual_prefix = [line[6:] if line.startswith("      ") else line for line in prefix_lines]
-                  require(actual_prefix == expected_prefix, "candidate named-step metadata drift")
-                  body_lines: list[str] = []
-                  for line in raw[run_position + 1:]:
-                      require(line == "" or line.startswith("          "), "candidate run-body indentation drift")
-                      body_lines.append(line[10:] if line.startswith("          ") else "")
-                  while body_lines and body_lines[-1] == "":
-                      body_lines.pop()
-                  body = "\n".join(body_lines) + "\n"
-                  named[name] = body
-              require(list(named) == NAMED_STEPS, "candidate workflow named-step sequence drift")
-              return named, actions
-
-          event_repo = env("EVENT_REPOSITORY")
-          event_pr_raw = env("EVENT_PR_NUMBER")
-          event_base_ref = env("EVENT_BASE_REF")
-          event_base_sha = env("EVENT_BASE_SHA")
-          event_head_ref = env("EVENT_HEAD_REF")
-          event_head_sha = env("EVENT_HEAD_SHA")
-          event_head_repo = env("EVENT_HEAD_REPOSITORY")
-          event_workflow_sha = env("EVENT_WORKFLOW_SHA")
-          require(bool(TOKEN), "read-only GitHub token unavailable")
-          require(event_pr_raw.isdigit() and int(event_pr_raw) > 0, "event PR number invalid")
-          event_pr = int(event_pr_raw)
-          require(event_repo == REPOSITORY, "repository identity mismatch")
-          require(event_base_ref == "main" and event_head_ref == AUTHORIZED_STAGE_B_HEAD_REF and event_head_repo == REPOSITORY, "PR ref/repository boundary drift")
-          require(SHA_RE.fullmatch(event_base_sha) is not None and SHA_RE.fullmatch(event_head_sha) is not None and event_base_sha != event_head_sha, "event revision identity invalid")
-          require(event_workflow_sha == event_base_sha, "trusted workflow was not loaded from exact protected base")
-
-          current_pr = api_json(f"/repos/{REPOSITORY}/pulls/{event_pr}")
-          require(current_pr.get("number") == event_pr and current_pr.get("state") == "open" and current_pr.get("draft") is False, "candidate PR state drift")
-          require(current_pr.get("head", {}).get("sha") == event_head_sha and current_pr.get("head", {}).get("ref") == AUTHORIZED_STAGE_B_HEAD_REF, "candidate PR head moved after event")
-          require(current_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY and current_pr.get("base", {}).get("ref") == "main", "candidate PR repository/base drift")
-          require(api_json(f"/repos/{REPOSITORY}/git/ref/heads/main").get("object", {}).get("sha") == event_base_sha, "protected main moved after event")
-
-          authorization_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{AUTHORIZATION_MERGE_SHA}")
-          require(authorization_commit.get("tree", {}).get("sha") == AUTHORIZATION_MERGE_TREE, "canonical R5 authorization merge tree drift")
-          verification = authorization_commit.get("verification", {})
-          require(verification.get("verified") is True and verification.get("reason") == "valid", "canonical R5 authorization merge verification drift")
-          authorization_text, authorization_blob_at_merge = file_at(AUTHORIZATION_MERGE_SHA, AUTHORIZATION_PATH)
-          require(authorization_blob_at_merge == AUTHORIZATION_BLOB and "Kodac K6-R5 Bounded Strategy Proposal and Qualification Authorization" in authorization_text, "canonical R5 authorization identity drift")
-          require(file_at(event_base_sha, AUTHORIZATION_PATH)[1] == AUTHORIZATION_BLOB, "canonical R5 authorization document drift on protected base")
-
-          stage_a_pr = api_json(f"/repos/{REPOSITORY}/pulls/{STAGE_A_PR_NUMBER}")
-          require(stage_a_pr.get("number") == STAGE_A_PR_NUMBER and stage_a_pr.get("merged") is True, "canonical Stage A adoption PR is not merged")
-          require(stage_a_pr.get("base", {}).get("ref") == "main" and stage_a_pr.get("base", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "canonical Stage A adoption base drift")
-          stage_a_head_sha = stage_a_pr.get("head", {}).get("sha")
-          require(stage_a_head_sha == STAGE_A_QUALIFIED_HEAD_SHA, "canonical Stage A qualified head drift")
-          require(stage_a_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY and stage_a_pr.get("changed_files") == 1, "canonical Stage A adoption PR scope drift")
-          require(stage_a_pr.get("merge_commit_sha") == STAGE_A_MERGE_SHA, "canonical Stage A adoption merge identity drift")
-
-          stage_a_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{STAGE_A_MERGE_SHA}")
-          stage_a_verification = stage_a_merge.get("verification", {})
-          require(stage_a_merge.get("tree", {}).get("sha") == STAGE_A_MERGE_TREE, "canonical Stage A adoption merge tree drift")
-          require(stage_a_verification.get("verified") is True and stage_a_verification.get("reason") == "valid", "canonical Stage A adoption merge verification drift")
-          stage_a_parents = stage_a_merge.get("parents")
-          require(isinstance(stage_a_parents, list) and len(stage_a_parents) == 2, "canonical Stage A adoption merge parent count drift")
-          require(stage_a_parents[0].get("sha") == AUTHORIZATION_MERGE_SHA and stage_a_parents[1].get("sha") == STAGE_A_QUALIFIED_HEAD_SHA, "canonical Stage A adoption merge parent identity drift")
-          stage_a_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{STAGE_A_QUALIFIED_HEAD_SHA}")
-          require(stage_a_merge.get("tree", {}).get("sha") == stage_a_head_commit.get("tree", {}).get("sha"), "canonical Stage A adoption merge tree differs from qualified head tree")
-
-          stage_a_scope = compare(AUTHORIZATION_MERGE_SHA, STAGE_A_QUALIFIED_HEAD_SHA)
-          require(stage_a_scope.get("base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA and stage_a_scope.get("merge_base_commit", {}).get("sha") == AUTHORIZATION_MERGE_SHA, "canonical Stage A adoption ancestry drift")
-          require(stage_a_scope.get("behind_by") == 0 and stage_a_scope.get("ahead_by", 0) > 0, "canonical Stage A adoption candidate ancestry drift")
-          stage_a_files = stage_a_scope.get("files")
-          require(isinstance(stage_a_files, list) and len(stage_a_files) == 1, "canonical Stage A adoption path count drift")
-          stage_a_file = stage_a_files[0]
-          require(isinstance(stage_a_file, dict) and stage_a_file.get("filename") == TRUSTED_WORKFLOW_PATH and stage_a_file.get("status") == "added" and stage_a_file.get("previous_filename") in (None, ""), "canonical Stage A adoption path/status drift")
-          stage_a_text, stage_a_blob = file_at(STAGE_A_MERGE_SHA, TRUSTED_WORKFLOW_PATH, "canonical Stage A trusted workflow unavailable")
-          stage_a_head_text, stage_a_head_blob = file_at(STAGE_A_QUALIFIED_HEAD_SHA, TRUSTED_WORKFLOW_PATH, "qualified Stage A workflow unavailable on adoption head")
-          require(stage_a_text == stage_a_head_text and stage_a_blob == STAGE_A_TRUSTED_WORKFLOW_BLOB and stage_a_head_blob == STAGE_A_TRUSTED_WORKFLOW_BLOB and stage_a_file.get("sha") == STAGE_A_TRUSTED_WORKFLOW_BLOB, "canonical Stage A trusted workflow root identity drift")
-
-          repair_authorization_pr = api_json(f"/repos/{REPOSITORY}/pulls/{REPAIR_AUTHORIZATION_PR_NUMBER}")
-          require(repair_authorization_pr.get("number") == REPAIR_AUTHORIZATION_PR_NUMBER and repair_authorization_pr.get("merged") is True, "R5 observability repair authorization PR is not merged")
-          require(repair_authorization_pr.get("base", {}).get("ref") == "main" and repair_authorization_pr.get("base", {}).get("sha") == STAGE_A_MERGE_SHA, "R5 observability repair authorization base drift")
-          require(repair_authorization_pr.get("head", {}).get("sha") == REPAIR_AUTHORIZATION_HEAD_SHA and repair_authorization_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "R5 observability repair authorization head drift")
-          require(repair_authorization_pr.get("changed_files") == 1 and repair_authorization_pr.get("merge_commit_sha") == REPAIR_AUTHORIZATION_MERGE_SHA, "R5 observability repair authorization PR scope/merge drift")
-
-          repair_authorization_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{REPAIR_AUTHORIZATION_MERGE_SHA}")
-          repair_authorization_verification = repair_authorization_merge.get("verification", {})
-          require(repair_authorization_merge.get("tree", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_TREE, "R5 observability repair authorization merge tree drift")
-          require(repair_authorization_verification.get("verified") is True and repair_authorization_verification.get("reason") == "valid", "R5 observability repair authorization merge verification drift")
-          repair_authorization_parents = repair_authorization_merge.get("parents")
-          require(isinstance(repair_authorization_parents, list) and len(repair_authorization_parents) == 2, "R5 observability repair authorization merge parent count drift")
-          require(repair_authorization_parents[0].get("sha") == STAGE_A_MERGE_SHA and repair_authorization_parents[1].get("sha") == REPAIR_AUTHORIZATION_HEAD_SHA, "R5 observability repair authorization merge parent identity drift")
-          repair_authorization_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{REPAIR_AUTHORIZATION_HEAD_SHA}")
-          require(repair_authorization_merge.get("tree", {}).get("sha") == repair_authorization_head_commit.get("tree", {}).get("sha"), "R5 observability repair authorization merge tree differs from exact head tree")
-
-          repair_authorization_scope = compare(STAGE_A_MERGE_SHA, REPAIR_AUTHORIZATION_HEAD_SHA)
-          require(repair_authorization_scope.get("base_commit", {}).get("sha") == STAGE_A_MERGE_SHA and repair_authorization_scope.get("merge_base_commit", {}).get("sha") == STAGE_A_MERGE_SHA, "R5 observability repair authorization ancestry drift")
-          require(repair_authorization_scope.get("behind_by") == 0 and repair_authorization_scope.get("ahead_by", 0) > 0, "R5 observability repair authorization candidate ancestry drift")
-          repair_authorization_files = repair_authorization_scope.get("files")
-          require(isinstance(repair_authorization_files, list) and len(repair_authorization_files) == 1, "R5 observability repair authorization path count drift")
-          repair_authorization_file = repair_authorization_files[0]
-          require(isinstance(repair_authorization_file, dict) and repair_authorization_file.get("filename") == REPAIR_AUTHORIZATION_PATH and repair_authorization_file.get("status") == "added" and repair_authorization_file.get("previous_filename") in (None, ""), "R5 observability repair authorization path/status drift")
-          repair_authorization_text, repair_authorization_blob_at_merge = file_at(REPAIR_AUTHORIZATION_MERGE_SHA, REPAIR_AUTHORIZATION_PATH)
-          require(repair_authorization_blob_at_merge == REPAIR_AUTHORIZATION_BLOB and "Kodac K6-R5 Trusted Qualification Ruleset Observability Repair Authorization" in repair_authorization_text, "R5 observability repair authorization identity drift")
-          require(file_at(event_base_sha, REPAIR_AUTHORIZATION_PATH)[1] == REPAIR_AUTHORIZATION_BLOB, "R5 observability repair authorization document drift on protected base")
-          require(file_at(REPAIR_AUTHORIZATION_MERGE_SHA, TRUSTED_WORKFLOW_PATH)[1] == STAGE_A_TRUSTED_WORKFLOW_BLOB, "trusted workflow changed before registered one-path repair")
-
-          require(TRUSTED_REPAIR_PR_NUMBER > 0, "trusted repair PR is not registered")
-          trusted_repair_pr = api_json(f"/repos/{REPOSITORY}/pulls/{TRUSTED_REPAIR_PR_NUMBER}")
-          require(trusted_repair_pr.get("number") == TRUSTED_REPAIR_PR_NUMBER and trusted_repair_pr.get("merged") is True, "registered R5 trusted repair PR is not merged")
-          require(trusted_repair_pr.get("base", {}).get("ref") == "main" and trusted_repair_pr.get("base", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA, "registered R5 trusted repair base drift")
-          trusted_repair_head_sha = trusted_repair_pr.get("head", {}).get("sha")
-          require(isinstance(trusted_repair_head_sha, str) and SHA_RE.fullmatch(trusted_repair_head_sha) is not None, "registered R5 trusted repair head unavailable")
-          require(trusted_repair_pr.get("head", {}).get("ref") == TRUSTED_REPAIR_HEAD_REF and trusted_repair_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "registered R5 trusted repair head boundary drift")
-          require(trusted_repair_pr.get("changed_files") == 1 and trusted_repair_pr.get("merge_commit_sha") == event_base_sha, "protected base is not exact registered R5 trusted repair merge")
-
-          trusted_repair_scope = compare(REPAIR_AUTHORIZATION_MERGE_SHA, trusted_repair_head_sha)
-          require(trusted_repair_scope.get("base_commit", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA and trusted_repair_scope.get("merge_base_commit", {}).get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA, "registered R5 trusted repair ancestry drift")
-          require(trusted_repair_scope.get("behind_by") == 0 and trusted_repair_scope.get("ahead_by", 0) > 0, "registered R5 trusted repair candidate ancestry drift")
-          trusted_repair_files = trusted_repair_scope.get("files")
-          require(isinstance(trusted_repair_files, list) and len(trusted_repair_files) == 1, "registered R5 trusted repair path count drift")
-          trusted_repair_file = trusted_repair_files[0]
-          require(isinstance(trusted_repair_file, dict) and trusted_repair_file.get("filename") == TRUSTED_WORKFLOW_PATH and trusted_repair_file.get("status") == "modified" and trusted_repair_file.get("previous_filename") in (None, ""), "registered R5 trusted repair path/status drift")
-
-          trusted_repair_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{event_base_sha}")
-          trusted_repair_verification = trusted_repair_merge.get("verification", {})
-          require(trusted_repair_verification.get("verified") is True and trusted_repair_verification.get("reason") == "valid", "registered R5 trusted repair merge verification drift")
-          trusted_repair_parents = trusted_repair_merge.get("parents")
-          require(isinstance(trusted_repair_parents, list) and len(trusted_repair_parents) == 2, "registered R5 trusted repair merge parent count drift")
-          require(trusted_repair_parents[0].get("sha") == REPAIR_AUTHORIZATION_MERGE_SHA and trusted_repair_parents[1].get("sha") == trusted_repair_head_sha, "registered R5 trusted repair merge parent identity drift")
-          trusted_repair_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{trusted_repair_head_sha}")
-          require(trusted_repair_merge.get("tree", {}).get("sha") == trusted_repair_head_commit.get("tree", {}).get("sha"), "registered R5 trusted repair merge tree differs from exact head tree")
-
-          trusted_text, trusted_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH, "canonical repaired R5 trusted workflow unavailable on protected base")
-          trusted_repair_head_text, trusted_repair_head_blob = file_at(trusted_repair_head_sha, TRUSTED_WORKFLOW_PATH, "registered R5 trusted repair workflow unavailable on exact head")
-          require(trusted_text == trusted_repair_head_text and trusted_blob == trusted_repair_head_blob and trusted_repair_file.get("sha") == trusted_blob, "canonical repaired R5 trusted workflow blob is not exact registered repair head identity")
-          require(trusted_blob != STAGE_A_TRUSTED_WORKFLOW_BLOB, "registered R5 trusted repair did not change trusted workflow identity")
-          require(trusted_text.startswith("name: k6-r5-trusted-qualification\n") and "pull_request_target:" in trusted_text, "canonical repaired R5 trusted workflow boundary drift")
-          require("permissions:\n  contents: read" in trusted_text, "canonical repaired R5 trusted workflow permissions drift")
-          trusted_lines = trusted_text.splitlines()
-          trusted_step_markers = [i for i, line in enumerate(trusted_lines) if line == "    steps:"]
-          require(len(trusted_step_markers) == 1, "canonical repaired R5 trusted workflow steps section count drift")
-          trusted_step_headers = [
-              line.strip()
-              for line in trusted_lines[trusted_step_markers[0] + 1:]
-              if re.match(r"^      - \S", line)
-          ]
-          require(
-              trusted_step_headers == ["- name: Inspect exact R5 candidate as untrusted data"],
-              "trusted inspector gained executable or additional top-level steps",
-          )
-
-          for path, expected_blob in PREDECESSOR_BLOBS.items():
-              require(file_at(event_base_sha, path)[1] == expected_blob, f"predecessor blob drift: {path}")
-          require(file_at(event_base_sha, STAGE_B_INDEX_PATH)[1] == PRE_R5_INDEX_BLOB, "pre-R5 public index blob drift")
-
-          comparison = compare(event_base_sha, event_head_sha)
-          require(comparison.get("base_commit", {}).get("sha") == event_base_sha and comparison.get("merge_base_commit", {}).get("sha") == event_base_sha, "candidate compare/base ancestry drift")
-          require(comparison.get("behind_by") == 0 and comparison.get("ahead_by", 0) > 0, "candidate ancestry drift")
-          files = comparison.get("files")
-          require(isinstance(files, list) and len(files) == len(EXPECTED_PATHS), "candidate compare file count invalid")
-          compare_blobs: dict[str, str] = {}
-          seen: set[str] = set()
-          for item in files:
-              require(isinstance(item, dict), "candidate compare file entry invalid")
-              path = item.get("filename")
-              require(isinstance(path, str) and path in EXPECTED_PATH_STATUS and path not in seen, "candidate compare path invalid or duplicated")
-              seen.add(path)
-              require(item.get("status") == EXPECTED_PATH_STATUS[path] and item.get("previous_filename") in (None, ""), "candidate compare status or rename drift")
-              blob = item.get("sha")
-              require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "candidate compare blob invalid")
-              compare_blobs[path] = blob
-          require(sorted(seen) == EXPECTED_PATHS, "candidate changed-file set is not exact Stage B six-path allowlist")
-
-          workflow, workflow_blob = file_at(event_head_sha, STAGE_B_WORKFLOW_PATH)
-          require(workflow_blob == compare_blobs[STAGE_B_WORKFLOW_PATH], "candidate workflow exact-head blob disagrees with compare entry")
-          require(workflow.startswith(EXPECTED_WORKFLOW_PREAMBLE), "candidate workflow preamble/trigger/permission/job identity drift")
-          require(workflow.count("jobs:\n") == 1 and workflow.count("permissions:\n") == 1, "candidate workflow control key count drift")
-          top_keys = re.findall(r"(?m)^([A-Za-z][A-Za-z0-9_-]*):", workflow)
-          require(top_keys == ["name", "on", "permissions", "jobs"], "candidate workflow top-level control surface drift")
-          for forbidden in [
-              "pull_request_target:", "workflow_dispatch:", "schedule:", "container:", "services:", "defaults:",
-              "id-token:", "contents: write", "pull-requests: write", "actions: write", "checks: write",
-              "NODE_OPTIONS:", "BASH_ENV:", "LD_PRELOAD:", "PYTHONPATH:", "working-directory:",
-              "continue-on-error:", "|| true", "GITHUB_ENV", "GITHUB_PATH", "::add-path", "::set-env",
-          ]:
-              require(forbidden not in workflow, f"candidate workflow contains prohibited control surface: {forbidden}")
-
-          jobs_suffix = workflow.split("jobs:\n", 1)[1]
-          require(re.findall(r"(?m)^  ([A-Za-z0-9_-]+):\s*$", jobs_suffix) == ["bounded-strategy-qualification"], "candidate workflow job set drift")
-          job_body = jobs_suffix.split("  bounded-strategy-qualification:\n", 1)[1]
-          job_metadata = [line for line in job_body.splitlines() if re.match(r"^    \S", line)]
-          require(job_metadata == [
-              "    name: k6-r5-bounded-strategy-qualification",
-              "    runs-on: ubuntu-latest",
-              "    timeout-minutes: 30",
-              "    env:",
-              "    steps:",
-          ], "candidate job-level metadata/control surface drift")
-
-          env_match = re.search(r"(?ms)^    env:\n(.*?)^    steps:\n", workflow)
-          require(env_match is not None, "candidate workflow job env block missing")
-          env_lines = [line.strip() for line in env_match.group(1).splitlines() if line.strip()]
-          static_env = {
-              f'K6_R5_AUTHORIZATION_MERGE_SHA: "{AUTHORIZATION_MERGE_SHA}"',
-              f'K6_R5_AUTHORIZATION_MERGE_TREE: "{AUTHORIZATION_MERGE_TREE}"',
-              f'K6_R5_AUTHORIZATION_DOCUMENT_BLOB: "{AUTHORIZATION_BLOB}"',
-              f'K6_R5_IMPLEMENTATION_BRANCH: "{AUTHORIZED_STAGE_B_HEAD_REF}"',
-              f'PRE_R5_INDEX_BLOB: "{PRE_R5_INDEX_BLOB}"',
-              f'R1_CONTRACTS_BLOB: "{PREDECESSOR_BLOBS["packages/kodac-runtime/src/evidence-router/contracts.ts"]}"',
-              f'R2_ROUTE_PLAN_CONTRACTS_BLOB: "{PREDECESSOR_BLOBS["packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts"]}"',
-              f'R4_OUTCOME_MEMORY_CONTRACTS_BLOB: "{PREDECESSOR_BLOBS["packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"]}"',
-              f'R4_OUTCOME_MEMORY_RUNTIME_BLOB: "{PREDECESSOR_BLOBS["packages/kodac-runtime/src/evidence-router/outcome-memory.ts"]}"',
-              'PYTHONDONTWRITEBYTECODE: "1"',
-          }
-          dynamic_env = {f'K6_R5_TRUSTED_WORKFLOW_BLOB: "{trusted_blob}"'}
-          require(set(env_lines) == static_env | dynamic_env and len(env_lines) == len(set(env_lines)), "candidate workflow job env key/value set drift")
-
-          named_runs, actions = inspect_steps(workflow)
-          require(actions == ACTION_BLOCKS, "candidate workflow action metadata drift")
-          for name in NAMED_STEPS:
-              actual_hash = hashlib.sha256(named_runs[name].encode("utf-8")).hexdigest()
-              require(actual_hash == EXPECTED_RUN_SHA256[name], f"candidate named-step fingerprint drift: {name}")
-
-          ruleset = api_json(f"/repos/{REPOSITORY}/rulesets/{RULESET_ID}")
-          require(ruleset.get("id") == RULESET_ID, "ruleset identity drift")
-          if "node_id" in ruleset:
-              require(ruleset.get("node_id") == RULESET_NODE_ID, "visible ruleset node identity drift")
-          require(parse_instant(ruleset.get("updated_at"), "ruleset updated_at") == parse_instant(RULESET_UPDATED_AT, "trusted ruleset updated_at"), "ruleset snapshot instant drift")
-          require(ruleset.get("name") == "Kodac canonical main protection v1" and ruleset.get("target") == "branch" and ruleset.get("enforcement") == "active", "ruleset activation drift")
-          if "source_type" in ruleset:
-              require(ruleset.get("source_type") == "Repository", "visible ruleset source type drift")
-          if "source" in ruleset:
-              require(ruleset.get("source") == REPOSITORY, "visible ruleset source drift")
-          require(ruleset.get("conditions", {}).get("ref_name") == {"exclude": [], "include": ["refs/heads/main"]}, "ruleset target drift")
-          bypass_actors_visible = "bypass_actors" in ruleset
-          current_user_can_bypass_visible = "current_user_can_bypass" in ruleset
-          if bypass_actors_visible:
-              require(ruleset.get("bypass_actors") == [], "visible ruleset bypass actor state drift")
-          if current_user_can_bypass_visible:
-              require(ruleset.get("current_user_can_bypass") == "never", "visible current-user bypass state drift")
-          bypass_state_visibility = (
-              "AVAILABLE"
-              if bypass_actors_visible and current_user_can_bypass_visible
-              else "UNAVAILABLE_UNDER_ACTIONS_TOKEN"
-          )
-          rules = ruleset.get("rules")
-          require(isinstance(rules, list), "ruleset rules unavailable")
-          require([rule.get("type") for rule in rules if isinstance(rule, dict)] == ["deletion", "non_fast_forward", "pull_request", "required_status_checks"], "ruleset rule set/order drift")
-          pr_rule = rules[2].get("parameters", {})
-          require(pr_rule == {
-              "required_approving_review_count": 0,
-              "dismiss_stale_reviews_on_push": False,
-              "required_reviewers": [],
-              "require_code_owner_review": False,
-              "require_last_push_approval": False,
-              "require_extra_approval_for_unattributed_changes": True,
-              "required_review_thread_resolution": True,
-              "allowed_merge_methods": ["merge", "squash", "rebase"],
-          }, "ruleset pull-request semantics drift")
-          status_params = rules[3].get("parameters", {})
-          require(status_params.get("strict_required_status_checks_policy") is True and status_params.get("do_not_enforce_on_create") is False, "ruleset strict-status semantics drift")
-          require(status_params.get("required_status_checks") == [
-              {"context": "provenance", "integration_id": 15368},
-              {"context": "legacy-tests", "integration_id": 15368},
-              {"context": "k2-runtime-gate", "integration_id": 15368},
-          ], "ruleset required-check set drift")
-
-          manifest = {
-              "version": "kodac-k6-r5-trusted-inspector-proof-v1",
-              "proof_model": "split-workflow-owner-v1",
-              "pr": event_pr,
-              "base_sha": event_base_sha,
-              "head_sha": event_head_sha,
-              "authorization_merge_sha": AUTHORIZATION_MERGE_SHA,
-              "authorization_tree": AUTHORIZATION_MERGE_TREE,
-              "authorization_blob": AUTHORIZATION_BLOB,
-              "stage_a_pr": STAGE_A_PR_NUMBER,
-              "stage_a_head_sha": STAGE_A_QUALIFIED_HEAD_SHA,
-              "stage_a_merge_sha": STAGE_A_MERGE_SHA,
-              "stage_a_trusted_workflow_blob": STAGE_A_TRUSTED_WORKFLOW_BLOB,
-              "repair_authorization_pr": REPAIR_AUTHORIZATION_PR_NUMBER,
-              "repair_authorization_merge_sha": REPAIR_AUTHORIZATION_MERGE_SHA,
-              "repair_authorization_blob": REPAIR_AUTHORIZATION_BLOB,
-              "trusted_repair_pr": TRUSTED_REPAIR_PR_NUMBER,
-              "trusted_repair_head_sha": trusted_repair_head_sha,
-              "trusted_workflow_blob": trusted_blob,
-              "candidate_workflow_blob": workflow_blob,
-              "stage_b_paths": EXPECTED_PATHS,
-              "named_run_sha256": {name: hashlib.sha256(body.encode("utf-8")).hexdigest() for name, body in named_runs.items()},
-              "ruleset_id": RULESET_ID,
-              "bypass_state_visibility": bypass_state_visibility,
-              "visible_bypass_fields_validated": [
-                  name
-                  for name, visible in [
-                      ("bypass_actors", bypass_actors_visible),
-                      ("current_user_can_bypass", current_user_can_bypass_visible),
-                  ]
-                  if visible
-              ],
-              "external_owner_no_bypass_proof_required": True,
-          }
-          print(json.dumps(manifest, sort_keys=True, separators=(",", ":")))
+          import ast,base64,hashlib,json,os,re,urllib.error,urllib.parse,urllib.request
+          from datetime import datetime,timezone
+          R="TheHalfMoon/Kodac"; TOK=os.environ.get("READ_ONLY_GITHUB_TOKEN",""); S=re.compile(r"^[0-9a-f]{40}$")
+          A="31f5f9f3e05dd0feeda2b96b3221374c4bfe0032"; AT="8f319e2e4238ffdcbd91dd6651a90e90c88abedb"; AP="docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md"; AB="8747754cc8563f2506869393221a4dac084e4805"
+          SA=225; SH="0d004e51732ca10c67eae7305bd291898257053e"; SM="76f8639a329d9f168fea9d71f78711d612075619"; ST="03041afd20e677992e57b7210cd20bd804539ab0"; SB="fbbb2a6f61d2b6e1d7390eebb85338bc467df6fb"
+          RA=227; RH="283f9b8f556984c5c0b92d5a746ed56f114c8582"; RM="06f2dc2df5eb432107313932a16079edc4912a38"; RT="4f325ce4b3c6aff664849dc33db7e2d9ff6e2954"; RP="docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md"; RB="e01639b284a9788d0cd1118c0ffd998271a087f0"
+          TR=228; TRF="ci/k6-r5-trusted-qualification-observability-repair"; TW=".github/workflows/k6-r5-trusted-qualification.yml"; BR="feat/k6-r5-bounded-strategy-proposal"
+          W=".github/workflows/k6-r5-bounded-strategy-qualification.yml"; SC="schema/k6-r5-bounded-strategy-proposal.schema.json"; CO="packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts"; RU="packages/kodac-runtime/src/evidence-router/strategy-proposal.ts"; IX="packages/kodac-runtime/src/index.ts"; TE="packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts"
+          PS={W:"added",SC:"added",CO:"added",RU:"added",IX:"modified",TE:"added"}; PATHS=sorted(PS)
+          RID=20707483; RN="RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js"; RUP="2026-08-11T21:30:21.316+03:00"; PRE="74b9d62501ffce8f2cb053e3b72827de11c203d9"
+          PB={"packages/kodac-runtime/src/evidence-router/contracts.ts":"dc29c4ce85340312f28b67604cac01c1d775e370","packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts":"4ee85d8c0163d5318d0d900d733ba75afa814f7c","packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts":"6411a42e6fc0074e60edc10eaa27e00b3b197fca","packages/kodac-runtime/src/evidence-router/outcome-memory.ts":"9f9d0769c5ffab2d482574ea59418144d6dc49a6"}
+          H={"Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions":"edf519e39311133151b5a13830ca1b6b26ec375a8358158b7589d051918a27ca","Sync locked validation environment outside the checkout":"288ae30bbb3ccc1c71de1a69bbc5d0f899237dadd71b7c66dba026edcf6323a3","Validate R5 schema/runtime parity and closed vocabularies":"e6760c1cfe96344a4429ba1f8a9e4deaab4fb3025c29646a96bad9346eb95082","Recompute R5 fixture strategy, trial-set, and qualification corpus identities":"1a53aaa2bd8335c26dcde5a0c489b41731ab5a8e1f69dfe08edc7617161b6e41","Prove forbidden R5 authority surfaces and live ruleset":"ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c","Install integrity-locked TypeScript validation tooling outside the checkout":"4b8ee02309647b7e4f023e874574f5c971573a4a8336daa7b972f7bf3ec0b125","Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates":"046f5bd1ec60241cd04d92b911ebe27f52fd659f6cf8aad353532b6a01f053c9","Remove ephemeral TypeScript validation tooling":"7d7717cbae28f3c319b74d96168c76464c8e5064e8aca1827b919081cafbe748","Attest checkout unchanged after K6-R5 validation":"1d9d18c40564400c5655731ecbc792fae7261d6c66ddf4779bb678a3afbb93e5"}
+          def q(c,e):
+           if not c: raise SystemExit("K6-R5 trusted qualification failed: "+e)
+          def env(n): v=os.environ.get(n,""); q(v,"E-env"); return v
+          def pairs(x):
+           d={}
+           for k,v in x:q(k not in d,"E-json-dup");d[k]=v
+           return d
+          def api(p):
+           q(p.startswith("/repos/TheHalfMoon/Kodac/"),"E-api-boundary")
+           x=urllib.request.Request("https://api.github.com"+p,headers={"Accept":"application/vnd.github+json","Authorization":"Bearer "+TOK,"X-GitHub-Api-Version":"2022-11-28","User-Agent":"kodac-k6-r5-trusted-qualification"})
+           try:
+            with urllib.request.urlopen(x,timeout=20) as r:b=r.read(8_000_001)
+           except Exception: raise SystemExit("K6-R5 trusted qualification failed: E-api")
+           q(len(b)<=8_000_000,"E-api-size")
+           try:v=json.loads(b,object_pairs_hook=pairs)
+           except Exception: raise SystemExit("K6-R5 trusted qualification failed: E-json")
+           q(isinstance(v,dict),"E-api-shape");return v
+          def cmp(a,b): q(S.fullmatch(a) and S.fullmatch(b),"E-sha");return api(f"/repos/{R}/compare/{a}...{b}")
+          def file(ref,p):
+           q(S.fullmatch(ref),"E-file-sha");v=api(f"/repos/{R}/contents/{urllib.parse.quote(p,safe='/')}?ref={ref}");h=v.get("sha");q(isinstance(h,str) and S.fullmatch(h),"E-blob");q(v.get("encoding")=="base64" and isinstance(v.get("content"),str),"E-content")
+           try:b=base64.b64decode(v["content"],validate=False);t=b.decode("utf-8","strict")
+           except Exception: raise SystemExit("K6-R5 trusted qualification failed: E-decode")
+           q(len(b)<=2_000_000,"E-file-size");return t,h
+          def instant(x):
+           q(isinstance(x,str) and x,"E-time");x=x[:-1]+"+00:00" if x.endswith("Z") else x
+           try:d=datetime.fromisoformat(x)
+           except ValueError:raise SystemExit("K6-R5 trusted qualification failed: E-time")
+           q(d.tzinfo is not None and d.utcoffset() is not None,"E-timezone");return d.astimezone(timezone.utc)
+          def merge(pr,base,head,msha,tree,path,status):
+           p=api(f"/repos/{R}/pulls/{pr}");q(p.get("merged") is True and p.get("base",{}).get("sha")==base and p.get("head",{}).get("sha")==head and p.get("head",{}).get("repo",{}).get("full_name")==R and p.get("changed_files")==1 and p.get("merge_commit_sha")==msha,"E-pr")
+           m=api(f"/repos/{R}/git/commits/{msha}");pa=m.get("parents",[]);ve=m.get("verification",{});q(m.get("tree",{}).get("sha")==tree and ve.get("verified") is True and ve.get("reason")=="valid" and len(pa)==2 and pa[0].get("sha")==base and pa[1].get("sha")==head,"E-merge")
+           h=api(f"/repos/{R}/git/commits/{head}");q(m.get("tree",{}).get("sha")==h.get("tree",{}).get("sha"),"E-tree")
+           c=cmp(base,head);fs=c.get("files",[]);q(c.get("merge_base_commit",{}).get("sha")==base and c.get("behind_by")==0 and c.get("ahead_by",0)>0 and len(fs)==1 and fs[0].get("filename")==path and fs[0].get("status")==status and fs[0].get("previous_filename") in (None,""),"E-scope");return p,m,fs[0]
+          def expr(x):return "$"+"{{ "+x+" }}"
+          # Exact self YAML semantic prefix; this is reconstructed at runtime to avoid direct expressions inside the heredoc.
+          SELF=("name: k6-r5-trusted-qualification\n\non:\n  pull_request_target:\n    branches:\n      - main\n    types: [opened, reopened, synchronize, ready_for_review]\n    paths:\n"+"".join(f'      - "{p}"\n' for p in PATHS)+"\npermissions:\n  contents: read\n\njobs:\n  trusted-r5-qualification:\n    name: k6-r5-trusted-qualification\n    runs-on: ubuntu-latest\n    timeout-minutes: 15\n    env:\n"+f"      EVENT_REPOSITORY: {expr('github.repository')}\n      EVENT_PR_NUMBER: {expr('github.event.number')}\n      EVENT_BASE_REF: {expr('github.event.pull_request.base.ref')}\n      EVENT_BASE_SHA: {expr('github.sha')}\n      EVENT_HEAD_REF: {expr('github.event.pull_request.head.ref')}\n      EVENT_HEAD_SHA: {expr('github.event.pull_request.head.sha')}\n      EVENT_HEAD_REPOSITORY: {expr('github.event.pull_request.head.repo.full_name')}\n      EVENT_WORKFLOW_SHA: {expr('github.workflow_sha')}\n      READ_ONLY_GITHUB_TOKEN: {expr('github.token')}\n\n    steps:\n      - name: Inspect exact R5 candidate as untrusted data\n        shell: bash\n        run: |\n")
+          # Event boundary
+          repo=env("EVENT_REPOSITORY"); n=env("EVENT_PR_NUMBER"); br=env("EVENT_BASE_REF"); bs=env("EVENT_BASE_SHA"); hr=env("EVENT_HEAD_REF"); hs=env("EVENT_HEAD_SHA"); hrepo=env("EVENT_HEAD_REPOSITORY"); ws=env("EVENT_WORKFLOW_SHA")
+          q(TOK and repo==R and n.isdigit() and int(n)>0 and br=="main" and hr==BR and hrepo==R and S.fullmatch(bs) and S.fullmatch(hs) and bs!=hs and ws==bs,"E-event")
+          p=api(f"/repos/{R}/pulls/{int(n)}");q(p.get("state")=="open" and p.get("draft") is False and p.get("head",{}).get("sha")==hs and p.get("head",{}).get("ref")==BR and p.get("base",{}).get("ref")=="main" and api(f"/repos/{R}/git/ref/heads/main").get("object",{}).get("sha")==bs,"E-live-pr")
+          # Immutable authority roots and bounded base evolution.
+          am=api(f"/repos/{R}/git/commits/{A}");q(am.get("tree",{}).get("sha")==AT and am.get("verification",{}).get("verified") is True and am.get("verification",{}).get("reason")=="valid" and file(A,AP)[1]==AB and file(bs,AP)[1]==AB,"E-auth")
+          _,_,sf=merge(SA,A,SH,SM,ST,TW,"added");q(file(SM,TW)[1]==SB and file(SH,TW)[1]==SB and sf.get("sha")==SB,"E-stage-a")
+          _,_,rf=merge(RA,SM,RH,RM,RT,RP,"added");q(file(RM,RP)[1]==RB and file(bs,RP)[1]==RB and file(RM,TW)[1]==SB,"E-repair-auth")
+          tr=api(f"/repos/{R}/pulls/{TR}");th=tr.get("head",{}).get("sha");q(tr.get("merged") is True and tr.get("base",{}).get("sha")==RM and tr.get("head",{}).get("ref")==TRF and tr.get("head",{}).get("repo",{}).get("full_name")==R and tr.get("changed_files")==1 and tr.get("merge_commit_sha")==bs and isinstance(th,str) and S.fullmatch(th),"E-repair-pr")
+          tm=api(f"/repos/{R}/git/commits/{bs}");pa=tm.get("parents",[]);q(tm.get("verification",{}).get("verified") is True and tm.get("verification",{}).get("reason")=="valid" and len(pa)==2 and pa[0].get("sha")==RM and pa[1].get("sha")==th and tm.get("tree",{}).get("sha")==api(f"/repos/{R}/git/commits/{th}").get("tree",{}).get("sha"),"E-repair-merge")
+          c=cmp(RM,th);fs=c.get("files",[]);q(c.get("merge_base_commit",{}).get("sha")==RM and c.get("behind_by")==0 and c.get("ahead_by",0)>0 and len(fs)==1 and fs[0].get("filename")==TW and fs[0].get("status")=="modified" and fs[0].get("previous_filename") in (None,""),"E-repair-scope")
+          txt,tb=file(bs,TW);ht,hb=file(th,TW);q(txt==ht and tb==hb and fs[0].get("sha")==tb and tb!=SB,"E-repair-blob")
+          # Exact repaired trusted workflow semantic allowlist.
+          q(txt.startswith(SELF+"          set -euo pipefail\n          python3 - <<'PYCODE'\n") and txt.count("python3 - <<'PYCODE'\n")==1 and txt.endswith("          PYCODE\n") and txt.count("pull_request_target:\n")==1 and txt.count("permissions:\n")==1 and txt.count("jobs:\n")==1,"E-self-prefix")
+          q(re.findall(r"(?m)^([A-Za-z][A-Za-z0-9_-]*):",txt)==["name","on","permissions","jobs"],"E-self-top")
+          q(re.findall(r"(?m)^  ([A-Za-z0-9_-]+):\s*$",txt.split("jobs:\n",1)[1])==["trusted-r5-qualification"],"E-self-job")
+          step_tail=txt.split("    steps:\n",1)[1];q(len(re.findall(r"(?m)^      - ",step_tail))==1,"E-self-step")
+          body=txt.split("python3 - <<'PYCODE'\n",1)[1].rsplit("          PYCODE\n",1)[0];src="\n".join(x[10:] if x.startswith("          ") else x for x in body.splitlines())
+          q(("$"+"{{") not in src,"E-self-expression")
+          tree=ast.parse(src)
+          allow={"ast","base64","hashlib","json","os","re","urllib.error","urllib.parse","urllib.request"}
+          for z in ast.walk(tree):
+           if isinstance(z,ast.Import):q(all(x.name in allow for x in z.names),"E-self-import")
+           if isinstance(z,ast.ImportFrom):q(z.module in {"__future__","datetime"},"E-self-from")
+           if isinstance(z,ast.Call) and isinstance(z.func,ast.Name):q(z.func.id not in {"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input"},"E-self-exec")
+           if isinstance(z,ast.Call) and isinstance(z.func,ast.Attribute) and isinstance(z.func.value,ast.Name) and z.func.value.id=="os":q(not (z.func.attr in {"system","popen"} or z.func.attr.startswith("spawn") or z.func.attr.startswith("exec")),"E-self-process")
+           if isinstance(z,ast.Attribute):q(not z.attr.startswith("__"),"E-self-dunder")
+          # Predecessor and exact six-path candidate.
+          for x,h in PB.items():q(file(bs,x)[1]==h,"E-predecessor")
+          q(file(bs,IX)[1]==PRE,"E-index")
+          c=cmp(bs,hs);fs=c.get("files",[]);q(c.get("merge_base_commit",{}).get("sha")==bs and c.get("behind_by")==0 and c.get("ahead_by",0)>0 and len(fs)==6,"E-candidate-scope")
+          seen={}
+          for x in fs:
+           pth=x.get("filename");q(pth in PS and pth not in seen and x.get("status")==PS[pth] and x.get("previous_filename") in (None,""),"E-path");seen[pth]=x.get("sha")
+          q(sorted(seen)==PATHS,"E-paths")
+          # Candidate Stage B workflow structure + exact run fingerprints.
+          cw,cb=file(hs,W);q(cb==seen[W],"E-candidate-blob")
+          PREAM="name: k6-r5-bounded-strategy-qualification\n\non:\n  pull_request:\n    branches:\n      - main\n    paths:\n"+"".join(f'      - "{p}"\n' for p in PATHS)+"\npermissions:\n  contents: read\n\njobs:\n  bounded-strategy-qualification:\n"
+          q(cw.startswith(PREAM) and re.findall(r"(?m)^([A-Za-z][A-Za-z0-9_-]*):",cw)==["name","on","permissions","jobs"],"E-cw-prefix")
+          for bad in ["pull_request_target:","workflow_dispatch:","schedule:","contents: write","actions: write","pull-requests: write","id-token:","continue-on-error:","|| true","GITHUB_ENV","GITHUB_PATH"]:q(bad not in cw,"E-cw-forbidden")
+          job=cw.split("  bounded-strategy-qualification:\n",1)[1];q([x for x in job.splitlines() if re.match(r"^    \\S",x)]==["    name: k6-r5-bounded-strategy-qualification","    runs-on: ubuntu-latest","    timeout-minutes: 30","    env:","    steps:"],"E-cw-job")
+          em=re.search(r"(?ms)^    env:\n(.*?)^    steps:\n",cw);q(em is not None,"E-cw-env")
+          el={x.strip() for x in em.group(1).splitlines() if x.strip()};static={f'K6_R5_AUTHORIZATION_MERGE_SHA: "{A}"',f'K6_R5_AUTHORIZATION_MERGE_TREE: "{AT}"',f'K6_R5_AUTHORIZATION_DOCUMENT_BLOB: "{AB}"',f'K6_R5_IMPLEMENTATION_BRANCH: "{BR}"',f'PRE_R5_INDEX_BLOB: "{PRE}"','PYTHONDONTWRITEBYTECODE: "1"',f'R1_CONTRACTS_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/contracts.ts"]}"',f'R2_ROUTE_PLAN_CONTRACTS_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts"]}"',f'R4_OUTCOME_MEMORY_CONTRACTS_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"]}"',f'R4_OUTCOME_MEMORY_RUNTIME_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/outcome-memory.ts"]}"',f'K6_R5_TRUSTED_WORKFLOW_BLOB: "{tb}"'};q(el==static,"E-cw-env-set")
+          # Extract named run blocks and exact action pins.
+          lines=cw.splitlines();sm=[i for i,x in enumerate(lines) if x=="    steps:"];q(len(sm)==1,"E-cw-steps");pos=[i for i in range(sm[0]+1,len(lines)) if re.match(r"^      - ",lines[i])];pos.append(len(lines));runs={};acts=[]
+          for i,j in zip(pos,pos[1:]):
+           raw=lines[i:j];head=raw[0].strip()
+           if head.startswith("- uses:"):acts.append([x.strip() for x in raw if x.strip()]);continue
+           q(head.startswith("- name: "),"E-cw-step");name=head[8:];rp=[k for k,x in enumerate(raw) if x=="        run: |"];q(len(rp)==1 and name in H,"E-cw-run");b=[x[10:] if x.startswith("          ") else "" for x in raw[rp[0]+1:]]
+           while b and b[-1]=="":b.pop()
+           runs[name]="\n".join(b)+"\n"
+          q(list(runs)==list(H),"E-cw-run-order")
+          for name,h in H.items():q(hashlib.sha256(runs[name].encode()).hexdigest()==h,"E-cw-run-hash")
+          q(acts==[["- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4","with:","ref: "+expr("github.event.pull_request.head.sha"),"persist-credentials: false","fetch-depth: 0"],["- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4","with:",'node-version: "24.18.0"'],["- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6","with:",'version: "0.12.1"',"enable-cache: false"]],"E-cw-actions")
+          # Live ruleset: visible fields exact; missing bypass metadata is not fabricated.
+          rs=api(f"/repos/{R}/rulesets/{RID}");q(rs.get("id")==RID and ("node_id" not in rs or rs.get("node_id")==RN) and instant(rs.get("updated_at"))==instant(RUP) and rs.get("name")=="Kodac canonical main protection v1" and rs.get("target")=="branch" and rs.get("enforcement")=="active" and rs.get("conditions",{}).get("ref_name")=={"exclude":[],"include":["refs/heads/main"]},"E-ruleset")
+          if "source_type" in rs:q(rs.get("source_type")=="Repository","E-ruleset-source")
+          if "source" in rs:q(rs.get("source")==R,"E-ruleset-source")
+          bv="bypass_actors" in rs;uv="current_user_can_bypass" in rs
+          if bv:q(rs.get("bypass_actors")==[],"E-bypass")
+          if uv:q(rs.get("current_user_can_bypass")=="never","E-bypass")
+          rules=rs.get("rules");q(isinstance(rules,list) and [x.get("type") for x in rules]==["deletion","non_fast_forward","pull_request","required_status_checks"],"E-rules")
+          pr=rules[2].get("parameters",{});q(pr=={"required_approving_review_count":0,"dismiss_stale_reviews_on_push":False,"required_reviewers":[],"require_code_owner_review":False,"require_last_push_approval":False,"require_extra_approval_for_unattributed_changes":True,"required_review_thread_resolution":True,"allowed_merge_methods":["merge","squash","rebase"]},"E-pr-rule")
+          st=rules[3].get("parameters",{});q(st.get("strict_required_status_checks_policy") is True and st.get("do_not_enforce_on_create") is False and st.get("required_status_checks")==[{"context":"provenance","integration_id":15368},{"context":"legacy-tests","integration_id":15368},{"context":"k2-runtime-gate","integration_id":15368}],"E-status-rule")
+          print(json.dumps({"version":"kodac-k6-r5-trusted-inspector-proof-v2","proof_model":"split-workflow-owner-v1","base_sha":bs,"head_sha":hs,"trusted_repair_pr":TR,"trusted_repair_head_sha":th,"trusted_workflow_blob":tb,"candidate_workflow_blob":cb,"bypass_state_visibility":"AVAILABLE" if bv and uv else "UNAVAILABLE_UNDER_ACTIONS_TOKEN","external_owner_no_bypass_proof_required":True},sort_keys=True,separators=(",",":")))
           print("K6-R5 trusted workflow-visible qualification: PASS; owner-level no-bypass proof remains mandatory")
-          PY
+          PYCODE
