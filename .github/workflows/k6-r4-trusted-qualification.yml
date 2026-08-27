@@ -67,15 +67,7 @@ jobs:
           R4_RUNTIME_PATH = "packages/kodac-runtime/src/evidence-router/outcome-memory.ts"
           R4_INDEX_PATH = "packages/kodac-runtime/src/index.ts"
           R4_TEST_PATH = "packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts"
-          EXPECTED_PATHS = sorted([
-              R4_WORKFLOW_PATH,
-              R4_SCHEMA_PATH,
-              R4_CONTRACTS_PATH,
-              R4_RUNTIME_PATH,
-              R4_INDEX_PATH,
-              R4_TEST_PATH,
-          ])
-          EXPECTED_FILE_STATUS = {
+          EXPECTED_PATH_STATUS = {
               R4_WORKFLOW_PATH: "added",
               R4_SCHEMA_PATH: "added",
               R4_CONTRACTS_PATH: "added",
@@ -83,19 +75,9 @@ jobs:
               R4_INDEX_PATH: "modified",
               R4_TEST_PATH: "added",
           }
-          NON_WORKFLOW_R4_PATHS = sorted([
-              R4_SCHEMA_PATH,
-              R4_CONTRACTS_PATH,
-              R4_RUNTIME_PATH,
-              R4_INDEX_PATH,
-              R4_TEST_PATH,
-          ])
-          EXPECTED_ACTION_LINES = [
-              "- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4",
-              "- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4",
-              "- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6",
-          ]
-          MIN_STEP_NAMES = [
+          EXPECTED_PATHS = sorted(EXPECTED_PATH_STATUS)
+          NON_WORKFLOW_R4_PATHS = sorted(path for path in EXPECTED_PATHS if path != R4_WORKFLOW_PATH)
+          NAMED_STEPS = [
               "Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions",
               "Sync locked validation environment outside the checkout",
               "Validate R4 schema registration, predecessor references, and runtime parity",
@@ -105,19 +87,52 @@ jobs:
               "Remove ephemeral TypeScript validation tooling",
               "Attest checkout unchanged after K6-R4 validation",
           ]
-          MIN_EXECUTABLE_LINES = [
-              'uv sync --frozen --dev',
+          ACTION_BLOCKS = [
+              [
+                  "- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4",
+                  "with:",
+                  "ref: ${{ github.event.pull_request.head.sha }}",
+                  "persist-credentials: false",
+                  "fetch-depth: 0",
+              ],
+              [
+                  "- uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4",
+                  "with:",
+                  'node-version: "24.18.0"',
+              ],
+              [
+                  "- uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6",
+                  "with:",
+                  'version: "0.12.1"',
+                  "enable-cache: false",
+              ],
+          ]
+          EXPECTED_STEP_HEADERS = [
+              ACTION_BLOCKS[0][0],
+              f"- name: {NAMED_STEPS[0]}",
+              ACTION_BLOCKS[1][0],
+              ACTION_BLOCKS[2][0],
+              f"- name: {NAMED_STEPS[1]}",
+              f"- name: {NAMED_STEPS[2]}",
+              f"- name: {NAMED_STEPS[3]}",
+              f"- name: {NAMED_STEPS[4]}",
+              f"- name: {NAMED_STEPS[5]}",
+              f"- name: {NAMED_STEPS[6]}",
+              f"- name: {NAMED_STEPS[7]}",
+          ]
+          REQUIRED_EXECUTABLE_LINES = [
+              "uv sync --frozen --dev",
               'node "$RUNNER_TEMP/k6-r4-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k6-r4-typescript/node_modules/@types"',
-              'node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts',
-              'node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory.ts',
-              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts',
-              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r3-route-outcome-linkage.test.ts',
-              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts',
-              'node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts',
-              '(cd packages/kodac-runtime && npm test)',
-              'uv run --frozen --no-sync pytest -p no:cacheprovider',
-              'uv run --frozen --no-sync ruff check --no-cache .',
-              'uv run --frozen --no-sync python tools/validate_provenance.py',
+              "node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts",
+              "node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/outcome-memory.ts",
+              "node --experimental-strip-types --test packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts",
+              "node --experimental-strip-types --test packages/kodac-runtime/test/k6-r3-route-outcome-linkage.test.ts",
+              "node --experimental-strip-types --test packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts",
+              "node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts",
+              "(cd packages/kodac-runtime && npm test)",
+              "uv run --frozen --no-sync pytest -p no:cacheprovider",
+              "uv run --frozen --no-sync ruff check --no-cache .",
+              "uv run --frozen --no-sync python tools/validate_provenance.py",
           ]
           MANIFEST_BEGIN = "K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_BEGIN"
           MANIFEST_END = "K6_R4_TRUSTED_INSPECTOR_MANIFEST_JSON_END"
@@ -137,74 +152,92 @@ jobs:
               require(bool(value), f"missing event field {name}")
               return value
 
+          def unique_object(pairs: list[tuple[str, object]]) -> dict:
+              out: dict[str, object] = {}
+              for key, value in pairs:
+                  if key in out:
+                      fail("JSON object contains duplicate keys")
+                  out[key] = value
+              return out
+
+          def parse_json(raw: bytes, label: str) -> object:
+              try:
+                  return json.loads(raw, object_pairs_hook=unique_object)
+              except SystemExit:
+                  raise
+              except Exception:
+                  fail(f"{label} is not valid JSON")
+
           def api_json(path: str) -> dict:
-              url = "https://api.github.com" + path
-              headers = {
-                  "Accept": "application/vnd.github+json",
-                  "X-GitHub-Api-Version": "2022-11-28",
-                  "User-Agent": "kodac-k6-r4-trusted-qualification",
-              }
-              if TOKEN:
-                  headers["Authorization"] = f"Bearer {TOKEN}"
-              request = urllib.request.Request(url, headers=headers, method="GET")
+              require(path.startswith("/repos/TheHalfMoon/Kodac/"), "GitHub API path escaped repository boundary")
+              request = urllib.request.Request(
+                  "https://api.github.com" + path,
+                  headers={
+                      "Accept": "application/vnd.github+json",
+                      "Authorization": f"Bearer {TOKEN}",
+                      "X-GitHub-Api-Version": "2022-11-28",
+                      "User-Agent": "kodac-k6-r4-trusted-qualification",
+                  },
+                  method="GET",
+              )
               try:
                   with urllib.request.urlopen(request, timeout=20) as response:
                       payload = response.read(8_000_001)
               except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError):
                   fail("read-only GitHub API request failed")
               require(len(payload) <= 8_000_000, "GitHub API response exceeds inspector bound")
-              try:
-                  value = json.loads(payload)
-              except Exception:
-                  fail("GitHub API response is not valid JSON")
+              value = parse_json(payload, "GitHub API response")
               require(isinstance(value, dict), "GitHub API response has unexpected shape")
               return value
+
+          def compare(base: str, head: str) -> dict:
+              require(SHA_RE.fullmatch(base) is not None and SHA_RE.fullmatch(head) is not None, "compare refs are not immutable SHAs")
+              return api_json(f"/repos/{REPOSITORY}/compare/{base}...{head}")
 
           def file_at(ref: str, path: str) -> tuple[str, str]:
               require(SHA_RE.fullmatch(ref) is not None, "file ref is not an immutable SHA")
               quoted = urllib.parse.quote(path, safe="/")
               value = api_json(f"/repos/{REPOSITORY}/contents/{quoted}?ref={ref}")
               blob = value.get("sha")
-              encoding = value.get("encoding")
-              content = value.get("content")
               require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "file blob identity unavailable")
-              require(encoding == "base64" and isinstance(content, str), "file content is not inline base64")
+              require(value.get("encoding") == "base64" and isinstance(value.get("content"), str), "file content is not inline base64")
               try:
-                  raw = base64.b64decode(content, validate=False)
+                  raw = base64.b64decode(value["content"], validate=False)
               except Exception:
                   fail("file content base64 decode failed")
               require(len(raw) <= 2_000_000, "candidate file exceeds inspector bound")
               try:
-                  text = raw.decode("utf-8", errors="strict")
+                  return raw.decode("utf-8", errors="strict"), blob
               except UnicodeDecodeError:
                   fail("candidate file is not UTF-8")
-              return text, blob
-
-          def unique_json_object(pairs: list[tuple[str, object]]) -> dict:
-              result: dict[str, object] = {}
-              for key, value in pairs:
-                  if key in result:
-                      raise ValueError(f"duplicate JSON key: {key}")
-                  result[key] = value
-              return result
 
           def extract_manifest(text: str) -> dict:
               require(text.count(MANIFEST_BEGIN) == 1 and text.count(MANIFEST_END) == 1, "replacement authorization manifest markers invalid")
               start = text.index(MANIFEST_BEGIN) + len(MANIFEST_BEGIN)
               end = text.index(MANIFEST_END, start)
-              payload = text[start:end].strip()
+              payload = text[start:end].strip().encode("utf-8")
               require(0 < len(payload) <= 100_000, "replacement authorization manifest size invalid")
-              try:
-                  manifest = json.loads(payload, object_pairs_hook=unique_json_object)
-              except Exception:
-                  fail("replacement authorization manifest is not valid unique-key JSON")
+              manifest = parse_json(payload, "replacement authorization manifest")
               require(isinstance(manifest, dict), "replacement authorization manifest shape invalid")
-              require(manifest.get("version") == "kodac-k6-r4-trusted-inspector-manifest-v1", "replacement authorization manifest version invalid")
+              expected_keys = {
+                  "version",
+                  "authorized_pr",
+                  "trusted_workflow_path",
+                  "trusted_workflow_merge_sha",
+                  "trusted_workflow_blob",
+                  "required_candidate_blobs",
+                  "required_named_step_sha256",
+                  "required_workflow_fragments",
+                  "forbidden_workflow_fragments",
+              }
+              require(set(manifest) == expected_keys, "replacement authorization manifest key set invalid")
+              require(manifest["version"] == "kodac-k6-r4-trusted-inspector-manifest-v2", "replacement authorization manifest version invalid")
+              require(manifest["authorized_pr"] == AUTHORIZED_PR, "replacement authorization PR binding invalid")
+              require(manifest["trusted_workflow_path"] == TRUSTED_WORKFLOW_PATH, "replacement authorization workflow path invalid")
               return manifest
 
-          def safe_string_list(value: object, label: str, *, minimum: int = 0, maximum: int = 256) -> list[str]:
-              require(isinstance(value, list), f"{label} is not a list")
-              require(minimum <= len(value) <= maximum, f"{label} length invalid")
+          def string_list(value: object, label: str, minimum: int = 0, maximum: int = 256) -> list[str]:
+              require(isinstance(value, list) and minimum <= len(value) <= maximum, f"{label} length invalid")
               out: list[str] = []
               for item in value:
                   require(isinstance(item, str) and 0 < len(item) <= 4096, f"{label} contains invalid string")
@@ -212,208 +245,184 @@ jobs:
               require(len(set(out)) == len(out), f"{label} contains duplicates")
               return out
 
-          def named_run_blocks(text: str) -> tuple[list[str], dict[str, str], list[str], list[str]]:
-              lines = text.splitlines()
-              step_names: list[str] = []
-              blocks: dict[str, str] = {}
-              action_lines: list[str] = []
-              step_if_lines: list[str] = []
-              i = 0
-              while i < len(lines):
-                  line = lines[i]
-                  if re.match(r"^      - uses:\s*", line):
-                      action_lines.append(line.strip())
-                  if re.match(r"^        if:\s*", line):
-                      step_if_lines.append(line.strip())
-                  match = re.match(r"^      - name: (.+)$", line)
-                  if not match:
-                      i += 1
+          def step_blocks(workflow: str) -> tuple[list[str], dict[str, str], list[list[str]]]:
+              lines = workflow.splitlines()
+              steps_positions = [i for i, line in enumerate(lines) if line == "    steps:"]
+              require(len(steps_positions) == 1, "candidate workflow steps section count drift")
+              start = steps_positions[0] + 1
+              item_positions = [i for i in range(start, len(lines)) if re.match(r"^      - ", lines[i])]
+              require(len(item_positions) == len(EXPECTED_STEP_HEADERS), "candidate workflow top-level step count drift")
+              headers = [lines[i].strip() for i in item_positions]
+              require(headers == EXPECTED_STEP_HEADERS, "candidate workflow top-level step sequence drift")
+              item_positions.append(len(lines))
+              named: dict[str, str] = {}
+              actions: list[list[str]] = []
+              for n in range(len(item_positions) - 1):
+                  i, j = item_positions[n], item_positions[n + 1]
+                  raw_block = lines[i:j]
+                  header = raw_block[0].strip()
+                  normalized = [line.strip() for line in raw_block if line.strip()]
+                  if header.startswith("- uses:"):
+                      actions.append(normalized)
                       continue
-                  name = match.group(1)
-                  step_names.append(name)
-                  j = i + 1
-                  run_at = None
-                  while j < len(lines) and not re.match(r"^      - (?:name:|uses:)", lines[j]):
-                      if lines[j] == "        run: |":
-                          run_at = j
-                      j += 1
-                  require(run_at is not None, "named validation step lacks literal run block")
-                  body: list[str] = []
-                  k = run_at + 1
-                  while k < j:
-                      current = lines[k]
-                      if current and not current.startswith("          "):
-                          fail("run block indentation is not canonical")
-                      body.append(current[10:] if current else "")
-                      k += 1
-                  blocks[name] = "\n".join(body) + "\n"
-                  i = j
-              return step_names, blocks, action_lines, step_if_lines
-
-          def require_descendant(ancestor: str, descendant: str, label: str, *, require_ahead: bool = False) -> dict:
-              require(SHA_RE.fullmatch(ancestor) is not None and SHA_RE.fullmatch(descendant) is not None, f"{label} revision invalid")
-              relation = api_json(f"/repos/{REPOSITORY}/compare/{ancestor}...{descendant}")
-              require(relation.get("base_commit", {}).get("sha") == ancestor, f"{label} base mismatch")
-              require(relation.get("merge_base_commit", {}).get("sha") == ancestor, f"{label} ancestry mismatch")
-              require(relation.get("behind_by") == 0, f"{label} descendant is behind ancestor")
-              if require_ahead:
-                  require(relation.get("ahead_by", 0) > 0, f"{label} descendant must be ahead")
-              return relation
+                  require(header.startswith("- name: "), "candidate workflow contains unrecognized step form")
+                  name = header[len("- name: "):]
+                  require(name in NAMED_STEPS and name not in named, "candidate workflow named-step identity drift")
+                  require(sum(1 for line in raw_block if line == "        shell: bash") == 1, "candidate named step shell drift")
+                  require(sum(1 for line in raw_block if line == "        run: |") == 1, "candidate named step run-block drift")
+                  block_text = "\n".join(raw_block) + "\n"
+                  named[name] = block_text
+              require(list(named) == NAMED_STEPS, "candidate workflow named-step sequence drift")
+              require(actions == ACTION_BLOCKS, "candidate workflow action metadata drift")
+              return headers, named, actions
 
           event_repo = env("EVENT_REPOSITORY")
-          event_pr_raw = env("EVENT_PR_NUMBER")
+          event_pr = env("EVENT_PR_NUMBER")
           event_base_ref = env("EVENT_BASE_REF")
           event_base_sha = env("EVENT_BASE_SHA")
           event_head_ref = env("EVENT_HEAD_REF")
           event_head_sha = env("EVENT_HEAD_SHA")
           event_head_repo = env("EVENT_HEAD_REPOSITORY")
+          require(bool(TOKEN), "read-only GitHub token unavailable")
           require(event_repo == REPOSITORY, "repository identity mismatch")
-          require(event_pr_raw == str(AUTHORIZED_PR), "pull request identity mismatch")
+          require(event_pr == str(AUTHORIZED_PR), "pull request identity mismatch")
           require(event_base_ref == "main", "base ref mismatch")
           require(event_head_ref == AUTHORIZED_HEAD_REF, "head branch mismatch")
           require(event_head_repo == REPOSITORY, "head repository mismatch")
-          require(SHA_RE.fullmatch(event_base_sha) is not None, "event base SHA invalid")
-          require(SHA_RE.fullmatch(event_head_sha) is not None, "event head SHA invalid")
+          require(SHA_RE.fullmatch(event_base_sha) is not None and SHA_RE.fullmatch(event_head_sha) is not None, "event SHA invalid")
           require(event_base_sha != event_head_sha, "event revisions unexpectedly identical")
 
           current_pr = api_json(f"/repos/{REPOSITORY}/pulls/{AUTHORIZED_PR}")
-          require(current_pr.get("number") == AUTHORIZED_PR, "current PR identity mismatch")
-          require(current_pr.get("state") == "open", "authorized PR is not open")
-          require(current_pr.get("draft") is False, "authorized PR is draft")
+          require(current_pr.get("number") == AUTHORIZED_PR and current_pr.get("state") == "open" and current_pr.get("draft") is False, "authorized PR state drift")
           require(current_pr.get("head", {}).get("sha") == event_head_sha, "authorized PR moved after event")
-          require(current_pr.get("head", {}).get("ref") == AUTHORIZED_HEAD_REF, "current PR head branch mismatch")
-          require(current_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "current PR head repository mismatch")
-          require(current_pr.get("base", {}).get("ref") == "main", "current PR base ref mismatch")
-          require(current_pr.get("base", {}).get("sha") == event_base_sha, "authorized PR base moved after event")
-
+          require(current_pr.get("head", {}).get("ref") == AUTHORIZED_HEAD_REF, "authorized PR head branch drift")
+          require(current_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "authorized PR head repository drift")
+          require(current_pr.get("base", {}).get("ref") == "main" and current_pr.get("base", {}).get("sha") == event_base_sha, "authorized PR base moved after event")
           main_ref = api_json(f"/repos/{REPOSITORY}/git/ref/heads/main")
           require(main_ref.get("object", {}).get("sha") == event_base_sha, "protected main moved after event")
-          require_descendant(HARDENING_MERGE_SHA, event_base_sha, "hardening-to-event-base lineage", require_ahead=True)
 
-          comparison = api_json(f"/repos/{REPOSITORY}/compare/{event_base_sha}...{event_head_sha}")
-          require(comparison.get("base_commit", {}).get("sha") == event_base_sha, "compare base mismatch")
-          require(comparison.get("merge_base_commit", {}).get("sha") == event_base_sha, "candidate is not based on exact protected base")
-          require(comparison.get("behind_by") == 0, "candidate is behind protected base")
-          require(comparison.get("ahead_by", 0) > 0, "candidate has no commits over base")
-          files = comparison.get("files")
-          require(isinstance(files, list) and len(files) == len(EXPECTED_PATHS), "compare file list unavailable or wrong length")
-          compare_blob: dict[str, str] = {}
-          for item in files:
-              require(isinstance(item, dict), "compare file entry has unexpected shape")
-              path = item.get("filename")
-              status = item.get("status")
-              blob = item.get("sha")
-              require(isinstance(path, str) and path in EXPECTED_FILE_STATUS, "compare contains unauthorized path")
-              require(status == EXPECTED_FILE_STATUS[path], "compare file status is not authorized")
-              require(item.get("previous_filename") is None, "rename/copy source path is not authorized")
-              require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "compare file blob identity unavailable")
-              require(path not in compare_blob, "compare contains duplicate path")
-              compare_blob[path] = blob
-          require(sorted(compare_blob.keys()) == EXPECTED_PATHS, "candidate changed-file set is not the exact six-path allowlist")
-
+          hardening_lineage = compare(HARDENING_MERGE_SHA, event_base_sha)
+          require(hardening_lineage.get("merge_base_commit", {}).get("sha") == HARDENING_MERGE_SHA, "event base does not descend from hardening merge")
           hardening_text, hardening_blob = file_at(event_base_sha, HARDENING_PATH)
-          require(hardening_blob == HARDENING_BLOB, "hardening authorization blob drift")
-          require("K6-R4 Trusted Qualification Hardening Authorization" in hardening_text, "hardening authorization identity drift")
+          require(hardening_blob == HARDENING_BLOB and "K6-R4 Trusted Qualification Hardening Authorization" in hardening_text, "hardening authorization drift")
           _, original_auth_blob = file_at(event_base_sha, ORIGINAL_R4_AUTH_PATH)
-          require(original_auth_blob == ORIGINAL_R4_AUTH_BLOB, "original R4 authorization blob drift")
-          trusted_workflow_text, trusted_workflow_blob = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH)
-          require("pull_request_target:" in trusted_workflow_text, "trusted inspector base workflow identity drift")
+          require(original_auth_blob == ORIGINAL_R4_AUTH_BLOB, "original R4 authorization drift")
+
           replacement_text, replacement_blob = file_at(event_base_sha, REPLACEMENT_AUTH_PATH)
           manifest = extract_manifest(replacement_text)
+          trusted_merge = manifest["trusted_workflow_merge_sha"]
+          trusted_blob = manifest["trusted_workflow_blob"]
+          require(isinstance(trusted_merge, str) and SHA_RE.fullmatch(trusted_merge) is not None, "trusted workflow merge SHA invalid")
+          require(isinstance(trusted_blob, str) and SHA_RE.fullmatch(trusted_blob) is not None, "trusted workflow blob invalid")
+          trusted_from_hardening = compare(HARDENING_MERGE_SHA, trusted_merge)
+          require(trusted_from_hardening.get("merge_base_commit", {}).get("sha") == HARDENING_MERGE_SHA, "trusted workflow merge does not descend from hardening merge")
+          base_from_trusted = compare(trusted_merge, event_base_sha)
+          require(base_from_trusted.get("merge_base_commit", {}).get("sha") == trusted_merge, "event base does not descend from exact trusted workflow merge")
+          trusted_at_merge, trusted_blob_at_merge = file_at(trusted_merge, TRUSTED_WORKFLOW_PATH)
+          trusted_at_base, trusted_blob_at_base = file_at(event_base_sha, TRUSTED_WORKFLOW_PATH)
+          require(trusted_blob_at_merge == trusted_blob == trusted_blob_at_base, "trusted workflow blob drift")
+          require(trusted_at_merge == trusted_at_base, "trusted workflow bytes drift after canonical merge")
+          require("pull_request_target:" in trusted_at_base and "permissions:\n  contents: read" in trusted_at_base, "trusted inspector canonical boundary drift")
 
-          require(manifest.get("authorized_pr") == AUTHORIZED_PR, "replacement manifest authorized PR drift")
-          require(manifest.get("hardening_merge_sha") == HARDENING_MERGE_SHA, "replacement manifest hardening merge drift")
-          require(manifest.get("trusted_workflow_path") == TRUSTED_WORKFLOW_PATH, "replacement manifest trusted workflow path drift")
-          trusted_workflow_merge_sha = manifest.get("trusted_workflow_merge_sha")
-          expected_trusted_workflow_blob = manifest.get("trusted_workflow_blob")
-          require(isinstance(trusted_workflow_merge_sha, str) and SHA_RE.fullmatch(trusted_workflow_merge_sha) is not None, "replacement manifest trusted workflow merge invalid")
-          require(isinstance(expected_trusted_workflow_blob, str) and SHA_RE.fullmatch(expected_trusted_workflow_blob) is not None, "replacement manifest trusted workflow blob invalid")
-          require_descendant(HARDENING_MERGE_SHA, trusted_workflow_merge_sha, "hardening-to-trusted-workflow lineage", require_ahead=True)
-          require_descendant(trusted_workflow_merge_sha, event_base_sha, "trusted-workflow-to-event-base lineage", require_ahead=True)
-          canonical_trusted_workflow_text, canonical_trusted_workflow_blob = file_at(trusted_workflow_merge_sha, TRUSTED_WORKFLOW_PATH)
-          require(canonical_trusted_workflow_blob == expected_trusted_workflow_blob, "trusted workflow merge blob does not match replacement manifest")
-          require(trusted_workflow_blob == expected_trusted_workflow_blob, "event base trusted workflow blob drift")
-          require(trusted_workflow_text == canonical_trusted_workflow_text, "event base trusted workflow bytes drift")
+          comparison = compare(event_base_sha, event_head_sha)
+          require(comparison.get("base_commit", {}).get("sha") == event_base_sha, "candidate compare base mismatch")
+          require(comparison.get("merge_base_commit", {}).get("sha") == event_base_sha, "candidate is not based on exact protected base")
+          require(comparison.get("behind_by") == 0 and comparison.get("ahead_by", 0) > 0, "candidate ancestry drift")
+          files = comparison.get("files")
+          require(isinstance(files, list) and len(files) == len(EXPECTED_PATHS), "candidate compare file count invalid")
+          compare_blob: dict[str, str] = {}
+          seen: set[str] = set()
+          for item in files:
+              require(isinstance(item, dict), "candidate compare file entry invalid")
+              path = item.get("filename")
+              require(isinstance(path, str) and path in EXPECTED_PATH_STATUS and path not in seen, "candidate compare path invalid or duplicated")
+              seen.add(path)
+              require(item.get("status") == EXPECTED_PATH_STATUS[path], "candidate compare file status drift")
+              require(item.get("previous_filename") in (None, ""), "candidate rename/copy source path is prohibited")
+              blob = item.get("sha")
+              require(isinstance(blob, str) and SHA_RE.fullmatch(blob) is not None, "candidate compare blob identity invalid")
+              compare_blob[path] = blob
+          require(sorted(seen) == EXPECTED_PATHS, "candidate changed-file set is not exact six-path allowlist")
 
           candidate_text: dict[str, str] = {}
           candidate_blob: dict[str, str] = {}
           for path in EXPECTED_PATHS:
               text, blob = file_at(event_head_sha, path)
-              require(blob == compare_blob[path], "candidate file blob differs from immutable compare entry")
+              require(blob == compare_blob[path], "candidate exact-head blob disagrees with compare entry")
               candidate_text[path] = text
               candidate_blob[path] = blob
 
-          required_blobs = manifest.get("required_candidate_blobs")
-          require(isinstance(required_blobs, dict), "replacement manifest candidate blob map missing")
-          require(sorted(required_blobs.keys()) == NON_WORKFLOW_R4_PATHS, "replacement manifest candidate blob scope invalid")
+          required_blobs = manifest["required_candidate_blobs"]
+          require(isinstance(required_blobs, dict) and sorted(required_blobs) == NON_WORKFLOW_R4_PATHS, "replacement manifest candidate blob scope invalid")
           for path in NON_WORKFLOW_R4_PATHS:
               expected_blob = required_blobs[path]
               require(isinstance(expected_blob, str) and SHA_RE.fullmatch(expected_blob) is not None, "replacement manifest candidate blob invalid")
               require(candidate_blob[path] == expected_blob, "candidate non-workflow R4 blob drift")
 
           workflow = candidate_text[R4_WORKFLOW_PATH]
-          require(workflow.count("pull_request_target") == 0, "candidate-owned workflow uses privileged pull_request_target")
-          require(workflow.count("pull_request:") == 1, "candidate-owned workflow trigger drift")
-          require("permissions:\n  contents: read\n\njobs:" in workflow, "candidate-owned workflow permission boundary drift")
+          require(workflow.count("pull_request_target") == 0 and workflow.count("pull_request:") == 1, "candidate workflow trigger drift")
+          require("permissions:\n  contents: read\n\njobs:" in workflow and workflow.count("permissions:") == 1, "candidate workflow permission boundary drift")
           require(re.search(r"(?m)^    runs-on: ubuntu-latest$", workflow) is not None, "candidate workflow runner drift")
           require(re.search(r"(?m)^    timeout-minutes: 30$", workflow) is not None, "candidate workflow timeout drift")
           for forbidden in [
               "continue-on-error:", "workflow_dispatch:", "schedule:", "container:", "services:", "defaults:",
               "id-token:", "contents: write", "pull-requests: write", "actions: write", "checks: write",
               "NODE_OPTIONS:", "BASH_ENV:", "LD_PRELOAD:", "PYTHONPATH:", "working-directory:", "|| true",
+              "GITHUB_ENV", "GITHUB_PATH", "::add-path", "::set-env",
           ]:
               require(forbidden not in workflow, "candidate workflow contains prohibited control surface")
           job_headers = re.findall(r"(?m)^  ([A-Za-z0-9_-]+):\s*$", workflow.split("jobs:\n", 1)[1])
           require(job_headers == ["privacy-governed-outcome-memory"], "candidate workflow job set drift")
-          require(workflow.count("steps:") == 1, "candidate workflow steps structure drift")
-          require(workflow.count("permissions:") == 1, "candidate workflow permission block count drift")
-          require(workflow.count("shell: bash") == len(MIN_STEP_NAMES), "candidate workflow shell structure drift")
-          require("ref: ${{ github.event.pull_request.head.sha }}" in workflow, "candidate workflow exact-head checkout ref missing")
-          require("persist-credentials: false" in workflow, "candidate workflow credential persistence boundary missing")
-          require("fetch-depth: 0" in workflow, "candidate workflow full-history qualification boundary missing")
-          require('node-version: "24.18.0"' in workflow, "candidate workflow Node pin drift")
-          require('version: "0.12.1"' in workflow, "candidate workflow uv pin drift")
-          require("enable-cache: false" in workflow, "candidate workflow uv cache boundary drift")
 
-          step_names, run_blocks, action_lines, step_if_lines = named_run_blocks(workflow)
-          require(step_names == MIN_STEP_NAMES, "candidate workflow named validation step sequence drift")
-          require(action_lines == EXPECTED_ACTION_LINES, "candidate workflow immutable action sequence drift")
-          require(step_if_lines == ["if: ${{ always() }}", "if: ${{ always() }}"], "candidate workflow conditional step set drift")
-          require(re.search(r"(?m)^    if:\s*", workflow) is None, "candidate workflow job-level conditional is prohibited")
-          require(len(step_names) + len(action_lines) == 11, "candidate workflow step count drift")
+          env_match = re.search(r"(?ms)^    env:\n(.*?)^    steps:\n", workflow)
+          require(env_match is not None, "candidate workflow job env block missing")
+          env_lines = [line.strip() for line in env_match.group(1).splitlines() if line.strip()]
+          expected_static_env = {
+              'K6_R4_IMPLEMENTATION_BRANCH: "feat/k6-r4-privacy-governed-outcome-memory"',
+              'PRE_R4_INDEX_BLOB: "f5f5c68de90e23ad07af4a0489cf85e57fe46cfe"',
+              'R3_AUTHORIZATION_BLOB: "b7c68a4e963a0d082fd966b2cfdab44095d107dd"',
+              'R3_WORKFLOW_BLOB: "7fdf087cab22719485b9aadd98568f9669cf3be1"',
+              'R1_SCHEMA_BLOB: "336b5477b16f1bba5c4173874d819091cea9495d"',
+              'R3_SCHEMA_BLOB: "70125dfeead8fa18ae7bddc909d611e92b5b1873"',
+              'R1_CONTRACTS_BLOB: "dc29c4ce85340312f28b67604cac01c1d775e370"',
+              'R3_CONTRACTS_BLOB: "eb49af7282ba9c60ac2d874dd71798867e39284e"',
+              'R3_MATERIALIZER_BLOB: "7349d8d84f698aced133d5932dae910bc01deb9b"',
+              'R1_TEST_BLOB: "974137a513f16c93336d5bcda38c351326c53255"',
+              'R3_TEST_BLOB: "9f79a44d8def5f04b943f9d4e7c87deba15bf61f"',
+              'CANONICAL_PROVENANCE_VALIDATOR_BLOB: "e312be037d5a7e4d6645b7056cb948486d035848"',
+              'RULESET_TRUSTED_SNAPSHOT_UPDATED_AT: "2026-08-11T21:30:21.316+03:00"',
+              'RULESET_TRUSTED_NODE_ID: "RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js"',
+              'PYTHONDONTWRITEBYTECODE: "1"',
+          }
+          base_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{event_base_sha}")
+          base_tree = base_commit.get("tree", {}).get("sha")
+          require(isinstance(base_tree, str) and SHA_RE.fullmatch(base_tree) is not None, "event base tree identity unavailable")
+          expected_dynamic_env = {
+              f'K6_R4_AUTHORIZATION_MERGE_SHA: "{event_base_sha}"',
+              f'K6_R4_AUTHORIZATION_MERGE_TREE: "{base_tree}"',
+              f'K6_R4_AUTHORIZATION_DOCUMENT_BLOB: "{replacement_blob}"',
+          }
+          require(set(env_lines) == expected_static_env | expected_dynamic_env, "candidate workflow job env key/value set drift")
+          require(len(env_lines) == len(set(env_lines)), "candidate workflow job env contains duplicates")
+
+          _, named_blocks, _ = step_blocks(workflow)
+          step_hashes = manifest["required_named_step_sha256"]
+          require(isinstance(step_hashes, dict) and list(step_hashes) == NAMED_STEPS, "replacement manifest named-step hash scope invalid")
+          for name in NAMED_STEPS:
+              expected_hash = step_hashes[name]
+              require(isinstance(expected_hash, str) and SHA256_RE.fullmatch(expected_hash) is not None, "replacement manifest named-step hash invalid")
+              actual_hash = hashlib.sha256(named_blocks[name].encode("utf-8")).hexdigest()
+              require(actual_hash == expected_hash, "candidate protected named-step block drift")
+
           stripped_lines = {line.strip() for line in workflow.splitlines() if line.strip() and not line.lstrip().startswith("#")}
-          for required_line in MIN_EXECUTABLE_LINES:
+          for required_line in REQUIRED_EXECUTABLE_LINES:
               require(required_line in stripped_lines, "candidate workflow mandatory executable command missing")
-
-          run_hashes = manifest.get("required_run_block_sha256")
-          require(isinstance(run_hashes, dict), "replacement manifest run-block hash map missing")
-          require(sorted(run_hashes.keys()) == sorted(MIN_STEP_NAMES), "replacement manifest run-block hash scope invalid")
-          for name in MIN_STEP_NAMES:
-              expected_hash = run_hashes[name]
-              require(isinstance(expected_hash, str) and SHA256_RE.fullmatch(expected_hash) is not None, "replacement manifest run-block hash invalid")
-              actual_hash = hashlib.sha256(run_blocks[name].encode("utf-8")).hexdigest()
-              require(actual_hash == expected_hash, "candidate workflow protected run block drift")
-
-          required_fragments = safe_string_list(manifest.get("required_workflow_fragments"), "required workflow fragments", minimum=4)
-          forbidden_fragments = safe_string_list(manifest.get("forbidden_workflow_fragments"), "forbidden workflow fragments")
+          required_fragments = string_list(manifest["required_workflow_fragments"], "required workflow fragments", minimum=4)
+          forbidden_fragments = string_list(manifest["forbidden_workflow_fragments"], "forbidden workflow fragments")
           for fragment in required_fragments:
               require(fragment in workflow, "candidate workflow required protected fragment missing")
           for fragment in forbidden_fragments:
               require(fragment not in workflow, "candidate workflow contains protected forbidden fragment")
-
-          for dynamic_pin in [
-              event_base_sha,
-              replacement_blob,
-              expected_trusted_workflow_blob,
-              trusted_workflow_merge_sha,
-              HARDENING_MERGE_SHA,
-              HARDENING_BLOB,
-              ORIGINAL_R4_AUTH_BLOB,
-              REPLACEMENT_AUTH_PATH,
-              HARDENING_PATH,
-              TRUSTED_WORKFLOW_PATH,
-          ]:
-              require(dynamic_pin in workflow, "candidate workflow missing canonical dynamic authorization pin")
 
           contracts = candidate_text[R4_CONTRACTS_PATH]
           runtime = candidate_text[R4_RUNTIME_PATH]
@@ -428,21 +437,20 @@ jobs:
               r"\bfetch\s*\(", r"\bprocess\.(?:env|cwd|chdir)", r"Math\.random", r"Date\.now", r"new\s+Date\s*\(",
               r"\b(?:exec|spawn|fork)\s*\(", r"localeCompare", r"Intl\.", r"telemetry", r"database",
           ]:
-              require(re.search(pattern, combined, flags=re.IGNORECASE if pattern in {"telemetry", "database"} else 0) is None, "R4 production authority surface drift")
-          util_members = re.findall(r"\butilTypes\.([A-Za-z_$][\w$]*)", runtime)
-          require(all(member == "isProxy" for member in util_members), "R4 node:util authority drift")
-          hash_algorithms = re.findall(r"createHash\([\"']([^\"']+)[\"']\)", runtime)
-          require(hash_algorithms == ["sha256"], "R4 hash algorithm drift")
-          require("canonicalK6R1Json" in runtime, "R4 canonical JSON dependency missing")
-          require("validateK6R1RouteRequest" in runtime, "R4 R1 validation dependency missing")
-          require("validateK6R3RouteOutcomeLinkageEnvelope" in runtime, "R4 R3 validation dependency missing")
+              flags = re.IGNORECASE if pattern in {"telemetry", "database"} else 0
+              require(re.search(pattern, combined, flags=flags) is None, "R4 production authority surface drift")
+          require(all(member == "isProxy" for member in re.findall(r"\butilTypes\.([A-Za-z_$][\w$]*)", runtime)), "R4 node:util authority drift")
+          require(re.findall(r"createHash\([\"']([^\"']+)[\"']\)", runtime) == ["sha256"], "R4 hash algorithm drift")
+          require("canonicalK6R1Json" in runtime and "validateK6R1RouteRequest" in runtime and "validateK6R3RouteOutcomeLinkageEnvelope" in runtime, "R4 predecessor validation dependency drift")
 
           base_index, _ = file_at(event_base_sha, R4_INDEX_PATH)
           expected_index = base_index + 'export * from "./evidence-router/outcome-memory-contracts.ts"\nexport * from "./evidence-router/outcome-memory.ts"\n'
           require(candidate_text[R4_INDEX_PATH] == expected_index, "R4 public index is not exact additive-only projection")
 
           try:
-              schema = json.loads(candidate_text[R4_SCHEMA_PATH])
+              schema = json.loads(candidate_text[R4_SCHEMA_PATH], object_pairs_hook=unique_object)
+          except SystemExit:
+              raise
           except Exception:
               fail("R4 schema is not valid JSON")
           require(schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema", "R4 schema draft drift")
@@ -464,13 +472,12 @@ jobs:
           for definition in defs.values():
               if isinstance(definition, dict) and definition.get("type") == "object":
                   require(definition.get("additionalProperties") is False, "R4 schema closed-object invariant drift")
-
-          append_ref = defs.get("appendOperation", {}).get("properties", {})
-          supersede_ref = defs.get("supersedeOperation", {}).get("properties", {})
-          require(append_ref.get("routeRequest", {}).get("$ref") == "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest", "R4 append R1 schema ref drift")
-          require(append_ref.get("routeOutcomeLinkageEnvelope", {}).get("$ref") == "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope", "R4 append R3 schema ref drift")
-          require(supersede_ref.get("routeRequest", {}).get("$ref") == "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest", "R4 supersede R1 schema ref drift")
-          require(supersede_ref.get("routeOutcomeLinkageEnvelope", {}).get("$ref") == "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope", "R4 supersede R3 schema ref drift")
+          append_props = defs.get("appendOperation", {}).get("properties", {})
+          supersede_props = defs.get("supersedeOperation", {}).get("properties", {})
+          r1_ref = "https://kodac.dev/schema/k6-r1-model-provider-route-eligibility.schema.json#/$defs/routeRequest"
+          r3_ref = "https://kodac.dev/schema/k6-r3-route-outcome-linkage.schema.json#/$defs/routeOutcomeLinkageEnvelope"
+          require(append_props.get("routeRequest", {}).get("$ref") == r1_ref and supersede_props.get("routeRequest", {}).get("$ref") == r1_ref, "R4 R1 schema ref drift")
+          require(append_props.get("routeOutcomeLinkageEnvelope", {}).get("$ref") == r3_ref and supersede_props.get("routeOutcomeLinkageEnvelope", {}).get("$ref") == r3_ref, "R4 R3 schema ref drift")
 
           print("K6-R4 trusted qualification: PASS")
           PY
