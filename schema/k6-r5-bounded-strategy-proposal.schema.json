@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/k6-r5-bounded-strategy-proposal.schema.json",
+  "$comment": "This contract does not grant candidate eligibility, strategy execution, selection, promotion, persistence, provider invocation, or production authority.",
+  "$ref": "#/$defs/qualificationResult",
+  "$defs": {
+    "sha256Identity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "privacyClass": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "REPOSITORY_PRIVATE",
+        "SENSITIVE"
+      ]
+    },
+    "nonNegativeSafeInteger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositoryIdentity",
+        "revisionIdentity",
+        "ownerScopeId",
+        "privacyClass",
+        "taskFamilyIdentity"
+      ],
+      "properties": {
+        "repositoryIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "revisionIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "ownerScopeId": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "privacyClass": {
+          "$ref": "#/$defs/privacyClass"
+        },
+        "taskFamilyIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "strategyIdentity",
+        "kind",
+        "scope",
+        "orderedCandidateIdentities"
+      ],
+      "properties": {
+        "version": {
+          "const": "kodac-k6-r5-strategy-v1"
+        },
+        "strategyIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "kind": {
+          "const": "EXPLICIT_ELIGIBLE_CANDIDATE_ORDER"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "orderedCandidateIdentities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sha256Identity"
+          }
+        }
+      }
+    },
+    "strategyEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "evidenceIdentity",
+        "strategyIdentity",
+        "scope",
+        "qualificationCorpusIdentity",
+        "trialSetIdentity",
+        "trialCaseIdentities",
+        "trialCount",
+        "verifiedPassCount",
+        "k5ValidCount",
+        "doneReadyCount",
+        "latencyTotalMs",
+        "computeUnitsTotal",
+        "privacyViolationCount",
+        "securityViolationCount",
+        "verificationEvidenceIdentity",
+        "k5EvidenceIdentity",
+        "doneGateEvidenceIdentity",
+        "latencyEvidenceIdentity",
+        "computeEvidenceIdentity",
+        "privacyEvidenceIdentity",
+        "securityEvidenceIdentity"
+      ],
+      "properties": {
+        "version": {
+          "const": "kodac-k6-r5-strategy-evidence-v1"
+        },
+        "evidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "strategyIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        },
+        "qualificationCorpusIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "trialSetIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "trialCaseIdentities": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/sha256Identity"
+          }
+        },
+        "trialCount": {
+          "$ref": "#/$defs/positiveSafeInteger"
+        },
+        "verifiedPassCount": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "k5ValidCount": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "doneReadyCount": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "latencyTotalMs": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "computeUnitsTotal": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "privacyViolationCount": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "securityViolationCount": {
+          "$ref": "#/$defs/nonNegativeSafeInteger"
+        },
+        "verificationEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "k5EvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "doneGateEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "latencyEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "computeEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "privacyEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "securityEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        }
+      }
+    },
+    "qualificationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "resultIdentity",
+        "incumbentStrategyIdentity",
+        "candidateStrategyIdentity",
+        "incumbentEvidenceIdentity",
+        "candidateEvidenceIdentity",
+        "qualificationCorpusIdentity",
+        "trialSetIdentity",
+        "trialCount",
+        "outcome"
+      ],
+      "properties": {
+        "version": {
+          "const": "kodac-k6-r5-qualification-result-v1"
+        },
+        "resultIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "incumbentStrategyIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "candidateStrategyIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "incumbentEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "candidateEvidenceIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "qualificationCorpusIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "trialSetIdentity": {
+          "$ref": "#/$defs/sha256Identity"
+        },
+        "trialCount": {
+          "$ref": "#/$defs/positiveSafeInteger"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "BOTH_INVALID",
+            "CANDIDATE_INVALID",
+            "INCUMBENT_INVALID",
+            "CANDIDATE_DOMINATES",
+            "INCUMBENT_DOMINATES",
+            "TIE",
+            "INCOMPARABLE"
+          ]
+        }
+      }
+    },
+    "positiveSafeInteger": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}
