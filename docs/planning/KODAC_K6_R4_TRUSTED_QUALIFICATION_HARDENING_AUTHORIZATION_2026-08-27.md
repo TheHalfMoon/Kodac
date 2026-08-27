@@ -24,20 +24,20 @@ cannot independently establish that its own admission and validation logic was
 not weakened by that PR.
 ```
 
-The canonical R4 authorization intentionally includes the dedicated workflow inside the six-path implementation surface. That workflow is still useful as implementation-owned regression evidence, but it is not an immutable external qualification root.
+The canonical R4 authorization intentionally includes the dedicated workflow inside the six-path implementation surface. That workflow remains useful for runtime/regression evidence, but it is candidate-controlled and therefore cannot independently establish its own integrity.
 
-The existing required `governance` and `k2-runtime` workflows are outside the R4 implementation diff and are trusted producers, but they do not independently enforce R4-specific six-path admission, predecessor binding, schema/runtime parity, production-authority restrictions, and R4 regression execution.
+The repository-required `governance` and `k2-runtime` workflows are outside the R4 implementation diff and are trusted producers, but they do not independently enforce the R4-specific six-path admission, workflow-step/pin requirements, production-authority restrictions, schema contract, or R4 dedicated-workflow integrity.
 
-Therefore the R4 implementation must stop before merge and add one separately canonical, base-controlled trusted qualification workflow before R4 can resume.
-
-This is a hardening correction, not a waiver and not an expansion of R4 product/runtime authority.
+Therefore PR #212 must stop before merge and add a separately canonical base-controlled qualification inspector before R4 can resume.
 
 ```text
 WAIVER = NO
-R4 IMPLEMENTATION MERGE = BLOCKED UNTIL TRUSTED GATE IS CANONICAL
+R4 IMPLEMENTATION MERGE = BLOCKED
 R4 PRODUCT SCOPE = UNCHANGED
 R4 SIX-PATH IMPLEMENTATION ALLOWLIST = UNCHANGED
 ```
+
+This is governance hardening, not an R4 product/runtime expansion.
 
 ## Decision
 
@@ -47,68 +47,127 @@ After and only after canonical adoption and post-merge proof of this exact recor
 .github/workflows/k6-r4-trusted-qualification.yml
 ```
 
-No other path is authorized by the workflow-hardening PR.
+No other path is authorized by that PR.
 
-The trusted workflow becomes a canonical preimplementation prerequisite. It is not part of the later R4 six-path implementation diff.
+The trusted workflow becomes a canonical preimplementation prerequisite already present on protected `main`. It is not a seventh R4 implementation path.
 
 The workflow-hardening PR must start from the canonical merge of this hardening authorization, not from the pre-authorization base recorded above.
 
-After that trusted workflow itself is canonically merged and post-merge proven, authorize preparation of one later documentation-only replacement R4 authorization candidate at exactly:
+After the trusted workflow itself is canonically merged and post-merge proven, authorize preparation of one later documentation-only replacement R4 authorization candidate at exactly:
 
 ```text
 docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
 ```
 
-That replacement authorization must pin the exact trusted-workflow merge SHA, tree, and blob; set the exact then-current canonical `main` as the new R4 implementation base; preserve the R4 v1 product/runtime contract unless an independently justified correction is explicitly documented; preserve the original six implementation paths; and require the trusted gate as exact-head qualification evidence.
+That replacement authorization must pin the exact trusted-workflow merge SHA/tree/blob, establish the exact then-current canonical `main` as the fresh R4 implementation base, preserve the R4 v1 product/runtime contract and six implementation paths, and require both the trusted inspector and the candidate-owned dedicated R4 workflow as complementary exact-head evidence.
 
-The replacement authorization is required because the original R4 implementation authorization pins the old authorization merge as the implementation base and explicitly requires replacement authorization after base/governance prerequisite drift.
+## Core trust split
 
-## Security model for the trusted workflow
+The hardening deliberately separates two roles.
 
-The workflow must be controlled by protected `main`, not by the R4 implementation candidate being qualified.
+### Base-controlled trusted inspector
 
-It must use:
+```text
+.github/workflows/k6-r4-trusted-qualification.yml
+```
+
+Purpose:
+
+- independently prove exact R4 candidate scope;
+- inspect the candidate-owned dedicated R4 workflow as untrusted data;
+- prove the dedicated workflow still contains the required immutable actions, permissions, admission checks, schema/static checks and exact test commands;
+- inspect R4 production/schema/index blobs as untrusted data for bounded static invariants;
+- never execute candidate code.
+
+### Candidate-owned dedicated R4 workflow
+
+```text
+.github/workflows/k6-r4-privacy-governed-outcome-memory.yml
+```
+
+Purpose:
+
+- execute strict TypeScript;
+- execute focused R4 tests;
+- execute R3/R2/R1 regressions;
+- execute full runtime tests;
+- execute Python/Ruff/provenance and checkout-integrity checks.
+
+It remains candidate-controlled, so its success is accepted only when the base-controlled inspector independently proves that its required validation structure was not weakened.
+
+```text
+TRUSTED INSPECTION + DEDICATED EXECUTION = R4-SPECIFIC QUALIFICATION EVIDENCE
+DEDICATED EXECUTION ALONE != INDEPENDENT QUALIFICATION
+```
+
+## Security model for the trusted inspector
+
+The workflow must use:
 
 ```text
 pull_request_target
 ```
 
-for the R4 implementation qualification event so the workflow definition and qualification commands come from protected base history rather than the PR head.
+so its workflow definition and inline inspection logic come only from protected base history.
 
-Because `pull_request_target` has a stronger security context, the workflow must be aggressively least privilege:
+It must use exactly least-privilege repository read permission:
 
 ```text
 permissions:
   contents: read
 ```
 
-It must not request or receive:
+It must not request:
 
-- repository write;
 - pull-request write;
+- contents write;
 - Actions write;
 - checks write;
 - administration;
 - ruleset write;
 - packages write;
+- deployments write;
 - id-token;
-- secrets;
 - environment secrets;
-- deployment credentials.
+- repository or organization secrets.
 
-The workflow may check out the exact PR head only with:
+### Critical no-execution boundary
 
-```text
-persist-credentials: false
-```
+The trusted inspector must **not** execute PR-head code.
 
-No `GH_TOKEN`, `GITHUB_TOKEN`, secret, credential, cloud identity, deployment identity, package-publish token, or writable cache credential may be passed to code executed from the PR head.
+It must not:
 
-The workflow may execute the R4 TypeScript/Python test surface only because the R4 implementation allowlist cannot mutate package manifests, lockfiles, repository dependency definitions, or the trusted workflow itself. Any future change to those assumptions requires replacement hardening authority.
+- use `actions/checkout` on the PR head;
+- `git checkout` the PR head into an executable working tree;
+- source or execute candidate shell scripts;
+- run candidate JavaScript/TypeScript/Python;
+- run `npm`, `pnpm`, `node`, `tsx`, `tsc`, `pytest`, `ruff`, `uv run`, package scripts, Make targets, repository scripts, or hooks against candidate content;
+- invoke candidate-defined local/composite/repository-hosted actions;
+- execute a binary, script, hook or command fetched from candidate blobs;
+- load candidate code as a module;
+- use `eval`, dynamic shell evaluation, or command substitution over candidate text.
+
+The trusted inspector may retrieve the exact candidate file list and exact candidate file/blob bytes through read-only GitHub API calls and process those bytes **only as data** using base-controlled inline inspection logic.
+
+The read token therefore remains confined to base-controlled metadata/blob-inspection steps. No candidate process exists that can read it.
+
+### No cache/artifact/credential side channels
+
+The trusted inspector must not:
+
+- use cache restore/save actions;
+- upload artifacts;
+- upload SARIF;
+- publish test results;
+- write checks/comments/reviews;
+- expose tokens through outputs, artifacts, logs or candidate-controlled strings;
+- pass `${{ github.token }}` or any secret/token value into candidate-derived commands, because candidate commands are forbidden entirely.
+
+The workflow-hardening qualification must statically prove these prohibitions from the exact workflow blob.
 
 ## Trusted workflow trigger boundary
 
-The workflow must run only for pull requests targeting `main` and must fail closed unless all of the following are true:
+The trusted inspector must run only for pull requests targeting `main` and must fail closed unless event metadata proves:
 
 ```text
 repository = TheHalfMoon/Kodac
@@ -117,13 +176,11 @@ head branch = feat/k6-r4-privacy-governed-outcome-memory
 base ref = main
 ```
 
-Its path trigger may name the six R4 implementation paths, but trigger filtering is not sufficient admission proof. The job itself must independently compute the exact base-to-head changed-file set and require exact equality with the six-path allowlist.
+A path trigger may list the six R4 paths, but trigger filtering is not admission proof. The base-controlled job must use the GitHub API/event identities to compute the exact base-to-head changed-file set and require exact equality with the six implementation paths.
 
-The trusted workflow path itself must not appear in the R4 implementation diff.
+The trusted workflow path itself must not appear in the candidate diff.
 
 ## Exact six-path R4 implementation allowlist preserved
-
-The later R4 implementation remains limited to exactly:
 
 ```text
 .github/workflows/k6-r4-privacy-governed-outcome-memory.yml
@@ -134,215 +191,187 @@ packages/kodac-runtime/src/index.ts
 packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts
 ```
 
-The trusted workflow is a canonical prerequisite already present on `main`; it is not a seventh implementation path.
+No seventh R4 implementation path is authorized.
 
-## Required trusted qualification checks
+## Required trusted inspection
 
-The base-controlled workflow must independently perform at least the following checks against the exact PR head.
+The base-controlled workflow must independently inspect the following properties without executing candidate code.
 
-### Admission and repository identity
+### Exact repository and scope admission
 
-- checkout exact `github.event.pull_request.head.sha` with credentials disabled;
-- require exact repository/head repository/base ref/head branch;
-- treat `github.event.pull_request.base.sha` as the exact protected-base identity for that run and require it to be the candidate merge base;
-- require the protected base to contain the fixed-path canonical replacement R4 authorization record before an R4 implementation candidate may qualify;
-- do not hardcode a future replacement-authorization merge SHA into the earlier trusted-workflow commit;
-- require exact six-path diff and `git diff --check`;
-- prove the trusted workflow itself is not changed by the candidate.
+- exact repository/head repository/base ref/head branch;
+- exact event head SHA;
+- exact event base SHA;
+- event base SHA is the protected candidate base for the run;
+- exact six changed paths, no seventh path;
+- candidate does not modify the trusted inspector;
+- no manifest/lockfile/dependency/script/action helper path changes.
 
-The later replacement authorization and external canonical preflight bind the exact base SHA/tree/document blob for the implementation candidate. The trusted workflow independently proves the candidate is exactly based on the protected base presented by the event and that its own definition is not candidate-controlled.
+The later replacement authorization and external canonical preflight bind the exact implementation base SHA/tree/document blob. The trusted inspector does not hardcode a future replacement-authorization merge SHA into an earlier workflow commit.
 
-### Canonical prerequisite binding
+## Dedicated-workflow integrity inspection
 
-The later replacement authorization must provide immutable pins that the trusted workflow can validate from protected base state and PR head state as appropriate, including:
-
-- trusted-workflow hardening authorization document blob;
-- trusted workflow blob;
-- canonical R1/R3 predecessor blobs needed by R4;
-- pre-R4 `index.ts` bytes or blob;
-- canonical provenance validator blob;
-- protected ruleset identity/snapshot information when readable under least privilege.
-
-The replacement authorization record itself cannot self-pin its own future merge SHA or blob. Its exact candidate blob and canonical merge identity are captured by the external authorization qualification/merge proof, while the trusted workflow requires the fixed replacement-authorization path to exist on protected base and consumes only non-self-referential pins declared by that canonical base record.
-
-No candidate-controlled value may be accepted as a substitute for a required protected-base pin.
-
-### R4 production-authority restrictions
-
-Independently reject:
-
-- unauthorized production imports;
-- filesystem/database/network/TLS/process/child-process imports;
-- provider/model/reviewer/evaluator invocation;
-- K2 execution-capability registration;
-- durable persistence;
-- telemetry/upload;
-- training/learning mutation;
-- strategy scoring/ranking/promotion;
-- dynamic import or unsupported import forms where the accepted R4 contract forbids them.
-
-### Schema and contract checks
-
-Independently validate:
-
-- Draft 2020-12 schema validity;
-- exact R4 schema `$id` and root;
-- R1/R3 schema references;
-- runtime/schema enum parity;
-- runtime/schema expressible bound parity;
-- `index.ts` additive-only exports.
-
-### Runtime and regression evidence
-
-Using locked repository dependencies and no writable credentials, independently run at least:
-
-- strict TypeScript validation;
-- focused K6-R4 tests;
-- canonical focused K6-R3/R2/R1 regressions;
-- full `packages/kodac-runtime` test suite;
-- canonical Python tests;
-- Ruff;
-- provenance validation;
-- checkout-integrity proof.
-
-The workflow must not rely on the candidate-controlled dedicated R4 workflow having run successfully before performing these checks.
-
-## Toolchain integrity
-
-The trusted workflow must use immutable full-SHA action references.
-
-Node and uv versions must be explicitly pinned to the repository-accepted R4 qualification versions unless a later canonical replacement authorization changes them.
-
-Temporary validation environments must live outside the checkout where practical.
-
-Dependency installation must use the canonical lockfile and disable package install scripts where the existing R4 qualification contract requires that behavior.
-
-No new dependency is authorized.
-
-## Relationship to the candidate-controlled dedicated R4 workflow
-
-The existing authorized path:
+The trusted inspector must retrieve the exact candidate blob for:
 
 ```text
 .github/workflows/k6-r4-privacy-governed-outcome-memory.yml
 ```
 
-remains part of the R4 implementation surface and may continue to provide implementation-owned regression evidence.
+and fail closed unless base-controlled inspection proves the exact required R4 workflow structure, including at minimum:
 
-However:
+- PR-to-main trigger and exact R4 path filter;
+- least-privilege permissions;
+- immutable full-SHA action references;
+- pinned Node and uv versions required by the replacement R4 authorization;
+- exact repository/base/head/six-path admission logic;
+- exact hardening/replacement-authorization and predecessor-pin checks required by the replacement authorization;
+- `index.ts` additive-only proof;
+- unsupported/side-effect/dynamic production import rejection;
+- R1/R3/R4 schema registration/reference/parity checks;
+- strict TypeScript command;
+- focused R4 test command;
+- focused canonical R3/R2/R1 regression commands;
+- full runtime test command;
+- Python test command;
+- Ruff command;
+- provenance command;
+- checkout-integrity proof;
+- absence of write/admin/ruleset mutation behavior.
 
-```text
-DEDICATED R4 WORKFLOW SUCCESS != INDEPENDENT QUALIFICATION BY ITSELF
-```
+The trusted inspector must fail if required commands are missing, weakened, replaced by conditional no-ops, hidden behind always-false branches, or otherwise made non-equivalent to the replacement authorization.
 
-The later replacement R4 authorization must require both:
+The later replacement authorization may provide exact normalized command/step fingerprints or exact required text fragments to make this inspection deterministic. It must not rely on a vague semantic judgment implemented by the PR candidate.
 
-1. the implementation-owned dedicated R4 workflow terminal success; and
-2. the separately canonical trusted R4 qualification workflow terminal success on the exact same candidate head.
+## Production/static inspection
 
-The trusted workflow is the independent workflow-definition root for R4-specific qualification.
+Using exact candidate blob bytes as data only, the trusted inspector must independently fail closed on at least:
+
+- unauthorized imports in `outcome-memory.ts` / `outcome-memory-contracts.ts`;
+- filesystem/database/network/TLS/process/child-process imports;
+- provider/model/reviewer/evaluator invocation primitives prohibited by R4;
+- K2 execution-capability registration;
+- durable persistence/telemetry/upload/training/learning/strategy-promotion primitives;
+- dynamic or unsupported import forms forbidden by the R4 contract;
+- unauthorized changes before the accepted pre-R4 `index.ts` prefix;
+- unexpected schema identity/reference/enum/bound drift that can be verified by non-executing JSON/text inspection.
+
+Candidate text is untrusted input. Base-controlled parsers must never turn it into executable code.
+
+## Runtime/regression evidence remains separate
+
+The trusted inspector does not execute runtime tests.
+
+The later R4 qualification still requires terminal success on the exact candidate head from:
+
+1. the candidate-owned dedicated R4 workflow, whose structure is independently validated by the trusted inspector;
+2. repository-required `provenance` from trusted producer `integration_id = 15368`;
+3. repository-required `legacy-tests` from trusted producer `integration_id = 15368`;
+4. repository-required `k2-runtime-gate` from trusted producer `integration_id = 15368`;
+5. fresh exact-head CodeRabbit and Qodo reviews;
+6. independent authorized ruleset/control-plane reads.
+
+This split avoids running untrusted candidate code inside `pull_request_target` while still removing the original workflow self-qualification gap.
+
+## Toolchain and action integrity
+
+The trusted inspector must use immutable full-SHA GitHub Action references.
+
+Because candidate code is never executed, it must not install candidate dependencies or run candidate package managers.
+
+Any helper logic needed for trusted inspection must be inline in the protected workflow or come from an independently canonical protected-base helper whose exact blob is separately pinned. This authorization does not authorize such a helper path, so the initial trusted workflow must use inline/base-provided platform tooling only.
+
+No new dependency is authorized.
 
 ## Ruleset relationship
 
 This hardening authorization does not authorize mutation of ruleset `20707483`.
 
-The trusted R4 workflow does not become a repository ruleset-required status check by implication. Instead, the later replacement R4 authorization must explicitly require its exact-head terminal success as part of the R4 canonical qualification gate alongside the existing repository-required trusted checks:
+The trusted inspector does not become a ruleset-required status check by implication. The later replacement R4 authorization must explicitly require its exact-head terminal success alongside the existing protected required checks.
 
-```text
-provenance
-legacy-tests
-k2-runtime-gate
-```
+A future ruleset change requires separate ruleset-governance authority.
 
-A future decision to add the trusted R4 context to branch protection/rulesets requires separate ruleset-governance authority.
-
-The existing independent pre/post-merge authorized control-plane reads for:
+Independent pre/post-merge control-plane reads must continue to prove:
 
 ```text
 bypass_actors = []
 current_user_can_bypass = never
 ```
 
-remain mandatory and unchanged.
+from responses that actually expose those fields.
 
 ## Workflow-hardening PR scope
 
-After this authorization is canonical, the workflow-hardening PR may change exactly one path:
+After this authorization is canonical, the workflow-hardening PR may change exactly:
 
 ```text
 .github/workflows/k6-r4-trusted-qualification.yml
 ```
 
-It must not modify:
-
-- R4 production source;
-- R4 implementation-owned workflow;
-- tests;
-- schemas;
-- `index.ts`;
-- dependencies/lockfiles/manifests;
-- documentation;
-- rulesets;
-- K2/K3/K4/K5/KRI/K6 runtime;
-- Done Gate;
-- provider/model/reviewer integrations;
-- storage/telemetry/autofix/release surfaces.
+It may not modify source, tests, schemas, the candidate-owned R4 workflow, dependencies, lockfiles, manifests, docs, rulesets, K2/K3/K4/K5/KRI/K6 runtime, Done Gate, storage, telemetry, providers, models, reviewers, autofix, or release surfaces.
 
 ## Workflow-hardening qualification gate
 
 The one-path trusted-workflow candidate is not canonical unless its exact final head proves:
 
-1. base ref is `main` and base SHA/tree equal the canonical merge of this hardening authorization, or a later separately canonical replacement-hardening base if main moved before workflow implementation;
+1. base ref is `main` and base SHA/tree equal the canonical merge of this hardening authorization, or a later separately canonical replacement-hardening base if live main moved;
 2. changed-file set is exactly `.github/workflows/k6-r4-trusted-qualification.yml`;
-3. workflow uses `pull_request_target` only for the intended R4 qualification boundary and `permissions: contents: read`;
-4. no secrets/write/admin/id-token permissions exist;
-5. checkout of PR head uses exact event head SHA and `persist-credentials: false`;
-6. action references are immutable full SHAs;
-7. workflow contains an in-job exact six-path admission check rather than relying only on path filters;
-8. workflow does not mutate repository/ruleset/PR/check state;
-9. applicable repository-required CI is terminal success;
-10. fresh exact-head CodeRabbit and Qodo reviews report zero unresolved material correctness/security/governance findings;
-11. zero unresolved actionable threads;
-12. candidate is open, non-draft, mergeable and `behind_by = 0`;
-13. final head/tree/workflow blob are captured;
-14. `WAIVER=NO`.
+3. `pull_request_target` is restricted to the intended R4 qualification boundary;
+4. `permissions: contents: read` and no write/admin/id-token/secrets exist;
+5. no PR-head checkout or candidate execution path exists;
+6. no cache/artifact/upload/check/comment/review write path exists;
+7. candidate blobs are consumed only as data by base-controlled logic;
+8. action references are immutable full SHAs;
+9. exact six-path admission is enforced in-job;
+10. dedicated-workflow integrity and required-command inspection is fail-closed;
+11. production/schema/index static inspection is fail-closed;
+12. workflow does not mutate repository/ruleset/PR/check state;
+13. applicable repository-required CI is terminal success;
+14. fresh exact-head CodeRabbit and Qodo report zero unresolved material correctness/security/governance findings;
+15. zero unresolved actionable threads;
+16. candidate is open, non-draft, mergeable and `behind_by = 0`;
+17. final head/tree/workflow blob are captured;
+18. `WAIVER=NO`.
 
-Merge only by normal GitHub merge commit guarded with the exact qualified `expected_head_sha`.
+Merge only by normal GitHub merge commit guarded with exact qualified `expected_head_sha`.
 
-Post-merge prove ordered parents, merge tree, trusted-workflow blob, protected main, valid GitHub signature, applicable post-merge required checks, ruleset control-plane evidence, and `WAIVER=NO`.
+Post-merge prove ordered parents, merge tree, workflow blob, protected main, valid GitHub signature, applicable required checks, ruleset/control-plane evidence, and `WAIVER=NO`.
 
 ## Replacement R4 authorization after trusted workflow lands
 
-Only after the trusted workflow is canonical may the next documentation-only candidate be prepared at:
+Only after the trusted workflow is canonical may a documentation-only candidate be prepared at:
 
 ```text
 docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
 ```
 
-That record must:
+That replacement record must:
 
 - use the exact trusted-workflow merge as predecessor evidence;
 - pin the trusted workflow blob;
-- pin the original R4 authorization as historical governing scope evidence;
+- pin this hardening authorization and the original R4 authorization as historical scope evidence;
 - record why PR #212 was paused rather than waived;
-- set a fresh exact implementation base;
-- preserve the six implementation paths;
-- require trusted-workflow exact-head success;
-- preserve dedicated-workflow success as complementary evidence;
+- set the fresh exact implementation base;
+- preserve the six implementation paths and R4 v1 product/runtime semantics;
+- define deterministic trusted-inspector workflow/command fingerprints or equivalent exact checks;
+- require trusted-inspector exact-head success;
+- require candidate-owned dedicated R4 workflow exact-head success;
+- preserve repository-required trusted checks;
 - preserve fresh exact-head CodeRabbit/Qodo and zero-thread requirements;
-- preserve ruleset/control-plane proof;
-- preserve all R4 privacy, retention, minimization, lifecycle and non-authority constraints;
+- preserve independent ruleset/control-plane proof;
+- preserve all privacy, minimization, retention, lifecycle, hostile-input and non-authority constraints;
 - preserve `WAIVER=NO`.
 
-No R4 implementation commit may be merged before that replacement authorization is itself canonical and post-merge proven.
+The replacement authorization cannot self-pin its own future merge SHA/blob. Its candidate blob and canonical merge identity are captured by its external qualification/merge proof. The trusted inspector uses protected-base event identity plus non-self-referential pins from the canonical record.
+
+No R4 implementation may merge before the replacement authorization is canonical and post-merge proven.
 
 ## Current PR #212 disposition
 
-PR #212 may remain open while the hardening lifecycle is completed, but it is not merge-qualified.
+PR #212 may remain open, but it is not merge-qualified.
 
-Its current implementation evidence may be used only as historical/debugging input. Once canonical `main` moves, all prior exact-head qualification/review evidence is stale.
+Once canonical `main` moves, all prior #212 exact-head CI/review evidence becomes stale.
 
-After the trusted workflow and replacement authorization become canonical, PR #212 must be reconciled forward by a normal merge from exact live `main`; no rebase or force-push is allowed. The resulting new exact head must be requalified from scratch against the replacement authorization and trusted gate.
+After the trusted workflow and replacement authorization are canonical, #212 must be reconciled forward through a normal merge from exact live `main`; no rebase or force-push. The resulting exact head must be requalified from scratch under the replacement authorization and trusted inspector.
 
 ## Preserved non-grants
 
@@ -351,23 +380,19 @@ This hardening lifecycle does not authorize:
 ```text
 R4 PRODUCT SCOPE EXPANSION
 SEVENTH R4 IMPLEMENTATION PATH
-DURABLE PERSISTENCE
-DATABASE / FILESYSTEM STORAGE
-TELEMETRY / UPLOAD
-NETWORK FALLBACK
-MODEL / PROVIDER / REVIEWER EXECUTION
-TRAINING / FINETUNING
-LEARNING MUTATION
+DURABLE PERSISTENCE / DATABASE / FILESYSTEM STORAGE
+TELEMETRY / UPLOAD / NETWORK FALLBACK
+MODEL / PROVIDER / REVIEWER / EVALUATOR EXECUTION
+TRAINING / FINETUNING / LEARNING MUTATION
 STRATEGY SCORING / RANKING / PROMOTION
 CROSS-REPOSITORY OR CROSS-USER LEARNING
 AUTOFIX
-NEW DEPENDENCIES
-NEW EXTERNAL SERVICES
+NEW DEPENDENCIES OR EXTERNAL SERVICES
 K2 / K5 / DONE GATE AUTHORITY CHANGE
 RULESET MUTATION
-REPOSITORY / PR / CHECK WRITE AUTHORITY FROM THE TRUSTED WORKFLOW
+REPOSITORY / PR / CHECK WRITE AUTHORITY FROM THE TRUSTED INSPECTOR
 PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH
-K6-R5 IMPLEMENTATION OR AUTHORIZATION
+K6-R5 AUTHORIZATION OR IMPLEMENTATION
 ```
 
 ## Exact scope of this authorization candidate
@@ -391,11 +416,11 @@ This authorization remains non-canonical unless its exact final candidate proves
 5. fresh exact-head CodeRabbit and Qodo reviews have zero unresolved material correctness/security/governance/authority findings;
 6. zero unresolved actionable threads;
 7. candidate is open, non-draft, mergeable and `behind_by = 0`;
-8. ruleset `20707483` remains active with the accepted trusted identity/check producers and independent control-plane proof still exposes `bypass_actors = []` and `current_user_can_bypass = never`;
+8. ruleset `20707483` remains active with the accepted identity/check producers and independent control-plane proof exposes `bypass_actors = []` and `current_user_can_bypass = never`;
 9. final head/tree/document blob are captured;
 10. guarded normal merge uses exact qualified `expected_head_sha`;
 11. post-merge ordered-parent/tree/blob/protected-main/signature proof succeeds;
-12. applicable post-merge repository-required checks are terminal success;
+12. applicable post-merge required checks are terminal success;
 13. `WAIVER=NO`.
 
 If live `main` moves before merge, stop and amend this record to the exact replacement live `main` SHA/tree, reconcile forward non-destructively, and requalify from scratch.
@@ -408,8 +433,8 @@ Until this record, the trusted workflow, and the replacement R4 authorization ar
 DO NOT MERGE PR #212
 DO NOT ADD A SEVENTH PATH TO PR #212
 DO NOT MUTATE RULESET 20707483
-DO NOT BYPASS OR RESOLVE THE MATERIAL CODERABBIT FINDING AS A WAIVER
+DO NOT BYPASS OR SILENTLY RESOLVE THE MATERIAL PR #212 FINDING
 DO NOT BEGIN K6-R5
 ```
 
-The purpose of this gate is to strengthen proof independence while preserving the already-authorized R4 product/runtime boundary.
+The purpose of this gate is to make R4 workflow qualification independently inspectable while keeping untrusted PR code entirely outside the `pull_request_target` security context.
