@@ -414,6 +414,6 @@ DO NOT BEGIN K6-R5
 DO NOT CLAIM K6-R4 CLOSED_CANONICAL
 ```
 
-After canonical adoption, proceed immediately to the bounded PR #212 forward reconciliation and exact-head qualification described by this record.
+After canonical adoption and successful post-merge proof, proceed immediately to the bounded PR #212 forward reconciliation and exact-head qualification described by this record.
 
 `WAIVER=NO`
