@@ -112,7 +112,7 @@ jobs:
            if isinstance(z,ast.Import):q(all(x.name in allow for x in z.names),"E-self-import")
            if isinstance(z,ast.ImportFrom):q(z.module in {"__future__","datetime"},"E-self-from")
            if isinstance(z,ast.Call) and isinstance(z.func,ast.Name):q(z.func.id not in {"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input"},"E-self-exec")
-           if isinstance(z,ast.Call) and isinstance(z.func,ast.Attribute) and isinstance(z.func.value,ast.Name) and z.func.value.id=="os":q(not (z.func.attr in {"system","popen"} or z.func.attr.startswith("spawn") or z.func.attr.startswith("exec")),"E-self-process")
+           if isinstance(z,ast.Call) and isinstance(z.func,ast.Attribute) and isinstance(z.func.value,ast.Name) and z.func.value.id=="os":q(False,"E-self-process")
            if isinstance(z,ast.Attribute):q(not z.attr.startswith("__"),"E-self-dunder")
           # Predecessor and exact six-path candidate.
           for x,h in PB.items():q(file(bs,x)[1]==h,"E-predecessor")
