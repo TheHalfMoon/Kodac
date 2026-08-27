@@ -128,7 +128,7 @@ For the active K6-R4 replacement-authorization candidate and subsequent PR #212 
 
 - a CodeRabbit rate-limit response is not clean review evidence;
 - CodeRabbit is not mandatory by name after this amendment becomes canonical;
-- Qodo may satisfy the external semantic-review slot if it gives a fresh terminal-clean exact-head assessment and no unresolved material findings remain;
+- any qualifying independent external reviewer may satisfy the external semantic-review slot on the exact final head;
 - the trusted K6-R4 base-controlled inspector, dedicated R4 workflow, required repository CI, exact scope/blob pins, ruleset, no-bypass proof, and post-merge proof remain mandatory and unchanged;
 - `WAIVER=NO` remains mandatory.
 
