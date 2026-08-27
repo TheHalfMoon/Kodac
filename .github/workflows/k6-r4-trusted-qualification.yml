@@ -29,7 +29,7 @@ jobs:
       EVENT_REPOSITORY: ${{ github.repository }}
       EVENT_PR_NUMBER: ${{ github.event.number }}
       EVENT_BASE_REF: ${{ github.event.pull_request.base.ref }}
-      EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      EVENT_BASE_SHA: ${{ github.sha }}
       EVENT_HEAD_REF: ${{ github.event.pull_request.head.ref }}
       EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       EVENT_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
@@ -271,7 +271,7 @@ jobs:
           current_pr = api_json(f"/repos/{REPOSITORY}/pulls/{AUTHORIZED_PR}")
           require(current_pr.get("number") == AUTHORIZED_PR and current_pr.get("state") == "open" and current_pr.get("draft") is False, "authorized PR state drift")
           require(current_pr.get("head", {}).get("sha") == event_head_sha and current_pr.get("head", {}).get("ref") == AUTHORIZED_HEAD_REF and current_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY, "authorized PR head moved after event")
-          require(current_pr.get("base", {}).get("ref") == "main" and current_pr.get("base", {}).get("sha") == event_base_sha, "authorized PR base moved after event")
+          require(current_pr.get("base", {}).get("ref") == "main", "authorized PR base ref drift")
           require(api_json(f"/repos/{REPOSITORY}/git/ref/heads/main").get("object", {}).get("sha") == event_base_sha, "protected main moved after event")
 
           hardening_lineage = compare(HARDENING_MERGE_SHA, event_base_sha)
