@@ -308,7 +308,6 @@ jobs:
               "NODE_OPTIONS:", "BASH_ENV:", "LD_PRELOAD:", "PYTHONPATH:", "working-directory:", "|| true",
           ]:
               require(forbidden not in workflow, "candidate workflow contains prohibited control surface")
-          require(len(re.findall(r"(?m)^  [A-Za-z0-9_-]+:\s*$", workflow.split("jobs:\n", 1)[1])) >= 1, "candidate workflow job structure unavailable")
           job_headers = re.findall(r"(?m)^  ([A-Za-z0-9_-]+):\s*$", workflow.split("jobs:\n", 1)[1])
           require(job_headers == ["privacy-governed-outcome-memory"], "candidate workflow job set drift")
           require(workflow.count("steps:") == 1, "candidate workflow steps structure drift")
@@ -395,17 +394,17 @@ jobs:
           defs = schema.get("$defs")
           require(isinstance(defs, dict), "R4 schema defs missing")
           require(defs.get("scope", {}).get("properties", {}).get("privacyClass", {}).get("enum") == ["PUBLIC", "REPOSITORY_PRIVATE", "SENSITIVE"], "R4 privacy enum drift")
-          require(defs.get("outcome", {}).get("properties", {}).get("k5Status", {}).get("enum") == ["VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"], "R4 K5 enum drift")
+          require(defs.get("outcome", {}).get("properties", {}).get("k5Status", {}).get("enum") == ["NOT_APPLICABLE", "VALID", "INCOMPLETE", "CONTRADICTORY", "STALE", "INVALID"], "R4 K5 enum drift")
           require(defs.get("outcome", {}).get("properties", {}).get("doneGateStatus", {}).get("enum") == ["PROVEN_READY", "NOT_READY"], "R4 Done Gate enum drift")
           require(defs.get("executionOutcome", {}).get("properties", {}).get("executionResultStatus", {}).get("enum") == ["success", "blocked", "failure"], "R4 execution status enum drift")
           require(defs.get("executionOutcome", {}).get("properties", {}).get("role", {}).get("enum") == ["PRIMARY", "FALLBACK"], "R4 role enum drift")
-          require(defs.get("tombstone", {}).get("properties", {}).get("transition", {}).get("enum") == ["SUPERSEDED", "DELETED", "EXPIRED"], "R4 tombstone enum drift")
+          require(defs.get("tombstone", {}).get("properties", {}).get("transition", {}).get("enum") == ["DELETED", "EXPIRED", "SUPERSEDED"], "R4 tombstone enum drift")
           require(defs.get("outcomeMemory", {}).get("properties", {}).get("records", {}).get("maxItems") == 4096, "R4 active-record bound drift")
           require(defs.get("outcomeMemory", {}).get("properties", {}).get("tombstones", {}).get("maxItems") == 8192, "R4 tombstone bound drift")
           require(defs.get("outcome", {}).get("properties", {}).get("executionOutcomes", {}).get("maxItems") == 4096, "R4 execution-outcome bound drift")
           require(defs.get("ownerScopeId", {}).get("maxLength") == 64, "R4 owner-scope bound drift")
           require("does not prove" in str(schema.get("$comment", "")), "R4 schema semantic disclaimer drift")
-          for name, definition in defs.items():
+          for definition in defs.values():
               if isinstance(definition, dict) and definition.get("type") == "object":
                   require(definition.get("additionalProperties") is False, "R4 schema closed-object invariant drift")
 
