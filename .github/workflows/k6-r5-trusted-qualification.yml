@@ -114,15 +114,16 @@ jobs:
             if isinstance(z,ast.FunctionDef):return z.name
           def ch(z):return z.id if isinstance(z,ast.Name) else (ch(z.value)+"."+z.attr if isinstance(z,ast.Attribute) else "")
           ap=[z for z in ast.walk(tree) if isinstance(z,ast.FunctionDef) and z.name=="api"];q(len(ap)==1 and hashlib.sha256(ast.dump(ap[0],include_attributes=False).encode()).hexdigest()=="e78a573bbbd6d6c047fb98fc2397d70e775d5f544db6e263fe6f00d64518fa65","E-self-api")
-          allow={"ast","base64","hashlib","json","os","re","urllib.error","urllib.parse","urllib.request"}
+          allow={"ast","base64","hashlib","json","os","re","urllib.error","urllib.parse","urllib.request"};danger={"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input","__builtins__"}
           for z in ast.walk(tree):
-           if isinstance(z,ast.Import):q(all(x.name in allow for x in z.names),"E-self-import")
-           if isinstance(z,ast.ImportFrom):q(z.module in {"__future__","datetime"},"E-self-from")
-           if isinstance(z,ast.Call) and isinstance(z.func,ast.Name):q(z.func.id not in {"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input"},"E-self-exec")
-           if isinstance(z,ast.Call) and isinstance(z.func,ast.Attribute) and isinstance(z.func.value,ast.Name) and z.func.value.id=="os":q(False,"E-self-process")
-           if isinstance(z,ast.Call) and ch(z.func).startswith("urllib.request."):q(own(z)=="api","E-self-network")
+           if isinstance(z,ast.Import):q(all(x.name in allow and x.asname is None for x in z.names),"E-self-import")
+           if isinstance(z,ast.ImportFrom):
+            ok=(z.module=="__future__" and [(x.name,x.asname) for x in z.names]==[("annotations",None)]) or (z.module=="datetime" and [(x.name,x.asname) for x in z.names]==[("datetime",None),("timezone",None)]);q(ok,"E-self-from")
+           if isinstance(z,ast.Name) and isinstance(z.ctx,ast.Load):
+            q(z.id not in danger,"E-self-exec");q(z.id not in {"os","urllib"} or isinstance(par.get(z),ast.Attribute),"E-self-alias")
+           if isinstance(z,ast.Attribute):
+            c=ch(z);q(not z.attr.startswith("__"),"E-self-dunder");q(not c.startswith("os.") or c in {"os.environ","os.environ.get"},"E-self-process");q(not (c=="urllib.request" or c.startswith("urllib.request.")) or own(z)=="api","E-self-network")
            if isinstance(z,ast.Call) and ch(z.func)=="urllib.parse.quote":q(own(z)=="file","E-self-network")
-           if isinstance(z,ast.Attribute):q(not z.attr.startswith("__"),"E-self-dunder")
           # Predecessor and exact six-path candidate.
           for x,h in PB.items():q(file(bs,x)[1]==h,"E-predecessor")
           q(file(bs,IX)[1]==PRE,"E-index")
@@ -139,12 +140,17 @@ jobs:
           job=cw.split("  bounded-strategy-qualification:\n",1)[1];q([x for x in job.splitlines() if re.match(r"^    \S", x)]==["    name: k6-r5-bounded-strategy-qualification","    runs-on: ubuntu-latest","    timeout-minutes: 30","    env:","    steps:"],"E-cw-job")
           em=re.search(r"(?ms)^    env:\n(.*?)^    steps:\n",cw);q(em is not None,"E-cw-env")
           el={x.strip() for x in em.group(1).splitlines() if x.strip()};static={f'K6_R5_AUTHORIZATION_MERGE_SHA: "{A}"',f'K6_R5_AUTHORIZATION_MERGE_TREE: "{AT}"',f'K6_R5_AUTHORIZATION_DOCUMENT_BLOB: "{AB}"',f'K6_R5_IMPLEMENTATION_BRANCH: "{BR}"',f'PRE_R5_INDEX_BLOB: "{PRE}"','PYTHONDONTWRITEBYTECODE: "1"',f'R1_CONTRACTS_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/contracts.ts"]}"',f'R2_ROUTE_PLAN_CONTRACTS_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts"]}"',f'R4_OUTCOME_MEMORY_CONTRACTS_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts"]}"',f'R4_OUTCOME_MEMORY_RUNTIME_BLOB: "{PB["packages/kodac-runtime/src/evidence-router/outcome-memory.ts"]}"',f'K6_R5_TRUSTED_WORKFLOW_BLOB: "{tb}"'};q(el==static,"E-cw-env-set")
-          # Extract named run blocks and exact action pins.
+          # Extract named run blocks, exact step metadata, and exact action pins.
+          M={k:["- name: "+k,"shell: bash","run: |"] for k in H}
+          M["Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions"]=["- name: Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions","shell: bash","env:","PR_BASE_REF: "+expr("github.event.pull_request.base.ref"),"PR_BASE_SHA: "+expr("github.event.pull_request.base.sha"),"PR_HEAD_SHA: "+expr("github.event.pull_request.head.sha"),"PR_HEAD_REF: "+expr("github.event.pull_request.head.ref"),"PR_HEAD_REPOSITORY: "+expr("github.event.pull_request.head.repo.full_name"),"REPOSITORY: "+expr("github.repository"),"run: |"]
+          M["Prove forbidden R5 authority surfaces and live ruleset"]=["- name: Prove forbidden R5 authority surfaces and live ruleset","shell: bash","env:","GH_TOKEN: "+expr("github.token"),"run: |"]
+          M["Remove ephemeral TypeScript validation tooling"]=["- name: Remove ephemeral TypeScript validation tooling","if: "+expr("always()"),"shell: bash","run: |"]
+          M["Attest checkout unchanged after K6-R5 validation"]=["- name: Attest checkout unchanged after K6-R5 validation","if: "+expr("always()"),"shell: bash","run: |"]
           lines=cw.splitlines();sm=[i for i,x in enumerate(lines) if x=="    steps:"];q(len(sm)==1,"E-cw-steps");pos=[i for i in range(sm[0]+1,len(lines)) if re.match(r"^      - ",lines[i])];pos.append(len(lines));runs={};acts=[]
           for i,j in zip(pos,pos[1:]):
            raw=lines[i:j];head=raw[0].strip()
            if head.startswith("- uses:"):acts.append([x.strip() for x in raw if x.strip()]);continue
-           q(head.startswith("- name: "),"E-cw-step");name=head[8:];rp=[k for k,x in enumerate(raw) if x=="        run: |"];q(len(rp)==1 and name in H,"E-cw-run");b=[x[10:] if x.startswith("          ") else "" for x in raw[rp[0]+1:]]
+           q(head.startswith("- name: "),"E-cw-step");name=head[8:];rp=[k for k,x in enumerate(raw) if x=="        run: |"];q(len(rp)==1 and name in H,"E-cw-run");q([x.strip() for x in raw[:rp[0]+1] if x.strip()]==M[name],"E-cw-meta");q(all(not x.strip() or x.startswith("          ") for x in raw[rp[0]+1:]),"E-cw-run-shape");b=[x[10:] if x.startswith("          ") else "" for x in raw[rp[0]+1:]]
            while b and b[-1]=="":b.pop()
            runs[name]="\n".join(b)+"\n"
           q(list(runs)==list(H),"E-cw-run-order")
