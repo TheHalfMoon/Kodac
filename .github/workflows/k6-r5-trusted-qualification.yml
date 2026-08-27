@@ -113,6 +113,27 @@ jobs:
             z=par[z]
             if isinstance(z,ast.FunctionDef):return z.name
           def ch(z):return z.id if isinstance(z,ast.Name) else (ch(z.value)+"."+z.attr if isinstance(z,ast.Attribute) else "")
+          critical={"q":"21390087c6f7bc03a64e0916f40c0f3e14cd1245e0028ffb5fd30a454d26d98b","env":"984c1b0cf20ddc66b840aeca4a2d9022d5e8e883e8b14344b11289eb53230c26","pairs":"7f7b6a654d36d9687c0e4d520663393c329fec02f12681ed37af05ea524eab5c","api":"e1c9af94db328e3d2c8f5c4635aedca1b3b73566e74c48884b5074cf9f9f0742","cmp":"efc02e478bfbee3dad42456feeb2d081102f7376626b3ff4415bbce945b04882","file":"a49a8ded9b7c1f784e3fa0f6dddead905e3f86ecd98c2d8c5203faab6e3c41d0","instant":"7aa39fad8ea2a288f2d5f788864582e3e6a03c4af1c0d7e85afe84f1b6bb29fb","merge":"9e45ef4e9f72fbc9575bb1062a6dec9d767eadddcda2fe2443fc74d2bd43e4d3","expr":"ba83b89eb3310d0a736bdf156b5c67205b122cab5f7665c7457e5cb2e159743b","own":"3db30d1a24115483066f34463fc51d46964ca65cc52a1b23e6f0986b1ed737fd","ch":"9eb4476f921a3290b1e839e62ef3fecb2d317e4987d5c0bba58b65407ee70e95"}
+          found={}
+          for z in ast.walk(tree):
+           if isinstance(z,ast.FunctionDef) and z.name in critical:
+            if z.name in found: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper")
+            found[z.name]=z
+          if set(found)!=set(critical): raise SystemExit("K6-R5 trusted qualification failed: E-self-helper")
+          for name,want in critical.items():
+           node=found[name];seg=ast.get_source_segment(src,node) or ""
+           if node.decorator_list or hashlib.sha256(seg.encode()).hexdigest()!=want: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper")
+          guarded=set(critical)
+          for z in ast.walk(tree):
+           if isinstance(z,ast.Name) and z.id in guarded and isinstance(z.ctx,(ast.Store,ast.Del)): raise SystemExit("K6-R5 trusted qualification failed: E-self-helper-binding")
+           if isinstance(z,(ast.AsyncFunctionDef,ast.ClassDef)) and z.name in guarded: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper-binding")
+           if isinstance(z,ast.ExceptHandler) and z.name in guarded: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper-binding")
+           if isinstance(z,(ast.MatchAs,ast.MatchStar)) and z.name in guarded: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper-binding")
+           if isinstance(z,ast.MatchMapping) and z.rest in guarded: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper-binding")
+           if isinstance(z,(ast.Import,ast.ImportFrom)):
+            for a in z.names:
+             bound=a.asname or (a.name.split(".")[0] if isinstance(z,ast.Import) else a.name)
+             if bound in guarded: raise SystemExit("K6-R5 trusted qualification failed: E-self-helper-binding")
           ap=[z for z in ast.walk(tree) if isinstance(z,ast.FunctionDef) and z.name=="api"];q(len(ap)==1 and hashlib.sha256((ast.get_source_segment(src,ap[0]) or "").encode()).hexdigest()=="e1c9af94db328e3d2c8f5c4635aedca1b3b73566e74c48884b5074cf9f9f0742","E-self-api")
           allow={"ast","base64","hashlib","json","os","re","urllib.error","urllib.parse","urllib.request"};danger={"eval","exec","compile","__import__","open","getattr","setattr","delattr","globals","locals","vars","breakpoint","input","__builtins__"}
           for z in ast.walk(tree):
