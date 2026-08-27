@@ -5,11 +5,14 @@
 - Date: 2026-08-27
 - Founder authority: `KODAC-FOUNDER-REPO-LOCAL-CONTINUATION-2026-08-27`
 - Authority class: DOCUMENTATION / REPLACEMENT K6-R4 AUTHORIZATION CANDIDATE
-- Candidate base commit: `87f9a3dbe9d15d0b1573b50fe74487ca83562ba2`
-- Candidate base tree: `36a7e9f279b1fb9828d61a16c476963cf311dde3`
+- Candidate base commit: `ab737bb95459f2c68069009e686b2f3805f3e6d3`
+- Candidate base tree: `990169816e8c86d43679e33a3a9d747cd37751b7`
 - Protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
 - Ruleset node ID: `RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js`
 - Ruleset snapshot `updated_at`: `2026-08-11T21:30:21.316+03:00`
+- Canonical review-provider-neutrality amendment merge: `ab737bb95459f2c68069009e686b2f3805f3e6d3`
+- Canonical review-provider-neutrality amendment tree: `990169816e8c86d43679e33a3a9d747cd37751b7`
+- Canonical review-provider-neutrality document blob: `5ad8768353786336d016acb32de483d53e34a83e`
 - Active implementation PR: `#212`
 - Active implementation branch: `feat/k6-r4-privacy-governed-outcome-memory`
 - Pre-reconciliation PR #212 head: `19a76ac90f5a753656e7c7703a3c8f01a690a62f`
@@ -44,6 +47,17 @@ TRUSTED_WORKFLOW_PATH=.github/workflows/k6-r4-trusted-qualification.yml
 ```
 
 PR #217 / merge `5440c32f06148f5ec7f3d2880321323176546546` authorized the protected-base binding repair. PR #218 then merged the exact one-path repair as `87f9a3dbe9d15d0b1573b50fe74487ca83562ba2`.
+
+The repository-wide review-provider-neutrality and evidence-quorum amendment is canonical at:
+
+```text
+REVIEW_PROVIDER_NEUTRALITY_MERGE=ab737bb95459f2c68069009e686b2f3805f3e6d3
+REVIEW_PROVIDER_NEUTRALITY_TREE=990169816e8c86d43679e33a3a9d747cd37751b7
+REVIEW_PROVIDER_NEUTRALITY_DOCUMENT_BLOB=5ad8768353786336d016acb32de483d53e34a83e
+REVIEW_PROVIDER_NEUTRALITY_PATH=docs/planning/KODAC_REVIEW_PROVIDER_NEUTRALITY_AND_EVIDENCE_QUORUM_AMENDMENT_2026-08-27.md
+```
+
+That amendment removes provider-name authority without reducing historical review cardinality. Any K6 gate that historically required both CodeRabbit and Qodo now requires two distinct independent external semantic reviewer channels on the exact final head. Skipped, stale, rate-limited, status-only, billing-only, failed-to-start, or duplicate-channel responses do not count. `WAIVER=NO` remains binding.
 
 ## Positive trusted-workflow registration proof
 
@@ -312,7 +326,8 @@ Before PR #212 may merge, prove on one exact final head:
 - `k6-r4-trusted-qualification` is terminal `SUCCESS` for the exact final head;
 - `k6-r4-privacy-governed-outcome-memory` is terminal `SUCCESS` for the exact final head;
 - required `provenance`, `legacy-tests`, and `k2-runtime-gate` from trusted integration `15368` are terminal `SUCCESS`;
-- fresh exact-head CodeRabbit and Qodo reviews are terminal clean with zero unresolved material findings;
+- at least two distinct independent external semantic reviewer channels each provide a fresh terminal-clean assessment bound to the exact final head, with zero unresolved material correctness/security/governance/authority/scope findings;
+- skipped, stale, rate-limited, status-only, failed-to-start, billing-only, or duplicate-channel responses do not count toward the two-review quorum;
 - zero unresolved actionable review threads remain;
 - ruleset `20707483` remains active and unchanged in accepted identity/required-check semantics;
 - independent control-plane reads expose `bypass_actors=[]` and `current_user_can_bypass=never`;
@@ -385,36 +400,40 @@ K6-R5 IMPLEMENTATION
 
 ## Exact scope of this replacement-authorization candidate
 
-This authorization PR may change exactly one path:
+This authorization PR may change exactly one path relative to its canonical base:
 
 ```text
 docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
 ```
 
-No second path is authorized.
+No second path is authorized. The provider-neutrality amendment is already canonical in the base and therefore must not appear as a #219 candidate change.
 
 ## Adoption gate for this replacement authorization
 
 This record remains non-canonical unless its exact final candidate proves all of the following:
 
 1. base ref is exactly `main`;
-2. live protected `main` SHA is exactly `87f9a3dbe9d15d0b1573b50fe74487ca83562ba2` unless a later canonical forward update amends this record before qualification;
-3. live protected-main tree is exactly `36a7e9f279b1fb9828d61a16c476963cf311dde3` under the same condition;
-4. changed-file set is exactly this one documentation path;
-5. the record pins the exact canonical trusted-workflow merge/tree/blob and governing original/hardening authorization identities;
-6. the record contains one valid duplicate-key-free trusted-inspector manifest with the exact required key set and raw JSON bytes between its markers;
-7. applicable repository-required exact-head CI is terminal success;
-8. fresh exact-head CodeRabbit review has zero unresolved material correctness/security/governance/authority findings;
-9. fresh exact-head Qodo review has zero unresolved material correctness/security/governance/authority findings;
-10. zero unresolved actionable review threads remain;
-11. candidate is open, non-draft, mergeable, and `behind_by=0`;
-12. ruleset `20707483` remains active with strict required status checks and required review-thread resolution;
-13. independent control-plane proof exposes `bypass_actors=[]` and `current_user_can_bypass=never`;
-14. exact final head/tree/document blob are captured;
-15. guarded normal merge uses exact qualified `expected_head_sha`;
-16. post-merge ordered-parent/tree/blob/protected-main/signature proof succeeds;
-17. applicable post-merge required checks are terminal success;
-18. `WAIVER=NO`.
+2. candidate PR base SHA is exactly `ab737bb95459f2c68069009e686b2f3805f3e6d3`;
+3. candidate PR base tree is exactly `990169816e8c86d43679e33a3a9d747cd37751b7`;
+4. live protected `main` SHA is exactly `ab737bb95459f2c68069009e686b2f3805f3e6d3` and live protected-main tree is exactly `990169816e8c86d43679e33a3a9d747cd37751b7`;
+5. if candidate-base or live-main identity drifts, this record is forward-amended/reconciled to the new exact canonical base and the entire candidate is requalified from scratch;
+6. changed-file set is exactly this one documentation path with no rename/copy source;
+7. the record pins the exact canonical trusted-workflow merge/tree/blob, governing original/hardening authorization identities, and canonical provider-neutral review-policy merge/tree/blob;
+8. the record contains one valid duplicate-key-free trusted-inspector manifest with the exact required key set and raw JSON bytes between its markers;
+9. applicable repository-required exact-head CI is terminal success;
+10. at least two distinct independent external semantic reviewer channels each give a substantive terminal-clean review bound to the exact final head with zero unresolved material correctness/security/governance/authority/scope findings;
+11. skipped, stale, rate-limited, status-only, failed-to-start, billing-only, or duplicate-channel responses do not count toward the two-review quorum;
+12. zero unresolved actionable review threads remain;
+13. candidate is open, non-draft, mergeable, and `behind_by=0`;
+14. ruleset `20707483` remains active with strict required status checks and required review-thread resolution;
+15. independent control-plane proof exposes `bypass_actors=[]` and `current_user_can_bypass=never`;
+16. exact final head/tree/document blob are captured;
+17. guarded normal merge uses exact qualified `expected_head_sha`;
+18. post-merge ordered-parent/tree/blob/protected-main/signature proof succeeds;
+19. applicable post-merge required checks are terminal success;
+20. `WAIVER=NO`.
+
+This gate preserves the historical two-review semantic quorum while removing permanent authority from any reviewer vendor. Provider substitution is permitted; review bypass and cardinality reduction are not.
 
 If live protected `main` moves before merge, do not merge stale authority. Amend this record through a forward commit to the new exact canonical base and requalify from scratch.
 
