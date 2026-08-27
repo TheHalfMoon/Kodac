@@ -2,7 +2,7 @@
 
 ## Record identity
 
-- Date: 2026-08-27
+- Date: `2026-08-27`
 - Founder authority: `KODAC-FOUNDER-REPO-LOCAL-CONTINUATION-2026-08-27`
 - Authority class: DOCUMENTATION / POST-MERGE GOVERNANCE-REPAIR AUTHORIZATION CANDIDATE
 - Canonical base commit: `47a2ac5e53d68c3fe6427fc1bb0e42195e09f365`
@@ -18,9 +18,9 @@
 - Ruleset trusted node ID: `RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js`
 - Ruleset trusted snapshot `updated_at`: `2026-08-11T21:30:21.316+03:00`
 
-## Why this repair gate exists
+## Why this gate exists
 
-PR #214 passed its pre-merge one-path scope, repository-required CI, exact-head Qodo review, exact-head CodeRabbit terminal review, thread-resolution, ruleset, expected-head merge, ordered-parent, merge-tree and signature checks.
+PR #214 passed its pre-merge one-path scope, repository-required CI, exact-head Qodo review, exact-head CodeRabbit terminal review, review-thread resolution, ruleset preflight, expected-head merge, ordered-parent proof, merge-tree proof and GitHub signature proof.
 
 Its merge itself is structurally valid:
 
@@ -34,7 +34,7 @@ GITHUB_SIGNATURE_VERIFIED=true
 GITHUB_SIGNATURE_REASON=valid
 ```
 
-However the mandatory post-merge proof found a base-controlled GitHub Actions registration failure before any job could be created:
+Mandatory post-merge proof then exposed a base-controlled GitHub Actions registration failure before any job could be created:
 
 ```text
 TRUSTED_WORKFLOW_POST_MERGE_RUN_ID=33035724433
@@ -54,7 +54,7 @@ GOVERNANCE_POST_MERGE_RUN_ID=33035725055
 GOVERNANCE_POST_MERGE_CONCLUSION=success
 ```
 
-Therefore the merge is present on protected `main`, but the trusted workflow has **not** satisfied its own mandatory post-merge proof and is not a canonical trusted prerequisite.
+Therefore the merge is present on protected `main`, but the trusted workflow has **not** satisfied its mandatory post-merge proof and is not a canonical trusted prerequisite.
 
 ```text
 K6_R4_TRUSTED_WORKFLOW_MERGED=YES
@@ -64,9 +64,9 @@ PR_212_MERGE=BLOCKED
 WAIVER=NO
 ```
 
-## Proven root cause
+## Proven root cause: YAML block-scalar escape
 
-The exact canonical workflow blob contains the Python assignment:
+The exact canonical trusted-workflow blob contains the Python assignment:
 
 ```text
 EXPECTED_WORKFLOW_PREAMBLE = """name: k6-r4-privacy-governed-outcome-memory
@@ -82,23 +82,33 @@ jobs:
 """
 ```
 
-Those physical continuation lines begin at YAML column zero. They therefore escape the `run: |` block scalar before GitHub Actions can compile the workflow. The post-merge zero-job failure is consistent with this exact structural defect: validation fails before a runnable job exists.
+Those physical continuation lines begin at YAML column zero. They therefore escape the surrounding `run: |` block scalar before GitHub Actions can compile the workflow. The zero-job, non-rerequestable Actions failure is consistent with this exact structural defect.
 
-This repair must eliminate that class entirely. A repaired workflow must not place unindented physical multiline Python-string content inside the YAML block scalar. The candidate preamble value must instead be represented in a YAML-safe form, for example adjacent escaped Python string literals or another equivalent base-controlled representation whose physical source lines remain inside the `run: |` indentation.
+A repair must remove that class entirely. The candidate preamble value must be represented in a YAML-safe form whose physical source lines remain inside the `run: |` indentation, such as adjacent escaped Python string literals or an equivalent base-controlled representation.
 
-## Additional exact repair required: literal GitHub-expression preservation
+## Additional repair required: literal GitHub-expression preservation
 
-The canonical workflow also contains an inspector comparison constant for the candidate-owned checkout action with literal text equivalent to:
+The canonical inspector also contains a comparison constant for the candidate-owned checkout action with literal text equivalent to:
 
 ```text
 ref: ${{ github.event.pull_request.head.sha }}
 ```
 
-That literal currently appears directly inside the trusted workflow's own `run:` scalar. GitHub Actions expression interpolation occurs before the shell/Python program receives that scalar, so the inspector must not depend on a literal `${{ ... }}` token surviving unchanged inside its own executable script.
+That candidate-workflow literal currently appears directly inside the trusted workflow's own executable `run:` scalar. GitHub Actions expression processing occurs before the shell/Python program receives that scalar, so the inspector must not depend on the complete literal expression token surviving unchanged.
 
-The repair must construct the candidate-workflow literal at Python runtime without embedding the complete `${{ ... }}` expression token in the trusted workflow's `run:` source. For example, a base-controlled concatenation of `"$"` with the brace/expression text is permitted. The resulting Python value must still equal the exact literal candidate workflow line and must not introduce `eval`, dynamic shell evaluation, candidate execution, or any new authority.
+The repair must construct that candidate-workflow literal at Python runtime without embedding the complete `${{ ... }}` token in the executable inspector source. A base-controlled construction such as concatenating `"$"` with the brace/expression text is permitted. The resulting Python value must equal the exact candidate-workflow line and must not introduce `eval`, dynamic shell evaluation, candidate execution or any new authority.
 
-This is a correctness repair to the already-authorized data-only inspector, not a new product/runtime capability.
+## Review repair: positive registration proof is mandatory
+
+Fresh review of the first version of this record correctly identified that merely proving the **absence** of another zero-job failure is insufficient. A repaired `pull_request_target` workflow could remain unregistered or otherwise unable to instantiate its job while the lifecycle incorrectly proceeds.
+
+Therefore this record now requires **positive GitHub registration and job-instantiation evidence** before the repaired workflow may be classified canonical.
+
+```text
+NEGATIVE_ONLY_REGISTRATION_PROOF=REJECTED
+POSITIVE_PULL_REQUEST_TARGET_JOB_CREATION_PROOF=REQUIRED
+WAIVER=NO
+```
 
 ## Decision
 
@@ -116,9 +126,24 @@ The repair may only:
 
 1. restore valid GitHub Actions/YAML registration of the already-authorized trusted workflow;
 2. preserve the intended candidate-workflow preamble as data without physical YAML dedent;
-3. preserve literal candidate GitHub-expression text without trusting GitHub expression interpolation inside inspector constants;
-4. preserve all previously accepted trust-boundary checks and reviewed fail-closed hardening;
-5. add no product/runtime authority.
+3. preserve literal candidate GitHub-expression text without trusting expression interpolation inside inspector constants;
+4. add a deterministic fail-closed diagnostic for the intentionally absent replacement R4 authorization during the registration probe described below;
+5. preserve all previously accepted trust-boundary checks and reviewed fail-closed hardening;
+6. add no product/runtime authority.
+
+The deterministic diagnostic in item 4 may distinguish an HTTP `404` for the **exact** protected-base path:
+
+```text
+docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
+```
+
+and fail with the exact base-controlled label:
+
+```text
+K6-R4 trusted qualification failed: replacement authorization unavailable
+```
+
+All other API/transport/status/shape failures must remain fail-closed. The diagnostic must not make the replacement authorization optional for actual R4 qualification; it exists only so the staged registration probe can prove that the registered job executed through all predecessor checks and stopped at the intentional missing-authorization boundary.
 
 ## Exact repair-preservation requirements
 
@@ -134,7 +159,7 @@ The repaired workflow must continue to preserve all of the following:
 - no `eval`, dynamic shell evaluation, or command substitution over candidate text;
 - no cache restore/save;
 - no artifact/SARIF/test-result upload;
-- no checks/comments/reviews/repository/ruleset writes;
+- no checks/comments/reviews/repository/ruleset writes from the trusted inspector;
 - no id-token, environment secrets, repository secrets, or organization secrets;
 - exact repository `TheHalfMoon/Kodac`;
 - exact authorized PR `#212`;
@@ -154,7 +179,7 @@ The repaired workflow must continue to preserve all of the following:
 - exact immutable action step metadata;
 - complete protected named-step SHA-256 fingerprints from the later manifest;
 - mandatory strict TypeScript/focused R4/R3/R2/R1/full runtime/Python/Ruff/provenance commands;
-- no unnamed executable step bypass;
+- no unnamed executable-step bypass;
 - no job-level always-false/no-op bypass;
 - no trigger/comment-spoofing bypass;
 - no `GITHUB_ENV` / `GITHUB_PATH` mutation path;
@@ -166,13 +191,77 @@ The repaired workflow must continue to preserve all of the following:
 - protected ruleset identity and independent external no-bypass proof;
 - `WAIVER=NO`.
 
-## Workflow registration proof
+## Positive workflow-registration probe
 
-The previous pre-merge review cycle was insufficient because GitHub's actual workflow compiler was not exercised successfully on protected `main`.
+The repaired workflow is **not** canonical merely because its repair PR merges and is **not** canonical merely because no invalid-workflow check suite appears on the merge push.
 
-The repaired workflow is not canonical merely because its PR merges.
+After the repair merge has become protected `main`, but before the replacement R4 authorization is created, one bounded external PR-state probe is authorized solely to exercise the canonical `pull_request_target` workflow definition.
 
-Post-merge proof for the repair must require:
+The probe must use PR `#212`, whose six R4 implementation paths already satisfy the workflow path filter, and must not alter its branch, commit, tree, changed-file set or implementation bytes.
+
+### Pre-probe fence
+
+Immediately before the probe, independently read and capture:
+
+```text
+PR_NUMBER=212
+STATE=open
+BASE_REF=main
+BASE_SHA=<exact repaired-trusted-workflow merge on protected main>
+HEAD_REF=feat/k6-r4-privacy-governed-outcome-memory
+HEAD_SHA=<exact pre-probe PR #212 head>
+HEAD_REPOSITORY=TheHalfMoon/Kodac
+CHANGED_PATHS=<exact six authorized R4 implementation paths>
+```
+
+If any field is different, STOP. Do not substitute a newer mutable ref silently.
+
+### Sole authorized external state transition
+
+For registration proof only, the external governance operator may perform exactly this state-only cycle:
+
+```text
+PR #212: READY -> DRAFT -> READY
+```
+
+The transition must use normal GitHub PR-state operations. It grants no authority to the trusted workflow itself and no authority to modify PR #212 code, branch history, review findings, labels, base branch, merge state, or implementation scope.
+
+The `READY` transition is expected to emit the already-authorized `ready_for_review` event and exercise the protected-base `pull_request_target` workflow.
+
+### Required positive evidence
+
+The repaired trusted workflow is not canonical unless the state-only probe produces all of the following:
+
+1. a new GitHub Actions workflow run whose workflow path is exactly `.github/workflows/k6-r4-trusted-qualification.yml`;
+2. event exactly `pull_request_target`;
+3. protected-base revision corresponding to the exact repaired-workflow merge on `main`;
+4. at least one actual check run/job rather than a zero-job workflow-validation suite;
+5. an instantiated job named exactly `k6-r4-trusted-qualification` / `trusted-r4-qualification` according to the canonical workflow metadata;
+6. the inspector step actually starts and executes base-controlled Python;
+7. the run reaches the exact deterministic staging barrier and emits:
+
+```text
+K6-R4 trusted qualification failed: replacement authorization unavailable
+```
+
+8. the failure occurs before any candidate code/action/script/module execution, which remains forbidden;
+9. no unexpected workflow-compilation, expression-interpolation, YAML, Python syntax, event-identity, predecessor, token, API, or control-flow error appears before the staging barrier;
+10. post-probe PR #212 is again open/non-draft and its head SHA, head tree, branch, repository and six changed implementation paths are byte-for-byte/identity-equal to the pre-probe snapshot;
+11. protected `main` remains the repaired-workflow merge throughout the probe;
+12. `WAIVER=NO`.
+
+A run that is absent, has zero jobs, is associated with the wrong workflow/event/base, fails before the exact staging barrier, or reaches candidate execution is a registration-proof failure.
+
+The expected run conclusion at this stage is therefore `failure`, but only the exact **positive job-created / inspector-executed / missing-replacement-authorization barrier** failure is acceptable. This is staging evidence, not R4 qualification success.
+
+```text
+EXPECTED_REGISTRATION_PROBE_RESULT=JOB_CREATED_AND_FAIL_CLOSED_AT_MISSING_REPLACEMENT_AUTHORIZATION
+R4_QUALIFICATION_RESULT=NOT_YET_APPLICABLE
+```
+
+## Repair post-merge proof
+
+Post-merge proof for the later workflow repair must require, in order:
 
 1. protected `main` equals the returned repair merge commit;
 2. ordered parent 1 equals the repair-authorization canonical merge base;
@@ -181,32 +270,34 @@ Post-merge proof for the repair must require:
 5. canonical trusted-workflow blob equals the qualified repair blob;
 6. GitHub merge signature is verified and valid;
 7. applicable repository-required post-merge checks succeed;
-8. the repair merge does **not** produce a zero-job, non-rerequestable GitHub Actions workflow-validation failure for `.github/workflows/k6-r4-trusted-qualification.yml`;
-9. the canonical workflow remains present at its exact path and byte identity after the merge;
-10. ruleset `20707483` remains active with `bypass_actors=[]` and `current_user_can_bypass=never` when externally observable;
-11. `WAIVER=NO`.
+8. no zero-job/non-rerequestable workflow-validation failure exists for the repaired canonical bytes;
+9. the positive state-only PR #212 registration probe above succeeds exactly;
+10. the canonical workflow remains present at its exact path/blob after the probe;
+11. ruleset `20707483` remains active with `bypass_actors=[]` and `current_user_can_bypass=never` when externally observable;
+12. `WAIVER=NO`.
 
-A missing ordinary `pull_request_target` execution on the repair merge's `push` event is expected and is not itself failure. The prohibited condition is another GitHub workflow-validation/check-suite failure before jobs exist.
+Only after **all** twelve checks succeed may the repaired trusted workflow be classified `CLOSED_CANONICAL` for its bounded preimplementation prerequisite role.
 
 ## Repair qualification gate
 
-The later one-path repair candidate is not merge-qualified unless its exact final head proves:
+The later one-path workflow repair candidate is not merge-qualified unless its exact final head proves:
 
 1. base ref is exactly `main` and base SHA/tree equal the canonical merge of this repair authorization;
 2. changed-file set is exactly `.github/workflows/k6-r4-trusted-qualification.yml`;
 3. `behind_by=0`;
 4. candidate is open, non-draft and mergeable;
-5. the workflow is structurally valid YAML and preserves the intended `run: |` block without unindented escaped content;
-6. no complete `${{ github.event.pull_request.head.sha }}` candidate-literal comparison token is embedded in the executable inspector source in a way GitHub expression interpolation can rewrite before Python receives it;
-7. all trust-boundary and exact-inspection invariants above remain fail-closed;
-8. applicable repository-required exact-head CI is terminal success;
-9. fresh exact-head CodeRabbit and Qodo report zero unresolved material correctness/security/governance/authority findings;
-10. zero unresolved actionable threads;
-11. final head/tree/workflow blob are captured;
-12. final protected-main/ruleset preflight remains unchanged;
-13. merge uses normal GitHub merge-commit semantics with exact `expected_head_sha`;
-14. mandatory post-merge registration/ordered-parent/tree/blob/signature/control-plane proof succeeds;
-15. `WAIVER=NO`.
+5. the workflow is structurally valid YAML and preserves the intended `run: |` block without physical dedent;
+6. the complete candidate-literal `${{ github.event.pull_request.head.sha }}` comparison token is not embedded in executable inspector source in a way GitHub expression processing can rewrite before Python receives it;
+7. the exact missing-replacement-authorization diagnostic is limited to an HTTP `404` for the exact protected replacement path and remains fail-closed;
+8. all trust-boundary and exact-inspection invariants above remain fail-closed;
+9. applicable repository-required exact-head CI is terminal success;
+10. fresh exact-head CodeRabbit and Qodo report zero unresolved material correctness/security/governance/authority findings;
+11. zero unresolved actionable threads;
+12. final head/tree/workflow blob are captured;
+13. final protected-main/ruleset preflight remains unchanged;
+14. merge uses normal GitHub merge-commit semantics with exact `expected_head_sha`;
+15. mandatory post-merge positive registration/ordered-parent/tree/blob/signature/control-plane proof succeeds;
+16. `WAIVER=NO`.
 
 Any head movement invalidates prior exact-head CI/review evidence.
 
@@ -218,7 +309,7 @@ Do **not** prepare or merge:
 docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md
 ```
 
-until the repaired trusted workflow is itself canonically adopted and passes the registration proof above.
+until the repaired trusted workflow is itself canonically adopted and passes the positive registration proof above.
 
 Only after that may the existing hardening lifecycle resume:
 
@@ -236,7 +327,9 @@ PR #212 may remain open but is paused and is not merge-qualified.
 
 Its current base and all previous exact-head CI/review evidence are stale after protected `main` moved.
 
-No merge, rebase, force-push or R4 implementation mutation is authorized until the repaired trusted workflow and then the replacement R4 authorization are canonical in order.
+The single `READY -> DRAFT -> READY` registration probe defined above is a state-only governance proof and is the sole additional PR #212 mutation authorized before the replacement R4 authorization. It must not alter implementation content or grant merge authority.
+
+No merge, rebase, force-push, implementation commit, branch rewrite or R4 implementation mutation is authorized until the repaired trusted workflow and then the replacement R4 authorization are canonical in order.
 
 ## Preserved non-grants
 
@@ -259,6 +352,8 @@ REPOSITORY / PR / CHECK WRITE AUTHORITY FROM THE TRUSTED INSPECTOR
 PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH
 K6-R5 AUTHORIZATION OR IMPLEMENTATION
 ```
+
+The external state-only registration probe does not grant any of those authorities to the trusted workflow or to R4.
 
 ## Exact scope of this authorization candidate
 
@@ -288,7 +383,7 @@ This record remains non-canonical unless its exact final candidate proves:
 12. applicable post-merge required checks succeed;
 13. `WAIVER=NO`.
 
-If `main` or the ruleset changes before merge, stop, reconcile this docs-only candidate forward non-destructively, update the exact base evidence if required, and requalify from scratch.
+If `main` or the ruleset changes before merge, stop, reconcile this docs-only candidate forward non-destructively, update exact base evidence if required, and requalify from scratch.
 
 ## Stop boundary
 
