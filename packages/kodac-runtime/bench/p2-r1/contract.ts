@@ -558,7 +558,7 @@ export function validateManifestRecord(
     chronology_scheme: value.chronology_scheme,
     chronology_status: value.chronology_status,
     task_family: value.task_family,
-    case_id: value.case_id,
+    case_id: value.case_id as string,
     case_digest: value.case_digest,
     strategy_id: value.strategy_id as string,
     strategy_version: value.strategy_version as string,
