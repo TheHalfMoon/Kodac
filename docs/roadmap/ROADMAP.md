@@ -78,7 +78,7 @@ K6 still does not authorize provider/model invocation, route execution, durable 
 P2 is required before broad evidence-backed comparisons or superiority claims for later P3-P8 work. The adopted benchmark direction follows ADR-0010 and the intelligence improvement master plan:
 
 - frozen, identity-bound corpus material;
-- separate later-in-time holdout identity;
+- separately identified holdout material whose `later-in-time` classification requires proven strict ordering under the defined comparable chronology scheme;
 - task-family-separated metrics;
 - provenance and contamination state;
 - reproducible deterministic contract/report identities;
