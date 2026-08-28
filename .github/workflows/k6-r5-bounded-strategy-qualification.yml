@@ -30,7 +30,7 @@ jobs:
       R2_ROUTE_PLAN_CONTRACTS_BLOB: "4ee85d8c0163d5318d0d900d733ba75afa814f7c"
       R4_OUTCOME_MEMORY_CONTRACTS_BLOB: "6411a42e6fc0074e60edc10eaa27e00b3b197fca"
       R4_OUTCOME_MEMORY_RUNTIME_BLOB: "9f9d0769c5ffab2d482574ea59418144d6dc49a6"
-      K6_R5_TRUSTED_WORKFLOW_BLOB: "fbbb2a6f61d2b6e1d7390eebb85338bc467df6fb"
+      K6_R5_TRUSTED_WORKFLOW_BLOB: "5b6e4c97412e8c0617e808e90113651194b85a31"
       PYTHONDONTWRITEBYTECODE: "1"
 
     steps:
@@ -166,15 +166,111 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          node --input-type=module <<'NODE'
+          node --experimental-vm-modules --input-type=module <<'NODE'
           import fs from "node:fs"
-          const contracts = fs.readFileSync("packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts", "utf8")
-          const runtime = fs.readFileSync("packages/kodac-runtime/src/evidence-router/strategy-proposal.ts", "utf8")
-          const imports = [...runtime.matchAll(/\bimport(?:\s+type)?[\s\S]*?\sfrom\s+["']([^"']+)["']/g)].map((match) => match[1])
-          if ((contracts.match(/\bimport\b/g) ?? []).length !== 0) throw new Error("R5 contracts gained imports")
-          if (JSON.stringify(imports) !== JSON.stringify(["node:crypto", "node:util", "./contracts.ts", "./strategy-proposal-contracts.ts"])) throw new Error("R5 runtime import allowlist drift")
-          if (/\bimport\s*\(/.test(runtime)) throw new Error("dynamic import forbidden")
-          const combined = `${contracts}\n${runtime}`
+          import path from "node:path"
+          import vm from "node:vm"
+          import { stripTypeScriptTypes } from "node:module"
+
+          const root = "packages/kodac-runtime/src/evidence-router"
+          const expectedRuntimeImports = new Map([
+            ["strategy-proposal.ts", ["node:crypto", "node:util", "./contracts.ts", "./strategy-proposal-contracts.ts"]],
+            ["contracts.ts", ["node:crypto", "node:util"]],
+            ["strategy-proposal-contracts.ts", []],
+          ])
+          const expectedImportPrefixes = new Map([
+            ["strategy-proposal.ts", [
+              'import { createHash } from "node:crypto"',
+              'import { types as utilTypes } from "node:util"',
+              "",
+              "import {",
+              "  K6_R1_LIMITS,",
+              "  canonicalK6R1Json,",
+              "  validateK6R1RouteRequest,",
+              '} from "./contracts.ts"',
+              "import {",
+              "  K6_R5_LIMITS,",
+              "  K6_R5_PRIVACY_CLASSES,",
+              "  K6_R5_QUALIFICATION_OUTCOMES,",
+              "  K6_R5_QUALIFICATION_RESULT_VERSION,",
+              "  K6_R5_STRATEGY_EVIDENCE_VERSION,",
+              "  K6_R5_STRATEGY_KIND,",
+              "  K6_R5_STRATEGY_VERSION,",
+              "  type K6R5PrivacyClass,",
+              "  type K6R5QualificationOutcome,",
+              "  type K6R5QualificationResult,",
+              "  type K6R5QualificationResultIdentityInput,",
+              "  type K6R5Strategy,",
+              "  type K6R5StrategyEvidence,",
+              "  type K6R5StrategyEvidenceIdentityInput,",
+              "  type K6R5StrategyIdentityInput,",
+              "  type K6R5StrategyScope,",
+              '} from "./strategy-proposal-contracts.ts"',
+              "",
+              "",
+            ].join("\n")],
+            ["contracts.ts", [
+              'import { createHash } from "node:crypto"',
+              'import { types as utilTypes } from "node:util"',
+              "",
+              "",
+            ].join("\n")],
+            ["strategy-proposal-contracts.ts", ""],
+          ])
+          const allowedBuiltins = new Set(["node:crypto", "node:util"])
+          const sources = new Map()
+
+          for (const [file, expected] of expectedRuntimeImports) {
+            const source = fs.readFileSync(path.join(root, file), "utf8")
+            sources.set(file, source)
+
+            const expectedPrefix = expectedImportPrefixes.get(file)
+            if (typeof expectedPrefix !== "string" || !source.startsWith(expectedPrefix)) {
+              throw new Error(`runtime import declaration form drift: ${file}`)
+            }
+
+            let stripped
+            try {
+              stripped = stripTypeScriptTypes(source, { mode: "strip" })
+            } catch {
+              throw new Error(`TypeScript stripping failed for ${file}`)
+            }
+
+            let parsed
+            try {
+              parsed = new vm.SourceTextModule(stripped, { identifier: file })
+            } catch {
+              throw new Error(`module parsing failed for ${file}`)
+            }
+
+            const actual = [...parsed.dependencySpecifiers]
+            if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+              throw new Error(`runtime dependency allowlist drift: ${file}`)
+            }
+
+            const importKeywordCount = (source.match(/\bimport\b/g) ?? []).length
+            if (importKeywordCount !== actual.length) {
+              throw new Error(`dynamic, type-only, side-effect, or unrecognized import form forbidden: ${file}`)
+            }
+
+            for (const specifier of actual) {
+              if (specifier.startsWith("./")) {
+                const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier))
+                if (!expectedRuntimeImports.has(resolved)) {
+                  throw new Error(`local runtime dependency escaped closure: ${file} -> ${specifier}`)
+                }
+              } else if (!allowedBuiltins.has(specifier)) {
+                throw new Error(`external runtime dependency forbidden: ${file} -> ${specifier}`)
+              }
+            }
+          }
+
+          const r5Contracts = sources.get("strategy-proposal-contracts.ts")
+          if ((r5Contracts.match(/\bimport\b/g) ?? []).length !== 0) {
+            throw new Error("R5 contracts gained imports")
+          }
+
+          const combined = [...sources.values()].join("\n")
           for (const pattern of [
             /\bExecutionGateway\b/i, /child_process/i, /node:fs/i, /node:path/i, /node:http/i, /node:https/i,
             /node:net/i, /node:tls/i, /\bfetch\s*\(/, /\bprocess\.(?:env|cwd|chdir)/, /Math\.random/,
@@ -186,9 +282,28 @@ jobs:
           NODE
 
           python3 - <<'PY'
+          from datetime import datetime
           import json
           import os
           import urllib.request
+
+          def need(condition, label):
+              if not condition:
+                  raise SystemExit(f"K6-R5 Stage B ruleset proof failed: {label}")
+
+          def instant(value):
+              need(isinstance(value, str) and bool(value), "ruleset timestamp missing")
+              normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+              try:
+                  parsed = datetime.fromisoformat(normalized)
+              except ValueError as exc:
+                  raise SystemExit("K6-R5 Stage B ruleset proof failed: ruleset timestamp invalid") from exc
+              need(parsed.tzinfo is not None and parsed.utcoffset() is not None, "ruleset timestamp lacks timezone")
+              return parsed
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  raise SystemExit("K6-R5 Stage B ruleset proof failed: GitHub API redirect forbidden")
 
           token = os.environ["GH_TOKEN"]
           request = urllib.request.Request(
@@ -200,25 +315,85 @@ jobs:
                   "User-Agent": "kodac-k6-r5-bounded-strategy-qualification",
               },
           )
-          with urllib.request.urlopen(request, timeout=20) as response:
+          opener = urllib.request.build_opener(NoRedirect())
+          with opener.open(request, timeout=20) as response:
               ruleset = json.load(response)
-          assert ruleset["enforcement"] == "active"
-          assert ruleset["conditions"]["ref_name"] == {"exclude": [], "include": ["refs/heads/main"]}
-          assert ruleset.get("bypass_actors") == []
-          assert ruleset.get("current_user_can_bypass") == "never"
-          pr_rules = [rule for rule in ruleset["rules"] if rule["type"] == "pull_request"]
-          assert len(pr_rules) == 1 and pr_rules[0]["parameters"]["required_review_thread_resolution"] is True
-          status_rules = [rule for rule in ruleset["rules"] if rule["type"] == "required_status_checks"]
-          assert len(status_rules) == 1
-          params = status_rules[0]["parameters"]
-          assert params["strict_required_status_checks_policy"] is True
-          assert params["required_status_checks"] == [
-              {"context": "provenance", "integration_id": 15368},
-              {"context": "legacy-tests", "integration_id": 15368},
-              {"context": "k2-runtime-gate", "integration_id": 15368},
-          ]
-          PY
 
+          need(ruleset["id"] == 20707483, "ruleset id drift")
+          if "node_id" in ruleset:
+              need(ruleset["node_id"] == "RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js", "ruleset node id drift")
+          need(instant(ruleset["updated_at"]) == instant("2026-08-11T21:30:21.316+03:00"), "ruleset timestamp drift")
+          need(ruleset["name"] == "Kodac canonical main protection v1", "ruleset name drift")
+          need(ruleset["target"] == "branch", "ruleset target drift")
+          need(ruleset["enforcement"] == "active", "ruleset enforcement drift")
+          if "source_type" in ruleset:
+              need(ruleset["source_type"] == "Repository", "ruleset source type drift")
+          if "source" in ruleset:
+              need(ruleset["source"] == "TheHalfMoon/Kodac", "ruleset source drift")
+          need(
+              ruleset["conditions"]["ref_name"] == {"exclude": [], "include": ["refs/heads/main"]},
+              "ruleset ref condition drift",
+          )
+
+          bypass_actors_visible = "bypass_actors" in ruleset
+          current_user_bypass_visible = "current_user_can_bypass" in ruleset
+          if bypass_actors_visible:
+              need(ruleset["bypass_actors"] == [], "visible bypass actors are non-canonical")
+          if current_user_bypass_visible:
+              need(ruleset["current_user_can_bypass"] == "never", "visible current-user bypass is non-canonical")
+
+          need(
+              [rule["type"] for rule in ruleset["rules"]] == [
+                  "deletion",
+                  "non_fast_forward",
+                  "pull_request",
+                  "required_status_checks",
+              ],
+              "ruleset rule ordering drift",
+          )
+          pr_params = ruleset["rules"][2]["parameters"]
+          need(
+              pr_params == {
+                  "required_approving_review_count": 0,
+                  "dismiss_stale_reviews_on_push": False,
+                  "required_reviewers": [],
+                  "require_code_owner_review": False,
+                  "require_last_push_approval": False,
+                  "require_extra_approval_for_unattributed_changes": True,
+                  "required_review_thread_resolution": True,
+                  "allowed_merge_methods": ["merge", "squash", "rebase"],
+              },
+              "pull-request rule parameters drift",
+          )
+          status_params = ruleset["rules"][3]["parameters"]
+          need(status_params["strict_required_status_checks_policy"] is True, "strict status policy disabled")
+          need(status_params["do_not_enforce_on_create"] is False, "status checks not enforced on create")
+          need(
+              status_params["required_status_checks"] == [
+                  {"context": "provenance", "integration_id": 15368},
+                  {"context": "legacy-tests", "integration_id": 15368},
+                  {"context": "k2-runtime-gate", "integration_id": 15368},
+              ],
+              "required status checks drift",
+          )
+
+          visibility = (
+              "AVAILABLE"
+              if bypass_actors_visible and current_user_bypass_visible
+              else "UNAVAILABLE_UNDER_ACTIONS_TOKEN"
+          )
+          print(
+              json.dumps(
+                  {
+                      "bypass_state_visibility": visibility,
+                      "external_owner_no_bypass_proof_required": True,
+                      "ruleset_id": 20707483,
+                  },
+                  sort_keys=True,
+                  separators=(",", ":"),
+              )
+          )
+          PY
       - name: Install integrity-locked TypeScript validation tooling outside the checkout
         shell: bash
         run: |
