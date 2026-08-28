@@ -9,158 +9,149 @@ They remain in the repository for historical integrity and research context, but
 - the README current architecture summary;
 - reconstituted `docs/roadmap/*`.
 
-This status notice does not delete, rewrite, validate, or re-adopt those historical product documents.
+This status notice does not delete, rewrite, validate, or re-adopt those historical product documents. Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
 
-Future Kodac product-document reconstitution requires a separate founder-reviewed gate.
+## Canonical closed milestones
 
-**K4 closeout-candidate rule:** every `K4: CLOSED` or equivalent K4-closed statement introduced by the bounded K4 closeout candidate was conditional candidate state until the exact-head closeout gate, expected-head merge, and required post-merge ordered-parent/tree/protected-main verification in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md` all passed. Those conditions are satisfied by canonical merge `dcd3693826d9282b475d99c6b9e658b9695e63a8`; K4 is canonically closed for its bounded R1-R5 data-only scope.
-
-**K5 closeout-candidate rule:** K5-R1 through K5-R5 are already canonical for their separately authorized bounded scopes, and the bounded closeout authorization is canonical at merge `f1457f8e7efd1e09e2d55e73fc0e4ea860bf8762`. Every `K5: CLOSED` or equivalent K5-closed statement introduced by this closeout candidate is conditional until the exact-head closeout gate, expected-head merge, and required post-merge ordered-parent/tree/blob/protected-main verification in `docs/planning/KODAC_K5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-26.md` all pass. Until those conditions pass, K5 remains defined/in progress even though R1-R5 are canonical. No K5-R6 contract is invented.
-
-Current authority boundaries are reconciled to canonical closeout of K3, canonical bounded KRI-R1 through KRI-R4, canonical bounded K4, and the conditional K5 closeout candidate:
+K3, K4, and K5 are already canonically closed for their exact bounded scopes. Historical candidate-time `IFF THIS CLOSEOUT MERGE GATE PASSES` language inside immutable historical closeout records remains historical evidence; it is not current state.
 
 ```text
-K3: CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
-K3-R1 THROUGH K3-R6: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
-K3-R7+: NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
+K3 = CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
+K3-R7+ = NOT REQUIRED FOR K3 CLOSEOUT / NOT AUTHORIZED
 
-K4: CLOSED FOR THE CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
-K4-R1: CANONICAL / COMPLETE FOR ITS AUTHORIZED DATA-ONLY COMPATIBILITY-NORMALIZATION SCOPE
-K4-R2: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY SCOPE
-K4-R2 PREIMPLEMENTATION K4-R1 WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH SCOPE
-K4-R2 CANONICAL-REGRESSION WORKFLOW HARDENING: CANONICAL / COMPLETE FOR ITS AUTHORIZED ONE-PATH PREREQUISITE SCOPE
-K4-R3: CANONICAL / COMPLETE FOR ITS AUTHORIZED PINNED DATA-ONLY ACP V2 METHOD-CATALOG EVIDENCE SCOPE
-K4-R4: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL PACKAGE EVIDENCE SCOPE
-K4-R5: CANONICAL / COMPLETE FOR ITS AUTHORIZED CALLER-MATERIALIZED DATA-ONLY AGENT SKILL GOVERNANCE-CLAIM EVIDENCE SCOPE
-K4-R6+: NOT REQUIRED FOR K4 CLOSEOUT / NOT AUTHORIZED
+K4 = CLOSED FOR THE CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
+K4-R6+ = NOT REQUIRED FOR K4 CLOSEOUT / NOT AUTHORIZED
 
-KRI-P0: CANONICAL PLANNING AUTHORITY
-KRI-R1 THROUGH KRI-R4: CANONICAL FOR THEIR SEPARATELY AUTHORIZED BOUNDED SCOPES
-KRI-R5+: NOT AUTHORIZED
-
-K5: CLOSED FOR THE CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE IFF THIS CLOSEOUT MERGE GATE PASSES
-K5-R1 THROUGH K5-R5: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
-K5-R6+: NOT REQUIRED FOR K5 CLOSEOUT / NOT AUTHORIZED
-DONE GATE PROVEN_READY AUTHORITY: UNCHANGED
-PROVEN_READY AUTHORITY FROM KRI OR K5: NOT AUTHORIZED
-
-CODE IMPORT: NOT AUTHORIZED
-NEW KODAC DEPENDENCIES: NOT AUTHORIZED
-EXTERNAL REVIEW SERVICE INTEGRATION: NOT AUTHORIZED
-REPOSITORY WRITE / GITHUB REVIEW / APPROVAL / MERGE AUTHORITY FROM KRI OR K5: NOT AUTHORIZED
-
-PUBLIC RELEASE: NOT AUTHORIZED
-PACKAGE PUBLICATION: NOT AUTHORIZED
-BRAND LAUNCH: NOT AUTHORIZED
-KODAC NAME / TRADEMARK CLEARANCE: NOT ESTABLISHED
+K5 = CLOSED FOR THE CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE
+K5-R6+ = NOT REQUIRED FOR K5 CLOSEOUT / NOT AUTHORIZED
+DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
 ```
 
-K4 closure is bounded to the accepted data-only R1-R5 evidence surface. It does **not** grant MCP/ACP transport, invocation, or execution; Agent Skill package discovery/read/parsing/install/activation/routing/execution; trust qualification; effect grants; persistent marketplace/registry behavior; or completion of every ADR-0007 direction. Those capabilities remain separately authorizable future work.
+Canonical bounded closeout evidence remains:
 
-K5 is likewise bounded. R1 validates and judges caller-materialized proof packages; R2 links caller-materialized verification/receipt/revision evidence; R3 links caller-materialized canonical KRI finding/adjudication evidence without transferring reviewer authority; R4 reconciles explicit linked proof states; and R5 qualifies their integrated deterministic behavior using inert fixtures and negative cases. None of these stages may execute reviewers, fetch evidence, run commands, access Git/GitHub, grant policy/effects, mutate Done Gate, emit `PROVEN_READY`, approve, write, or merge.
+- `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`
+- `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md`
+- `docs/planning/KODAC_K5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-26.md`
 
-The R5 post-merge record remains truthful: one first-attempt Ubuntu H4-R3G-B failure occurred on unchanged pre-existing code, followed by exactly one controlled same-SHA/no-drift rerun that passed with the final `k2-runtime-gate`; `WAIVER: NONE`. The closeout evidence records both attempts rather than claiming every first attempt was green.
+The K5 R5 post-merge record remains truthful: one first-attempt Ubuntu H4-R3G-B failure occurred on unchanged pre-existing code, followed by exactly one controlled same-SHA/no-drift rerun that passed. That anomaly is not rewritten as an all-green first attempt.
 
-Later engineering milestones remain:
+## K6 closeout-candidate rule
+
+K6-R1 through K6-R5 are already separately `CLOSED_CANONICAL`. K6 bounded-closeout authorization is canonical at merge `748706683a0102f1743c1797950272bbd41d8a3c` (PR #235).
+
+This closeout candidate may introduce `K6 = CLOSED` wording only as conditional candidate state. Until its exact-head qualification, guarded normal merge, ordered-parent/tree/blob/signature proof, applicable post-merge checks, and ruleset/no-bypass proof all pass, K6 itself is **not yet closed by this candidate**.
 
 ```text
-K5: CLOSED FOR THE CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE IFF THIS CLOSEOUT MERGE GATE PASSES
-K5-R1 THROUGH K5-R5: CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
-K5-R6+: NOT REQUIRED FOR K5 CLOSEOUT / NOT AUTHORIZED
-K6: PROPOSED / NOT AUTHORIZED
-K7: PROPOSED / NOT AUTHORIZED
+K6-R1 = CLOSED_CANONICAL
+K6-R2 = CLOSED_CANONICAL
+K6-R3 = CLOSED_CANONICAL
+K6-R4 = CLOSED_CANONICAL
+K6-R5 = CLOSED_CANONICAL
+K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE IFF THIS CLOSEOUT MERGE GATE PASSES
+K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
+P2 KODACBENCH IMPLEMENTATION = NOT AUTHORIZED BY K6 CLOSEOUT
+K2 / K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
+WAIVER = NO
 ```
 
-## KRI-P0 through KRI-R4 and K5 preserved non-grants
+The exact candidate evidence, implementation ledger, repair history, exit matrix, non-grants, and merge/post-merge conditions are in:
+
+- `docs/planning/KODAC_K6_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
+- `docs/planning/KODAC_K6_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
+
+## Bounded K6 meaning
+
+The accepted R1-R5 path is data/evidence only:
 
 ```text
-KRI-R5+ IMPLEMENTATION: NOT AUTHORIZED
-K5-R6+ IMPLEMENTATION: NOT AUTHORIZED
-K6 / K7 IMPLEMENTATION: NOT AUTHORIZED BY K5 CLOSEOUT
-K3-R6 SCOPE EXPANSION BEYOND THE EXACT AUTHORIZATION AND REVIEW-HARDENING EXTENSION: NOT AUTHORIZED
-K3-R7+: NOT AUTHORIZED
-K4-R1 SCOPE EXPANSION BEYOND THE DATA-ONLY NORMALIZATION AUTHORIZATION: NOT AUTHORIZED
-K4-R2 SCOPE EXPANSION BEYOND THE CALLER-MATERIALIZED MCP CATALOG-EVIDENCE AUTHORIZATION: NOT AUTHORIZED
-K4-R2 SOURCE PR BEFORE CANONICAL K4-R1 WORKFLOW HARDENING: NOT AUTHORIZED
-K4-R3 SCOPE EXPANSION BEYOND THE PINNED ACP V2 METHOD-CATALOG AUTHORIZATION: NOT AUTHORIZED
-K4-R3 SOURCE PR BEFORE CANONICAL K4-R2 WORKFLOW HARDENING: NOT AUTHORIZED
-K4-R4 SCOPE EXPANSION BEYOND THE CALLER-MATERIALIZED AGENT SKILL PACKAGE-EVIDENCE AUTHORIZATION: NOT AUTHORIZED
-K4-R5 SCOPE EXPANSION BEYOND THE CALLER-MATERIALIZED AGENT SKILL GOVERNANCE-CLAIM EVIDENCE AUTHORIZATION: NOT AUTHORIZED
-K4-R6+: NOT AUTHORIZED
-PROVEN_READY AUTHORITY FROM KRI OR K5: NOT AUTHORIZED
-DONE GATE MODIFICATION BY THIS GATE: NOT AUTHORIZED
+caller-materialized candidate evidence
+-> deterministic R1 eligibility values
+-> caller-explicit deterministic R2 route-plan values
+-> caller-materialized deterministic R3 route/outcome linkage
+-> privacy-governed caller-managed in-process R4 outcome-memory values
+-> caller-materialized comparable R5 strategy evidence and deterministic comparison
+```
 
-CUBIC SOURCE INTAKE: NOT AUTHORIZED
-CODERABBIT SOURCE INTAKE: NOT AUTHORIZED
-CUBIC INTEGRATION: NOT AUTHORIZED
-CODERABBIT INTEGRATION: NOT AUTHORIZED
-EXTERNAL REVIEW SERVICE INTEGRATION: NOT AUTHORIZED
-CONCRETE EXTERNAL REVIEWER ADAPTER: NOT AUTHORIZED
-PROVIDER NETWORK / SECRET HANDLING: NOT AUTHORIZED
+Mandatory distinctions remain:
 
-NEW KODAC DEPENDENCIES: NOT AUTHORIZED
-CODE IMPORT: NOT AUTHORIZED
+```text
+ELIGIBILITY EVIDENCE != EXECUTION AUTHORITY
+ELIGIBLE != SELECTED
+ROUTE PLAN != ROUTE EXECUTION
+OUTCOME LINKAGE != DONE GATE EVALUATION
+OUTCOME MEMORY != DURABLE PERSISTENCE AUTHORITY
+STRATEGY PROPOSAL != STRATEGY EXECUTION
+STRATEGY COMPARISON != PROMOTION
+CANDIDATE_DOMINATES != PROVEN_READY
+R5 BOUNDED QUALIFICATION CORPUS != GENERAL KODACBENCH
+SELF-IMPROVING != SELF-AUTHORIZING
+```
 
-PERSISTENT REVIEW / PROOF STORAGE: NOT AUTHORIZED
-PERSISTENT REVIEW / PROOF LEARNING: NOT AUTHORIZED
-VECTOR / EMBEDDING INFRASTRUCTURE: NOT AUTHORIZED
+K6 repair history remains part of canonical evidence rather than being normalized away. It includes R1 canonicalization hardening, R3 qualification fixes, R4 trusted-machine/registration/protected-base/provider-neutral/resource-budget repairs, and R5 comparability/ruleset-observability/split-proof/hostile-input/import-closure repairs. PR #223 and PRs #229-#231 remain closed-unmerged non-authority history.
 
-AUTOFIX EXECUTION: NOT AUTHORIZED
-REPOSITORY WRITE AUTHORITY: NOT AUTHORIZED
-GITHUB COMMENT / REVIEW WRITE AUTHORITY: NOT AUTHORIZED
-PR APPROVAL AUTHORITY: NOT AUTHORIZED
-MERGE AUTHORITY: NOT AUTHORIZED
+## Preserved non-grants
 
-RULESET CHANGE: NOT AUTHORIZED
-K2 EXECUTION-AUTHORITY EXPANSION: NOT AUTHORIZED
+This documentation closeout does not grant or modify any of the following:
 
-PUBLIC RELEASE: NOT AUTHORIZED
-PACKAGE PUBLICATION: NOT AUTHORIZED
-BRAND LAUNCH: NOT AUTHORIZED
+```text
+KRI-R5+ IMPLEMENTATION = NOT AUTHORIZED
+K3-R7+ = NOT AUTHORIZED
+K4-R6+ = NOT AUTHORIZED
+K5-R6+ = NOT AUTHORIZED
+K6-R6+ = NOT AUTHORIZED
+P2 KODACBENCH IMPLEMENTATION = NOT AUTHORIZED BY THIS CLOSEOUT
+P3-P8 IMPLEMENTATION = NOT AUTHORIZED
+
+PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT AUTHORIZED
+ROUTE / FALLBACK / RETRY / STRATEGY EXECUTION = NOT AUTHORIZED
+AUTOMATIC ROUTING ADVANCEMENT = NOT AUTHORIZED
+AUTOMATIC STRATEGY PROMOTION = NOT AUTHORIZED
+TRUST-POLICY MUTATION FROM K6 = NOT AUTHORIZED
+
+PERSISTENT REVIEW / PROOF / ROUTE / OUTCOME STORAGE = NOT AUTHORIZED
+FILESYSTEM / DATABASE PERSISTENCE FROM K6 = NOT AUTHORIZED
+TELEMETRY / UPLOAD / ANALYTICS EGRESS = NOT AUTHORIZED
+TRAINING / FINE-TUNING / ONLINE LEARNING = NOT AUTHORIZED
+CROSS-REPOSITORY AGGREGATION / LEARNING = NOT AUTHORIZED
+VECTOR / EMBEDDING INFRASTRUCTURE = NOT AUTHORIZED BY THIS CLOSEOUT
+
+K2 EXECUTION-AUTHORITY EXPANSION = NOT AUTHORIZED
+K5 PROOF-AUTHORITY EXPANSION = NOT AUTHORIZED
+DONE GATE MODIFICATION = NOT AUTHORIZED
+PROVEN_READY AUTHORITY FROM KRI / K5 / K6 = NOT AUTHORIZED
+
+REPOSITORY WRITE AUTHORITY FROM KRI / K5 / K6 = NOT AUTHORIZED
+GITHUB COMMENT / REVIEW / APPROVAL / MERGE AUTHORITY FROM KRI / K5 / K6 = NOT AUTHORIZED
+AUTOFIX EXECUTION = NOT AUTHORIZED
+RULESET CHANGE / BYPASS = NOT AUTHORIZED
+
+NEW KODAC DEPENDENCIES = NOT AUTHORIZED BY THIS CLOSEOUT
+CODE / DONOR IMPORT = NOT AUTHORIZED BY THIS CLOSEOUT
+CONCRETE EXTERNAL REVIEWER / PROVIDER / MODEL ADAPTER = NOT AUTHORIZED
+PROVIDER NETWORK / SECRET HANDLING = NOT AUTHORIZED
+
+PUBLIC RELEASE = NOT AUTHORIZED
+PACKAGE PUBLICATION = NOT AUTHORIZED
+PUBLIC VERSION DECLARATION = NOT AUTHORIZED
+SUPPORT / COMPATIBILITY PROMISE = NOT AUTHORIZED
+BRAND LAUNCH = NOT AUTHORIZED
+KODAC NAME / TRADEMARK CLEARANCE = NOT ESTABLISHED
+
+Z0 / Z0L / ZROK EXECUTION = NOT AUTHORIZED BY K6 CLOSEOUT
+PAYMENT / PUBLIC ENDPOINT / GITHUB APP / WEBHOOK / SECRET MUTATION = NOT AUTHORIZED
 ```
 
 This documentation gate does not modify `code_import_authorized` and admits no external source.
 
-The bounded KRI slices are a deterministic offline gold corpus (R1), finding/adjudication contracts plus a read-only runtime (R2), provider-neutral execution with a caller-injected interface (R3), and pure/in-memory historical-claim-disposition qualification (R4). They do not establish general reviewer trust, finding truth, default routing authority, or production readiness.
+## Next engineering boundary
 
-The reconciliation basis and exact canonical merge identities are recorded in `docs/planning/KODAC_KRI_R1_R4_ROADMAP_TRUTH_RECONCILIATION_2026-08-24.md`.
+After and only after this K6 closeout candidate becomes canonical and its required post-merge proof succeeds:
 
-The exact K3-R6 scope and implementation allowlist are defined in `docs/planning/KODAC_K3_R6_SNAPSHOT_RELATION_GRAPH_AUTHORIZATION_2026-08-24.md`.
+```text
+K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
+P2 KODACBENCH AUTHORIZATION-CANDIDATE PREPARATION = NEXT ELIGIBLE DOCUMENTATION / PLANNING UNIT
+P2 KODACBENCH IMPLEMENTATION = NOT AUTHORIZED UNTIL SEPARATELY AUTHORIZED AND CANONICAL
+P3-P8 IMPLEMENTATION = NOT AUTHORIZED
+```
 
-The narrow `node:util` Proxy-rejection, structural-input, adjacency-index, and serialized-seed review-hardening extension is defined in `docs/planning/KODAC_K3_R6_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
-
-The bounded K3 closure evidence, canonical implementation ledger, platform applicability, and preserved non-grants are recorded in `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`.
-
-The K4 definition, official primary-standard pins, exact K4-R1 implementation allowlist, and non-executable compatibility boundaries are recorded in `docs/planning/KODAC_K4_DEFINITION_AND_R1_COMPATIBILITY_NORMALIZATION_AUTHORIZATION_2026-08-24.md`.
-
-The exact K4-R1 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R1_COMPATIBILITY_NORMALIZATION_CANONICAL_EVIDENCE_2026-08-24.md`.
-
-The exact K4-R2 caller-materialized MCP catalog-evidence contract, primary-source basis, implementation allowlist, required proofs, and non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
-
-The inherited shared-export CI-gate conflict, exact one-path K4-R1 canonical-regression workflow hardening, self-canonicalizing merge proof, and unchanged K4-R2 five-path allowlist are recorded in `docs/planning/KODAC_K4_R2_REVIEW_HARDENING_SCOPE_EXTENSION_2026-08-24.md`.
-
-The exact K4-R2 implementation ledger, qualified identity, review evidence, proof matrix, conditional canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R2_CALLER_MATERIALIZED_MCP_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
-
-The exact pinned ACP v2 primary-source basis, 16-method catalog contract, ordered one-path K4-R2 workflow prerequisite, five-path K4-R3 implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
-
-The exact K4-R2 prerequisite-hardening identity, K4-R3 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, required evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R3_PINNED_ACP_V2_METHOD_CATALOG_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
-
-The exact K4-R4 caller-materialized portable metadata and redacted content/provenance evidence contract, Agent Skills primary-source basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
-
-The exact K4-R4 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R4_CALLER_MATERIALIZED_AGENT_SKILL_PACKAGE_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
-
-The exact K4-R5 caller-materialized governance-claim evidence contract, K4-R4 dependency basis, five-path implementation allowlist, required proofs, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_AUTHORIZATION_2026-08-24.md`.
-
-The exact K4-R5 implementation ledger, qualified identity, review evidence, proof matrix, canonical surface, evidence merge gate, and preserved non-grants are recorded in `docs/planning/KODAC_K4_R5_CALLER_MATERIALIZED_AGENT_SKILL_GOVERNANCE_CLAIM_EVIDENCE_CANONICAL_EVIDENCE_2026-08-24.md`.
-
-The bounded K4 closeout authorization is recorded in `docs/planning/KODAC_K4_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-25.md`.
-
-The canonical K4 ledger, bounded exit-evidence matrix, closure meaning, platform applicability, and preserved non-grants are recorded in `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md`.
-
-The K5 milestone definition and R1 proof-package judgment authorization are recorded in `docs/planning/KODAC_K5_DEFINITION_AND_R1_PROOF_PACKAGE_JUDGMENT_AUTHORIZATION_2026-08-25.md`.
-
-The subsequent R1 evidence/R2 authorization, R2 evidence/R3 authorization, R3 evidence/R4 authorization, and R4 evidence/R5 authorization records preserve the staged K5 authority chain through R5.
-
-The bounded K5 closeout authorization is recorded in `docs/planning/KODAC_K5_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-26.md`.
-
-The complete K5 ledger, R5 anomaly disclosure, bounded exit-evidence matrix, closure meaning, platform applicability, and preserved non-grants are recorded in `docs/planning/KODAC_K5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-26.md`.
+Engineering milestone closure remains separate from public release, packaging, support, production-readiness, and brand claims.
