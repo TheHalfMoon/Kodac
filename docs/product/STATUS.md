@@ -13,7 +13,7 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 ## Canonical closed milestones
 
-K3, K4, and K5 are already canonically closed for their exact bounded scopes. Historical candidate-time `IFF THIS CLOSEOUT MERGE GATE PASSES` language inside immutable historical closeout records remains historical evidence; it is not current state.
+K3, K4, K5, and the bounded K6 R1-R5 milestone are canonically closed for their exact scopes. Historical candidate-time `IFF THIS ... MERGE GATE PASSES` language inside immutable historical closeout records remains historical evidence; it is not current state.
 
 ```text
 K3 = CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -25,6 +25,14 @@ K4-R6+ = NOT REQUIRED FOR K4 CLOSEOUT / NOT AUTHORIZED
 K5 = CLOSED FOR THE CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE
 K5-R6+ = NOT REQUIRED FOR K5 CLOSEOUT / NOT AUTHORIZED
 DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
+
+K6-R1 = CLOSED_CANONICAL
+K6-R2 = CLOSED_CANONICAL
+K6-R3 = CLOSED_CANONICAL
+K6-R4 = CLOSED_CANONICAL
+K6-R5 = CLOSED_CANONICAL
+K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
+K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
 ```
 
 Canonical bounded closeout evidence remains:
@@ -32,32 +40,11 @@ Canonical bounded closeout evidence remains:
 - `docs/planning/KODAC_K3_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-24.md`
 - `docs/planning/KODAC_K4_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-25.md`
 - `docs/planning/KODAC_K5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-26.md`
-
-The K5 R5 post-merge record remains truthful: one first-attempt Ubuntu H4-R3G-B failure occurred on unchanged pre-existing code, followed by exactly one controlled same-SHA/no-drift rerun that passed. That anomaly is not rewritten as an all-green first attempt.
-
-## K6 closeout-candidate rule
-
-K6-R1 through K6-R5 are already separately `CLOSED_CANONICAL`. K6 bounded-closeout authorization is canonical at merge `748706683a0102f1743c1797950272bbd41d8a3c` (PR #235).
-
-This closeout candidate may introduce `K6 = CLOSED` wording only as conditional candidate state. Until its exact-head qualification, guarded normal merge, ordered-parent/tree/blob/signature proof, applicable post-merge checks, and ruleset/no-bypass proof all pass, K6 itself is **not yet closed by this candidate**.
-
-```text
-K6-R1 = CLOSED_CANONICAL
-K6-R2 = CLOSED_CANONICAL
-K6-R3 = CLOSED_CANONICAL
-K6-R4 = CLOSED_CANONICAL
-K6-R5 = CLOSED_CANONICAL
-K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE IFF THIS CLOSEOUT MERGE GATE PASSES
-K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
-P2 KODACBENCH IMPLEMENTATION = NOT AUTHORIZED BY K6 CLOSEOUT
-K2 / K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
-WAIVER = NO
-```
-
-The exact candidate evidence, implementation ledger, repair history, exit matrix, non-grants, and merge/post-merge conditions are in:
-
-- `docs/planning/KODAC_K6_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
 - `docs/planning/KODAC_K6_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
+
+K6 bounded closeout was merged by PR #236 at canonical merge `ed4fb16e8bbaf960812285671062c9b2abf597a8`. Its ordered-parent/tree/blob/signature proof, applicable post-merge checks, and active ruleset/no-bypass proof passed. That closure is engineering milestone evidence only; it created no provider/model execution, persistence, learning, promotion, Done Gate, `PROVEN_READY`, release, or general KodacBench authority.
+
+The K5 R5 first-attempt Ubuntu H4-R3G-B anomaly and K6 repair/fix-forward history remain part of canonical evidence and are not rewritten as all-green first attempts.
 
 ## Bounded K6 meaning
 
@@ -87,11 +74,26 @@ R5 BOUNDED QUALIFICATION CORPUS != GENERAL KODACBENCH
 SELF-IMPROVING != SELF-AUTHORIZING
 ```
 
-K6 repair history remains part of canonical evidence rather than being normalized away. It includes R1 canonicalization hardening, R3 qualification fixes, R4 trusted-machine/registration/protected-base/provider-neutral/resource-budget repairs, and R5 comparability/ruleset-observability/split-proof/hostile-input/import-closure repairs. PR #223 and PRs #229-#231 remain closed-unmerged non-authority history.
+## P2 KodacBench authorization candidate
+
+With K6 now closed-canonical, P2 authorization-candidate preparation is eligible. This branch proposes exactly one first slice:
+
+```text
+P2-R1 = BENCHMARK CONTRACT + FROZEN FIXTURE / MANIFEST SPINE
+P2-R1 IMPLEMENTATION = AUTHORIZED ONLY AFTER THE EXACT P2-R1 AUTHORIZATION RECORD IS CANONICAL
+P2-R2+ = NOT AUTHORIZED
+GENERAL KODACBENCH = NOT CLOSED
+```
+
+The exact candidate authority and deny-by-default allowlist are in:
+
+- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md`
+
+Candidate text does not itself grant implementation authority. Until the exact authorization unit qualifies, merges normally into protected `main`, and passes its required post-merge proof, P2-R1 implementation remains **not yet effective**.
 
 ## Preserved non-grants
 
-This documentation closeout does not grant or modify any of the following:
+Neither K6 closeout nor this P2 authorization candidate grants:
 
 ```text
 KRI-R5+ IMPLEMENTATION = NOT AUTHORIZED
@@ -99,59 +101,35 @@ K3-R7+ = NOT AUTHORIZED
 K4-R6+ = NOT AUTHORIZED
 K5-R6+ = NOT AUTHORIZED
 K6-R6+ = NOT AUTHORIZED
-P2 KODACBENCH IMPLEMENTATION = NOT AUTHORIZED BY THIS CLOSEOUT
+P2-R2+ = NOT AUTHORIZED
 P3-P8 IMPLEMENTATION = NOT AUTHORIZED
 
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT AUTHORIZED
 ROUTE / FALLBACK / RETRY / STRATEGY EXECUTION = NOT AUTHORIZED
-AUTOMATIC ROUTING ADVANCEMENT = NOT AUTHORIZED
-AUTOMATIC STRATEGY PROMOTION = NOT AUTHORIZED
-TRUST-POLICY MUTATION FROM K6 = NOT AUTHORIZED
+AUTOMATIC ROUTING ADVANCEMENT / STRATEGY PROMOTION = NOT AUTHORIZED
+TRUST-POLICY MUTATION = NOT AUTHORIZED
 
-PERSISTENT REVIEW / PROOF / ROUTE / OUTCOME STORAGE = NOT AUTHORIZED
-FILESYSTEM / DATABASE PERSISTENCE FROM K6 = NOT AUTHORIZED
+PERSISTENT STORAGE / DATABASE = NOT AUTHORIZED
 TELEMETRY / UPLOAD / ANALYTICS EGRESS = NOT AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT AUTHORIZED
 CROSS-REPOSITORY AGGREGATION / LEARNING = NOT AUTHORIZED
-VECTOR / EMBEDDING INFRASTRUCTURE = NOT AUTHORIZED BY THIS CLOSEOUT
 
 K2 EXECUTION-AUTHORITY EXPANSION = NOT AUTHORIZED
 K5 PROOF-AUTHORITY EXPANSION = NOT AUTHORIZED
 DONE GATE MODIFICATION = NOT AUTHORIZED
-PROVEN_READY AUTHORITY FROM KRI / K5 / K6 = NOT AUTHORIZED
-
-REPOSITORY WRITE AUTHORITY FROM KRI / K5 / K6 = NOT AUTHORIZED
-GITHUB COMMENT / REVIEW / APPROVAL / MERGE AUTHORITY FROM KRI / K5 / K6 = NOT AUTHORIZED
+PROVEN_READY AUTHORITY TRANSFER = NOT AUTHORIZED
 AUTOFIX EXECUTION = NOT AUTHORIZED
-RULESET CHANGE / BYPASS = NOT AUTHORIZED
 
-NEW KODAC DEPENDENCIES = NOT AUTHORIZED BY THIS CLOSEOUT
-CODE / DONOR IMPORT = NOT AUTHORIZED BY THIS CLOSEOUT
-CONCRETE EXTERNAL REVIEWER / PROVIDER / MODEL ADAPTER = NOT AUTHORIZED
+NEW KODAC DEPENDENCIES = NOT AUTHORIZED
+CODE / DONOR / EXTERNAL DATA INTAKE = NOT AUTHORIZED
 PROVIDER NETWORK / SECRET HANDLING = NOT AUTHORIZED
-
-PUBLIC RELEASE = NOT AUTHORIZED
-PACKAGE PUBLICATION = NOT AUTHORIZED
-PUBLIC VERSION DECLARATION = NOT AUTHORIZED
-SUPPORT / COMPATIBILITY PROMISE = NOT AUTHORIZED
-BRAND LAUNCH = NOT AUTHORIZED
-KODAC NAME / TRADEMARK CLEARANCE = NOT ESTABLISHED
-
-Z0 / Z0L / ZROK EXECUTION = NOT AUTHORIZED BY K6 CLOSEOUT
-PAYMENT / PUBLIC ENDPOINT / GITHUB APP / WEBHOOK / SECRET MUTATION = NOT AUTHORIZED
+PUBLIC LEADERBOARD / GENERAL SUPERIORITY CLAIM = NOT AUTHORIZED
+RULESET CHANGE / BYPASS = NOT AUTHORIZED
+PUBLIC RELEASE / PACKAGE PUBLICATION / PUBLIC VERSION / BRAND LAUNCH = NOT AUTHORIZED
 ```
-
-This documentation gate does not modify `code_import_authorized` and admits no external source.
 
 ## Next engineering boundary
 
-After and only after this K6 closeout candidate becomes canonical and its required post-merge proof succeeds:
+If and only if this exact P2-R1 authorization candidate becomes canonical and its post-merge proof succeeds, the next eligible repository unit is the one bounded P2-R1 implementation PR described by that authorization.
 
-```text
-K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
-P2 KODACBENCH AUTHORIZATION-CANDIDATE PREPARATION = NEXT ELIGIBLE DOCUMENTATION / PLANNING UNIT
-P2 KODACBENCH IMPLEMENTATION = NOT AUTHORIZED UNTIL SEPARATELY AUTHORIZED AND CANONICAL
-P3-P8 IMPLEMENTATION = NOT AUTHORIZED
-```
-
-Engineering milestone closure remains separate from public release, packaging, support, production-readiness, and brand claims.
+Engineering milestone closure and benchmark infrastructure remain separate from public release, packaging, production-readiness, support, compatibility, and superiority claims.
