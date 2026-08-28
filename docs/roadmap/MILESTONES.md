@@ -23,9 +23,9 @@ Historical authorization/evidence records remain unchanged historical evidence.
 | K6-R2 | **CLOSED_CANONICAL** | Pure deterministic route-plan materialization only |
 | K6-R3 | **CLOSED_CANONICAL** | Pure deterministic route-outcome linkage only |
 | K6-R4 | **CLOSED_CANONICAL** | Pure privacy-governed caller-managed in-process outcome memory only |
-| K6-R5 | **NOT_AUTHORIZED** | Bounded strategy proposal/qualification authorization candidate is next |
-| K6 bounded closeout | **NOT YET ELIGIBLE** | Requires separately completed R4 and R5 lifecycles |
-| P2 KodacBench | **NOT_AUTHORIZED** | General measurement spine follows K6 bounded closeout |
+| K6-R5 | **CLOSED_CANONICAL** | Pure bounded strategy proposal/comparison and R5-specific qualification only |
+| K6 bounded closeout | **NOT_AUTHORIZED** | Separate evidence/closeout authorization candidate is next |
+| P2 KodacBench | **NOT_AUTHORIZED** | General measurement spine follows canonical K6 bounded closeout |
 | P3-P8 | **NOT_AUTHORIZED** | Later improvement stages require dependencies and separate authority |
 
 ## Canonical reconciliation anchors
@@ -39,6 +39,13 @@ K6-R3 merge       = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
 K6-R4 auth root   = PR #211 / 1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372
 K6-R4 final auth  = PR #221 / 93c197cb6f88409dd406694fe4614ecf0fb6ba00
 K6-R4 merge       = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
+K6-R5 auth        = PR #224 / 31f5f9f3e05dd0feeda2b96b3221374c4bfe0032
+K6-R5 Stage A     = PR #225 / 76f8639a329d9f168fea9d71f78711d612075619
+K6-R5 repair auth = PR #227 / 06f2dc2df5eb432107313932a16079edc4912a38
+K6-R5 trust repair= PR #228 / 0c151b3db8ab1487c5fcf1553060b4743ede155d
+K6-R5 pin auth    = PR #232 / 2d4393fd08329507385fe06d90c3ddedff77bad9
+K6-R5 Unit B      = PR #233 / 99aa00db6265b33ebffb2a7653e23a8db4b70c31
+K6-R5 merge       = PR #226 / 91d817741d1c55195d26ef8e8f5be98e04d1977d
 Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -63,59 +70,59 @@ K5 proof states remain evidence and never become completion authority.
 
 ## K6 — IN PROGRESS
 
+After this roadmap reconciliation is canonical and post-merge proven:
+
 ```text
 K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
 K6-R4 = CLOSED_CANONICAL
-K6-R5 = NOT_AUTHORIZED
+K6-R5 = CLOSED_CANONICAL
+K6 BOUNDED CLOSEOUT = NOT_AUTHORIZED
 ```
 
-R1-R4 preserve their exact bounded, caller-materialized, deterministic contracts. Their canonical completion does **not** authorize:
+R1-R5 preserve their exact bounded, caller-materialized, deterministic contracts. Their canonical completion does **not** authorize:
 
 - provider/model/reviewer/evaluator/tool/agent invocation;
 - route/fallback/retry execution;
-- uncontrolled failure/retry classification;
+- candidate eligibility by R5 or strategy execution;
 - persistence, telemetry, training, or learning;
-- strategy promotion;
+- automatic strategy promotion or trust-policy mutation;
 - cross-repository aggregation;
 - autofix;
 - K2 side-effect authority expansion;
-- Done Gate or `PROVEN_READY` authority transfer.
+- K5 or Done Gate / `PROVEN_READY` authority transfer;
+- general KodacBench or broad superiority claims.
 
-Exact K6 authorization records:
+Exact K6 authorization records include:
 
 - `docs/planning/KODAC_K6_R1_MODEL_PROVIDER_ROUTE_ELIGIBILITY_AUTHORIZATION_2026-08-26.md`
 - `docs/planning/KODAC_K6_R2_DETERMINISTIC_ROUTE_PLAN_AUTHORIZATION_2026-08-26.md`
 - `docs/planning/KODAC_K6_R3_ROUTE_OUTCOME_LINKAGE_AUTHORIZATION_2026-08-26.md`
 - `docs/planning/KODAC_K6_R4_PRIVACY_GOVERNED_OUTCOME_MEMORY_AUTHORIZATION_2026-08-26.md`
 - `docs/planning/KODAC_K6_R4_TRUSTED_QUALIFICATION_REPLACEMENT_AUTHORIZATION_2026-08-27.md`
+- `docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md`
+- `docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md`
+- `docs/planning/KODAC_K6_R5_STAGE_B_SPLIT_PROOF_PIN_AMENDMENT_AUTHORIZATION_2026-08-27.md`
+
+R5-specific qualification evidence remains distinct from general KodacBench:
+
+```text
+K6-R5 BOUNDED QUALIFICATION CORPUS != GENERAL KODACBENCH
+```
 
 ## Next milestone unit
 
-After this roadmap reconciliation is canonical and post-merge proven, the next eligible action is **K6-R5 authorization-candidate preparation only**.
+After this roadmap reconciliation is canonical and post-merge proven, the next eligible action is **K6 bounded closeout authorization-candidate preparation only**.
 
-Before any K6-R5 implementation, its separate authorization must define:
+A separate closeout record must prove the bounded R1-R5 surface and preserve all non-grants. It must bind the exact canonical slice identities and post-merge evidence, retain material repair/anomaly history, prove that no execution/persistence/learning/promotion/trust-policy/completion authority emerged by composition, and carry its own exact scope, CI/review/ruleset/merge/post-merge gates.
 
-- immutable/versioned candidate and incumbent strategy identities;
-- exact strategy fields and deterministic identity rules;
-- an exact bounded R5-specific corpus/holdout identity, contents and provenance;
-- task-family, repository, revision and privacy guardrails;
-- deterministic comparison metrics, ties and invalid-result precedence;
-- independently visible latency, compute, privacy and security evidence;
-- no self-reported reward as truth and no automatic promotion;
-- rollback/incumbent identity retention and a separate human/canonical promotion gate;
-- exact implementation allowlist;
-- CI/review/merge/post-merge proof gates.
-
-K6-R5 implementation remains fail-closed until that authorization itself becomes canonical and its required post-merge proof succeeds. R5-specific qualification evidence is not general KodacBench evidence and grants no broad superiority claim.
+K6 is not closed by this milestone ledger. P2 KodacBench remains fail-closed until the separate K6 bounded closeout record becomes canonical and post-merge proven.
 
 ## Ordered later milestones
 
 ```text
-K6-R4 authorization + bounded implementation + qualification + canonical closeout
--> K6-R5 authorization + bounded strategy proposal + qualification + canonical closeout
--> K6 bounded closeout
+K6 bounded closeout
 -> P2 KodacBench
 -> P3 Context Engine v2
 -> P4 Reviewer Intelligence v2
