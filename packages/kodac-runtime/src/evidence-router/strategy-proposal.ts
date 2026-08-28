@@ -28,6 +28,7 @@ import {
 const SHA256 = /^[0-9a-f]{64}$/
 const PRIVACY_CLASS_SET = new Set<string>(K6_R5_PRIVACY_CLASSES)
 const OUTCOME_SET = new Set<string>(K6_R5_QUALIFICATION_OUTCOMES)
+const MAX_HOSTILE_TEXT_BYTES = K6_R1_LIMITS.maxModelBytes
 
 type UnknownRecord = Record<string, unknown>
 
@@ -95,6 +96,14 @@ function noProxy(value: unknown, label: string): void {
 }
 
 function validUnicodeScalars(value: string, label: string): void {
+  // The graph node cap plus this per-text cap bounds total hostile text scanned.
+  // Check UTF-16 length first so oversized input fails in O(1) before byte counting.
+  if (value.length > MAX_HOSTILE_TEXT_BYTES) {
+    tooLarge(label, `exceeds canonical hostile text byte limit ${MAX_HOSTILE_TEXT_BYTES}`)
+  }
+  if (Buffer.byteLength(value, "utf8") > MAX_HOSTILE_TEXT_BYTES) {
+    tooLarge(label, `exceeds canonical hostile text byte limit ${MAX_HOSTILE_TEXT_BYTES}`)
+  }
   for (let index = 0; index < value.length; index += 1) {
     const code = value.charCodeAt(index)
     if (code >= 0xd800 && code <= 0xdbff) {
