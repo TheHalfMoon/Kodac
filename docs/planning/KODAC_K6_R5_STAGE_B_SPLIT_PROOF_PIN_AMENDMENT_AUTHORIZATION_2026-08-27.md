@@ -19,7 +19,7 @@
 - Stage B reconciliation checkpoint head: `b950d8a4a04eac25ab4b213ad8a529d2efed1d00`
 - Protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
 - Existing unrecoverable Stage B proof-body pin: `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c`
-- Replacement exact Stage B proof-body pin: `e537aff749eb7749e5b83fa769611210d1664ae9e2a97037e099903b5acb7bac`
+- Replacement exact Stage B proof-body pin: `7216b701d0db142c1a2ac00dc199d67becb605f7a61dcd2a852cba60905ced6c`
 - `WAIVER=NO`
 
 This record is candidate authority only until it is merged to protected `main` through normal repository governance and its post-merge proof succeeds. It grants no trusted-workflow or Stage B implementation authority before that point.
@@ -71,9 +71,9 @@ Hashing contract:
 - no YAML indentation in the hashed body;
 - first bytes are `set -euo pipefail`;
 - exactly one terminal LF after the final `PY`;
-- SHA-256 MUST equal `e537aff749eb7749e5b83fa769611210d1664ae9e2a97037e099903b5acb7bac`.
+- SHA-256 MUST equal `7216b701d0db142c1a2ac00dc199d67becb605f7a61dcd2a852cba60905ced6c`.
 
-The Stage B workflow already pins `actions/setup-node` and Node `24.18.0` before this step. The body uses Node's TypeScript stripper and module parser to validate the complete bounded runtime dependency closure rather than treating regex text matching as import authority. It then uses explicit Python failures rather than optimization-removable security assertions.
+The Stage B workflow already pins `actions/setup-node` and Node `24.18.0` before this step. The body pins the exact import-declaration prefix bytes for each runtime closure member that imports dependencies, then uses Node's TypeScript stripper and module parser to validate the complete bounded runtime dependency closure. The exact-prefix check distinguishes binding imports from side-effect or standalone type-only substitutions even when they resolve to the same module specifier. The body then uses explicit Python failures rather than optimization-removable security assertions.
 
 ```text
 set -euo pipefail
@@ -89,12 +89,56 @@ const expectedRuntimeImports = new Map([
   ["contracts.ts", ["node:crypto", "node:util"]],
   ["strategy-proposal-contracts.ts", []],
 ])
+const expectedImportPrefixes = new Map([
+  ["strategy-proposal.ts", [
+    'import { createHash } from "node:crypto"',
+    'import { types as utilTypes } from "node:util"',
+    "",
+    "import {",
+    "  K6_R1_LIMITS,",
+    "  canonicalK6R1Json,",
+    "  validateK6R1RouteRequest,",
+    '} from "./contracts.ts"',
+    "import {",
+    "  K6_R5_LIMITS,",
+    "  K6_R5_PRIVACY_CLASSES,",
+    "  K6_R5_QUALIFICATION_OUTCOMES,",
+    "  K6_R5_QUALIFICATION_RESULT_VERSION,",
+    "  K6_R5_STRATEGY_EVIDENCE_VERSION,",
+    "  K6_R5_STRATEGY_KIND,",
+    "  K6_R5_STRATEGY_VERSION,",
+    "  type K6R5PrivacyClass,",
+    "  type K6R5QualificationOutcome,",
+    "  type K6R5QualificationResult,",
+    "  type K6R5QualificationResultIdentityInput,",
+    "  type K6R5Strategy,",
+    "  type K6R5StrategyEvidence,",
+    "  type K6R5StrategyEvidenceIdentityInput,",
+    "  type K6R5StrategyIdentityInput,",
+    "  type K6R5StrategyScope,",
+    '} from "./strategy-proposal-contracts.ts"',
+    "",
+    "",
+  ].join("\n")],
+  ["contracts.ts", [
+    'import { createHash } from "node:crypto"',
+    'import { types as utilTypes } from "node:util"',
+    "",
+    "",
+  ].join("\n")],
+  ["strategy-proposal-contracts.ts", ""],
+])
 const allowedBuiltins = new Set(["node:crypto", "node:util"])
 const sources = new Map()
 
 for (const [file, expected] of expectedRuntimeImports) {
   const source = fs.readFileSync(path.join(root, file), "utf8")
   sources.set(file, source)
+
+  const expectedPrefix = expectedImportPrefixes.get(file)
+  if (typeof expectedPrefix !== "string" || !source.startsWith(expectedPrefix)) {
+    throw new Error(`runtime import declaration form drift: ${file}`)
+  }
 
   let stripped
   try {
@@ -117,7 +161,7 @@ for (const [file, expected] of expectedRuntimeImports) {
 
   const importKeywordCount = (source.match(/\bimport\b/g) ?? []).length
   if (importKeywordCount !== actual.length) {
-    throw new Error(`dynamic, type-only, or unrecognized import form forbidden: ${file}`)
+    throw new Error(`dynamic, type-only, side-effect, or unrecognized import form forbidden: ${file}`)
   }
 
   for (const specifier of actual) {
@@ -262,14 +306,16 @@ PY
 
 The Node half is intentionally fail-closed:
 
-- it parses the bounded TypeScript runtime closure instead of trusting regex-derived import specifiers;
+- it pins the exact import-declaration prefix bytes for `strategy-proposal.ts` and canonical `contracts.ts` before parser-based dependency validation;
+- the prefix pins the binding/import form, names, module specifiers, ordering, spacing, and trailing import-block separator, so an allowlisted side-effect import or standalone type-only substitution cannot reuse the same specifier identity and pass;
+- it parses the bounded TypeScript runtime closure rather than trusting regex-derived import specifiers;
 - the closure is exactly `strategy-proposal.ts`, `contracts.ts`, and `strategy-proposal-contracts.ts`;
 - exact runtime dependencies are fixed for each closure member;
 - only `node:crypto` and `node:util` may escape the local closure;
 - relative dependencies must resolve to a named closure member;
-- dynamic, standalone type-only, side-effect, or otherwise unrecognized import forms fail through the import-declaration count invariant or parser/dependency mismatch;
+- dynamic, standalone type-only, side-effect, or otherwise unrecognized import forms fail through the exact-prefix, import-declaration count, or parser/dependency invariants;
 - `strategy-proposal-contracts.ts` remains no-import;
-- the forbidden authority-surface scan covers all three closure source texts, including the previously omitted canonical `contracts.ts` dependency.
+- the forbidden authority-surface scan covers all three closure source texts, including the canonical `contracts.ts` dependency.
 
 The Python half contains no security-critical `assert`. Every invariant uses explicit `need(...)` or an explicit exception and therefore remains active under `PYTHONOPTIMIZE` / optimized Python execution. Missing owner-only bypass fields continue to mean only `UNAVAILABLE_UNDER_ACTIONS_TOKEN`; visible non-canonical values fail. External owner-level no-bypass proof remains mandatory.
 
@@ -289,7 +335,7 @@ It may modify exactly:
 
 It may only:
 
-1. change the expected Stage B proof-body SHA from `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c` to `e537aff749eb7749e5b83fa769611210d1664ae9e2a97037e099903b5acb7bac`;
+1. change the expected Stage B proof-body SHA from `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c` to `7216b701d0db142c1a2ac00dc199d67becb605f7a61dcd2a852cba60905ced6c`;
 2. add immutable Stage B PR identity `226` and require both the event PR number and fetched live PR identity to equal exactly PR #226;
 3. extend the protected-base identity chain by exactly the canonical PR #232 authorization merge and the registered Unit B repair merge;
 4. prove the immutable chain preserving original R5 authorization, Stage A #225, PR #227 authorization, PR #228 repair, PR #232 authorization, and registered Unit B repair;
@@ -340,7 +386,7 @@ Compare from the new protected main to the reconciled PR #226 head must contain 
 For this governance repair, no source/runtime/schema/test behavior may change. Within `.github/workflows/k6-r5-bounded-strategy-qualification.yml` only, authorize exactly:
 
 1. `K6_R5_TRUSTED_WORKFLOW_BLOB` becomes the exact canonical Unit B trusted-workflow blob;
-2. `Prove forbidden R5 authority surfaces and live ruleset` becomes byte-for-byte the body specified in this record, hashing to `e537aff749eb7749e5b83fa769611210d1664ae9e2a97037e099903b5acb7bac`.
+2. `Prove forbidden R5 authority surfaces and live ruleset` becomes byte-for-byte the body specified in this record, hashing to `7216b701d0db142c1a2ac00dc199d67becb605f7a61dcd2a852cba60905ced6c`.
 
 No other trigger, permission, job-level environment, action metadata, step metadata, or run body may drift.
 
