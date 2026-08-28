@@ -41,9 +41,19 @@ Canonical anchors:
 - P2-R1 authorization: PR #237 / `1cd2fc4de1eb5849cbe2519ae1699bc2acc56397`
 - P2-R1 implementation: PR #238 / `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f`
 
-P2-R1 exact evidence:
+P2-R1 evidence layering is explicit:
 
-- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+- historical candidate-time implementation evidence record: `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`;
+- qualified exact head: `f3ab68cc74f391ae460b82a8697c7e319cb4ed3b`;
+- qualified tree: `a01997cffe5848dd91ac12a6639134648bbe2f89`;
+- merge: PR #238 / `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f`;
+- post-merge governance run: `33173090203` / SUCCESS;
+- post-merge K2 runtime run: `33173090251` / SUCCESS;
+- merge signature: verified / valid;
+- canonical six P2-R1 blobs matched the qualified candidate after merge;
+- ruleset `20707483` remained active with no bypass.
+
+The committed P2-R1 evidence file intentionally retains candidate-time wording because it was frozen before its own merge and cannot self-record a future merge result. The later immutable GitHub merge/object/check proof above establishes `P2-R1 = CLOSED_CANONICAL`; the historical candidate-time wording is not a current-state claim.
 
 P2-R1 established only the local deterministic contract plus frozen development/holdout fixture and manifest spine. It did not authorize a provider/model/evaluator runner, external benchmark execution, public leaderboard, aggregate winner score, product integration, persistence, telemetry, learning, release, or superiority claim.
 
