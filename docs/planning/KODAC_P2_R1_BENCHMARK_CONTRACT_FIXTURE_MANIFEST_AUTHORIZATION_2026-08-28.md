@@ -57,13 +57,13 @@ Implement the smallest Kodac-owned contract and fixture spine that can later sup
 The slice must establish:
 
 1. a versioned benchmark manifest contract;
-2. a frozen local corpus/fixture identity;
-3. a separately identified later-in-time holdout fixture/manifest boundary;
+2. a frozen local corpus/fixture identity and immutable freeze anchor;
+3. a separately identified holdout fixture/manifest boundary with explicit chronology evidence required before it may be called later-in-time;
 4. deterministic canonical serialization and digest/identity derivation;
 5. task-family-separated metric declarations rather than one blended score;
-6. provenance and contamination declarations sufficient to distinguish corpus origin, fixture role, and known overlap state;
+6. provenance and contamination declarations sufficient to distinguish corpus origin, fixture role, known overlap state, and chronology status;
 7. immutable run/report identity fields for later consumers without actually invoking providers/models;
-8. validation that fails closed on malformed, ambiguous, non-canonical, duplicate, or identity-inconsistent records.
+8. validation that fails closed on malformed, ambiguous, non-canonical, duplicate, chronology-unproven, or identity-inconsistent records.
 
 ## Authorized implementation allowlist
 
@@ -93,8 +93,12 @@ benchmark_protocol_version
 corpus_id
 corpus_digest
 corpus_role
+development_freeze_anchor
 holdout_id
 holdout_digest
+holdout_chronology_anchor
+chronology_scheme
+chronology_status
 task_family
 case_id
 case_digest
@@ -117,7 +121,7 @@ Identity fields for participants that were not invoked in P2-R1 must be represen
 
 A later report identity must be derivable from canonical evidence-bearing inputs, not wall-clock timestamps, local absolute paths, unordered object iteration, or incidental process state.
 
-Timestamps may be recorded only as non-identity metadata if the implementation includes them at all.
+Timestamps may be recorded only as non-identity metadata if the implementation includes them at all. Chronology proof must use an explicit comparable source/version chronology scheme rather than trusting local wall-clock time.
 
 ## Frozen corpus and holdout rules
 
@@ -125,16 +129,30 @@ P2-R1 must distinguish at least:
 
 ```text
 DEVELOPMENT / PRIMARY FROZEN CORPUS
-LATER-IN-TIME HOLDOUT
+VERSIONED HOLDOUT / REALITY-CHECK LANE
 ```
 
-The holdout must have a separate identity and must not be silently folded into the development corpus.
+The development corpus must bind an immutable `development_freeze_anchor`. The holdout must have its own immutable `holdout_chronology_anchor` under an explicitly named `chronology_scheme` that makes ordering comparable without relying on the local machine clock.
+
+Acceptable chronology anchors are semantic source/version identities whose ordering can be proven inside the contract, such as a repository commit/release lineage, source version sequence, or an explicitly defined ordered fixture epoch used only to exercise the contract. An arbitrary timestamp string, local filesystem mtime, PR creation time, or process clock is not sufficient chronology proof.
+
+A holdout may be classified as `later-in-time` only when the contract can prove, under the same chronology scheme, that its chronology anchor is strictly after the development freeze anchor. If the anchors are equal, incomparable, missing, ambiguous, or ordering cannot be proven, validation must fail closed for any `later-in-time` claim. Such evidence must remain distinguishable as `chronology-unproven`; it must not be silently upgraded to a later-in-time holdout.
+
+```text
+SEPARATE HOLDOUT ID != LATER-IN-TIME PROOF
+HOLDOUT TIMESTAMP STRING != LATER-IN-TIME PROOF
+CHRONOLOGY-UNPROVEN != LATER-IN-TIME
+```
+
+The holdout must also have a separate content identity and must not be silently folded into the development corpus.
 
 The local fixture package must be small, deterministic, synthetic or repository-owned/permitted, and committed directly under the P2-R1 fixture allowlist. No PHI, private user data, secrets, proprietary third-party benchmark dataset, or unapproved donor source may be added.
 
+P2-R1 synthetic fixtures may exercise the chronology contract through a documented deterministic ordered fixture epoch; those fixtures demonstrate contract behavior only and are not evidence that a future real benchmark dataset is actually later-in-time.
+
 Each fixture/case must have stable content identity. Duplicate case identities or conflicting case digests must fail closed.
 
-The P2-R1 contract must leave room for later immutable corpus versioning; mutation of a frozen corpus under the same identity is forbidden.
+The P2-R1 contract must leave room for later immutable corpus versioning; mutation of a frozen corpus under the same identity or freeze anchor is forbidden.
 
 ## Task-family metric rules
 
@@ -163,10 +181,12 @@ Every benchmark case must preserve enough provenance to determine at least:
 - whether it is repository-authored/synthetic/permitted;
 - its fixture/corpus role;
 - its immutable content identity;
+- its freeze/chronology anchor where applicable;
 - whether known overlap/contamination exists between development and holdout material;
-- whether contamination status is `none-known`, `known`, or `unknown` rather than silently assumed clean.
+- whether contamination status is `none-known`, `known`, or `unknown` rather than silently assumed clean;
+- whether holdout chronology is proven, contradicted, or unproven.
 
-`unknown` contamination status must not be normalized to `none-known`.
+`unknown` contamination status must not be normalized to `none-known`. `chronology-unproven` must not be normalized to `later-in-time`.
 
 P2-R1 may validate declarations; it does not authorize remote contamination research, model memorization probing, external dataset ingestion, or internet/network access.
 
@@ -178,6 +198,7 @@ For identical canonical inputs:
 same schema version
 + same benchmark protocol version
 + same frozen corpus / holdout identities
++ same freeze / chronology anchors and chronology scheme
 + same ordered semantic contents
 + same declared task/strategy/evaluator/model/provider identities
 -> same canonical result identity
@@ -185,7 +206,7 @@ same schema version
 
 Canonicalization must be deterministic across repeated local runs. Object-key order, absolute workspace paths, timestamps, locale, and other incidental host state must not affect semantic identity.
 
-Malformed or unknown required fields, duplicate identities, digest mismatches, forbidden path forms, conflicting corpus roles, and unsupported schema versions must fail closed.
+Malformed or unknown fields, missing required fields, duplicate identities, digest mismatches, forbidden path forms, conflicting corpus roles, unsupported schema versions, or false/unprovable later-in-time declarations must fail closed.
 
 ## Security and privacy invariants
 
@@ -236,17 +257,21 @@ The later implementation PR must include focused tests proving at least:
 1. canonical serialization is stable under semantically irrelevant object-key ordering;
 2. corpus and holdout digests are deterministic;
 3. corpus and holdout identities cannot alias or silently overlap under contradictory declarations;
-4. duplicate case identities fail closed;
-5. case-content digest mismatch fails closed;
-6. unsupported schema versions fail closed;
-7. unknown required fields or missing required fields fail closed according to the contract;
-8. non-canonical/escaping fixture paths fail closed;
-9. contamination `unknown` remains distinguishable from `none-known`;
-10. task-family metric definitions remain separated and no universal blended score is materialized;
-11. absent provider/model/evaluator identities cannot be presented as executed evidence;
-12. timestamps/absolute paths do not alter canonical identity;
-13. repeated identical inputs produce identical result identities;
-14. existing repository tests and required CI remain green.
+4. development freeze and holdout chronology anchors are explicit and comparable under one chronology scheme;
+5. a holdout cannot claim `later-in-time` when its anchor is equal to, before, incomparable with, missing from, or otherwise unproven relative to the development freeze anchor;
+6. an explicitly ordered synthetic fixture epoch can exercise later-in-time contract semantics without being represented as real-world chronology evidence;
+7. duplicate case identities fail closed;
+8. case-content digest mismatch fails closed;
+9. unsupported schema versions fail closed;
+10. unknown fields or missing required fields fail closed according to the contract;
+11. non-canonical/escaping fixture paths fail closed;
+12. contamination `unknown` remains distinguishable from `none-known`;
+13. `chronology-unproven` remains distinguishable from `later-in-time`;
+14. task-family metric definitions remain separated and no universal blended score is materialized;
+15. absent provider/model/evaluator identities cannot be presented as executed evidence;
+16. timestamps/absolute paths do not alter canonical identity;
+17. repeated identical inputs produce identical result identities;
+18. existing repository tests and required CI remain green.
 
 Tests must use only committed P2-R1 local fixtures or in-memory/safe temporary test values. They must not require internet access.
 
