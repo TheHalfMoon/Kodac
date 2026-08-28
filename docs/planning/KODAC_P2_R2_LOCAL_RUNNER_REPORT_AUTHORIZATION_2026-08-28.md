@@ -24,9 +24,25 @@ c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
 
 That commit is the merge of PR #238 and closes P2-R1 for its exact bounded contract, frozen fixture/manifest, and evidence scope after exact-head review, guarded merge, ordered-parent/tree/blob/signature proof, successful post-merge governance checks, and successful post-merge K2 runtime matrix/gate qualification.
 
-Canonical P2-R1 implementation evidence:
+The committed P2-R1 evidence record is intentionally a **candidate-time historical artifact**. By its own self-reference-safe design it does not and cannot claim the future merge/post-merge result that occurred after its bytes were frozen:
 
 - `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+
+P2-R1 canonical closure is therefore established by the later immutable GitHub object/check proof, not by rewriting that historical candidate record:
+
+```text
+QUALIFIED_FINAL_HEAD = f3ab68cc74f391ae460b82a8697c7e319cb4ed3b
+QUALIFIED_FINAL_TREE = a01997cffe5848dd91ac12a6639134648bbe2f89
+MERGE_PR = #238
+MERGE_SHA = c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
+MERGE_PARENT_1 = 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
+MERGE_PARENT_2 = f3ab68cc74f391ae460b82a8697c7e319cb4ed3b
+MERGE_VERIFICATION = verified / valid
+POST_MERGE_GOVERNANCE_RUN = 33173090203 / SUCCESS
+POST_MERGE_K2_RUNTIME_RUN = 33173090251 / SUCCESS
+```
+
+The post-merge K2 run included successful Ubuntu, Windows, and macOS runtime jobs plus `k2-runtime-gate`. The canonical six P2-R1 path blobs matched the qualified candidate blobs after merge. Ruleset `20707483` remained active with no bypass. This external post-merge proof is the closure authority; the candidate-time wording preserved inside the historical evidence file is not a contradictory current-state assertion.
 
 Governing records include:
 
@@ -37,7 +53,7 @@ Governing records include:
 - `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`;
 - `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`;
 - `docs/planning/KODAC_K3_BENCHMARK_AND_EVIDENCE_PROTOCOL_2026-08-12.md` as benchmark/evidence precedent;
-- the canonical P2-R1 authorization and evidence records.
+- the canonical P2-R1 authorization, the historical candidate-time P2-R1 evidence record, and the immutable GitHub post-merge closure proof above.
 
 If live protected `main`, repository governance, or any more-specific canonical authority conflicts with this candidate before merge, reconcile forward without force-push, rebase, destructive history rewrite, or silent waiver.
 
