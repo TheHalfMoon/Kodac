@@ -15,6 +15,8 @@
 - Canonical trusted-workflow blob: `9abba1ba237609908ad33afa2e9968e32c64a65c`
 - Governing repair authorization: `docs/planning/KODAC_K6_R5_TRUSTED_QUALIFICATION_RULESET_OBSERVABILITY_REPAIR_AUTHORIZATION_2026-08-27.md`
 - Governing repair authorization blob: `e01639b284a9788d0cd1118c0ffd998271a087f0`
+- Governing review-quorum amendment: `docs/planning/KODAC_REVIEW_PROVIDER_NEUTRALITY_AND_EVIDENCE_QUORUM_AMENDMENT_2026-08-27.md`
+- Governing review-quorum amendment blob: `5ad8768353786336d016acb32de483d53e34a83e`
 - Active Stage B implementation PR: `#226`
 - Stage B reconciliation checkpoint head: `b950d8a4a04eac25ab4b213ad8a529d2efed1d00`
 - Protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
@@ -319,6 +321,21 @@ The Node half is intentionally fail-closed:
 
 The Python half contains no security-critical `assert`. Every invariant uses explicit `need(...)` or an explicit exception and therefore remains active under `PYTHONOPTIMIZE` / optimized Python execution. Missing owner-only bypass fields continue to mean only `UNAVAILABLE_UNDER_ACTIONS_TOKEN`; visible non-canonical values fail. External owner-level no-bypass proof remains mandatory.
 
+## Provider-neutral external semantic review quorum
+
+The canonical `KODAC_REVIEW_PROVIDER_NEUTRALITY_AND_EVIDENCE_QUORUM_AMENDMENT_2026-08-27.md` supersedes reviewer provider names while preserving review cardinality. Every two-review gate in this record therefore means:
+
+```text
+EXTERNAL_SEMANTIC_REVIEW_COUNT >= 2
+EXTERNAL_SEMANTIC_REVIEW_CHANNELS_DISTINCT = YES
+EXACT_FINAL_HEAD = YES
+SUBSTANTIVE_SEMANTIC_ASSESSMENT = YES
+ZERO_UNRESOLVED_MATERIAL_CORRECTNESS_SECURITY_GOVERNANCE_AUTHORITY_SCOPE_DEFECTS = YES
+WAIVER = NO
+```
+
+A rate-limit, billing notice, provider outage, skipped review, status-only result, stale review, self-review, or duplicate review from the same provider does not satisfy or increase the quorum. Provider substitution is allowed; cardinality reduction is not. Any head movement invalidates all previously collected semantic-review slots.
+
 ## Authorized Unit B — one-path trusted pin/lifecycle/PR-identity repair
 
 Only after PR #232 is canonical and post-merge proven, authorize a PR on branch:
@@ -362,7 +379,7 @@ The exact final Unit B head must prove:
 - Stage B PR number is fixed to 226;
 - only the dedicated Stage B proof fingerprint changes among Stage B run fingerprints;
 - fresh exact-head required GitHub Actions checks succeed;
-- fresh substantive Qodo and CodeRabbit reviews are terminal clean;
+- at least two distinct independent external semantic reviewer channels provide fresh substantive terminal-clean reviews on the exact final head;
 - zero unresolved actionable review threads;
 - owner ruleset proof is active/no-bypass/exact required contexts;
 - guarded normal merge uses exact expected head;
@@ -402,7 +419,7 @@ The exact final Stage B head must prove:
 - dedicated `k6-r5-bounded-strategy-qualification` succeeds;
 - required `provenance`, `legacy-tests`, and `k2-runtime-gate` succeed from integration `15368`;
 - all applicable R5 corpus/identity/adversarial/predecessor/runtime/Python/Ruff/provenance gates succeed;
-- fresh exact-head Qodo and CodeRabbit reviews are terminal clean;
+- at least two distinct independent external semantic reviewer channels provide fresh substantive terminal-clean reviews on the exact final head;
 - zero unresolved actionable threads;
 - owner ruleset proof remains active/no-bypass/exact required contexts immediately before merge;
 - guarded normal merge uses exact final head;
@@ -420,14 +437,13 @@ This authorization is not canonical unless its exact final head proves:
 4. `behind_by=0`;
 5. PR open, non-draft and mergeable;
 6. required exact-head GitHub Actions checks are terminal success from the required integration;
-7. fresh substantive exact-head Qodo review is terminal clean;
-8. fresh substantive exact-head CodeRabbit review is terminal clean;
-9. zero unresolved actionable review threads;
-10. owner ruleset proof confirms active/no-bypass/exact required contexts;
-11. guarded normal merge uses exact expected-head precondition;
-12. authorization merge ordered parent 1 equals `0c151b3db8ab1487c5fcf1553060b4743ede155d` and parent 2 equals the exact qualified final #232 head;
-13. post-merge main/tree/document-blob/signature/check/ruleset proof succeeds;
-14. `WAIVER=NO`.
+7. at least two distinct independent external semantic reviewer channels provide fresh substantive terminal-clean reviews on the exact final head;
+8. zero unresolved actionable review threads;
+9. owner ruleset proof confirms active/no-bypass/exact required contexts;
+10. guarded normal merge uses exact expected-head precondition;
+11. authorization merge ordered parent 1 equals `0c151b3db8ab1487c5fcf1553060b4743ede155d` and parent 2 equals the exact qualified final #232 head;
+12. post-merge main/tree/document-blob/signature/check/ruleset proof succeeds;
+13. `WAIVER=NO`.
 
 ## Mandatory Stage B post-merge proof
 
