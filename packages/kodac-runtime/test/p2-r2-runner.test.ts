@@ -292,7 +292,7 @@ test("caller input mutation after return cannot mutate report semantics", () => 
 
 test("hostile observation objects fail closed without invoking accessors or proxies", () => {
   let getterInvoked = false
-  const accessor = clone(observationFor(manifest[0])) as Record<string, unknown>
+  const accessor = clone(observationFor(manifest[0])) as unknown as Record<string, unknown>
   Object.defineProperty(accessor, "value", {
     enumerable: true,
     configurable: true,
