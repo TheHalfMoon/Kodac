@@ -1,0 +1,33 @@
+{
+  "schema_version": "p2-r1-fixture/v1",
+  "corpus_id": "p2-r1-development-v1",
+  "corpus_role": "development",
+  "chronology_scheme": "fixture-epoch-v1",
+  "chronology_anchor": {
+    "scheme": "fixture-epoch-v1",
+    "ordinal": 1
+  },
+  "source_provenance": {
+    "kind": "repository-authored-synthetic",
+    "path": "packages/kodac-runtime/test/fixtures/p2-r1/development.json"
+  },
+  "contamination_status": "none-known",
+  "cases": [
+    {
+      "case_id": "dev-patch-001",
+      "task_family": "patch-analysis",
+      "payload": {
+        "change": "rename an internal helper without changing behavior",
+        "expected_contract": "identity-preserving-change"
+      }
+    },
+    {
+      "case_id": "dev-finding-001",
+      "task_family": "finding-verification",
+      "payload": {
+        "finding": "candidate reports an escaping fixture path",
+        "expected_contract": "reject-path-escape"
+      }
+    }
+  ]
+}

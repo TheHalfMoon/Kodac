@@ -1,0 +1,182 @@
+[
+  {
+    "schema_version": "p2-r1-manifest/v1",
+    "benchmark_id": "kodacbench-p2-r1-fixture-spine",
+    "benchmark_protocol_version": "p2-r1/v1",
+    "corpus_id": "p2-r1-development-v1",
+    "corpus_digest": "sha256:440e4e69c1a4cd70d90a1c7a419fc20becd16e4234c78068a11931dd7c881d96",
+    "corpus_role": "development",
+    "development_freeze_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 1
+    },
+    "holdout_id": "p2-r1-holdout-v1",
+    "holdout_digest": "sha256:32b5d96f9fbe62d21d1b2a168bffdbb253dfcf1339a10bc62502e7caf5f62398",
+    "holdout_chronology_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 2
+    },
+    "chronology_scheme": "fixture-epoch-v1",
+    "chronology_status": "later-in-time",
+    "task_family": "patch-analysis",
+    "case_id": "dev-patch-001",
+    "case_digest": "sha256:894846e1436e7a498853cc2ca46799225b29a1e6e4c4f499863e53d61b5c5e66",
+    "strategy_id": "not-applicable",
+    "strategy_version": "not-applicable",
+    "evaluator_id": "not-applicable",
+    "evaluator_version": "not-applicable",
+    "model_id": "not-applicable",
+    "model_version": "not-applicable",
+    "provider_id": "not-applicable",
+    "provider_version": "not-applicable",
+    "execution_environment_id": "not-applicable",
+    "source_provenance": {
+      "kind": "repository-authored-synthetic",
+      "path": "packages/kodac-runtime/test/fixtures/p2-r1/development.json"
+    },
+    "contamination_status": "none-known",
+    "metric_definitions": [
+      {
+        "task_family": "patch-analysis",
+        "metric_id": "contract_exactness",
+        "unit": "boolean"
+      }
+    ],
+    "result_identity": "sha256:be17ceb004ef1faaf773c1c8354695417c764aaf5d7430e5903bb664f8ba3363"
+  },
+  {
+    "schema_version": "p2-r1-manifest/v1",
+    "benchmark_id": "kodacbench-p2-r1-fixture-spine",
+    "benchmark_protocol_version": "p2-r1/v1",
+    "corpus_id": "p2-r1-development-v1",
+    "corpus_digest": "sha256:440e4e69c1a4cd70d90a1c7a419fc20becd16e4234c78068a11931dd7c881d96",
+    "corpus_role": "development",
+    "development_freeze_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 1
+    },
+    "holdout_id": "p2-r1-holdout-v1",
+    "holdout_digest": "sha256:32b5d96f9fbe62d21d1b2a168bffdbb253dfcf1339a10bc62502e7caf5f62398",
+    "holdout_chronology_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 2
+    },
+    "chronology_scheme": "fixture-epoch-v1",
+    "chronology_status": "later-in-time",
+    "task_family": "finding-verification",
+    "case_id": "dev-finding-001",
+    "case_digest": "sha256:de39704dbc0bab346d59c53eab8789051505e909a72f3d34f9e78774a92cad69",
+    "strategy_id": "not-applicable",
+    "strategy_version": "not-applicable",
+    "evaluator_id": "not-applicable",
+    "evaluator_version": "not-applicable",
+    "model_id": "not-applicable",
+    "model_version": "not-applicable",
+    "provider_id": "not-applicable",
+    "provider_version": "not-applicable",
+    "execution_environment_id": "not-applicable",
+    "source_provenance": {
+      "kind": "repository-authored-synthetic",
+      "path": "packages/kodac-runtime/test/fixtures/p2-r1/development.json"
+    },
+    "contamination_status": "none-known",
+    "metric_definitions": [
+      {
+        "task_family": "finding-verification",
+        "metric_id": "finding_contract_validity",
+        "unit": "boolean"
+      }
+    ],
+    "result_identity": "sha256:eb8bfce14a5e1235f920b1d055e28d85ce2e94929247ab4dccb2e400082ec5f3"
+  },
+  {
+    "schema_version": "p2-r1-manifest/v1",
+    "benchmark_id": "kodacbench-p2-r1-fixture-spine",
+    "benchmark_protocol_version": "p2-r1/v1",
+    "corpus_id": "p2-r1-development-v1",
+    "corpus_digest": "sha256:440e4e69c1a4cd70d90a1c7a419fc20becd16e4234c78068a11931dd7c881d96",
+    "corpus_role": "holdout",
+    "development_freeze_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 1
+    },
+    "holdout_id": "p2-r1-holdout-v1",
+    "holdout_digest": "sha256:32b5d96f9fbe62d21d1b2a168bffdbb253dfcf1339a10bc62502e7caf5f62398",
+    "holdout_chronology_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 2
+    },
+    "chronology_scheme": "fixture-epoch-v1",
+    "chronology_status": "later-in-time",
+    "task_family": "patch-analysis",
+    "case_id": "holdout-patch-001",
+    "case_digest": "sha256:8131f812dafa88f45442af30a35c03dc26dfafacae6990b6e72999ceeced9d1a",
+    "strategy_id": "not-applicable",
+    "strategy_version": "not-applicable",
+    "evaluator_id": "not-applicable",
+    "evaluator_version": "not-applicable",
+    "model_id": "not-applicable",
+    "model_version": "not-applicable",
+    "provider_id": "not-applicable",
+    "provider_version": "not-applicable",
+    "execution_environment_id": "not-applicable",
+    "source_provenance": {
+      "kind": "repository-authored-synthetic",
+      "path": "packages/kodac-runtime/test/fixtures/p2-r1/holdout.json"
+    },
+    "contamination_status": "unknown",
+    "metric_definitions": [
+      {
+        "task_family": "patch-analysis",
+        "metric_id": "contract_exactness",
+        "unit": "boolean"
+      }
+    ],
+    "result_identity": "sha256:2ee50d47b0bfc1ac4a171ab19b45e447db9863cc6af878a3892ef3368a2718e6"
+  },
+  {
+    "schema_version": "p2-r1-manifest/v1",
+    "benchmark_id": "kodacbench-p2-r1-fixture-spine",
+    "benchmark_protocol_version": "p2-r1/v1",
+    "corpus_id": "p2-r1-development-v1",
+    "corpus_digest": "sha256:440e4e69c1a4cd70d90a1c7a419fc20becd16e4234c78068a11931dd7c881d96",
+    "corpus_role": "holdout",
+    "development_freeze_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 1
+    },
+    "holdout_id": "p2-r1-holdout-v1",
+    "holdout_digest": "sha256:32b5d96f9fbe62d21d1b2a168bffdbb253dfcf1339a10bc62502e7caf5f62398",
+    "holdout_chronology_anchor": {
+      "scheme": "fixture-epoch-v1",
+      "ordinal": 2
+    },
+    "chronology_scheme": "fixture-epoch-v1",
+    "chronology_status": "later-in-time",
+    "task_family": "finding-verification",
+    "case_id": "holdout-finding-001",
+    "case_digest": "sha256:759ca0ab006a022409adbb4e9897a5105407312cfed95a8d18eecc25faf5c2ef",
+    "strategy_id": "not-applicable",
+    "strategy_version": "not-applicable",
+    "evaluator_id": "not-applicable",
+    "evaluator_version": "not-applicable",
+    "model_id": "not-applicable",
+    "model_version": "not-applicable",
+    "provider_id": "not-applicable",
+    "provider_version": "not-applicable",
+    "execution_environment_id": "not-applicable",
+    "source_provenance": {
+      "kind": "repository-authored-synthetic",
+      "path": "packages/kodac-runtime/test/fixtures/p2-r1/holdout.json"
+    },
+    "contamination_status": "unknown",
+    "metric_definitions": [
+      {
+        "task_family": "finding-verification",
+        "metric_id": "finding_contract_validity",
+        "unit": "boolean"
+      }
+    ],
+    "result_identity": "sha256:4d4e476b7eb12a0c80676e1fed7bb4e641ec2b604fd3156a83b047b3a8f397aa"
+  }
+]
