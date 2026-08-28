@@ -27,6 +27,8 @@ K6-R5 merge        = PR #226 / 91d817741d1c55195d26ef8e8f5be98e04d1977d
 K6 closeout merge  = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
 P2-R1 auth merge   = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
 P2-R1 impl merge   = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
+P2-R2 auth merge   = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de
+P2-R2 impl merge   = PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
 Improvement plan   = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -40,12 +42,13 @@ Always re-read live protected `main`; these identities are evidence anchors, not
 | K2 | Trusted Runtime Spine | **CLOSED** | K2 remains trusted side-effect execution boundary |
 | K3 | Repository Intelligence & Context Engine | **CLOSED for canonical K3-R1 through K3-R6 bounded scope** | K3-R7+ not required / not authorized |
 | KRI-R1 through KRI-R4 | Bounded Reviewer Intelligence | **CANONICAL / COMPLETE** | KRI-R5+ not authorized |
-| K4 | Ecosystem Compatibility | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
+| K4 | Ecosystem Compatibility | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not required / not authorized |
 | K5 | Proof Review & Judge | **CLOSED for canonical K5-R1 through K5-R5 bounded scope** | Done Gate unchanged |
 | K6 | Evidence Router & Outcome Learning | **CLOSED_CANONICAL for bounded R1-R5 scope** | No execution/persistence/learning/promotion authority by composition |
-| P2-R1 | KodacBench contract + frozen fixture/manifest spine | **CLOSED_CANONICAL** | Local deterministic contract/data scope only; closure proven by post-merge GitHub objects/checks |
-| P2-R2 | Local runner + immutable report spine | **AUTHORIZATION CANDIDATE** | Effective implementation authority only after this exact gate becomes canonical |
-| P2-R3+ | Later KodacBench slices | **NOT_AUTHORIZED** | Separate exact authority required |
+| P2-R1 | KodacBench contract + frozen fixture/manifest spine | **CLOSED_CANONICAL** | Local deterministic contract/data scope only |
+| P2-R2 | Local runner + immutable report spine | **CLOSED_CANONICAL** | Pure in-memory observation/report scope only |
+| P2-R3 | Explicit reducer policy + task-family summary spine | **AUTHORIZATION CANDIDATE** | Effective implementation authority only after this exact gate becomes canonical |
+| P2-R4+ | Later KodacBench slices | **NOT_AUTHORIZED** | Comparison/ranking/external execution requires separate exact authority |
 | P3-P8 | Later improvement stages | **NOT_AUTHORIZED** | Each needs dependencies and separate canonical authority |
 
 Engineering milestone status is separate from public product release status.
@@ -62,67 +65,85 @@ P2 is required before broad evidence-backed comparisons or superiority claims fo
 - separately identified holdout material whose `later-in-time` classification requires proven strict ordering under a comparable chronology scheme;
 - task-family-separated metrics;
 - provenance and contamination state;
-- reproducible deterministic contract/report identities;
-- exact strategy/evaluator/model/provider identities where they actually apply;
+- reproducible deterministic contract/report/summary identities;
+- exact strategy/evaluator/model/provider identities only where a later authorized slice actually invokes them;
 - no universal blended `best` score or unsupported product-level superiority claim.
 
 ### P2-R1 — closed canonical
 
 PR #238 merged P2-R1 at `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f` after exact-head qualification and required post-merge proof.
 
-The committed P2-R1 evidence file is deliberately a historical **candidate-time** artifact:
+P2-R1 established hardened canonical JSON identity semantics, frozen repository-authored synthetic development and holdout fixtures, chronology/provenance/contamination contracts, exact case/corpus/holdout/result identities, and task-family-separated metric declarations.
 
-- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+P2-R1 did not execute providers/models/evaluators and did not define aggregation/reducer policy.
 
-It was frozen before its own merge and therefore cannot truthfully contain that future merge result. P2-R1 closure is instead bound by the later immutable proof:
+### P2-R2 — closed canonical
+
+PR #240 merged the qualified P2-R2 implementation to canonical `main` at:
 
 ```text
-QUALIFIED_FINAL_HEAD = f3ab68cc74f391ae460b82a8697c7e319cb4ed3b
-QUALIFIED_FINAL_TREE = a01997cffe5848dd91ac12a6639134648bbe2f89
-MERGE = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
-POST_MERGE_GOVERNANCE = 33173090203 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33173090251 / SUCCESS
+4a0b2c67dbd707c18395b0898752c111ca6b16a9
+```
+
+Closure proof binds:
+
+```text
+QUALIFIED_FINAL_HEAD = 46f455c21e294d92d2976d4398a26ffdf3f82c96
+QUALIFIED_FINAL_TREE = d7957e6030a723efbdddc174651fe4da313ff84d
+MERGE_PARENT_1 = f2b8d452e93ec207ebe04c9db7d47dc032df20de
+MERGE_PARENT_2 = 46f455c21e294d92d2976d4398a26ffdf3f82c96
+POST_MERGE_GOVERNANCE = 33180522055 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33180522073 / SUCCESS
 MERGE_VERIFICATION = verified / valid
 ```
 
-The canonical six P2-R1 blobs matched the qualified candidate after merge, and ruleset `20707483` remained active with no bypass. Accordingly, candidate-time wording preserved in the historical evidence file is not a current incompletion claim and does not override the subsequent post-merge proof.
+The three canonical P2-R2 blobs matched the qualified candidate after merge and ruleset `20707483` remained active with no bypass.
 
-P2-R1 established:
+P2-R2 established a deterministic local runner/report layer over caller-materialized observations with strict R1 identity binding, explicit missing/unavailable state, task-family separation, completeness counts, and immutable report identity.
 
-- hardened canonical JSON identity semantics;
-- frozen repository-authored synthetic development and holdout fixtures;
-- chronology/provenance/contamination contracts;
-- exact case/corpus/holdout/result identities;
-- task-family-separated metric declarations;
-- explicit `not-applicable` identities for uninvoked strategy/evaluator/model/provider/execution dimensions.
+P2-R2 intentionally did not define reducers, directionality, thresholds, comparison, rankings, winner semantics, external execution, product integration, persistence, learning, or public claims.
 
-P2-R1 did not execute those participants and did not define aggregation/reducer policy.
+### P2-R3 — current authorization candidate
 
-### P2-R2 — current authorization candidate
-
-The next proposed P2 slice is intentionally narrower than a general benchmark executor:
+The next proposed P2 slice closes only the reducer-policy gap left intentionally open by P2-R2:
 
 ```text
-P2-R2 = LOCAL DETERMINISTIC RUNNER + IMMUTABLE REPORT SPINE
-P2-R2 IMPLEMENTATION = AUTHORIZED ONLY AFTER ITS EXACT AUTHORIZATION RECORD BECOMES CANONICAL
-P2-R3+ = NOT AUTHORIZED
+P2-R3 = EXPLICIT REDUCER POLICY + TASK-FAMILY SUMMARY SPINE
+P2-R3 IMPLEMENTATION = AUTHORIZED ONLY AFTER ITS EXACT AUTHORIZATION RECORD BECOMES CANONICAL
+P2-R4+ = NOT AUTHORIZED
 ```
 
 Candidate authority:
 
-- `docs/planning/KODAC_P2_R2_LOCAL_RUNNER_REPORT_AUTHORIZATION_2026-08-28.md`
+- `docs/planning/KODAC_P2_R3_TASK_FAMILY_SUMMARY_AUTHORIZATION_2026-08-28.md`
 
 If canonical, that record authorizes exactly one pure in-memory implementation PR limited to:
 
 ```text
-packages/kodac-runtime/bench/p2-r2/**
-packages/kodac-runtime/test/p2-r2-*.test.ts
-docs/planning/KODAC_P2_R2_LOCAL_RUNNER_REPORT_EVIDENCE_2026-08-28.md
+packages/kodac-runtime/bench/p2-r3/**
+packages/kodac-runtime/test/p2-r3-*.test.ts
+docs/planning/KODAC_P2_R3_TASK_FAMILY_SUMMARY_EVIDENCE_2026-08-28.md
 ```
 
-The R2 runner would consume validated R1 values plus caller-materialized metric observations, bind each observation to exact R1 case/result/metric/unit identity, fail closed on malformed or hostile structures, deterministically order evidence, preserve explicit missing observations, produce completeness counts, and derive one immutable report identity.
+The R3 layer would consume a validated R2 report plus an explicit versioned per-metric policy. No reducer is inferred. The closed reducer vocabulary for this slice is:
 
-R2 may not infer averages, reducers, weighting, normalization, thresholds, global rankings, universal scores, winner/superiority semantics, or external execution authority. No provider/model/reviewer/evaluator/tool/network/subprocess/persistence/product integration is included.
+```text
+ARITHMETIC_MEAN
+BOOLEAN_TRUE_RATE
+```
+
+The closed missingness vocabulary is:
+
+```text
+REQUIRE_COMPLETE
+OBSERVED_ONLY_WITH_COVERAGE
+```
+
+`ARITHMETIC_MEAN` applies only to finite numeric observed values and preserves the input metric unit. `BOOLEAN_TRUE_RATE` applies only to boolean observed values and exposes numerator/denominator with output unit `ratio_0_1`. Missing/unavailable values never silently become zero or false. Incomplete evidence remains visible through exact expected/observed/missing/unavailable counts.
+
+R3 keeps task families separate and may not infer or materialize directionality, thresholds, cross-metric utility, weighted/blended scores, cross-task normalization, comparison between reports/systems/strategies/models/providers/configurations, Pareto dominance, statistical significance, ranking, leaderboard, `best`, `winner`, `superior`, promotion, or public claims.
+
+No provider/model/reviewer/evaluator/tool/network/subprocess/persistence/product integration is included.
 
 ## Ordered improvement program
 
@@ -130,8 +151,9 @@ R2 may not infer averages, reducers, weighting, normalization, thresholds, globa
 K6 bounded closeout
 -> P2 KodacBench
    -> R1 contract + frozen fixture/manifest spine [CLOSED_CANONICAL]
-   -> R2 local deterministic runner + immutable report spine [AUTHORIZATION CANDIDATE]
-   -> R3+ separate benchmark slices [NOT AUTHORIZED]
+   -> R2 local deterministic runner + immutable report spine [CLOSED_CANONICAL]
+   -> R3 explicit reducer policy + task-family summary [AUTHORIZATION CANDIDATE]
+   -> R4+ separate benchmark slices [NOT AUTHORIZED]
 -> P3 Context Engine v2
 -> P4 Reviewer Intelligence v2
 -> P5 Finding Verifier Fabric
@@ -140,7 +162,7 @@ K6 bounded closeout
 -> P8 Product / Distribution Hardening
 ```
 
-P2 itself remains sliced and evidence-gated. Successful R2 would not silently authorize R3.
+P2 itself remains sliced and evidence-gated. Successful R3 would not silently authorize R4.
 
 ## Preserved authority boundaries
 
@@ -150,11 +172,13 @@ K5 PROOF EVIDENCE != DONE GATE COMPLETION AUTHORITY
 REVIEWER / MODEL OUTPUT = CLAIM / EVIDENCE, NOT COMPLETION TRUTH
 K6 ROUTING / OUTCOME / STRATEGY EVIDENCE != EXECUTION AUTHORITY
 P2 BENCHMARK EVIDENCE != EXECUTION / PROMOTION / DONE GATE AUTHORITY
-P2-R3+ = NOT AUTHORIZED
+P2-R4+ = NOT AUTHORIZED
 P3-P8 = NOT AUTHORIZED
 NEW DEPENDENCIES / CODE IMPORT = NOT AUTHORIZED
 PROVIDER / MODEL / REVIEWER / EVALUATOR INVOCATION = NOT AUTHORIZED
 PERSISTENCE / TELEMETRY / LEARNING = NOT AUTHORIZED
+SYSTEM / REPORT COMPARISON = NOT AUTHORIZED
+THRESHOLD / DIRECTION / RANKING / WINNER = NOT AUTHORIZED
 AUTOFIX EXECUTION = NOT AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE / BRAND LAUNCH = NOT AUTHORIZED
 ```
