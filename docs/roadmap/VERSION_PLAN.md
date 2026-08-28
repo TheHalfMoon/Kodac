@@ -10,6 +10,8 @@ Always read live GitHub truth, root `AGENTS.md`, `docs/roadmap/NEXT.md`, and the
 
 ## Current engineering state
 
+After this roadmap reconciliation is canonical and post-merge proven:
+
 ```text
 K0/K1 = CLOSED
 K2 = CLOSED
@@ -22,8 +24,8 @@ K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
 K6-R4 = CLOSED_CANONICAL
-K6-R5 = NOT_AUTHORIZED
-K6 BOUNDED CLOSEOUT = NOT YET ELIGIBLE
+K6-R5 = CLOSED_CANONICAL
+K6 BOUNDED CLOSEOUT = NOT_AUTHORIZED
 P2 KODACBENCH = NOT_AUTHORIZED
 P3-P8 IMPLEMENTATION = NOT_AUTHORIZED
 ```
@@ -38,6 +40,13 @@ K6-R3 merge       = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
 K6-R4 auth root   = PR #211 / 1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372
 K6-R4 final auth  = PR #221 / 93c197cb6f88409dd406694fe4614ecf0fb6ba00
 K6-R4 merge       = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
+K6-R5 auth        = PR #224 / 31f5f9f3e05dd0feeda2b96b3221374c4bfe0032
+K6-R5 Stage A     = PR #225 / 76f8639a329d9f168fea9d71f78711d612075619
+K6-R5 repair auth = PR #227 / 06f2dc2df5eb432107313932a16079edc4912a38
+K6-R5 trust repair= PR #228 / 0c151b3db8ab1487c5fcf1553060b4743ede155d
+K6-R5 pin auth    = PR #232 / 2d4393fd08329507385fe06d90c3ddedff77bad9
+K6-R5 Unit B      = PR #233 / 99aa00db6265b33ebffb2a7653e23a8db4b70c31
+K6-R5 merge       = PR #226 / 91d817741d1c55195d26ef8e8f5be98e04d1977d
 Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -51,12 +60,15 @@ The following implications are invalid:
 K5 CLOSED
 != PUBLIC RELEASE READY
 
-K6-R1/R2/R3/R4 CLOSED_CANONICAL
+K6-R1/R2/R3/R4/R5 CLOSED_CANONICAL
 != K6 CLOSED
 != ROUTE EXECUTION AUTHORIZED
+!= STRATEGY EXECUTION AUTHORIZED
 != OUTCOME PERSISTENCE AUTHORIZED
 != LEARNING AUTHORIZED
+!= AUTOMATIC PROMOTION AUTHORIZED
 != PRODUCTION ROUTING AUTHORIZED
+!= GENERAL KODACBENCH CLAIM AUTHORIZED
 
 ENGINEERING MILESTONE CLOSED
 != PACKAGE PUBLISHABLE
@@ -68,7 +80,7 @@ ENGINEERING MILESTONE CLOSED
 
 K5 retains bounded proof-review semantics only. K5 does not receive Done Gate / `PROVEN_READY` authority.
 
-K6-R1/R2/R3/R4 retain only their exact bounded deterministic caller-materialized surfaces. R4 adds privacy-governed in-process outcome values and lifecycle transitions, not durable storage or learning authority. These slices do not authorize provider/model/reviewer invocation, route execution, persistence, telemetry, training, learning, strategy promotion, autofix, K2 expansion, or Done Gate authority transfer.
+K6-R1/R2/R3/R4/R5 retain only their exact bounded deterministic caller-materialized surfaces. R4 adds privacy-governed in-process outcome values and lifecycle transitions, not durable storage or learning authority. R5 adds immutable bounded strategy comparison over caller-materialized comparable evidence, not candidate eligibility, execution, promotion, trust-policy mutation, or general benchmark authority. These slices do not authorize provider/model/reviewer invocation, route execution, persistence, telemetry, training, learning, autofix, K2 expansion, K5 expansion, or Done Gate authority transfer.
 
 ## Public product versions
 
@@ -103,8 +115,8 @@ KRI-R5+ = NOT_AUTHORIZED
 K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R4 PERSISTENCE / LEARNING / PROMOTION EXPANSION = NOT_AUTHORIZED
-K6-R5 = NOT_AUTHORIZED
-K6 BOUNDED CLOSEOUT = NOT YET ELIGIBLE
+K6-R5 EXECUTION / ELIGIBILITY / PROMOTION / GENERAL BENCHMARK EXPANSION = NOT_AUTHORIZED
+K6 BOUNDED CLOSEOUT = NOT_AUTHORIZED
 P2 KODACBENCH = NOT_AUTHORIZED
 P3-P8 = NOT_AUTHORIZED
 
@@ -125,9 +137,11 @@ DONE GATE MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 
 ## Next engineering action
 
-After the roadmap reconciliation containing this file is canonical and post-merge proven, the next eligible unit is **K6-R5 authorization-candidate preparation only**.
+After the roadmap reconciliation containing this file is canonical and post-merge proven, the next eligible unit is **K6 bounded closeout authorization-candidate preparation only**.
 
-That planning step does not itself create strategy execution, qualification execution, promotion, persistence, learning, provider/model/reviewer invocation, or general benchmark authority. K6-R5 implementation remains `NOT_AUTHORIZED` until a separate exact authorization becomes canonical and defines immutable strategy identities, the exact R5-specific corpus/holdout, comparison semantics, task/privacy/security guardrails, rollback and external promotion boundaries, implementation allowlist, CI, review, merge, and post-merge gates.
+That closeout candidate must be a separate evidence/governance record for the exact canonical R1-R5 surface. It must preserve every non-grant above and may not imply KodacBench, release, provider/model/reviewer invocation, execution, persistence, learning, promotion, autofix, dependency, K2/K5/Done Gate, or ruleset authority.
+
+Only after a separate K6 bounded closeout record becomes canonical and post-merge proven may the repository consider the next P2 KodacBench authorization-candidate preparation. That later planning step still does not create benchmark implementation or public claim authority by itself.
 
 ## Future release-gate direction
 
