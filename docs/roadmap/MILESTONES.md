@@ -21,7 +21,7 @@ Historical authorization/evidence records remain historical evidence. Candidate 
 | K5 | **CLOSED for canonical K5-R1 through K5-R5 bounded proof-review scope** | K5-R6+ not required / not authorized; Done Gate unchanged |
 | K6-R1 through K6-R5 | **CLOSED_CANONICAL individually** | Exact bounded data/evidence contracts only |
 | K6 bounded closeout | **CLOSED_CANONICAL** | PR #236 / `ed4fb16e8bbaf960812285671062c9b2abf597a8` |
-| P2-R1 | **CLOSED_CANONICAL** | Contract + frozen development/holdout fixture/manifest spine via PR #238 |
+| P2-R1 | **CLOSED_CANONICAL** | Contract + frozen development/holdout fixture/manifest spine via PR #238 and external post-merge proof |
 | P2-R2 | **AUTHORIZATION CANDIDATE** | Local deterministic caller-observation runner + immutable report spine |
 | P2-R3+ | **NOT_AUTHORIZED** | Separate exact authority required |
 | P3-P8 | **NOT_AUTHORIZED** | Later stages require dependencies and separate authority |
@@ -46,7 +46,7 @@ Always re-read live protected `main`; these identities are evidence anchors, not
 
 ## P2-R1 — CLOSED_CANONICAL
 
-P2-R1 is closed for its exact bounded scope after PR #238 merged the qualified implementation head and post-merge proof succeeded.
+P2-R1 is closed for its exact bounded scope after PR #238 merged the qualified implementation head and the required later GitHub post-merge proof succeeded.
 
 ```text
 P2-R1 = BENCHMARK CONTRACT + FROZEN FIXTURE / MANIFEST SPINE
@@ -54,9 +54,18 @@ P2-R1 = CLOSED_CANONICAL
 GENERAL KODACBENCH = OPEN
 ```
 
-Exact evidence:
+Evidence is intentionally layered rather than retroactively rewriting the historical candidate file:
 
-- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+- candidate-time implementation evidence record: `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`;
+- qualified exact head: `f3ab68cc74f391ae460b82a8697c7e319cb4ed3b`;
+- qualified tree: `a01997cffe5848dd91ac12a6639134648bbe2f89`;
+- canonical merge: PR #238 / `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f`;
+- post-merge governance run `33173090203` / SUCCESS;
+- post-merge K2 runtime run `33173090251` / SUCCESS;
+- merge verification: verified / valid;
+- canonical six-path blob equality and active no-bypass ruleset were re-proven after merge.
+
+The evidence record's candidate-time wording is historical by design: the record was frozen before the merge whose result it could not truthfully predict or recursively encode. Current closure truth comes from the subsequent immutable GitHub object/check proof above.
 
 P2-R1 established deterministic canonical identities, frozen local development/holdout fixtures, chronology/provenance/contamination semantics, and task-family-separated metric declarations. It did not authorize external execution, evaluator semantics, aggregation, ranking, product integration, persistence, telemetry, or public claims.
 
