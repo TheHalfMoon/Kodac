@@ -15,11 +15,11 @@ Before any mutation:
 
 If this page conflicts with live GitHub, an ADR, or an exact authorization/evidence record, the more authoritative source wins.
 
-Text on this feature branch is candidate text only. The transition below becomes effective only after this exact K6 closeout candidate is merged and its required post-merge proof succeeds.
+Candidate wording on a feature branch never creates canonical authority by itself.
 
 ---
 
-# Current canonical truth before this candidate merges
+# Current canonical truth
 
 ```text
 K5 = CLOSED FOR CANONICAL R1-R5 BOUNDED PROOF-REVIEW SCOPE
@@ -28,75 +28,81 @@ K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
 K6-R4 = CLOSED_CANONICAL
 K6-R5 = CLOSED_CANONICAL
-K6 BOUNDED CLOSEOUT AUTHORIZATION = CANONICAL VIA PR #235 / 748706683a0102f1743c1797950272bbd41d8a3c
-K6 ITSELF = NOT CLOSED UNTIL THIS CLOSEOUT MERGE + POST-MERGE GATE PASSES
-P2 KODACBENCH IMPLEMENTATION = NOT_AUTHORIZED
+K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
+K6 CLOSEOUT MERGE = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
+K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
+P2 IMPLEMENTATION = NOT YET AUTHORIZED BY CANONICAL MAIN
 WAIVER = NO
 ```
 
-Canonical anchors include:
-
-```text
-K6 planning       = PR #202 / 2f167794a375bc913c377746419acf3bcc5ee0ab
-K6-R1 merge       = PR #204 / 7bc163b9ec0d5d451950542f1feb15e444fbdc6c
-K6-R2 merge       = PR #206 / 90c00cfc01cb874c08b4f7bde1469ccb298b5648
-K6-R3 merge       = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
-K6-R4 merge       = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
-K6-R4 reconcile   = PR #222 / 1db9fef23df0961d76b1fdd1b0e558fba180cad8
-K6-R5 merge       = PR #226 / 91d817741d1c55195d26ef8e8f5be98e04d1977d
-K6-R5 reconcile   = PR #234 / 74868b75d0e531fdff8255e3827c4ecbce7dc4ac
-K6 closeout auth  = PR #235 / 748706683a0102f1743c1797950272bbd41d8a3c
-```
-
-The exact K6 closeout evidence and gate are in:
+The exact K6 closeout evidence remains:
 
 - `docs/planning/KODAC_K6_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
 - `docs/planning/KODAC_K6_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
 
----
-
-# NOW — exact K6 bounded closeout candidate
-
-The active unit on this branch is exactly the six-document closeout candidate authorized by canonical PR #235.
-
-```text
-K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE IFF THIS EXACT CLOSEOUT MERGE GATE PASSES
-K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
-P2 KODACBENCH IMPLEMENTATION = NOT_AUTHORIZED BY THIS CLOSEOUT
-K2 / K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
-```
-
-No seventh path is authorized for this closeout candidate.
-
-The closeout must retain the exact live implementation identities, material repair/anomaly history, provider-neutral semantic-review quorum, active ruleset/no-bypass evidence, and authority-by-composition protections. It must not rewrite historical branch/base-pinned non-applicability as green CI.
-
-Critical distinctions remain:
-
-```text
-ELIGIBILITY EVIDENCE != EXECUTION AUTHORITY
-ROUTE PLAN != ROUTE EXECUTION
-OUTCOME LINKAGE != DONE GATE EVALUATION
-OUTCOME MEMORY != DURABLE PERSISTENCE AUTHORITY
-STRATEGY COMPARISON != PROMOTION
-R5 DOMINANCE RESULT != PROVEN_READY
-R5 BOUNDED QUALIFICATION CORPUS != GENERAL KODACBENCH
-SELF-IMPROVING != SELF-AUTHORIZING
-```
+K6 closure did not create provider/model/reviewer/evaluator invocation, execution, persistence, learning, promotion, Done Gate, `PROVEN_READY`, release, or general KodacBench authority.
 
 ---
 
-# THEN — only after canonical K6 closeout proof
+# NOW — P2-R1 authorization candidate
 
-After and only after this closeout is canonically merged and post-merge proven, the next eligible repository unit is:
+The active repository unit on this branch is one planning/governance gate:
 
 ```text
-P2 KODACBENCH AUTHORIZATION-CANDIDATE PREPARATION ONLY
-P2 KODACBENCH IMPLEMENTATION = NOT_AUTHORIZED UNTIL ITS OWN SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
+P2-R1 = BENCHMARK CONTRACT + FROZEN FIXTURE / MANIFEST SPINE
+P2-R1 AUTHORIZATION = CANDIDATE UNTIL THIS EXACT UNIT IS CANONICAL
+P2-R1 IMPLEMENTATION = NOT YET EFFECTIVE
+P2-R2+ = NOT AUTHORIZED
+P3-P8 = NOT AUTHORIZED
 ```
 
-The P2 authorization candidate must be a separate planning/governance unit. It may define the exact benchmark contract, scope, datasets/fixtures, metrics, reproducibility requirements, security/privacy boundaries, implementation allowlist, qualification gates, review quorum, merge conditions, and preserved non-grants. It may not implement the benchmark merely because this front door names it next.
+The exact authorization unit is these five paths and no others:
 
-The durable dependency order remains:
+```text
+docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md
+docs/product/STATUS.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/NEXT.md
+docs/roadmap/ROADMAP.md
+```
+
+That same exact five-path set governs candidate changed-file qualification and the required individual pre-merge blob capture. Missing any one of those five candidate blobs makes authorization qualification incomplete. This unit may not implement P2-R1.
+
+The candidate defines the later P2-R1 implementation as a local deterministic contract/fixture slice with:
+
+- frozen corpus and separately identified holdout material whose `later-in-time` classification requires proven strict ordering under the defined comparable chronology scheme;
+- stable digests and canonical identities;
+- task-family-separated metric declarations;
+- explicit provenance and contamination status;
+- fail-closed schema/identity/path validation;
+- immutable evidence/report identity fields;
+- no universal blended `best` score;
+- no public superiority claim.
+
+The candidate explicitly denies provider/model/reviewer/evaluator calls, network/secrets, dependencies, product-runtime changes, persistence, telemetry, training/learning, strategy execution/promotion, autofix, Done Gate expansion, ruleset bypass, and release authority.
+
+---
+
+# THEN — only if the P2-R1 authorization becomes canonical
+
+If and only if this exact authorization PR is qualified on one exact head, merged normally into protected `main`, and its required post-merge proof succeeds, the next eligible unit is exactly one P2-R1 implementation PR with this allowlist:
+
+```text
+packages/kodac-runtime/bench/p2-r1/**
+packages/kodac-runtime/test/p2-r1-*.test.ts
+packages/kodac-runtime/test/fixtures/p2-r1/**
+docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md
+```
+
+No other path is implied.
+
+The implementation must satisfy the exact tests/evidence/qualification conditions in the canonical authorization. P2-R1 becomes complete only after its own exact-head qualification, guarded normal merge, and post-merge proof.
+
+Successful P2-R1 does **not** authorize P2-R2. The next P2 slice requires a separate canonical authorization record.
+
+---
+
+# Durable dependency order
 
 ```text
 K6 bounded closeout
@@ -109,7 +115,7 @@ K6 bounded closeout
 -> P8 Product / Distribution Hardening
 ```
 
-General KodacBench is required before broad claims about context, reviewer, verifier, security, autofix, or product superiority.
+General KodacBench evidence is required before broad claims about context, reviewer, verifier, security, autofix, or product superiority.
 
 ---
 
@@ -138,6 +144,7 @@ No roadmap sentence can override these stop rules.
 - Current engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Current milestone ledger: `docs/roadmap/MILESTONES.md`
 - Engineering/public-version separation: `docs/roadmap/VERSION_PLAN.md`
+- P2-R1 authorization candidate: `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md`
 - K6 closeout evidence: `docs/planning/KODAC_K6_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
 - Durable ordered plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Research/gap rationale: `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
