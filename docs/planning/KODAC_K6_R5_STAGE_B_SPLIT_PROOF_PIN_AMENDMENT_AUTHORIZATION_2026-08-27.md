@@ -21,7 +21,7 @@
 - Stage B reconciliation checkpoint head: `b950d8a4a04eac25ab4b213ad8a529d2efed1d00`
 - Protected-main ruleset: `20707483` (`Kodac canonical main protection v1`)
 - Existing unrecoverable Stage B proof-body pin: `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c`
-- Replacement exact Stage B proof-body pin: `de7c2eb5c460fdd81fc2341e8fd7034f2be430d5d0933eb5f0eef5734291137d`
+- Replacement exact Stage B proof-body pin: `b3ca1a533889b0c7feed3806a50466f2ccb72a514e3ae129adb4c47a85c9f726`
 - `WAIVER=NO`
 
 This record is candidate authority only until it is merged to protected `main` through normal repository governance and its post-merge proof succeeds. It grants no trusted-workflow or Stage B implementation authority before that point.
@@ -73,7 +73,7 @@ Hashing contract:
 - no YAML indentation in the hashed body;
 - first bytes are `set -euo pipefail`;
 - exactly one terminal LF after the final `PY`;
-- SHA-256 MUST equal `de7c2eb5c460fdd81fc2341e8fd7034f2be430d5d0933eb5f0eef5734291137d`.
+- SHA-256 MUST equal `b3ca1a533889b0c7feed3806a50466f2ccb72a514e3ae129adb4c47a85c9f726`.
 
 The Stage B workflow already pins `actions/setup-node` and Node `24.18.0` before this step. The body pins the exact import-declaration prefix bytes for each runtime closure member that imports dependencies, then uses Node's TypeScript stripper and module parser to validate the complete bounded runtime dependency closure. The exact-prefix check distinguishes binding imports from side-effect or standalone type-only substitutions even when they resolve to the same module specifier. The ruleset request is hard-coded to the GitHub API and uses a no-redirect opener, so any HTTP redirect fails before a second request can be issued. The body then uses explicit Python failures rather than optimization-removable security assertions.
 
@@ -357,7 +357,7 @@ It may modify exactly:
 
 It may only:
 
-1. change the expected Stage B proof-body SHA from `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c` to `de7c2eb5c460fdd81fc2341e8fd7034f2be430d5d0933eb5f0eef5734291137d`;
+1. change the expected Stage B proof-body SHA from `ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c` to `b3ca1a533889b0c7feed3806a50466f2ccb72a514e3ae129adb4c47a85c9f726`;
 2. add immutable Stage B PR identity `226` and require both the event PR number and fetched live PR identity to equal exactly PR #226;
 3. extend the protected-base identity chain by exactly the canonical PR #232 authorization merge and the registered Unit B repair merge;
 4. prove the immutable chain preserving original R5 authorization, Stage A #225, PR #227 authorization, PR #228 repair, PR #232 authorization, and registered Unit B repair;
@@ -408,7 +408,7 @@ Compare from the new protected main to the reconciled PR #226 head must contain 
 For this governance repair, no source/runtime/schema/test behavior may change. Within `.github/workflows/k6-r5-bounded-strategy-qualification.yml` only, authorize exactly:
 
 1. `K6_R5_TRUSTED_WORKFLOW_BLOB` becomes the exact canonical Unit B trusted-workflow blob;
-2. `Prove forbidden R5 authority surfaces and live ruleset` becomes byte-for-byte the body specified in this record, hashing to `de7c2eb5c460fdd81fc2341e8fd7034f2be430d5d0933eb5f0eef5734291137d`.
+2. `Prove forbidden R5 authority surfaces and live ruleset` becomes byte-for-byte the body specified in this record, hashing to `b3ca1a533889b0c7feed3806a50466f2ccb72a514e3ae129adb4c47a85c9f726`.
 
 No other trigger, permission, job-level environment, action metadata, step metadata, or run body may drift.
 
