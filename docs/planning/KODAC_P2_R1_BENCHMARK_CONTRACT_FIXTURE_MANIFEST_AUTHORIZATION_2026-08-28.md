@@ -36,6 +36,22 @@ Governing records include:
 
 If live protected `main`, repository governance, or any more-specific canonical authority conflicts with this candidate before merge, this candidate is stale and must be reconciled forward. No rebase, force-push, destructive history rewrite, or silent waiver is authorized.
 
+## Exact authorization-unit changed-file set
+
+This authorization/gate PR is allowed to change exactly these five repository paths and no others:
+
+```text
+docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md
+docs/product/STATUS.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/NEXT.md
+docs/roadmap/ROADMAP.md
+```
+
+The first path is this authorization record. The other four paths are the complete intended current-front-door reconciliation set for this gate. No shorthand such as “the planning record plus front doors” may be used to admit an unnamed sixth path or to omit any of the four named front-door paths.
+
+The exact five-path set above is the source of truth for candidate-scope qualification and pre-merge blob capture.
+
 ## P2 purpose and slice decomposition
 
 P2 establishes KodacBench as a reproducible measurement and proof spine before later P3-P8 claims or optimization decisions.
@@ -303,13 +319,32 @@ Candidate-time evidence must not claim a future merge result as fact.
 This authorization candidate itself may be merged only if all of the following hold on one exact head:
 
 - live protected `main` has not moved without forward reconciliation;
-- changed files are exactly this planning record plus the explicitly intended current-front-door reconciliation documents;
+- changed files are exactly these five named paths and no others:
+
+  ```text
+  docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md
+  docs/product/STATUS.md
+  docs/roadmap/MILESTONES.md
+  docs/roadmap/NEXT.md
+  docs/roadmap/ROADMAP.md
+  ```
+
 - no runtime source, workflow, dependency, lockfile, fixture, or benchmark implementation changes are present;
 - all required exact-head CI/check contexts succeed or are proven non-applicable from canonical workflow conditions;
 - at least two distinct independent external semantic reviewer channels each give a substantive terminal-clean assessment on the exact final head under the provider-neutral review evidence contract;
 - rate-limit, billing, skipped-review, outage, status-only, summary-only, self-review, stale-head, or duplicate-channel output does not count toward that quorum;
 - unresolved material review threads/findings = 0;
-- exact final candidate head, candidate tree, authorization-document blob, and all four reconciled front-door document blobs are captured before merge;
+- before merge, capture the exact final candidate head and candidate tree plus the exact blob for each of these five paths individually:
+
+  ```text
+  docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md
+  docs/product/STATUS.md
+  docs/roadmap/MILESTONES.md
+  docs/roadmap/NEXT.md
+  docs/roadmap/ROADMAP.md
+  ```
+
+- missing any one of those five candidate blobs makes qualification incomplete; an aggregate tree identity does not substitute for the five individual blob identities;
 - the PR is open, non-draft, mergeable, and not behind protected `main`;
 - the active ruleset remains in force with `bypass_actors=[]`, `current_user_can_bypass=never`, and no silent bypass/waiver;
 - guarded normal merge uses the exact qualified `expected_head_sha` and ordinary history-preserving behavior only.
