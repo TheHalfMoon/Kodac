@@ -43,7 +43,7 @@ Always re-read live protected `main`; these identities are evidence anchors, not
 | K4 | Ecosystem Compatibility | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
 | K5 | Proof Review & Judge | **CLOSED for canonical K5-R1 through K5-R5 bounded scope** | Done Gate unchanged |
 | K6 | Evidence Router & Outcome Learning | **CLOSED_CANONICAL for bounded R1-R5 scope** | No execution/persistence/learning/promotion authority by composition |
-| P2-R1 | KodacBench contract + frozen fixture/manifest spine | **CLOSED_CANONICAL** | Local deterministic contract/data scope only |
+| P2-R1 | KodacBench contract + frozen fixture/manifest spine | **CLOSED_CANONICAL** | Local deterministic contract/data scope only; closure proven by post-merge GitHub objects/checks |
 | P2-R2 | Local runner + immutable report spine | **AUTHORIZATION CANDIDATE** | Effective implementation authority only after this exact gate becomes canonical |
 | P2-R3+ | Later KodacBench slices | **NOT_AUTHORIZED** | Separate exact authority required |
 | P3-P8 | Later improvement stages | **NOT_AUTHORIZED** | Each needs dependencies and separate canonical authority |
@@ -69,6 +69,23 @@ P2 is required before broad evidence-backed comparisons or superiority claims fo
 ### P2-R1 — closed canonical
 
 PR #238 merged P2-R1 at `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f` after exact-head qualification and required post-merge proof.
+
+The committed P2-R1 evidence file is deliberately a historical **candidate-time** artifact:
+
+- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+
+It was frozen before its own merge and therefore cannot truthfully contain that future merge result. P2-R1 closure is instead bound by the later immutable proof:
+
+```text
+QUALIFIED_FINAL_HEAD = f3ab68cc74f391ae460b82a8697c7e319cb4ed3b
+QUALIFIED_FINAL_TREE = a01997cffe5848dd91ac12a6639134648bbe2f89
+MERGE = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
+POST_MERGE_GOVERNANCE = 33173090203 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33173090251 / SUCCESS
+MERGE_VERIFICATION = verified / valid
+```
+
+The canonical six P2-R1 blobs matched the qualified candidate after merge, and ruleset `20707483` remained active with no bypass. Accordingly, candidate-time wording preserved in the historical evidence file is not a current incompletion claim and does not override the subsequent post-merge proof.
 
 P2-R1 established:
 
