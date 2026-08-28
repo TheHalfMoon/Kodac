@@ -70,7 +70,7 @@ That same exact five-path set governs candidate changed-file qualification and t
 
 The candidate defines the later P2-R1 implementation as a local deterministic contract/fixture slice with:
 
-- frozen corpus and separately identified later-in-time holdout;
+- frozen corpus and separately identified holdout material whose `later-in-time` classification requires proven strict ordering under the defined comparable chronology scheme;
 - stable digests and canonical identities;
 - task-family-separated metric declarations;
 - explicit provenance and contamination status;
