@@ -56,11 +56,17 @@ P2-R2+ = NOT AUTHORIZED
 P3-P8 = NOT AUTHORIZED
 ```
 
-The exact candidate record is:
+The exact authorization unit is these five paths and no others:
 
-- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md`
+```text
+docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md
+docs/product/STATUS.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/NEXT.md
+docs/roadmap/ROADMAP.md
+```
 
-This authorization unit may change only that planning record plus the intended current-front-door reconciliation documents. It may not implement P2-R1.
+That same exact five-path set governs candidate changed-file qualification and the required individual pre-merge blob capture. Missing any one of those five candidate blobs makes authorization qualification incomplete. This unit may not implement P2-R1.
 
 The candidate defines the later P2-R1 implementation as a local deterministic contract/fixture slice with:
 
