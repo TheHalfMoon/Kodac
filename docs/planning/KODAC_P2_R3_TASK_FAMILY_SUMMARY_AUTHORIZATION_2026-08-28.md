@@ -111,17 +111,51 @@ packages/kodac-runtime/test/p2-r3-*.test.ts
 docs/planning/KODAC_P2_R3_TASK_FAMILY_SUMMARY_EVIDENCE_2026-08-28.md
 ```
 
-P2-R3 may import and use the already-canonical P2-R1 contract and P2-R2 report contract. Tests may consume committed P2-R1 fixtures and in-memory P2-R2 reports. P2-R3 may not modify P2-R1 or P2-R2 bytes.
+P2-R3 may import and use the already-canonical P2-R1 canonicalization/hash primitives and the P2-R2 report schema/types. Tests may consume committed P2-R1 fixtures and in-memory P2-R2 reports. P2-R3 may not modify P2-R1 or P2-R2 bytes.
 
 No package manifest, lockfile, workflow, CLI, product-runtime source, K2/K3/K4/K5/K6 source, adapter, provider, model, reviewer, evaluator, persistence, telemetry, release, or ruleset path is in the allowlist.
 
 If a necessary change falls outside this allowlist, stop. A separate authorization is required.
 
-## Required policy contract
+## Required P2-R2 report revalidation
 
-P2-R3 must define an exact-key versioned in-memory policy contract. A policy entry must bind to one already-declared P2-R1/P2-R2 metric within exactly one task family.
+P2-R3 must treat a caller-supplied P2-R2 report as untrusted input even when its TypeScript type is `P2R2Report`.
 
-Each metric policy must identify at least:
+Before any policy binding or reduction, P2-R3 must:
+
+1. cross the hardened P2-R1 canonical JSON boundary before semantic field reads;
+2. require the exact P2-R2 report schema version and exact-key report/section/case/metric structure;
+3. validate canonical non-empty identities/strings, lowercase SHA-256 digest fields, safe non-negative integer count fields, measurement-status vocabulary, finite observed numeric values, boolean observed values, and `null` for missing/unavailable values;
+4. reject duplicate task-family sections, duplicate case identities, and duplicate case/metric slots;
+5. recompute the P2-R2 report identity from all evidence-bearing report fields except `report_identity` and require exact equality;
+6. recompute derived case/observation/missing counts from the materialized report structure and require exact equality with the report-level counts;
+7. preserve the distinction between `missing` and `unavailable` at metric-slot level.
+
+This validation must not claim that P2-R3 can reconstruct R1 manifests or the original observation-set digest from report bytes alone. P2-R3 verifies the self-contained R2 report contract and identity it receives; it does not manufacture missing upstream provenance.
+
+## Exact policy-document contract
+
+P2-R3 must define an exact-key versioned in-memory policy document with exactly these top-level caller-supplied fields:
+
+```text
+schema_version
+benchmark_id
+benchmark_protocol_version
+r2_report_identity
+metric_policies
+```
+
+The policy document must bind exactly to one validated P2-R2 report:
+
+- `benchmark_id` must equal the report `benchmark_id`;
+- `benchmark_protocol_version` must equal the report `benchmark_protocol_version`;
+- `r2_report_identity` must equal the validated report `report_identity`;
+- `metric_policies` must be a canonical array;
+- input order of `metric_policies` is not identity-bearing after canonical deterministic sorting.
+
+P2-R3 derives `policy_identity` from the canonical validated policy document; `policy_identity` is not caller-supplied and therefore cannot self-assert validity.
+
+Each metric-policy entry must have exactly these keys:
 
 ```text
 schema_version
@@ -134,65 +168,98 @@ missingness_policy
 minimum_observed_count
 ```
 
-Required semantics:
+Required binding semantics:
 
-- `task_family`, `metric_id`, and `unit` must match the validated P2-R2 report evidence exactly;
-- one metric may have at most one policy entry in one policy set;
+- `task_family`, `metric_id`, and `unit` must match metric slots present in the validated P2-R2 report exactly;
+- one `(task_family, metric_id)` may have at most one policy entry in one policy set;
 - policy entries for unknown metrics or cross-task-family bindings fail closed;
-- no reducer is inferred from numeric or boolean value shape;
-- every summarized metric must have an explicit reducer entry;
+- every summarized metric must have an explicit policy entry;
 - metrics without an explicit policy remain unsummarized rather than receiving a default;
+- no reducer or `value_kind` is inferred from observed data shape;
+- every observed slot selected by a policy must match the explicit `value_kind`; mixed or mismatched observed kinds fail closed;
 - policy identity is evidence-bearing and must participate in summary identity;
-- policy input must cross the hardened canonical JSON boundary before semantic reads;
 - caller timestamps, absolute paths, object iteration order, locale, host state, wall-clock time, or process state must not affect policy or summary identity.
+
+## Closed value-kind vocabulary
+
+P2-R3 may implement only:
+
+```text
+NUMBER
+BOOLEAN
+```
+
+`NUMBER` means every `observed` slot for that metric must contain a finite JSON number.
+
+`BOOLEAN` means every `observed` slot for that metric must contain a JSON boolean.
+
+P2-R1 metric definitions do not carry a value kind and P2-R2 permits either finite numbers or booleans at the generic observation layer. Therefore P2-R3 policy is the first layer that explicitly declares the expected value kind for reduction, and it must verify every observed slot rather than infer the declaration from data.
+
+Any other value kind requires a later separate authorization.
 
 ## Closed reducer vocabulary
 
-P2-R3 may implement only this bounded reducer vocabulary:
+P2-R3 may implement only:
 
 ```text
 ARITHMETIC_MEAN
 BOOLEAN_TRUE_RATE
 ```
 
+Reducer/value-kind compatibility is exact:
+
+```text
+ARITHMETIC_MEAN    -> NUMBER only
+BOOLEAN_TRUE_RATE  -> BOOLEAN only
+```
+
 `ARITHMETIC_MEAN`:
 
-- applies only to finite numeric `observed` values;
-- returns a finite numeric value in the same declared metric unit;
+- reduces only finite numeric `observed` values;
+- returns a finite numeric value in the same declared input metric unit;
 - never converts missing or unavailable values to zero;
-- must preserve exact observed/expected/missing/unavailable counts beside the reduced value.
+- must either use a numerically safe finite computation or fail closed if a finite result cannot be produced;
+- must preserve exact expected/observed/missing/unavailable counts beside the reduced value.
 
 `BOOLEAN_TRUE_RATE`:
 
-- applies only to boolean `observed` values;
-- returns a finite ratio in the closed unit `ratio_0_1`;
-- numerator and denominator must remain explicit in the summary evidence;
-- missing or unavailable values are never treated as false.
+- reduces only boolean `observed` values;
+- returns a finite ratio in the closed output unit `ratio_0_1`;
+- exposes exact `true_count` and `denominator_count` evidence;
+- never treats missing or unavailable values as false.
 
 Any other reducer, percentile, median, sum, weighted score, normalization, threshold, utility function, statistical test, confidence interval, cost-quality tradeoff, or domain-specific scoring function requires a later separate authorization.
 
-## Missingness policy
+## Closed missingness policy and minimum count
 
-P2-R3 may support only these explicit missingness policies:
+P2-R3 may support only:
 
 ```text
 REQUIRE_COMPLETE
 OBSERVED_ONLY_WITH_COVERAGE
 ```
 
-`REQUIRE_COMPLETE` fails closed for a metric summary when any expected slot is not `observed`.
+`minimum_observed_count` must always be a positive safe integer (`>= 1`). Zero, negative, fractional, unsafe-integer, non-numeric, or non-finite values fail closed.
 
-`OBSERVED_ONLY_WITH_COVERAGE` may reduce only the observed values if `minimum_observed_count` is satisfied, but the summary must retain expected, observed, missing, and unavailable counts so incomplete coverage cannot disappear behind the reduced value.
+After policy/report binding establishes a metric's `expected_count`:
 
-A zero observed count never produces a numeric/boolean reduced value. It remains an explicit insufficient-evidence state.
+- `minimum_observed_count > expected_count` fails closed as an impossible policy;
+- under `REQUIRE_COMPLETE`, `minimum_observed_count` must equal `expected_count`;
+- under `OBSERVED_ONLY_WITH_COVERAGE`, `minimum_observed_count` may be any positive safe integer from `1` through `expected_count` inclusive.
+
+`REQUIRE_COMPLETE` semantics are per metric. If any expected slot for that metric is not `observed`, that metric emits the explicit `INSUFFICIENT_EVIDENCE` state with no reduced value; it does not silently drop the metric and does not abort otherwise-valid summaries for independent metrics.
+
+`OBSERVED_ONLY_WITH_COVERAGE` may reduce only observed values when `observed_count >= minimum_observed_count`. Otherwise that metric emits `INSUFFICIENT_EVIDENCE`. In both states the summary retains exact expected, observed, missing, and unavailable counts so incomplete coverage cannot disappear behind the reduced value.
+
+A zero observed count never produces a numeric reduced value or ratio. It remains `INSUFFICIENT_EVIDENCE`.
 
 No imputation, zero-filling, success-filling, failure-filling, carry-forward, interpolation, weighting, or hidden exclusion is authorized.
 
-## Required summary contract
+## Exact summary contract
 
-P2-R3 must produce an immutable machine-readable summary with exact versioned semantics and deterministic canonical identity.
+P2-R3 must produce a deeply immutable machine-readable summary with exact versioned semantics and deterministic canonical identity.
 
-The summary must bind at least:
+The top-level summary must have exactly these keys:
 
 ```text
 schema_version
@@ -204,25 +271,54 @@ task_family_summaries
 summary_identity
 ```
 
-Each task-family summary must preserve independently, per metric:
+Each task-family summary must have exactly:
 
 ```text
 task_family
+metrics
+```
+
+Each metric summary must have exactly:
+
+```text
 metric_id
 input_unit
+output_unit
+value_kind
 reducer
 missingness_policy
+minimum_observed_count
 expected_count
 observed_count
 missing_count
 unavailable_count
-reduced_value_or_insufficient_evidence
-output_unit
+status
+reduced_value
+true_count
+denominator_count
 ```
+
+Closed metric-summary status vocabulary:
+
+```text
+REDUCED
+INSUFFICIENT_EVIDENCE
+```
+
+Representation rules:
+
+- `REDUCED` requires a non-null finite `reduced_value`;
+- `INSUFFICIENT_EVIDENCE` requires `reduced_value = null`;
+- `ARITHMETIC_MEAN` preserves `output_unit = input_unit` and requires `true_count = null`, `denominator_count = null`;
+- `BOOLEAN_TRUE_RATE` requires `output_unit = ratio_0_1`; on `REDUCED`, `true_count` and `denominator_count` are safe non-negative integers with `denominator_count = observed_count` and `0 <= true_count <= denominator_count`;
+- for `BOOLEAN_TRUE_RATE` with `INSUFFICIENT_EVIDENCE`, `true_count` and `denominator_count` still expose the observed boolean evidence and therefore remain safe non-negative integers with `denominator_count = observed_count`;
+- `expected_count = observed_count + missing_count + unavailable_count` exactly;
+- all count fields are safe non-negative integers;
+- task families and metric summaries are deterministically sorted by canonical strings before identity construction.
 
 Task families must remain separate arrays/sections. P2-R3 must not collapse task families into one universal product score.
 
-The summary identity must be derived only from canonical evidence-bearing values. `summary_identity` itself must be excluded from its own identity input.
+The summary identity must be derived from every canonical evidence-bearing summary field except `summary_identity` itself. `policy_identity` and `r2_report_identity` are mandatory identity inputs.
 
 ## No comparison, direction, threshold, or winner semantics
 
@@ -244,9 +340,9 @@ Those semantics require a later exact P2 authorization with ADR-0010 fair-compar
 
 ## Canonicalization and hostile-structure boundary
 
-P2-R3 must use or preserve the hardened canonical JSON boundary established by P2-R1 and used by P2-R2.
+P2-R3 must reuse the hardened canonical JSON boundary established by P2-R1 before semantic reads of untrusted report or policy input.
 
-Before policy or summary identity construction, fail closed on unsupported or hostile values including, where applicable:
+Fail closed on unsupported or hostile values including, where applicable:
 
 - Proxies;
 - accessors/getters;
@@ -259,7 +355,7 @@ Before policy or summary identity construction, fail closed on unsupported or ho
 
 A legitimate own JSON key such as `__proto__` must remain ordinary data and must not mutate an intermediate object's prototype.
 
-P2-R3 should reuse small exported P2-R1/P2-R2 canonical primitives rather than duplicating hardened parsing logic mechanically.
+P2-R3 should reuse exported P2-R1 canonicalization/hash primitives rather than duplicating hostile-JavaScript traversal logic mechanically. Any R2 structural validator needed by R3 must live inside the authorized `p2-r3/**` implementation path and may not mutate R2 bytes.
 
 ## Determinism and mutation safety
 
@@ -269,10 +365,11 @@ Required identity invariant:
 same validated P2-R2 report
 + same canonical explicit P2-R3 policy
 + same P2-R3 schema semantics
+-> same policy identity
 -> same summary identity
 ```
 
-Input order must not change policy or summary identity. The implementation must not derive identity from mutable caller references after validation. Caller mutation after return must not mutate returned summary semantics.
+Caller array/object insertion order must not change policy or summary identity after deterministic canonical sorting. The implementation must not derive identity from mutable caller references after validation. Caller mutation after return must not mutate returned policy or summary semantics.
 
 ## Security and privacy invariants
 
@@ -297,7 +394,7 @@ P2-R3 runtime logic must remain pure/in-memory for this slice. K2 remains Kodac'
 This record does not authorize:
 
 - P2-R4 or any later P2 slice;
-- system/strategy/model/provider/reviewer/evaluator/configuration comparison;
+- system/strategy/model/provider/reviewer/evaluator/configuration/report comparison;
 - provider/model/reviewer/evaluator/tool/agent invocation;
 - network access or secret handling;
 - subprocess, compiler, test-runner, sandbox, or external benchmark execution by P2-R3 logic;
@@ -308,7 +405,7 @@ This record does not authorize:
 - persistent database, file output, telemetry, upload, analytics, training, fine-tuning, online learning, or cross-repository learning;
 - strategy execution, automatic selection, promotion, trust mutation, or eligibility advancement;
 - K2, K5, Done Gate, or `PROVEN_READY` authority expansion;
-- unlisted reducers, imputation, thresholds, directionality, normalization, statistical testing, comparison, ranking, winner, or superiority semantics;
+- unlisted reducers/value kinds, imputation, thresholds, directionality, normalization, statistical testing, comparison, ranking, winner, or superiority semantics;
 - public leaderboard or competitive benchmark execution;
 - SOTA, production-readiness, security, support, compatibility, cost, or quality superiority claims;
 - public release, package publication, public version declaration, or brand launch;
@@ -318,28 +415,34 @@ This record does not authorize:
 
 The implementation PR must include focused tests proving at least:
 
-1. the P2-R2 report input is revalidated before summarization;
-2. policy input order does not affect policy or summary identity;
-3. repeated identical inputs produce identical summary identity;
-4. summary identity changes when an evidence-bearing policy or observation changes;
-5. unknown task families fail closed;
-6. unknown metric IDs fail closed;
-7. metric-unit mismatch fails closed;
-8. duplicate metric policies fail closed;
-9. reducer/value-kind mismatch fails closed;
-10. non-finite values remain rejected;
-11. `ARITHMETIC_MEAN` computes only over observed finite numeric values;
-12. `BOOLEAN_TRUE_RATE` exposes numerator/denominator and never treats missing as false;
-13. `REQUIRE_COMPLETE` refuses incomplete metric evidence;
-14. `OBSERVED_ONLY_WITH_COVERAGE` retains exact coverage/missing/unavailable counts;
-15. zero observed values remain insufficient evidence rather than zero;
-16. task-family summaries remain separated;
-17. no direction, threshold, blended score, ranking, winner, comparison, or promotion field is materialized;
-18. caller input mutation after return does not mutate returned semantics;
-19. hostile/non-JSON JavaScript structures fail closed before identity construction and do not execute hooks;
-20. `__proto__` remains ordinary canonical data where generic JSON payloads are permitted;
-21. timestamps/absolute paths/process state are not identity inputs;
-22. existing repository tests and required CI remain green.
+1. P2-R2 report input crosses hardened canonicalization before semantic reads;
+2. exact R2 report structure, identity, and derived report counts are revalidated before summarization;
+3. malformed/stale R2 `report_identity` fails closed;
+4. policy input order does not affect policy or summary identity;
+5. repeated identical inputs produce identical identities;
+6. summary identity changes when evidence-bearing policy or report evidence changes;
+7. unknown task families fail closed;
+8. unknown metric IDs fail closed;
+9. metric-unit mismatch fails closed;
+10. duplicate metric policies fail closed;
+11. unsupported `value_kind` fails closed;
+12. reducer/value-kind mismatch fails closed;
+13. mixed or mismatched observed value kinds fail closed;
+14. `minimum_observed_count` rejects zero, negative, fractional, unsafe, non-finite, and greater-than-expected values;
+15. `REQUIRE_COMPLETE` requires `minimum_observed_count = expected_count` and emits per-metric `INSUFFICIENT_EVIDENCE` on incomplete coverage;
+16. `OBSERVED_ONLY_WITH_COVERAGE` reduces only when its explicit minimum count is met and always retains exact coverage;
+17. non-finite numeric values and non-finite reducer results fail closed;
+18. `ARITHMETIC_MEAN` computes only over observed finite numeric values and preserves unit;
+19. `BOOLEAN_TRUE_RATE` exposes exact true/denominator counts and never treats missing as false;
+20. zero observed values remain `INSUFFICIENT_EVIDENCE` rather than zero;
+21. expected/observed/missing/unavailable counts reconcile exactly;
+22. task-family summaries remain separated and deterministically ordered;
+23. no direction, threshold, blended score, ranking, winner, comparison, or promotion field is materialized;
+24. returned graph is deeply frozen and caller mutation after return cannot alter semantics;
+25. hostile/non-JSON JavaScript structures fail closed before identity construction and do not execute hooks;
+26. `__proto__` remains ordinary canonical data where generic JSON payloads are permitted;
+27. timestamps/absolute paths/locale/process/host state are not identity inputs;
+28. existing repository tests and required CI remain green.
 
 Tests must use committed local fixtures and in-memory safe values only. They must not require internet access.
 
@@ -369,32 +472,55 @@ Candidate-time evidence must not claim a future merge result as fact.
 
 This authorization candidate may merge only if all of the following hold on one frozen exact head:
 
-- live protected `main` has not moved without explicit forward reconciliation;
-- changed files are exactly the five named authorization-unit paths and no others;
-- no runtime source, workflow, dependency, lockfile, benchmark implementation, fixture, schema, or product change is present;
-- all required exact-head CI/check contexts succeed or are proven non-applicable from canonical workflow conditions;
-- at least two distinct independent external semantic reviewer channels each give a substantive terminal-clean assessment on the exact final head under the provider-neutral review evidence contract;
-- rate-limit, billing, skipped-review, outage, status-only, summary-only, self-review, stale-head, error, or duplicate-channel output does not count;
-- unresolved material findings and actionable review threads = 0;
-- exact final candidate head and tree are captured;
-- each of the five changed paths has an individually captured final blob identity;
-- PR is open, non-draft, mergeable, and not behind protected `main`;
-- ruleset `20707483` remains active with `bypass_actors=[]`, `current_user_can_bypass=never`, required review-thread resolution, and strict required checks `provenance`, `legacy-tests`, and `k2-runtime-gate`;
-- merge is a normal history-preserving merge guarded by exact `expected_head_sha` semantics;
-- `WAIVER=NO`.
+1. live protected `main` still equals the exact canonical baseline unless this candidate is forward-reconciled;
+2. PR base is `main` and candidate `behind_by = 0`;
+3. changed files are exactly the five named authorization-unit paths and no others;
+4. the candidate is documentation/governance only and introduces no implementation authority before canonical adoption;
+5. applicable repository-required exact-head CI is terminal success;
+6. at least two distinct independent external semantic reviewer channels each provide a substantive terminal-clean assessment bound to the exact final head under the canonical provider-neutral quorum policy;
+7. skipped, rate-limited, billing-blocked, outage, stale, status-only, self-review, or duplicate-channel output is not counted;
+8. zero unresolved material correctness, security, governance, authority, or scope finding remains;
+9. zero unresolved actionable review threads remain;
+10. PR is open, non-draft, mergeable, and unchanged from the qualified head;
+11. exact final head, exact tree, and all five candidate document blobs are captured;
+12. ruleset `20707483` remains active for `main` with required review-thread resolution and strict required checks;
+13. `bypass_actors = []` and `current_user_can_bypass = never`;
+14. normal history-preserving merge uses the exact qualified `expected_head_sha` and does not use force-push, rebase, or destructive history rewriting;
+15. post-merge protected `main` equals the returned merge commit;
+16. post-merge ordered parents bind the pre-merge canonical main first and the exact qualified candidate head second for a normal merge commit;
+17. post-merge tree and all five canonical document blobs equal the qualified candidate;
+18. GitHub merge verification is `verified / valid` when GitHub emits the signed merge commit;
+19. applicable post-merge repository-required push checks are terminal success; an intentionally non-applicable path-filtered workflow must be proven non-applicable rather than described as green;
+20. ruleset/no-bypass evidence is re-proven after merge;
+21. `WAIVER = NO`.
 
-## Required post-merge proof
+Any repository-byte change invalidates prior exact-head CI, review, head/tree/blob, and merge qualification evidence. Requalify the new head from scratch.
 
-P2-R3 implementation authority becomes effective only after this authorization PR merges and all of the following are proven from live GitHub objects:
+## Post-merge authority boundary
 
-- protected `main` equals the returned authorization merge SHA;
-- ordered merge parents are the then-canonical base followed by the exact qualified authorization head;
-- merge tree matches the qualified candidate tree;
-- all five canonical path blobs match the qualified candidate blobs;
-- GitHub merge signature/verification is valid where emitted;
-- ruleset/no-bypass state remains intact;
-- applicable post-merge push checks succeed or non-applicability is proven from canonical workflow conditions.
+Only after every authorization-unit post-merge proof item succeeds may the repository state be interpreted as:
 
-Only after that proof may the one bounded P2-R3 implementation PR described above begin.
+```text
+P2-R3 IMPLEMENTATION AUTHORITY = EFFECTIVE FOR THE EXACT ALLOWLIST IN THIS RECORD
+P2-R4+ = NOT AUTHORIZED
+GENERAL KODACBENCH = NOT CLOSED
+PUBLIC SUPERIORITY CLAIMS = NOT AUTHORIZED
+WAIVER = NO
+```
 
-Even successful P2-R3 does not authorize P2-R4, comparison/ranking, external execution, public claims, or release.
+Successful authorization does not make P2-R3 implemented, tested, merged, or complete. Successful later P2-R3 implementation does not silently authorize P2-R4.
+
+## Preserved constitutional invariants
+
+```text
+DONE != MODEL ASSERTION
+EVIDENCE BEFORE CLAIMS
+BENCHMARK EVIDENCE != EXECUTION AUTHORITY
+ONE-REPORT SUMMARY != COMPARISON
+SUMMARY != DIRECTION / THRESHOLD / RANKING / WINNER
+REVIEWER OUTPUT = CLAIM / EVIDENCE, NOT COMPLETION TRUTH
+K2 REMAINS THE TRUSTED SIDE-EFFECT EXECUTION BOUNDARY
+K5 PROOF EVIDENCE != DONE GATE COMPLETION AUTHORITY
+ROADMAP TEXT != IMPLEMENTATION AUTHORITY
+WAIVER = NO
+```
