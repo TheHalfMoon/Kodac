@@ -8,14 +8,11 @@ This file is a current engineering roadmap view. It does not create implementati
 
 ```text
 K6 closeout merge  = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
-P2-R1 auth merge   = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
-P2-R1 impl merge   = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
-P2-R2 auth merge   = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de
-P2-R2 impl merge   = PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
-P2-R3 auth merge   = PR #241 / d398983a457060dff0b700714d3eebbc4dce8e23
-P2-R3 impl merge   = PR #242 / 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
-P2-R4 auth merge   = PR #243 / 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
-P2-R4 impl merge   = PR #244 / a97436df6008e37baf544345893b414d70b40c19
+P2-R1 auth / impl  = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397 -> PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
+P2-R2 auth / impl  = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de -> PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
+P2-R3 auth / impl  = PR #241 / d398983a457060dff0b700714d3eebbc4dce8e23 -> PR #242 / 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
+P2-R4 auth / impl  = PR #243 / 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26 -> PR #244 / a97436df6008e37baf544345893b414d70b40c19
+P2-R5 auth / impl  = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de -> PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
 Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -34,83 +31,82 @@ Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 | P2-R2 | **CLOSED_CANONICAL** | Deterministic caller-observation report spine |
 | P2-R3 | **CLOSED_CANONICAL** | Explicit reducer policy + task-family summaries |
 | P2-R4 | **CLOSED_CANONICAL** | Controlled pairwise raw-delta comparison only |
-| P2-R5 | **NOT_AUTHORIZED** | Separate exact authorization required |
-| P2-R6+ | **NOT_AUTHORIZED** | Separate exact authorization required |
+| P2-R5 | **CLOSED_CANONICAL** | Metric-local direction-aware relation only |
+| P2 overall | **OPEN** | Bounded R1-R5 closeout not yet canonical; general/public KodacBench not closed |
+| P2-R6+ | **NOT_AUTHORIZED** | Only required if a later separately authorized broader benchmark semantic is needed |
 | P3-P8 | **NOT_AUTHORIZED** | Later improvement stages require separate authority |
 
 Engineering milestone state is separate from public release status.
 
-## P2-R4 canonical closure
+## P2-R5 canonical closure
 
-P2-R4 is closed for its exact pure in-memory controlled pairwise-comparison scope.
+P2-R5 is closed for its exact pure in-memory metric-local directional-relation scope.
 
 ```text
-AUTHORIZATION = PR #243 / 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
-QUALIFIED_HEAD = c0b1098dd45ec3b6a76ec2abf094813624a9ae56
-QUALIFIED_TREE = 691279ea5f4e4bea5dcdaf189d0f378260399033
-MERGE = PR #244 / a97436df6008e37baf544345893b414d70b40c19
-MERGE_PARENT_1 = 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
-MERGE_PARENT_2 = c0b1098dd45ec3b6a76ec2abf094813624a9ae56
+AUTHORIZATION = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de
+QUALIFIED_HEAD = 7e63cdfb689be15efea14bfe8b1862cccced73a2
+QUALIFIED_TREE = 4242fbad9e25d3332460324ac5e8277838ff468c
+MERGE = PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
+MERGE_PARENT_1 = f1f33a01a3d5c764ac59a292464322c3c7c7b3de
+MERGE_PARENT_2 = 7e63cdfb689be15efea14bfe8b1862cccced73a2
 MERGE_VERIFICATION = verified / valid
-POST_MERGE_GOVERNANCE = 33195761378 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33195761314 / ATTEMPT 2 / SUCCESS
+POST_MERGE_GOVERNANCE = 33199492928 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33199492770 / SUCCESS
 RULESET = 20707483 / active / no bypass
 WAIVER = NO
 ```
 
-Canonical R4 blobs:
+Canonical R5 blobs:
 
 ```text
-packages/kodac-runtime/bench/p2-r4/comparison.ts
-  = 78c1417e51f1c36989ec7ec700a3424df3b58944
-packages/kodac-runtime/test/p2-r4-comparison.test.ts
-  = 844eba6eb456752925f914c732ccfccf2778b050
-packages/kodac-runtime/test/p2-r4-key-order.test.ts
-  = c15908c3dc4221f92347b97a93b9504fce65baf0
-docs/planning/KODAC_P2_R4_CONTROLLED_PAIRWISE_COMPARISON_EVIDENCE_2026-08-28.md
-  = 9830a418b274f5d740c12236e87dd0981303f8c7
+packages/kodac-runtime/bench/p2-r5/relation.ts
+  = e55e2ce138ab88132f0fddb79faa3ecac8db4e14
+packages/kodac-runtime/test/p2-r5-relation.test.ts
+  = ce9406bb3befca3222241e8f470bb90945d6aaf8
+docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_EVIDENCE_2026-08-28.md
+  = 8bb343916cece955bd1f78d284ccdf8e5d87ed0d
 ```
 
-The first K2 post-merge attempt failed only the pre-existing Linux H4-R3G-B global-deadline timing assertion. P2-R4 tests passed in that attempt. No bytes changed and no waiver was used. Attempt 2 on the same merge SHA passed Ubuntu and `k2-runtime-gate`; macOS and Windows remained successful. Historical failure evidence is preserved.
+The implementation independently revalidates the serialized R4 comparison it consumes, preserves task-family separation and raw `left - right` evidence, and adds only the four authorized metric-local relations. Exact equality has no tolerance. Insufficient evidence cannot infer a side relation.
 
-R4 consumes two already-materialized R2/R3 evidence sets under one exact shared ADR-0010 evaluation context and an explicit per-metric direction policy. It revalidates/cross-binds both sides, requires exact benchmark/task topology, keeps task families separate, exposes finite raw `left - right` deltas only for comparable metrics, preserves insufficient-evidence coverage, and derives deterministic immutable identities.
+Historical WIP K2 run `33198255234` remains a failure at Typecheck on head `9169883db3239289f76886a75cb5563a8d65c099`; tests did not run there. The defect was repaired forward and final qualification/post-merge proof passed without waiver or history rewriting.
 
-R4 does **not** emit or authorize a winner/loser/better/worse verdict, threshold, target band, ranking, leaderboard, blended score, statistics, significance, promotion, provider/model execution, benchmark execution, persistence, telemetry, product integration, release, or public superiority claim.
+R5 does **not** create a global winner/loser verdict, ranking, leaderboard, threshold/tolerance, blended score, statistics, significance, promotion, provider/model execution, benchmark execution, persistence, telemetry, product integration, release, or public superiority claim.
 
-## Next proposed P2 slice
+## Next proposed P2 unit
 
-After this reconciliation becomes canonical and post-merge proven, the next eligible work is **P2-R5 authorization-candidate preparation only**.
+After this reconciliation itself becomes canonical and post-merge proven, the next eligible work is **P2 bounded R1-R5 closeout authorization-candidate preparation only**.
 
-The narrow design target is a pure direction-aware relation over one already-materialized P2-R4 comparison. A later authorization may permit per-metric outcomes only:
+That closeout candidate may prove only the exact bounded engineering spine already canonical through R1-R5. It must preserve:
 
 ```text
-LEFT_FAVORED_BY_DIRECTION
-RIGHT_FAVORED_BY_DIRECTION
-EQUAL_RAW_VALUE
-INSUFFICIENT_EVIDENCE
+GENERAL / PUBLIC KODACBENCH = NOT CLOSED
+REAL PROVIDER / MODEL BENCHMARK EXECUTION = NOT AUTHORIZED
+GLOBAL SUPERIORITY / WINNER CLAIMS = NOT AUTHORIZED
+P2-R6+ IMPLEMENTATION = NOT AUTHORIZED
+P3 IMPLEMENTATION = NOT AUTHORIZED
 ```
 
-The relation must stay task-family-separated and metric-local. It may not become a global winner, score, ranking, threshold, tolerance band, statistical test, donor replacement, promotion, release decision, or public claim by composition.
-
-P2-R5 implementation remains `NOT_AUTHORIZED` until a separate exact canonical authorization is qualified, merged, and post-merge proven.
+No R6 slice is implied. The R5 authorization says broader benchmark semantics, if actually needed, must become a new P2-R6+ authorization candidate rather than being absorbed into R5.
 
 ## Ordered improvement program
 
 ```text
 K6 bounded closeout
--> P2 KodacBench
+-> P2 KodacBench bounded measurement spine
    -> R1 contract + frozen fixture/manifest spine [CLOSED_CANONICAL]
    -> R2 local deterministic runner/report [CLOSED_CANONICAL]
    -> R3 explicit reducer/task-family summary [CLOSED_CANONICAL]
    -> R4 controlled pairwise raw comparison [CLOSED_CANONICAL]
-   -> R5 direction-aware per-metric relation [AUTHORIZATION CANDIDATE PREPARATION ONLY]
-   -> R6+ later benchmark slices [NOT_AUTHORIZED]
--> P3 Context Engine v2
--> P4 Reviewer Intelligence v2
--> P5 Finding Verifier Fabric
--> P6 Security Validation
--> P7 Bounded Autofix
--> P8 Product / Distribution Hardening
+   -> R5 direction-aware per-metric relation [CLOSED_CANONICAL]
+   -> bounded R1-R5 closeout [AUTHORIZATION CANDIDATE PREPARATION ONLY]
+   -> R6+ only if separately justified and authorized [NOT_AUTHORIZED]
+-> P3 Context Engine v2 [NOT_AUTHORIZED]
+-> P4 Reviewer Intelligence v2 [NOT_AUTHORIZED]
+-> P5 Finding Verifier Fabric [NOT_AUTHORIZED]
+-> P6 Security Validation [NOT_AUTHORIZED]
+-> P7 Bounded Autofix [NOT_AUTHORIZED]
+-> P8 Product / Distribution Hardening [NOT_AUTHORIZED]
 ```
 
 ## Preserved authority boundaries
@@ -120,9 +116,9 @@ INTELLIGENCE != AUTHORITY
 BENCHMARK EVIDENCE != EXECUTION AUTHORITY
 RAW DELTA != GLOBAL WINNER
 PER-METRIC DIRECTIONAL RELATION != PRODUCT SUPERIORITY
+BOUNDED P2 CLOSEOUT != PUBLIC / GENERAL BENCHMARK CLAIM
 K2 SIDE-EFFECT AUTHORITY = UNCHANGED
 K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
-P2-R5 IMPLEMENTATION = NOT AUTHORIZED
 P2-R6+ = NOT AUTHORIZED
 P3-P8 = NOT AUTHORIZED
 NEW DEPENDENCIES / DONOR INTAKE = NOT AUTHORIZED
