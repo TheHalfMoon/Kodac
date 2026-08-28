@@ -36,9 +36,18 @@ P2-R3+ = NOT AUTHORIZED
 WAIVER = NO
 ```
 
-P2-R1 exact evidence:
+P2-R1 evidence is layered:
 
-- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+- historical candidate-time evidence record: `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`;
+- qualified final head: `f3ab68cc74f391ae460b82a8697c7e319cb4ed3b`;
+- qualified tree: `a01997cffe5848dd91ac12a6639134648bbe2f89`;
+- canonical merge: PR #238 / `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f`;
+- post-merge governance run: `33173090203` / SUCCESS;
+- post-merge K2 runtime run: `33173090251` / SUCCESS;
+- merge verification: verified / valid;
+- canonical six-path blobs and active no-bypass ruleset were re-proven after merge.
+
+The evidence file intentionally retains candidate-time wording because its bytes were frozen before its own merge. It does not claim current incompletion; subsequent immutable GitHub object/check proof establishes `P2-R1 = CLOSED_CANONICAL`.
 
 P2-R1 closure does not create provider/model/reviewer/evaluator invocation, external benchmark execution, aggregation/ranking, product integration, persistence, learning, release, or general superiority authority.
 
@@ -161,6 +170,6 @@ No roadmap sentence can override these stop rules.
 - Current milestone ledger: `docs/roadmap/MILESTONES.md`
 - Engineering/public-version separation: `docs/roadmap/VERSION_PLAN.md`
 - P2-R2 authorization candidate: `docs/planning/KODAC_P2_R2_LOCAL_RUNNER_REPORT_AUTHORIZATION_2026-08-28.md`
-- P2-R1 evidence: `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+- P2-R1 historical candidate evidence record: `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
 - Durable ordered plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Research/gap rationale: `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
