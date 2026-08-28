@@ -191,16 +191,23 @@ function validateObservation(
   }
 
   const value = input.value
+  let canonicalValue: P2R2MeasurementValue
   if (input.measurement_status === "observed") {
     if (typeof value === "number") {
       if (!Number.isFinite(value)) {
         fail(`${label}.value must be finite when numeric`)
       }
-    } else if (typeof value !== "boolean") {
+      canonicalValue = value
+    } else if (typeof value === "boolean") {
+      canonicalValue = value
+    } else {
       fail(`${label}.value must be a boolean or finite number when observed`)
     }
-  } else if (value !== null) {
-    fail(`${label}.value must be null when measurement_status is ${input.measurement_status}`)
+  } else {
+    if (value !== null) {
+      fail(`${label}.value must be null when measurement_status is ${input.measurement_status}`)
+    }
+    canonicalValue = null
   }
 
   return {
@@ -211,7 +218,7 @@ function validateObservation(
     metric_id: input.metric_id,
     unit: input.unit,
     measurement_status: input.measurement_status,
-    value,
+    value: canonicalValue,
   }
 }
 
@@ -249,10 +256,12 @@ function deepFreeze<T>(value: T): T {
   if (typeof value !== "object" || value === null || Object.isFrozen(value)) {
     return value
   }
-  for (const key of Object.keys(value as Record<string, unknown>)) {
-    deepFreeze((value as Record<string, unknown>)[key])
+  const record = value as unknown as Record<string, unknown>
+  for (const key of Object.keys(record)) {
+    deepFreeze(record[key])
   }
-  return Object.freeze(value)
+  Object.freeze(value)
+  return value
 }
 
 export function runP2R2Report(
