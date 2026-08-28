@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto"
+import { types as utilTypes } from "node:util"
 
 export const P2_R1_FIXTURE_ROOT = "packages/kodac-runtime/test/fixtures/p2-r1"
 export const P2_R1_MANIFEST_SCHEMA = "p2-r1-manifest/v1"
@@ -142,13 +143,27 @@ function fail(message: string): never {
   throw new Error(`P2-R1 contract violation: ${message}`)
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value)
-}
-
 function assertRecord(value: unknown, label: string): asserts value is Record<string, unknown> {
-  if (!isRecord(value)) {
+  if (typeof value !== "object" || value === null) {
     fail(`${label} must be an object`)
+  }
+  if (utilTypes.isProxy(value)) {
+    fail(`${label} must not be a Proxy`)
+  }
+  if (Array.isArray(value)) {
+    fail(`${label} must be an object`)
+  }
+  const prototype = Object.getPrototypeOf(value)
+  if (prototype !== Object.prototype && prototype !== null) {
+    fail(`${label} must be a plain object`)
+  }
+  if (Object.getOwnPropertySymbols(value).length !== 0) {
+    fail(`${label} must not contain symbol fields`)
+  }
+  for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(value))) {
+    if (!("value" in descriptor) || !descriptor.enumerable) {
+      fail(`${label}.${key} must be an enumerable data property`)
+    }
   }
 }
 
@@ -208,7 +223,11 @@ function assertChronologyStatus(
   }
 }
 
-function toJsonValue(value: unknown, label = "value"): JsonValue {
+function toJsonValue(
+  value: unknown,
+  label = "value",
+  ancestors = new WeakSet<object>(),
+): JsonValue {
   if (value === null || typeof value === "boolean" || typeof value === "string") {
     return value
   }
@@ -218,21 +237,56 @@ function toJsonValue(value: unknown, label = "value"): JsonValue {
     }
     return value
   }
-  if (Array.isArray(value)) {
-    return value.map((entry, index) => toJsonValue(entry, `${label}[${index}]`))
+  if (typeof value !== "object") {
+    fail(`${label} contains a non-JSON value`)
   }
-  if (isRecord(value)) {
-    const result: { [key: string]: JsonValue } = {}
-    for (const key of Object.keys(value)) {
-      const child = value[key]
-      if (child === undefined) {
-        fail(`${label}.${key} is undefined`)
+  if (utilTypes.isProxy(value)) {
+    fail(`${label} must not be a Proxy`)
+  }
+  if (ancestors.has(value)) {
+    fail(`${label} contains a cycle`)
+  }
+  ancestors.add(value)
+  try {
+    if (Array.isArray(value)) {
+      if (Object.getPrototypeOf(value) !== Array.prototype) {
+        fail(`${label} must use the canonical Array prototype`)
       }
-      result[key] = toJsonValue(child, `${label}.${key}`)
+      if (Object.getOwnPropertySymbols(value).length !== 0) {
+        fail(`${label} must not contain symbol fields`)
+      }
+      const descriptors = Object.getOwnPropertyDescriptors(value)
+      const allowedKeys = new Set<string>(["length"])
+      const result: JsonValue[] = []
+      for (let index = 0; index < value.length; index += 1) {
+        const key = String(index)
+        allowedKeys.add(key)
+        const descriptor = descriptors[key]
+        if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable) {
+          fail(`${label}[${index}] must be a present enumerable data property`)
+        }
+        result.push(toJsonValue(descriptor.value, `${label}[${index}]`, ancestors))
+      }
+      for (const key of Object.keys(descriptors)) {
+        if (!allowedKeys.has(key)) {
+          fail(`${label}.${key} is not a canonical array index`)
+        }
+      }
+      return result
+    }
+
+    assertRecord(value, label)
+    const result = Object.create(null) as { [key: string]: JsonValue }
+    for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(value))) {
+      if (!("value" in descriptor) || !descriptor.enumerable) {
+        fail(`${label}.${key} must be an enumerable data property`)
+      }
+      result[key] = toJsonValue(descriptor.value, `${label}.${key}`, ancestors)
     }
     return result
+  } finally {
+    ancestors.delete(value)
   }
-  fail(`${label} contains a non-JSON value`)
 }
 
 export function canonicalize(value: unknown): string {
@@ -316,6 +370,7 @@ export function validateFixtureDocument(
   value: unknown,
   expectedRole?: CorpusRole,
 ): FixtureDocument {
+  value = toJsonValue(value, "fixture document")
   assertRecord(value, "fixture document")
   assertExactKeys(value, FIXTURE_KEYS, "fixture document")
   if (value.schema_version !== P2_R1_FIXTURE_SCHEMA) {
@@ -441,7 +496,14 @@ function anchorsEqual(left: ChronologyAnchor, right: ChronologyAnchor): boolean 
 export function deriveResultIdentity(
   record: Omit<P2R1ManifestRecord, "result_identity"> | P2R1ManifestRecord,
 ): string {
-  const { result_identity: _ignored, ...identityInput } = record as P2R1ManifestRecord
+  const canonicalRecord = toJsonValue(record, "result identity input")
+  assertRecord(canonicalRecord, "result identity input")
+  const identityInput = Object.create(null) as { [key: string]: JsonValue }
+  for (const key of Object.keys(canonicalRecord)) {
+    if (key !== "result_identity") {
+      identityInput[key] = canonicalRecord[key] as JsonValue
+    }
+  }
   return sha256Canonical(identityInput)
 }
 
@@ -451,6 +513,7 @@ export function validateManifestRecord(
   holdoutInput: unknown,
 ): P2R1ManifestRecord {
   const { development, holdout } = validateCorpusPair(developmentInput, holdoutInput)
+  value = toJsonValue(value, "manifest record")
   assertRecord(value, "manifest record")
   assertExactKeys(value, MANIFEST_KEYS, "manifest record")
   if (value.schema_version !== P2_R1_MANIFEST_SCHEMA) {
@@ -497,7 +560,10 @@ export function validateManifestRecord(
   if (value.holdout_digest !== sha256Canonical(holdout)) {
     fail("manifest holdout_digest does not match frozen holdout content")
   }
-  if (value.chronology_scheme !== development.chronology_scheme || value.chronology_scheme !== holdout.chronology_scheme) {
+  if (
+    value.chronology_scheme !== development.chronology_scheme ||
+    value.chronology_scheme !== holdout.chronology_scheme
+  ) {
     fail("manifest chronology_scheme is not shared by development and holdout")
   }
   if (!anchorsEqual(developmentFreezeAnchor, development.chronology_anchor)) {
@@ -585,6 +651,7 @@ export function validateManifestSet(
   developmentInput: unknown,
   holdoutInput: unknown,
 ): P2R1ManifestRecord[] {
+  value = toJsonValue(value, "manifest")
   if (!Array.isArray(value) || value.length === 0) {
     fail("manifest must be a non-empty array")
   }

@@ -66,6 +66,110 @@ test("canonical serialization is stable under object-key reordering", () => {
   assert.equal(sha256Canonical(left), sha256Canonical(right))
 })
 
+test("canonical serialization preserves __proto__ as an ordinary data key", () => {
+  const withProtoKey = Object.create(null) as Record<string, unknown>
+  withProtoKey.safe = 1
+  Object.defineProperty(withProtoKey, "__proto__", {
+    value: { injected: true },
+    enumerable: true,
+    configurable: true,
+    writable: true,
+  })
+  const withoutProtoKey = Object.create(null) as Record<string, unknown>
+  withoutProtoKey.safe = 1
+
+  assert.match(canonicalize(withProtoKey), /"__proto__"/)
+  assert.notEqual(canonicalize(withProtoKey), canonicalize(withoutProtoKey))
+  assert.notEqual(sha256Canonical(withProtoKey), sha256Canonical(withoutProtoKey))
+})
+
+test("canonicalization rejects hostile object structures without invoking accessors", () => {
+  let getterInvoked = false
+  const accessorRecord: Record<string, unknown> = {}
+  Object.defineProperty(accessorRecord, "value", {
+    enumerable: true,
+    configurable: true,
+    get() {
+      getterInvoked = true
+      return 1
+    },
+  })
+
+  const symbolRecord: Record<string, unknown> = { value: 1 }
+  Object.defineProperty(symbolRecord, Symbol("hidden"), {
+    value: 2,
+    enumerable: true,
+  })
+
+  const nonPlainRecord = Object.create({ inherited: true }) as Record<string, unknown>
+  nonPlainRecord.value = 1
+
+  const proxyRecord = new Proxy<Record<string, unknown>>(
+    { value: 1 },
+    {
+      get() {
+        throw new Error("proxy getter must not execute")
+      },
+    },
+  )
+
+  for (const candidate of [accessorRecord, symbolRecord, nonPlainRecord, proxyRecord]) {
+    assert.throws(() => canonicalize(candidate), /P2-R1 contract violation/)
+  }
+  assert.equal(getterInvoked, false)
+})
+
+test("canonicalization rejects sparse, accessor, extended, non-canonical arrays and cycles", () => {
+  const sparse = new Array<unknown>(2)
+  sparse[1] = "present"
+
+  let arrayGetterInvoked = false
+  const accessorArray: unknown[] = [0]
+  Object.defineProperty(accessorArray, "0", {
+    enumerable: true,
+    configurable: true,
+    get() {
+      arrayGetterInvoked = true
+      return 1
+    },
+  })
+
+  const extendedArray: unknown[] = [1]
+  Object.defineProperty(extendedArray, "extra", {
+    value: 2,
+    enumerable: false,
+  })
+
+  const nonCanonicalArray: unknown[] = [1]
+  Object.setPrototypeOf(nonCanonicalArray, null)
+
+  const cyclic: Record<string, unknown> = {}
+  cyclic.self = cyclic
+
+  for (const candidate of [sparse, accessorArray, extendedArray, nonCanonicalArray, cyclic]) {
+    assert.throws(() => canonicalize(candidate), /P2-R1 contract violation/)
+  }
+  assert.equal(arrayGetterInvoked, false)
+})
+
+test("fixture validation rejects hostile nested payloads before identity construction", () => {
+  let getterInvoked = false
+  const changed = clone(development) as FixtureDocument
+  const payload: Record<string, unknown> = {}
+  Object.defineProperty(payload, "hidden", {
+    enumerable: true,
+    configurable: true,
+    get() {
+      getterInvoked = true
+      return "must-not-run"
+    },
+  })
+  changed.cases[0].payload = payload
+
+  assert.throws(() => validateFixtureDocument(changed), /P2-R1 contract violation/)
+  assert.equal(getterInvoked, false)
+})
+
 test("frozen development and holdout digests are deterministic and distinct", () => {
   assert.equal(
     sha256Canonical(development),
