@@ -267,7 +267,22 @@ minimum_observed_count
 expected_count
 ```
 
-The policy entry must match those semantic fields exactly. Unknown metrics, duplicate entries, cross-task bindings, unit drift, reducer drift, missingness drift, minimum-count drift, or expected-count drift fail closed.
+`expected_count` is derived evidence from the validated P2-R2 task topology and the two validated P2-R3 summaries. It is not caller comparison policy. The left and right summaries must match exactly on `expected_count`, but `expected_count` must not be accepted as a field in a `metric_directions` entry.
+
+The policy entry must match the corresponding left/right summary fields exactly for:
+
+```text
+task_family
+metric_id
+input_unit
+output_unit
+value_kind
+reducer
+missingness_policy
+minimum_observed_count
+```
+
+Its `direction` is the only additional per-metric comparison policy field. Unknown fields, including caller-supplied `expected_count`, fail closed. Unknown metrics, duplicate entries, cross-task bindings, unit drift, reducer drift, missingness drift, minimum-count drift, or left/right `expected_count` drift fail closed.
 
 Metrics without an explicit direction policy remain uncompared rather than receiving an inferred default.
 
@@ -403,7 +418,7 @@ A later P2-R4 implementation must include focused tests proving at minimum:
 10. exact subject descriptor validation;
 11. explicit `HIGHER_IS_BETTER` / `LOWER_IS_BETTER` policy only;
 12. no inferred direction;
-13. exact left/right metric-policy semantic equality requirements;
+13. exact left/right metric-policy semantic equality requirements, including derived `expected_count` equality between summaries while rejecting caller-supplied `expected_count` in direction policy;
 14. raw finite `left - right` delta behavior;
 15. subtraction overflow/non-finite result fails closed;
 16. dual-REDUCED requirement for `COMPARABLE`;
