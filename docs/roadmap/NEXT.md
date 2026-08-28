@@ -31,10 +31,17 @@ K6-R3 merge       = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
 K6-R4 auth root   = PR #211 / 1e8c193ca0aeeb77b56ad1c75d9d7db0ca82b372
 K6-R4 final auth  = PR #221 / 93c197cb6f88409dd406694fe4614ecf0fb6ba00
 K6-R4 merge       = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
+K6-R5 auth        = PR #224 / 31f5f9f3e05dd0feeda2b96b3221374c4bfe0032
+K6-R5 Stage A     = PR #225 / 76f8639a329d9f168fea9d71f78711d612075619
+K6-R5 repair auth = PR #227 / 06f2dc2df5eb432107313932a16079edc4912a38
+K6-R5 trust repair= PR #228 / 0c151b3db8ab1487c5fcf1553060b4743ede155d
+K6-R5 pin auth    = PR #232 / 2d4393fd08329507385fe06d90c3ddedff77bad9
+K6-R5 Unit B      = PR #233 / 99aa00db6265b33ebffb2a7653e23a8db4b70c31
+K6-R5 merge       = PR #226 / 91d817741d1c55195d26ef8e8f5be98e04d1977d
 Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
-Current bounded state:
+Current bounded state after this reconciliation is canonical and post-merge proven:
 
 ```text
 K5 = CLOSED FOR CANONICAL R1-R5 BOUNDED PROOF-REVIEW SCOPE
@@ -42,7 +49,9 @@ K6-R1 = CLOSED_CANONICAL
 K6-R2 = CLOSED_CANONICAL
 K6-R3 = CLOSED_CANONICAL
 K6-R4 = CLOSED_CANONICAL
-K6-R5 = NOT_AUTHORIZED
+K6-R5 = CLOSED_CANONICAL
+K6 BOUNDED CLOSEOUT = NOT_AUTHORIZED
+P2 KODACBENCH = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
@@ -50,54 +59,30 @@ Engineering milestone state remains separate from public release state.
 
 ---
 
-# NOW — K6-R5 authorization candidate
+# NOW — K6 bounded closeout authorization candidate
 
 After this reconciliation is canonical and post-merge proven, the next eligible repository unit is:
 
 ```text
-K6-R5 AUTHORIZATION-CANDIDATE PREPARATION
-TOPIC = BOUNDED STRATEGY PROPOSAL / R5-SPECIFIC QUALIFICATION
-K6-R5 IMPLEMENTATION = NOT_AUTHORIZED
+K6 BOUNDED CLOSEOUT AUTHORIZATION-CANDIDATE PREPARATION
+TOPIC = SEPARATE EVIDENCE / CLOSEOUT GATE FOR CANONICAL K6-R1 THROUGH K6-R5
+K6 BOUNDED CLOSEOUT = NOT_AUTHORIZED BY THIS ROADMAP
+P2 KODACBENCH = NOT_AUTHORIZED
 ```
 
-Do **not** implement K6-R5 source/runtime work merely because this roadmap names it next.
+Do **not** mark K6 closed merely because R1-R5 are separately `CLOSED_CANONICAL`.
 
-A separate R5 authorization must become canonical before implementation and must define at minimum:
+A separate closeout record must become canonical before `K6 = CLOSED` may be claimed and must at minimum:
 
-- immutable/versioned candidate and incumbent strategy identities;
-- exact strategy fields, closed proposal vocabulary and deterministic identity rules;
-- exact bounded R5-specific qualification corpus/holdout identity, contents and provenance;
-- explicit task-family, repository, revision and privacy guardrails;
-- deterministic comparison metrics, directionality, ties and invalid-result precedence;
-- independently visible latency, compute, privacy and security evidence;
-- rejection of self-reported reward as completion or quality truth;
-- exact rollback/incumbent identity retention;
-- explicit human/canonical promotion boundary with no automatic promotion;
-- hostile-input, resource-bound and caller-mutation behavior;
-- exact implementation allowlist;
-- required tests and negative/adversarial cases;
-- exact-head CI and review requirements;
-- guarded merge requirements;
-- post-merge proof requirements.
+- bind the exact canonical R1-R5 authorization, implementation and reconciliation identities;
+- prove that each slice stayed within its separately authorized bounded contract and exact post-merge evidence;
+- record any material repair/anomaly history instead of rewriting it as a clean first attempt;
+- prove that R1-R5 together did not create provider/model/reviewer execution, routing execution, persistence, telemetry, training, cross-repository learning, automatic promotion, trust-policy mutation, K2/K5 expansion, or Done Gate authority;
+- preserve the distinction between the bounded R5-specific qualification corpus and general KodacBench;
+- prove active ruleset/no-bypass state, exact-head repository CI, semantic-review quorum, guarded normal merge, ordered parents/tree/blob identities and post-merge checks for the closeout candidate itself;
+- keep public release, package publication, support, compatibility and brand claims separate and unauthorized.
 
-The R5 authorization must explicitly preserve:
-
-```text
-MODEL / PROVIDER / REVIEWER INVOCATION = NOT_AUTHORIZED
-MODEL TRAINING = NOT_AUTHORIZED
-TELEMETRY / UPLOAD = NOT_AUTHORIZED BY IMPLICATION
-PERSISTENCE / NETWORK EGRESS = NOT_AUTHORIZED BY IMPLICATION
-CROSS-REPOSITORY LEARNING = NOT_AUTHORIZED
-AUTOMATIC STRATEGY PROMOTION = NOT_AUTHORIZED
-TRUST-POLICY MUTATION = NOT_AUTHORIZED
-AUTOFIX = NOT_AUTHORIZED
-EXTERNAL SERVICES = NOT_AUTHORIZED
-K2 AUTHORITY EXPANSION = NOT_AUTHORIZED
-DONE GATE / PROVEN_READY AUTHORITY CHANGE = NOT_AUTHORIZED
-GENERAL KODACBENCH CLAIMS = NOT_AUTHORIZED
-```
-
-The authorization candidate may only grant a future implementation allowlist after that authorization itself has passed exact-head qualification, guarded merge, and required post-merge proof.
+The closeout candidate is documentation/evidence authority only unless a later exact canonical record says otherwise. It may not add source, runtime, schema, workflow, dependency, provider, model, persistence, telemetry, learning, autofix, release, or ruleset authority by implication.
 
 ---
 
@@ -106,9 +91,7 @@ The authorization candidate may only grant a future implementation allowlist aft
 The canonical dependency order remains:
 
 ```text
-K6-R5 authorization
--> K6-R5 bounded strategy proposal + R5-specific qualification corpus
--> K6 bounded closeout
+K6 bounded closeout
 -> P2 KodacBench
 -> P3 Context Engine v2
 -> P4 Reviewer Intelligence v2
@@ -164,7 +147,7 @@ Research and gap rationale:
 
 Stop and report the exact blocker when:
 
-- implementation authorization is absent;
+- implementation or closeout authority is absent;
 - live `main` or exact head moved after qualification;
 - required CI/review evidence is stale or failing;
 - an unresolved material finding remains;
