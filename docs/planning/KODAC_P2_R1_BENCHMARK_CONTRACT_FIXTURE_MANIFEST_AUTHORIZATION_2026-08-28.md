@@ -28,6 +28,7 @@ Governing records include:
 - `AGENTS.md`;
 - `docs/adr/ADR-0001-kodac-product-constitution-done-means-proven.md`;
 - `docs/adr/ADR-0010-benchmark-first-donor-selection.md`;
+- `docs/planning/KODAC_REVIEW_PROVIDER_NEUTRALITY_AND_EVIDENCE_QUORUM_AMENDMENT_2026-08-27.md`;
 - `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`;
 - `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`;
 - `docs/planning/KODAC_K3_BENCHMARK_AND_EVIDENCE_PROTOCOL_2026-08-12.md` as benchmark/evidence precedent;
@@ -305,11 +306,13 @@ This authorization candidate itself may be merged only if all of the following h
 - changed files are exactly this planning record plus the explicitly intended current-front-door reconciliation documents;
 - no runtime source, workflow, dependency, lockfile, fixture, or benchmark implementation changes are present;
 - all required exact-head CI/check contexts succeed or are proven non-applicable from canonical workflow conditions;
-- required semantic review quorum under live governance is terminal and clean on the exact head;
+- at least two distinct independent external semantic reviewer channels each give a substantive terminal-clean assessment on the exact final head under the provider-neutral review evidence contract;
+- rate-limit, billing, skipped-review, outage, status-only, summary-only, self-review, stale-head, or duplicate-channel output does not count toward that quorum;
 - unresolved material review threads/findings = 0;
+- exact final candidate head, candidate tree, authorization-document blob, and all four reconciled front-door document blobs are captured before merge;
 - the PR is open, non-draft, mergeable, and not behind protected `main`;
-- the active ruleset remains in force with no silent bypass/waiver;
-- merge uses ordinary guarded history-preserving behavior only.
+- the active ruleset remains in force with `bypass_actors=[]`, `current_user_can_bypass=never`, and no silent bypass/waiver;
+- guarded normal merge uses the exact qualified `expected_head_sha` and ordinary history-preserving behavior only.
 
 ## P2-R1 implementation exit gate
 
