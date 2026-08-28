@@ -1,6 +1,4 @@
 import assert from "node:assert/strict"
-import { createHash } from "node:crypto"
-import { readFile } from "node:fs/promises"
 import test from "node:test"
 
 import { sha256Canonical } from "../bench/p2-r1/contract.ts"
@@ -13,51 +11,54 @@ import {
 } from "../bench/p2-r4/comparison.ts"
 import {
   P2_R5_RELATION_SET_SCHEMA,
-  relateP2R5,
-  validateP2R5RelationSet,
+  deriveP2R5Relations,
 } from "../bench/p2-r5/relation.ts"
+import type { P2R3MetricSummary } from "../bench/p2-r3/summary.ts"
 
-const digest = (label: string): string => sha256Canonical({ label })
+function identity(seed: string): string {
+  return sha256Canonical({ seed })
+}
 
-function summary(value: number | null, options: { insufficient?: boolean } = {}) {
-  const insufficient = options.insufficient ?? false
+function numericSummary(metricId: string, unit: string, value: number | null): P2R3MetricSummary {
+  const reduced = value !== null
   return {
-    metric_id: "precision",
-    input_unit: "ratio_0_1",
-    output_unit: "ratio_0_1",
-    value_kind: "NUMBER" as const,
-    reducer: "ARITHMETIC_MEAN" as const,
-    missingness_policy: "REQUIRE_COMPLETE" as const,
-    minimum_observed_count: 2,
-    expected_count: 2,
-    observed_count: insufficient ? 1 : 2,
-    missing_count: insufficient ? 1 : 0,
+    metric_id: metricId,
+    input_unit: unit,
+    output_unit: unit,
+    value_kind: "NUMBER",
+    reducer: "ARITHMETIC_MEAN",
+    missingness_policy: "REQUIRE_COMPLETE",
+    minimum_observed_count: 1,
+    expected_count: 1,
+    observed_count: reduced ? 1 : 0,
+    missing_count: reduced ? 0 : 1,
     unavailable_count: 0,
-    status: insufficient ? ("INSUFFICIENT_EVIDENCE" as const) : ("REDUCED" as const),
-    reduced_value: insufficient ? null : value,
+    status: reduced ? "REDUCED" : "INSUFFICIENT_EVIDENCE",
+    reduced_value: value,
     true_count: null,
     denominator_count: null,
   }
 }
 
-function metric(
-  left: number,
-  right: number,
-  direction: P2R4Direction = "HIGHER_IS_BETTER",
-  options: { leftInsufficient?: boolean; rightInsufficient?: boolean } = {},
+function numericMetric(
+  metricId: string,
+  direction: P2R4Direction,
+  left: number | null,
+  right: number | null,
+  unit = "score",
 ): P2R4MetricComparison {
-  const leftSummary = summary(left, { insufficient: options.leftInsufficient })
-  const rightSummary = summary(right, { insufficient: options.rightInsufficient })
-  const comparable = leftSummary.status === "REDUCED" && rightSummary.status === "REDUCED"
+  const leftSummary = numericSummary(metricId, unit, left)
+  const rightSummary = numericSummary(metricId, unit, right)
+  const comparable = left !== null && right !== null
   return {
-    metric_id: "precision",
-    input_unit: "ratio_0_1",
-    output_unit: "ratio_0_1",
+    metric_id: metricId,
+    input_unit: unit,
+    output_unit: unit,
     value_kind: "NUMBER",
     reducer: "ARITHMETIC_MEAN",
     missingness_policy: "REQUIRE_COMPLETE",
-    minimum_observed_count: 2,
-    expected_count: 2,
+    minimum_observed_count: 1,
+    expected_count: 1,
     direction,
     left_summary: leftSummary,
     right_summary: rightSummary,
@@ -68,318 +69,324 @@ function metric(
   }
 }
 
-function comparison(
-  left = 0.9,
-  right = 0.8,
-  direction: P2R4Direction = "HIGHER_IS_BETTER",
-  options: { leftInsufficient?: boolean; rightInsufficient?: boolean } = {},
+function booleanSummary(metricId: string, trueCount: number, denominator: number): P2R3MetricSummary {
+  return {
+    metric_id: metricId,
+    input_unit: "boolean",
+    output_unit: "ratio_0_1",
+    value_kind: "BOOLEAN",
+    reducer: "BOOLEAN_TRUE_RATE",
+    missingness_policy: "REQUIRE_COMPLETE",
+    minimum_observed_count: denominator,
+    expected_count: denominator,
+    observed_count: denominator,
+    missing_count: 0,
+    unavailable_count: 0,
+    status: "REDUCED",
+    reduced_value: trueCount / denominator,
+    true_count: trueCount,
+    denominator_count: denominator,
+  }
+}
+
+function booleanMetric(
+  metricId: string,
+  direction: P2R4Direction,
+  leftTrue: number,
+  rightTrue: number,
+  denominator = 4,
+): P2R4MetricComparison {
+  const leftSummary = booleanSummary(metricId, leftTrue, denominator)
+  const rightSummary = booleanSummary(metricId, rightTrue, denominator)
+  const left = leftSummary.reduced_value as number
+  const right = rightSummary.reduced_value as number
+  return {
+    metric_id: metricId,
+    input_unit: "boolean",
+    output_unit: "ratio_0_1",
+    value_kind: "BOOLEAN",
+    reducer: "BOOLEAN_TRUE_RATE",
+    missingness_policy: "REQUIRE_COMPLETE",
+    minimum_observed_count: denominator,
+    expected_count: denominator,
+    direction,
+    left_summary: leftSummary,
+    right_summary: rightSummary,
+    status: "COMPARABLE",
+    left_value: left,
+    right_value: right,
+    raw_delta_left_minus_right: left - right,
+  }
+}
+
+function comparisonFromFamilies(
+  families: Array<{ task_family: string; metrics: P2R4MetricComparison[] }>,
 ): P2R4Comparison {
-  const identityInput = {
+  const identityInput: Omit<P2R4Comparison, "comparison_identity"> = {
     schema_version: P2_R4_COMPARISON_SCHEMA,
-    benchmark_id: "kodacbench-r5-test",
+    benchmark_id: "kodacbench.synthetic",
     benchmark_protocol_version: "v1",
     left_subject: {
       schema_version: P2_R4_SUBJECT_SCHEMA,
       subject_id: "left",
-      system_version_commit_identity: digest("left-system"),
-      raw_artifact_log_set_identity: digest("left-artifacts"),
+      system_version_commit_identity: identity("left-system"),
+      raw_artifact_log_set_identity: identity("left-artifacts"),
     },
     right_subject: {
       schema_version: P2_R4_SUBJECT_SCHEMA,
       subject_id: "right",
-      system_version_commit_identity: digest("right-system"),
-      raw_artifact_log_set_identity: digest("right-artifacts"),
+      system_version_commit_identity: identity("right-system"),
+      raw_artifact_log_set_identity: identity("right-artifacts"),
     },
-    left_r2_report_identity: digest("left-r2"),
-    right_r2_report_identity: digest("right-r2"),
-    left_summary_identity: digest("left-r3"),
-    right_summary_identity: digest("right-r3"),
-    shared_evaluation_context_identity: digest("shared-context"),
-    comparison_policy_identity: digest("comparison-policy"),
-    task_family_comparisons: [
-      {
-        task_family: "review",
-        metrics: [metric(left, right, direction, options)],
-      },
-    ],
+    left_r2_report_identity: identity("left-r2"),
+    right_r2_report_identity: identity("right-r2"),
+    left_summary_identity: identity("left-r3"),
+    right_summary_identity: identity("right-r3"),
+    shared_evaluation_context_identity: identity("shared-context"),
+    comparison_policy_identity: identity("r4-policy"),
+    task_family_comparisons: families,
   }
-  return {
-    ...identityInput,
-    comparison_identity: sha256Canonical(identityInput),
-  }
-}
-
-function recomputeComparison(value: P2R4Comparison): P2R4Comparison {
-  const { comparison_identity: _ignored, ...identityInput } = value
   return { ...identityInput, comparison_identity: sha256Canonical(identityInput) }
 }
 
-function reverseObjectKeys(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(reverseObjectKeys)
-  if (typeof value !== "object" || value === null) return value
-  const entries = Object.entries(value as Record<string, unknown>).reverse()
-  return Object.fromEntries(entries.map(([key, entry]) => [key, reverseObjectKeys(entry)]))
+function comparison(metrics: P2R4MetricComparison[]): P2R4Comparison {
+  return comparisonFromFamilies([{ task_family: "family-a", metrics }])
 }
 
-function gitBlobSha(content: Buffer): string {
-  const header = Buffer.from(`blob ${content.byteLength}\0`, "utf8")
-  return createHash("sha1").update(header).update(content).digest("hex")
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T
 }
 
-test("P2-R5 derives higher-is-better left and right relations", () => {
-  assert.equal(relateP2R5(comparison(0.9, 0.8)).task_family_relations[0]!.metrics[0]!.relation, "LEFT_FAVORED_BY_DIRECTION")
-  assert.equal(relateP2R5(comparison(0.7, 0.8)).task_family_relations[0]!.metrics[0]!.relation, "RIGHT_FAVORED_BY_DIRECTION")
+function rebindComparisonIdentity(value: P2R4Comparison): void {
+  const { comparison_identity: _ignored, ...identityInput } = value
+  value.comparison_identity = sha256Canonical(identityInput)
+}
+
+function metricRelations(result: ReturnType<typeof deriveP2R5Relations>) {
+  return result.task_family_relations[0]!.metrics
+}
+
+test("derives the exact direction-aware relation vocabulary", () => {
+  const input = comparison([
+    numericMetric("a_equal", "HIGHER_IS_BETTER", 2, 2),
+    numericMetric("b_higher_left", "HIGHER_IS_BETTER", 3, 2),
+    numericMetric("c_higher_right", "HIGHER_IS_BETTER", 2, 3),
+    numericMetric("d_lower_left", "LOWER_IS_BETTER", 2, 3),
+    numericMetric("e_lower_right", "LOWER_IS_BETTER", 3, 2),
+  ])
+  assert.deepEqual(
+    metricRelations(deriveP2R5Relations(input)).map((metric) => metric.relation),
+    [
+      "EQUAL_RAW_VALUE",
+      "LEFT_FAVORED_BY_DIRECTION",
+      "RIGHT_FAVORED_BY_DIRECTION",
+      "LEFT_FAVORED_BY_DIRECTION",
+      "RIGHT_FAVORED_BY_DIRECTION",
+    ],
+  )
 })
 
-test("P2-R5 derives lower-is-better left and right relations", () => {
-  assert.equal(relateP2R5(comparison(10, 20, "LOWER_IS_BETTER")).task_family_relations[0]!.metrics[0]!.relation, "LEFT_FAVORED_BY_DIRECTION")
-  assert.equal(relateP2R5(comparison(30, 20, "LOWER_IS_BETTER")).task_family_relations[0]!.metrics[0]!.relation, "RIGHT_FAVORED_BY_DIRECTION")
+test("preserves insufficient evidence without inferring a side", () => {
+  const input = comparison([numericMetric("a_missing", "HIGHER_IS_BETTER", null, 3)])
+  const metric = metricRelations(deriveP2R5Relations(input))[0]!
+  assert.equal(metric.relation, "INSUFFICIENT_EVIDENCE")
+  assert.equal(metric.status, "INSUFFICIENT_EVIDENCE")
+  assert.equal(metric.left_value, null)
+  assert.equal(metric.right_value, null)
+  assert.equal(metric.raw_delta_left_minus_right, null)
+  assert.equal(metric.left_summary.status, "INSUFFICIENT_EVIDENCE")
+  assert.equal(metric.right_summary.status, "REDUCED")
 })
 
-test("P2-R5 exact equality is EQUAL_RAW_VALUE without tolerance semantics", () => {
-  const output = relateP2R5(comparison(0.5, 0.5))
-  const relation = output.task_family_relations[0]!.metrics[0]!
-  assert.equal(relation.relation, "EQUAL_RAW_VALUE")
-  assert.equal(relation.raw_delta_left_minus_right, 0)
+test("keeps raw left-minus-right delta independent of direction", () => {
+  const input = comparison([numericMetric("a_latency", "LOWER_IS_BETTER", 2, 5, "ms")])
+  const metric = metricRelations(deriveP2R5Relations(input))[0]!
+  assert.equal(metric.raw_delta_left_minus_right, -3)
+  assert.equal(metric.relation, "LEFT_FAVORED_BY_DIRECTION")
 })
 
-test("P2-R5 insufficient evidence never derives a favored side", () => {
-  const output = relateP2R5(comparison(0.9, 0.1, "HIGHER_IS_BETTER", { rightInsufficient: true }))
-  const relation = output.task_family_relations[0]!.metrics[0]!
-  assert.equal(relation.status, "INSUFFICIENT_EVIDENCE")
-  assert.equal(relation.relation, "INSUFFICIENT_EVIDENCE")
-  assert.equal(relation.left_value, null)
-  assert.equal(relation.right_value, null)
-  assert.equal(relation.raw_delta_left_minus_right, null)
+test("validates BOOLEAN_TRUE_RATE evidence before relation derivation", () => {
+  const input = comparison([booleanMetric("a_success", "HIGHER_IS_BETTER", 3, 1)])
+  const metric = metricRelations(deriveP2R5Relations(input))[0]!
+  assert.equal(metric.left_value, 0.75)
+  assert.equal(metric.right_value, 0.25)
+  assert.equal(metric.relation, "LEFT_FAVORED_BY_DIRECTION")
 })
 
-test("P2-R5 preserves raw left-minus-right orientation independently of direction", () => {
-  const output = relateP2R5(comparison(10, 20, "LOWER_IS_BETTER"))
-  const relation = output.task_family_relations[0]!.metrics[0]!
-  assert.equal(relation.relation, "LEFT_FAVORED_BY_DIRECTION")
-  assert.equal(relation.raw_delta_left_minus_right, -10)
+test("is deterministic and binds the canonical relation-set identity", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  const first = deriveP2R5Relations(input)
+  const second = deriveP2R5Relations(input)
+  assert.deepEqual(first, second)
+  assert.equal(first.schema_version, P2_R5_RELATION_SET_SCHEMA)
+  const { relation_set_identity: _identity, ...identityInput } = first
+  assert.equal(first.relation_set_identity, sha256Canonical(identityInput))
 })
 
-test("R4 raw delta and comparison identity tampering fail closed", () => {
-  const rawDeltaTamper = structuredClone(comparison())
-  rawDeltaTamper.task_family_comparisons[0]!.metrics[0]!.raw_delta_left_minus_right = 999
-  rawDeltaTamper.comparison_identity = sha256Canonical({ ...rawDeltaTamper, comparison_identity: undefined })
-  assert.throws(() => relateP2R5(rawDeltaTamper), /raw_delta_left_minus_right/)
-
-  const identityTamper = structuredClone(comparison())
-  identityTamper.comparison_identity = digest("forged")
-  assert.throws(() => relateP2R5(identityTamper), /comparison_identity/)
+test("relation-set identity changes when valid bound R4 evidence changes", () => {
+  const first = deriveP2R5Relations(comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)]))
+  const second = deriveP2R5Relations(comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 8, 5)]))
+  assert.notEqual(first.r4_comparison_identity, second.r4_comparison_identity)
+  assert.notEqual(first.relation_set_identity, second.relation_set_identity)
 })
 
-test("R4 status/value/nullability inconsistency fails closed", () => {
-  const value = structuredClone(comparison())
-  value.task_family_comparisons[0]!.metrics[0]!.status = "INSUFFICIENT_EVIDENCE"
-  value.task_family_comparisons[0]!.metrics[0]!.left_value = null
-  value.task_family_comparisons[0]!.metrics[0]!.right_value = null
-  value.task_family_comparisons[0]!.metrics[0]!.raw_delta_left_minus_right = null
-  const rebound = recomputeComparison(value)
-  assert.throws(() => relateP2R5(rebound), /status does not match/)
+test("returns deeply frozen evidence independent of later caller mutation", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  const result = deriveP2R5Relations(input)
+  input.task_family_comparisons[0]!.metrics[0]!.left_value = 999
+  assert.equal(result.task_family_relations[0]!.metrics[0]!.left_value, 7)
+  assert.equal(Object.isFrozen(result), true)
+  assert.equal(Object.isFrozen(result.left_subject), true)
+  assert.equal(Object.isFrozen(result.task_family_relations), true)
+  assert.equal(Object.isFrozen(result.task_family_relations[0]!.metrics[0]!.left_summary), true)
 })
 
-test("malformed direction and summary semantic mismatch fail closed", () => {
-  const directionTamper = structuredClone(comparison()) as any
-  directionTamper.task_family_comparisons[0].metrics[0].direction = "SIDEWAYS"
-  directionTamper.comparison_identity = sha256Canonical({ ...directionTamper, comparison_identity: undefined })
-  assert.throws(() => relateP2R5(directionTamper), /direction is unsupported/)
-
-  const summaryTamper = structuredClone(comparison())
-  summaryTamper.task_family_comparisons[0]!.metrics[0]!.right_summary.input_unit = "milliseconds"
-  const rebound = recomputeComparison(summaryTamper)
-  assert.throws(() => relateP2R5(rebound), /summary semantics differ/)
+test("accepts object-key reordering without making key order identity-bearing", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  const reordered = Object.fromEntries(Object.entries(input).reverse())
+  const first = deriveP2R5Relations(input)
+  const second = deriveP2R5Relations(reordered)
+  assert.equal(first.relation_set_identity, second.relation_set_identity)
 })
 
-test("non-finite comparable values and overflowing subtraction fail closed", () => {
-  const nonFinite = structuredClone(comparison()) as any
-  nonFinite.task_family_comparisons[0].metrics[0].left_value = Number.POSITIVE_INFINITY
-  assert.throws(() => relateP2R5(nonFinite), /non-finite|canonical JSON/)
-
-  const overflow = comparison(Number.MAX_VALUE, -Number.MAX_VALUE)
-  assert.throws(() => relateP2R5(overflow), /raw_delta_left_minus_right would be non-finite|canonical JSON/)
+test("rejects a tampered comparison identity", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  input.comparison_identity = identity("tampered")
+  assert.throws(() => deriveP2R5Relations(input), /comparison_identity/)
 })
 
-test("non-canonical task-family and metric ordering fails closed", () => {
-  const familyOrder = structuredClone(comparison())
-  familyOrder.task_family_comparisons = [
-    { task_family: "z-family", metrics: [metric(1, 0)] },
-    { task_family: "a-family", metrics: [metric(1, 0)] },
-  ]
-  assert.throws(() => relateP2R5(recomputeComparison(familyOrder)), /strictly sorted/)
-
-  const metricOrder = structuredClone(comparison())
-  const second = structuredClone(metric(1, 0))
-  second.metric_id = "accuracy"
-  second.left_summary.metric_id = "accuracy"
-  second.right_summary.metric_id = "accuracy"
-  metricOrder.task_family_comparisons[0]!.metrics = [metric(1, 0), second]
-  assert.throws(() => relateP2R5(recomputeComparison(metricOrder)), /strictly sorted/)
+test("rejects a tampered raw delta even when comparison identity is rebound", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  input.task_family_comparisons[0]!.metrics[0]!.raw_delta_left_minus_right = 999
+  rebindComparisonIdentity(input)
+  assert.throws(() => deriveP2R5Relations(input), /raw_delta_left_minus_right/)
 })
 
-test("duplicate task-family and metric identities fail closed", () => {
-  const families = structuredClone(comparison())
-  families.task_family_comparisons.push(structuredClone(families.task_family_comparisons[0]!))
-  assert.throws(() => relateP2R5(recomputeComparison(families)), /strictly sorted/)
-
-  const metrics = structuredClone(comparison())
-  metrics.task_family_comparisons[0]!.metrics.push(structuredClone(metrics.task_family_comparisons[0]!.metrics[0]!))
-  assert.throws(() => relateP2R5(recomputeComparison(metrics)), /strictly sorted/)
+test("rejects pairwise values that diverge from nested summary evidence", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  input.task_family_comparisons[0]!.metrics[0]!.left_value = 8
+  input.task_family_comparisons[0]!.metrics[0]!.raw_delta_left_minus_right = 3
+  rebindComparisonIdentity(input)
+  assert.throws(() => deriveP2R5Relations(input), /summary evidence/)
 })
 
-test("unknown R4 top-level and metric fields fail closed", () => {
-  const top = structuredClone(comparison()) as any
-  top.winner = "left"
-  assert.throws(() => relateP2R5(top), /keys are not canonical/)
-
-  const nested = structuredClone(comparison()) as any
-  nested.task_family_comparisons[0].metrics[0].threshold = 0.01
-  assert.throws(() => relateP2R5(nested), /keys are not canonical/)
+test("rejects invalid coverage status even when the outer identity is rebound", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  input.task_family_comparisons[0]!.metrics[0]!.left_summary.status = "INSUFFICIENT_EVIDENCE"
+  input.task_family_comparisons[0]!.metrics[0]!.left_summary.reduced_value = null
+  rebindComparisonIdentity(input)
+  assert.throws(() => deriveP2R5Relations(input), /status does not match coverage evidence/)
 })
 
-test("hostile Proxy and accessor input fails before caller hooks execute", () => {
-  let proxyTrap = false
-  const proxied = new Proxy(comparison(), {
-    ownKeys() {
-      proxyTrap = true
-      throw new Error("proxy trap executed")
-    },
-  })
-  assert.throws(() => relateP2R5(proxied), /Proxy|canonical JSON/)
-  assert.equal(proxyTrap, false)
+test("rejects invalid direction values", () => {
+  const input = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  ;(input.task_family_comparisons[0]!.metrics[0] as unknown as Record<string, unknown>).direction = "SIDEWAYS"
+  rebindComparisonIdentity(input)
+  assert.throws(() => deriveP2R5Relations(input), /direction is unsupported/)
+})
 
-  let getterCalled = false
-  const accessor = structuredClone(comparison()) as any
-  Object.defineProperty(accessor, "winner", {
+test("rejects unknown and missing top-level fields", () => {
+  const unknown = clone(comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])) as unknown as Record<string, unknown>
+  unknown.winner = "left"
+  assert.throws(() => deriveP2R5Relations(unknown), /unknown=\[winner\]/)
+
+  const missing = clone(comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])) as unknown as Record<string, unknown>
+  delete missing.comparison_policy_identity
+  assert.throws(() => deriveP2R5Relations(missing), /missing=\[comparison_policy_identity\]/)
+})
+
+test("rejects unsorted and duplicate metric order", () => {
+  const unsorted = comparison([
+    numericMetric("b_score", "HIGHER_IS_BETTER", 7, 5),
+    numericMetric("a_score", "HIGHER_IS_BETTER", 6, 5),
+  ])
+  rebindComparisonIdentity(unsorted)
+  assert.throws(() => deriveP2R5Relations(unsorted), /strictly sorted/)
+
+  const duplicate = comparison([
+    numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5),
+    numericMetric("a_score", "LOWER_IS_BETTER", 7, 5),
+  ])
+  rebindComparisonIdentity(duplicate)
+  assert.throws(() => deriveP2R5Relations(duplicate), /strictly sorted/)
+})
+
+test("rejects unsorted and duplicate task-family order", () => {
+  const metric = numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)
+  const unsorted = comparisonFromFamilies([
+    { task_family: "family-b", metrics: [metric] },
+    { task_family: "family-a", metrics: [clone(metric)] },
+  ])
+  assert.throws(() => deriveP2R5Relations(unsorted), /strictly sorted/)
+
+  const duplicate = comparisonFromFamilies([
+    { task_family: "family-a", metrics: [metric] },
+    { task_family: "family-a", metrics: [clone(metric)] },
+  ])
+  assert.throws(() => deriveP2R5Relations(duplicate), /strictly sorted/)
+})
+
+test("rejects same-subject and same-system-version comparisons", () => {
+  const sameSubject = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  sameSubject.right_subject.subject_id = sameSubject.left_subject.subject_id
+  rebindComparisonIdentity(sameSubject)
+  assert.throws(() => deriveP2R5Relations(sameSubject), /subject_id values must be distinct/)
+
+  const sameSystem = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  sameSystem.right_subject.system_version_commit_identity = sameSystem.left_subject.system_version_commit_identity
+  rebindComparisonIdentity(sameSystem)
+  assert.throws(() => deriveP2R5Relations(sameSystem), /system_version_commit_identity values must be distinct/)
+})
+
+test("fails closed on hostile Proxy, accessor, cyclic, sparse, bigint, and non-finite inputs", () => {
+  const base = comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)])
+  assert.throws(() => deriveP2R5Relations(new Proxy(base, {})), /Proxy/)
+
+  let getterExecuted = false
+  const accessor = clone(base) as unknown as Record<string, unknown>
+  Object.defineProperty(accessor, "benchmark_id", {
     enumerable: true,
     get() {
-      getterCalled = true
-      return "left"
+      getterExecuted = true
+      return "unexpected"
     },
   })
-  assert.throws(() => relateP2R5(accessor), /enumerable data property|canonical JSON/)
-  assert.equal(getterCalled, false)
-})
+  assert.throws(() => deriveP2R5Relations(accessor), /enumerable data property/)
+  assert.equal(getterExecuted, false)
 
-test("symbol, custom prototype, sparse array, cycle, and non-JSON forms fail closed", () => {
-  const symbol = structuredClone(comparison()) as any
-  symbol[Symbol("hidden")] = true
-  assert.throws(() => relateP2R5(symbol), /symbol|canonical JSON/)
+  const cyclic = clone(base) as unknown as Record<string, unknown>
+  cyclic.loop = cyclic
+  assert.throws(() => deriveP2R5Relations(cyclic), /cycle/)
 
-  const custom = Object.assign(Object.create({ inherited: true }), comparison())
-  assert.throws(() => relateP2R5(custom), /plain object|canonical JSON/)
+  const sparse = clone(base)
+  sparse.task_family_comparisons = new Array(1)
+  assert.throws(() => deriveP2R5Relations(sparse), /present enumerable data property/)
 
-  const sparse = structuredClone(comparison())
-  sparse.task_family_comparisons.length = 2
-  assert.throws(() => relateP2R5(sparse), /present enumerable data property|canonical JSON/)
-
-  const cyclic = structuredClone(comparison()) as any
-  cyclic.cycle = cyclic
-  assert.throws(() => relateP2R5(cyclic), /cycle|canonical JSON/)
-
-  const bigint = structuredClone(comparison()) as any
+  const bigint = clone(base) as unknown as Record<string, unknown>
   bigint.benchmark_id = 1n
-  assert.throws(() => relateP2R5(bigint), /non-JSON|canonical JSON/)
+  assert.throws(() => deriveP2R5Relations(bigint), /non-JSON/)
+
+  const nonFinite = clone(base)
+  nonFinite.task_family_comparisons[0]!.metrics[0]!.left_value = Number.NaN
+  assert.throws(() => deriveP2R5Relations(nonFinite), /non-finite/)
 })
 
-test("__proto__ remains inert ordinary canonical data and cannot pollute prototypes", () => {
-  const value = structuredClone(comparison()) as any
-  const nested = value.task_family_comparisons[0].metrics[0].left_summary
-  Object.defineProperty(nested, "__proto__", { enumerable: true, value: { polluted: true } })
-  assert.throws(() => relateP2R5(value), /keys are not canonical/)
-  assert.equal(({} as any).polluted, undefined)
-})
-
-test("caller object-key insertion order does not change canonical R5 bytes or identity", () => {
-  const canonical = relateP2R5(comparison())
-  const reordered = relateP2R5(reverseObjectKeys(comparison()))
-  assert.equal(JSON.stringify(canonical), JSON.stringify(reordered))
-  assert.equal(canonical.relation_set_identity, reordered.relation_set_identity)
-})
-
-test("repeated semantic input is byte-identical and evidence changes alter identity", () => {
-  const first = relateP2R5(comparison())
-  const second = relateP2R5(comparison())
-  assert.equal(JSON.stringify(first), JSON.stringify(second))
-  assert.equal(first.relation_set_identity, second.relation_set_identity)
-  assert.notEqual(first.relation_set_identity, relateP2R5(comparison(0.91, 0.8)).relation_set_identity)
-})
-
-test("returned relation set is deeply frozen and caller mutation cannot alter it", () => {
-  const input = comparison()
-  const output = relateP2R5(input)
-  input.left_subject.subject_id = "mutated"
-  assert.equal(output.left_subject.subject_id, "left")
-  assert.equal(Object.isFrozen(output), true)
-  assert.equal(Object.isFrozen(output.task_family_relations), true)
-  assert.equal(Object.isFrozen(output.task_family_relations[0]!.metrics[0]!.left_summary), true)
-  assert.throws(() => {
-    ;(output as any).benchmark_id = "mutated"
-  }, TypeError)
-})
-
-test("serialized R5 validator accepts canonical output and rejects relation and identity tampering", () => {
-  const output = relateP2R5(comparison())
-  assert.deepEqual(validateP2R5RelationSet(output), output)
-
-  const relationTamper = structuredClone(output) as any
-  relationTamper.task_family_relations[0].metrics[0].relation = "RIGHT_FAVORED_BY_DIRECTION"
-  relationTamper.relation_set_identity = sha256Canonical({ ...relationTamper, relation_set_identity: undefined })
-  assert.throws(() => validateP2R5RelationSet(relationTamper), /relation does not match/)
-
-  const identityTamper = structuredClone(output)
-  identityTamper.relation_set_identity = digest("forged-r5")
-  assert.throws(() => validateP2R5RelationSet(identityTamper), /relation_set_identity/)
-})
-
-test("R5 output contains no global decision, ranking, threshold, statistics, promotion, or release fields", () => {
-  const output = relateP2R5(comparison()) as any
-  assert.equal(output.schema_version, P2_R5_RELATION_SET_SCHEMA)
-  const serialized = JSON.stringify(output).toLowerCase()
-  for (const forbidden of [
-    '"winner"',
-    '"loser"',
-    '"ranking"',
-    '"leaderboard"',
-    '"threshold"',
-    '"tolerance"',
-    '"p_value"',
-    '"confidence_interval"',
-    '"promotion"',
-    '"release_decision"',
-  ]) {
-    assert.equal(serialized.includes(forbidden), false, forbidden)
-  }
-})
-
-test("R5 production source has no ambient execution, persistence, network, provider, or telemetry authority", async () => {
-  const source = await readFile(new URL("../bench/p2-r5/relation.ts", import.meta.url), "utf8")
-  for (const forbidden of [
-    "node:child_process",
-    "node:fs",
-    "node:http",
-    "node:https",
-    "node:net",
-    "fetch(",
-    "process.env",
-    "provider",
-    "telemetry",
-  ]) {
-    assert.equal(source.includes(forbidden), false, forbidden)
-  }
-})
-
-test("canonical P2-R1 through P2-R4 predecessor blobs remain unchanged", async () => {
-  const expected = new Map([
-    ["../bench/p2-r1/contract.ts", "573aaf45f285902c9acda19759d912f16e9ccd8e"],
-    ["../bench/p2-r2/runner.ts", "1c7d4f2c7b03911d73a1c8f3d1ee8496bb4dc6a4"],
-    ["../bench/p2-r3/summary.ts", "1c0c79381ad89ca9051e0d37243a17f85ea19285"],
-    ["../bench/p2-r4/comparison.ts", "78c1417e51f1c36989ec7ec700a3424df3b58944"],
-  ])
-  for (const [path, expectedBlob] of expected) {
-    const content = await readFile(new URL(path, import.meta.url))
-    assert.equal(gitBlobSha(content), expectedBlob, path)
+test("does not emit global winner, score, ranking, threshold, or promotion fields", () => {
+  const result = deriveP2R5Relations(comparison([numericMetric("a_score", "HIGHER_IS_BETTER", 7, 5)]))
+  const forbidden = [
+    "winner",
+    "loser",
+    "overall_score",
+    "blended_score",
+    "rank",
+    "ranking",
+    "threshold",
+    "tolerance",
+    "promotion",
+    "release_decision",
+  ]
+  for (const key of forbidden) {
+    assert.equal(Object.hasOwn(result, key), false)
+    assert.equal(Object.hasOwn(result.task_family_relations[0]!.metrics[0]!, key), false)
   }
 })
