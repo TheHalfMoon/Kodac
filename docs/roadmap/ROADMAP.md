@@ -2,7 +2,7 @@
 
 ## Authority
 
-This file is a **current engineering roadmap view**. It reports canonical and conditional-candidate state; it does not create implementation authority.
+This file is a current engineering roadmap view. It reports canonical and conditional-candidate state; it does not create implementation authority.
 
 Before any repository mutation:
 
@@ -22,14 +22,11 @@ K6 planning        = PR #202 / 2f167794a375bc913c377746419acf3bcc5ee0ab
 K6-R1 merge        = PR #204 / 7bc163b9ec0d5d451950542f1feb15e444fbdc6c
 K6-R2 merge        = PR #206 / 90c00cfc01cb874c08b4f7bde1469ccb298b5648
 K6-R3 merge        = PR #208 / 4ed9bed6fdb23643c722298adfba4ae8e72097b2
-K6-R4 final auth   = PR #221 / 93c197cb6f88409dd406694fe4614ecf0fb6ba00
 K6-R4 merge        = PR #212 / 7af698feae73f46df06bf6084a7d0d0317d5560a
-K6-R4 reconcile    = PR #222 / 1db9fef23df0961d76b1fdd1b0e558fba180cad8
-K6-R5 auth         = PR #224 / 31f5f9f3e05dd0feeda2b96b3221374c4bfe0032
 K6-R5 merge        = PR #226 / 91d817741d1c55195d26ef8e8f5be98e04d1977d
-K6-R5 reconcile    = PR #234 / 74868b75d0e531fdff8255e3827c4ecbce7dc4ac
-K6 closeout auth   = PR #235 / 748706683a0102f1743c1797950272bbd41d8a3c
 K6 closeout merge  = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
+P2-R1 auth merge   = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
+P2-R1 impl merge   = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
 Improvement plan   = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -46,77 +43,95 @@ Always re-read live protected `main`; these identities are evidence anchors, not
 | K4 | Ecosystem Compatibility | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
 | K5 | Proof Review & Judge | **CLOSED for canonical K5-R1 through K5-R5 bounded scope** | Done Gate unchanged |
 | K6 | Evidence Router & Outcome Learning | **CLOSED_CANONICAL for bounded R1-R5 scope** | No execution/persistence/learning/promotion authority by composition |
-| P2-R1 | KodacBench contract + fixture spine | **AUTHORIZATION CANDIDATE** | Effective implementation authority only after this exact gate becomes canonical |
-| P2-R2+ | Later KodacBench slices | **NOT_AUTHORIZED** | Separate exact authority required |
+| P2-R1 | KodacBench contract + frozen fixture/manifest spine | **CLOSED_CANONICAL** | Local deterministic contract/data scope only; closure proven by post-merge GitHub objects/checks |
+| P2-R2 | Local runner + immutable report spine | **AUTHORIZATION CANDIDATE** | Effective implementation authority only after this exact gate becomes canonical |
+| P2-R3+ | Later KodacBench slices | **NOT_AUTHORIZED** | Separate exact authority required |
 | P3-P8 | Later improvement stages | **NOT_AUTHORIZED** | Each needs dependencies and separate canonical authority |
 
 Engineering milestone status is separate from public product release status.
 
 ## K6 — bounded closeout is canonical
 
-PR #236 merged the exact bounded closeout candidate at `ed4fb16e8bbaf960812285671062c9b2abf597a8`. Required ordered-parent/tree/blob/signature, applicable post-merge checks, and active ruleset/no-bypass proof were established.
-
-```text
-K6-R1 = CLOSED_CANONICAL
-K6-R2 = CLOSED_CANONICAL
-K6-R3 = CLOSED_CANONICAL
-K6-R4 = CLOSED_CANONICAL
-K6-R5 = CLOSED_CANONICAL
-K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
-K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
-```
-
-Exact evidence:
-
-- `docs/planning/KODAC_K6_BOUNDED_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
-- `docs/planning/KODAC_K6_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
-
-K6 still does not authorize provider/model invocation, route execution, durable persistence, telemetry, training, online/cross-repository learning, automatic promotion, K2/K5/Done Gate expansion, autofix, general KodacBench, dependencies, release, or superiority claims.
+K6-R1 through K6-R5 are closed-canonical for the bounded evidence/value scope. K6 remains evidence infrastructure rather than side-effect, persistence, learning, promotion, Done Gate, or release authority.
 
 ## P2 KodacBench
 
-P2 is required before broad evidence-backed comparisons or superiority claims for later P3-P8 work. The adopted benchmark direction follows ADR-0010 and the intelligence improvement master plan:
+P2 is required before broad evidence-backed comparisons or superiority claims for later P3-P8 work. The benchmark direction follows ADR-0010 and the intelligence improvement master plan:
 
-- frozen, identity-bound corpus material;
-- separately identified holdout material whose `later-in-time` classification requires proven strict ordering under the defined comparable chronology scheme;
+- frozen identity-bound corpus material;
+- separately identified holdout material whose `later-in-time` classification requires proven strict ordering under a comparable chronology scheme;
 - task-family-separated metrics;
 - provenance and contamination state;
 - reproducible deterministic contract/report identities;
-- exact benchmark/corpus/strategy/evaluator/model/provider identities where they actually apply;
+- exact strategy/evaluator/model/provider identities where they actually apply;
 - no universal blended `best` score or unsupported product-level superiority claim.
 
-### P2-R1 — current authorization candidate
+### P2-R1 — closed canonical
 
-The first proposed P2 slice is intentionally smaller than a general benchmark runner:
+PR #238 merged P2-R1 at `c499c8ac098cca9719eaad3cacadd2af7d1c0a1f` after exact-head qualification and required post-merge proof.
+
+The committed P2-R1 evidence file is deliberately a historical **candidate-time** artifact:
+
+- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md`
+
+It was frozen before its own merge and therefore cannot truthfully contain that future merge result. P2-R1 closure is instead bound by the later immutable proof:
 
 ```text
-P2-R1 = BENCHMARK CONTRACT + FROZEN FIXTURE / MANIFEST SPINE
-P2-R1 IMPLEMENTATION = AUTHORIZED ONLY AFTER ITS EXACT AUTHORIZATION RECORD BECOMES CANONICAL
-P2-R2+ = NOT AUTHORIZED
+QUALIFIED_FINAL_HEAD = f3ab68cc74f391ae460b82a8697c7e319cb4ed3b
+QUALIFIED_FINAL_TREE = a01997cffe5848dd91ac12a6639134648bbe2f89
+MERGE = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
+POST_MERGE_GOVERNANCE = 33173090203 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33173090251 / SUCCESS
+MERGE_VERIFICATION = verified / valid
+```
+
+The canonical six P2-R1 blobs matched the qualified candidate after merge, and ruleset `20707483` remained active with no bypass. Accordingly, candidate-time wording preserved in the historical evidence file is not a current incompletion claim and does not override the subsequent post-merge proof.
+
+P2-R1 established:
+
+- hardened canonical JSON identity semantics;
+- frozen repository-authored synthetic development and holdout fixtures;
+- chronology/provenance/contamination contracts;
+- exact case/corpus/holdout/result identities;
+- task-family-separated metric declarations;
+- explicit `not-applicable` identities for uninvoked strategy/evaluator/model/provider/execution dimensions.
+
+P2-R1 did not execute those participants and did not define aggregation/reducer policy.
+
+### P2-R2 — current authorization candidate
+
+The next proposed P2 slice is intentionally narrower than a general benchmark executor:
+
+```text
+P2-R2 = LOCAL DETERMINISTIC RUNNER + IMMUTABLE REPORT SPINE
+P2-R2 IMPLEMENTATION = AUTHORIZED ONLY AFTER ITS EXACT AUTHORIZATION RECORD BECOMES CANONICAL
+P2-R3+ = NOT AUTHORIZED
 ```
 
 Candidate authority:
 
-- `docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_AUTHORIZATION_2026-08-28.md`
+- `docs/planning/KODAC_P2_R2_LOCAL_RUNNER_REPORT_AUTHORIZATION_2026-08-28.md`
 
-If canonical, that record authorizes exactly one local/deterministic implementation PR limited to:
+If canonical, that record authorizes exactly one pure in-memory implementation PR limited to:
 
 ```text
-packages/kodac-runtime/bench/p2-r1/**
-packages/kodac-runtime/test/p2-r1-*.test.ts
-packages/kodac-runtime/test/fixtures/p2-r1/**
-docs/planning/KODAC_P2_R1_BENCHMARK_CONTRACT_FIXTURE_MANIFEST_EVIDENCE_2026-08-28.md
+packages/kodac-runtime/bench/p2-r2/**
+packages/kodac-runtime/test/p2-r2-*.test.ts
+docs/planning/KODAC_P2_R2_LOCAL_RUNNER_REPORT_EVIDENCE_2026-08-28.md
 ```
 
-No runtime product source, workflow, dependency, lockfile, provider/model/reviewer/evaluator adapter, network/secret, persistent storage, telemetry, learning, promotion, or release path is included.
+The R2 runner would consume validated R1 values plus caller-materialized metric observations, bind each observation to exact R1 case/result/metric/unit identity, fail closed on malformed or hostile structures, deterministically order evidence, preserve explicit missing observations, produce completeness counts, and derive one immutable report identity.
 
-The authorization is not effective while this is only candidate text.
+R2 may not infer averages, reducers, weighting, normalization, thresholds, global rankings, universal scores, winner/superiority semantics, or external execution authority. No provider/model/reviewer/evaluator/tool/network/subprocess/persistence/product integration is included.
 
 ## Ordered improvement program
 
 ```text
 K6 bounded closeout
 -> P2 KodacBench
+   -> R1 contract + frozen fixture/manifest spine [CLOSED_CANONICAL]
+   -> R2 local deterministic runner + immutable report spine [AUTHORIZATION CANDIDATE]
+   -> R3+ separate benchmark slices [NOT AUTHORIZED]
 -> P3 Context Engine v2
 -> P4 Reviewer Intelligence v2
 -> P5 Finding Verifier Fabric
@@ -125,7 +140,7 @@ K6 bounded closeout
 -> P8 Product / Distribution Hardening
 ```
 
-P2 itself remains sliced and evidence-gated; successful P2-R1 does not silently authorize P2-R2.
+P2 itself remains sliced and evidence-gated. Successful R2 would not silently authorize R3.
 
 ## Preserved authority boundaries
 
@@ -135,10 +150,10 @@ K5 PROOF EVIDENCE != DONE GATE COMPLETION AUTHORITY
 REVIEWER / MODEL OUTPUT = CLAIM / EVIDENCE, NOT COMPLETION TRUTH
 K6 ROUTING / OUTCOME / STRATEGY EVIDENCE != EXECUTION AUTHORITY
 P2 BENCHMARK EVIDENCE != EXECUTION / PROMOTION / DONE GATE AUTHORITY
-P2-R2+ = NOT AUTHORIZED
+P2-R3+ = NOT AUTHORIZED
 P3-P8 = NOT AUTHORIZED
 NEW DEPENDENCIES / CODE IMPORT = NOT AUTHORIZED
-PROVIDER / MODEL / REVIEWER INVOCATION = NOT AUTHORIZED
+PROVIDER / MODEL / REVIEWER / EVALUATOR INVOCATION = NOT AUTHORIZED
 PERSISTENCE / TELEMETRY / LEARNING = NOT AUTHORIZED
 AUTOFIX EXECUTION = NOT AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE / BRAND LAUNCH = NOT AUTHORIZED
