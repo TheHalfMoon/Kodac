@@ -1,0 +1,33 @@
+{
+  "schema_version": "p2-r1-fixture/v1",
+  "corpus_id": "p2-r1-holdout-v1",
+  "corpus_role": "holdout",
+  "chronology_scheme": "fixture-epoch-v1",
+  "chronology_anchor": {
+    "scheme": "fixture-epoch-v1",
+    "ordinal": 2
+  },
+  "source_provenance": {
+    "kind": "repository-authored-synthetic",
+    "path": "packages/kodac-runtime/test/fixtures/p2-r1/holdout.json"
+  },
+  "contamination_status": "unknown",
+  "cases": [
+    {
+      "case_id": "holdout-patch-001",
+      "task_family": "patch-analysis",
+      "payload": {
+        "change": "reorder object keys while preserving semantic values",
+        "expected_contract": "stable-canonical-identity"
+      }
+    },
+    {
+      "case_id": "holdout-finding-001",
+      "task_family": "finding-verification",
+      "payload": {
+        "finding": "candidate labels an unproven chronology as later-in-time",
+        "expected_contract": "reject-unproven-chronology"
+      }
+    }
+  ]
+}
