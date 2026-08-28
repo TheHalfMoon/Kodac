@@ -3,12 +3,14 @@ import {
   P2_R4_COMPARISON_SCHEMA,
   P2_R4_SUBJECT_SCHEMA,
   type P2R4Comparison,
+  type P2R4ComparisonStatus,
   type P2R4Direction,
   type P2R4MetricComparison,
   type P2R4SubjectDescriptor,
 } from "../p2-r4/comparison.ts"
 import type {
   P2R3MetricSummary,
+  P2R3MetricSummaryStatus,
   P2R3MissingnessPolicy,
   P2R3Reducer,
   P2R3ValueKind,
@@ -34,7 +36,7 @@ export interface P2R5MetricRelation {
   direction: P2R4Direction
   left_summary: P2R3MetricSummary
   right_summary: P2R3MetricSummary
-  status: P2R4MetricComparison["status"]
+  status: P2R4ComparisonStatus
   left_value: number | null
   right_value: number | null
   raw_delta_left_minus_right: number | null
@@ -80,8 +82,8 @@ const SUBJECT_KEYS = [
   "system_version_commit_identity",
   "raw_artifact_log_set_identity",
 ] as const
-const TASK_FAMILY_KEYS = ["task_family", "metrics"] as const
-const R4_METRIC_KEYS = [
+const FAMILY_KEYS = ["task_family", "metrics"] as const
+const METRIC_KEYS = [
   "metric_id",
   "input_unit",
   "output_unit",
@@ -98,7 +100,7 @@ const R4_METRIC_KEYS = [
   "right_value",
   "raw_delta_left_minus_right",
 ] as const
-const SUMMARY_METRIC_KEYS = [
+const SUMMARY_KEYS = [
   "metric_id",
   "input_unit",
   "output_unit",
@@ -115,44 +117,28 @@ const SUMMARY_METRIC_KEYS = [
   "true_count",
   "denominator_count",
 ] as const
-const R5_RELATION_SET_KEYS = [
-  "schema_version",
-  "benchmark_id",
-  "benchmark_protocol_version",
-  "r4_comparison_identity",
-  "left_subject",
-  "right_subject",
-  "shared_evaluation_context_identity",
-  "comparison_policy_identity",
-  "task_family_relations",
-  "relation_set_identity",
-] as const
-const R5_METRIC_KEYS = [...R4_METRIC_KEYS, "relation"] as const
 
 function fail(message: string): never {
   throw new Error(`P2-R5 contract violation: ${message}`)
 }
 
-function cloneCanonical<T>(value: unknown, label: string): T {
+function cloneCanonical(value: unknown, label: string): unknown {
   try {
-    return JSON.parse(canonicalize(value)) as T
+    return JSON.parse(canonicalize(value)) as unknown
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
     fail(`${label} is not canonical JSON: ${detail}`)
   }
 }
 
-function assertRecord(value: unknown, label: string): asserts value is Record<string, unknown> {
+function record(value: unknown, label: string): Record<string, unknown> {
   if (typeof value !== "object" || value === null || Array.isArray(value)) {
     fail(`${label} must be an object`)
   }
+  return value as Record<string, unknown>
 }
 
-function assertExactKeys(
-  value: Record<string, unknown>,
-  expected: readonly string[],
-  label: string,
-): void {
+function exactKeys(value: Record<string, unknown>, expected: readonly string[], label: string): void {
   const actual = Object.keys(value).sort()
   const required = [...expected].sort()
   const unknown = actual.filter((key) => !required.includes(key))
@@ -162,35 +148,60 @@ function assertExactKeys(
   }
 }
 
-function assertCanonicalString(value: unknown, label: string): asserts value is string {
+function canonicalString(value: unknown, label: string): string {
   if (typeof value !== "string" || value.length === 0 || value.trim() !== value) {
     fail(`${label} must be a non-empty canonical string`)
   }
+  return value
 }
 
-function assertSha256(value: unknown, label: string): asserts value is string {
+function sha256(value: unknown, label: string): string {
   if (typeof value !== "string" || !/^sha256:[0-9a-f]{64}$/.test(value)) {
     fail(`${label} must be a lowercase sha256 identity`)
   }
+  return value
 }
 
-function assertNonNegativeSafeInteger(value: unknown, label: string): asserts value is number {
-  if (!Number.isSafeInteger(value) || (value as number) < 0) {
-    fail(`${label} must be a non-negative safe integer`)
-  }
+function positiveInt(value: unknown, label: string): number {
+  if (!Number.isSafeInteger(value) || (value as number) < 1) fail(`${label} must be a positive safe integer`)
+  return value as number
 }
 
-function assertPositiveSafeInteger(value: unknown, label: string): asserts value is number {
-  if (!Number.isSafeInteger(value) || (value as number) <= 0) {
-    fail(`${label} must be a positive safe integer`)
-  }
+function nonNegativeInt(value: unknown, label: string): number {
+  if (!Number.isSafeInteger(value) || (value as number) < 0) fail(`${label} must be a non-negative safe integer`)
+  return value as number
+}
+
+function valueKind(value: unknown, label: string): P2R3ValueKind {
+  if (value !== "NUMBER" && value !== "BOOLEAN") fail(`${label} is unsupported`)
+  return value
+}
+
+function reducer(value: unknown, label: string): P2R3Reducer {
+  if (value !== "ARITHMETIC_MEAN" && value !== "BOOLEAN_TRUE_RATE") fail(`${label} is unsupported`)
+  return value
+}
+
+function missingness(value: unknown, label: string): P2R3MissingnessPolicy {
+  if (value !== "REQUIRE_COMPLETE" && value !== "OBSERVED_ONLY_WITH_COVERAGE") fail(`${label} is unsupported`)
+  return value
+}
+
+function direction(value: unknown, label: string): P2R4Direction {
+  if (value !== "HIGHER_IS_BETTER" && value !== "LOWER_IS_BETTER") fail(`${label} is unsupported`)
+  return value
+}
+
+function comparisonStatus(value: unknown, label: string): P2R4ComparisonStatus {
+  if (value !== "COMPARABLE" && value !== "INSUFFICIENT_EVIDENCE") fail(`${label} is unsupported`)
+  return value
 }
 
 function compareStrings(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0
 }
 
-function assertStrictlySorted(values: readonly string[], label: string): void {
+function strictlySorted(values: readonly string[], label: string): void {
   for (let index = 1; index < values.length; index += 1) {
     if (compareStrings(values[index - 1]!, values[index]!) >= 0) {
       fail(`${label} must be strictly sorted and duplicate-free`)
@@ -199,266 +210,228 @@ function assertStrictlySorted(values: readonly string[], label: string): void {
 }
 
 function validateSubject(input: unknown, label: string): P2R4SubjectDescriptor {
-  assertRecord(input, label)
-  assertExactKeys(input, SUBJECT_KEYS, label)
-  if (input.schema_version !== P2_R4_SUBJECT_SCHEMA) fail(`${label}.schema_version is unsupported`)
-  assertCanonicalString(input.subject_id, `${label}.subject_id`)
-  assertSha256(input.system_version_commit_identity, `${label}.system_version_commit_identity`)
-  assertSha256(input.raw_artifact_log_set_identity, `${label}.raw_artifact_log_set_identity`)
+  const value = record(input, label)
+  exactKeys(value, SUBJECT_KEYS, label)
+  if (value.schema_version !== P2_R4_SUBJECT_SCHEMA) fail(`${label}.schema_version is unsupported`)
   return {
     schema_version: P2_R4_SUBJECT_SCHEMA,
-    subject_id: input.subject_id,
-    system_version_commit_identity: input.system_version_commit_identity,
-    raw_artifact_log_set_identity: input.raw_artifact_log_set_identity,
+    subject_id: canonicalString(value.subject_id, `${label}.subject_id`),
+    system_version_commit_identity: sha256(value.system_version_commit_identity, `${label}.system_version_commit_identity`),
+    raw_artifact_log_set_identity: sha256(value.raw_artifact_log_set_identity, `${label}.raw_artifact_log_set_identity`),
   }
 }
 
-function validateSummaryMetric(input: unknown, label: string): P2R3MetricSummary {
-  assertRecord(input, label)
-  assertExactKeys(input, SUMMARY_METRIC_KEYS, label)
-  assertCanonicalString(input.metric_id, `${label}.metric_id`)
-  assertCanonicalString(input.input_unit, `${label}.input_unit`)
-  assertCanonicalString(input.output_unit, `${label}.output_unit`)
-  if (input.value_kind !== "NUMBER" && input.value_kind !== "BOOLEAN") {
-    fail(`${label}.value_kind is unsupported`)
-  }
-  if (input.reducer !== "ARITHMETIC_MEAN" && input.reducer !== "BOOLEAN_TRUE_RATE") {
-    fail(`${label}.reducer is unsupported`)
-  }
-  if (
-    input.missingness_policy !== "REQUIRE_COMPLETE" &&
-    input.missingness_policy !== "OBSERVED_ONLY_WITH_COVERAGE"
-  ) {
-    fail(`${label}.missingness_policy is unsupported`)
-  }
-  assertPositiveSafeInteger(input.minimum_observed_count, `${label}.minimum_observed_count`)
-  assertPositiveSafeInteger(input.expected_count, `${label}.expected_count`)
-  assertNonNegativeSafeInteger(input.observed_count, `${label}.observed_count`)
-  assertNonNegativeSafeInteger(input.missing_count, `${label}.missing_count`)
-  assertNonNegativeSafeInteger(input.unavailable_count, `${label}.unavailable_count`)
-  if (
-    (input.observed_count as number) +
-      (input.missing_count as number) +
-      (input.unavailable_count as number) !==
-    input.expected_count
-  ) {
-    fail(`${label} coverage counts do not reconcile`)
-  }
-  if ((input.minimum_observed_count as number) > (input.expected_count as number)) {
-    fail(`${label}.minimum_observed_count exceeds expected_count`)
-  }
-  if (
-    input.missingness_policy === "REQUIRE_COMPLETE" &&
-    input.minimum_observed_count !== input.expected_count
-  ) {
+function validateSummary(input: unknown, label: string): P2R3MetricSummary {
+  const value = record(input, label)
+  exactKeys(value, SUMMARY_KEYS, label)
+
+  const metricId = canonicalString(value.metric_id, `${label}.metric_id`)
+  const inputUnit = canonicalString(value.input_unit, `${label}.input_unit`)
+  const outputUnit = canonicalString(value.output_unit, `${label}.output_unit`)
+  const kind = valueKind(value.value_kind, `${label}.value_kind`)
+  const reduce = reducer(value.reducer, `${label}.reducer`)
+  const missing = missingness(value.missingness_policy, `${label}.missingness_policy`)
+  const minimum = positiveInt(value.minimum_observed_count, `${label}.minimum_observed_count`)
+  const expected = positiveInt(value.expected_count, `${label}.expected_count`)
+  const observed = nonNegativeInt(value.observed_count, `${label}.observed_count`)
+  const missingCount = nonNegativeInt(value.missing_count, `${label}.missing_count`)
+  const unavailableCount = nonNegativeInt(value.unavailable_count, `${label}.unavailable_count`)
+
+  if (observed + missingCount + unavailableCount !== expected) fail(`${label} coverage counts do not reconcile`)
+  if (minimum > expected) fail(`${label}.minimum_observed_count exceeds expected_count`)
+  if (missing === "REQUIRE_COMPLETE" && minimum !== expected) {
     fail(`${label}.minimum_observed_count must equal expected_count under REQUIRE_COMPLETE`)
   }
-  const sufficient =
-    input.missingness_policy === "REQUIRE_COMPLETE"
-      ? input.observed_count === input.expected_count
-      : (input.observed_count as number) >= (input.minimum_observed_count as number)
-  const expectedStatus = sufficient ? "REDUCED" : "INSUFFICIENT_EVIDENCE"
-  if (input.status !== expectedStatus) fail(`${label}.status does not match coverage evidence`)
 
-  if (input.reducer === "ARITHMETIC_MEAN") {
-    if (input.value_kind !== "NUMBER") fail(`${label}.ARITHMETIC_MEAN requires NUMBER`)
-    if (input.output_unit !== input.input_unit) fail(`${label}.ARITHMETIC_MEAN must preserve unit`)
-    if (input.true_count !== null || input.denominator_count !== null) {
-      fail(`${label}.ARITHMETIC_MEAN count evidence must be null`)
-    }
+  const sufficient = missing === "REQUIRE_COMPLETE" ? observed === expected : observed >= minimum
+  const status: P2R3MetricSummaryStatus = sufficient ? "REDUCED" : "INSUFFICIENT_EVIDENCE"
+  if (value.status !== status) fail(`${label}.status does not match coverage evidence`)
+
+  let reducedValue: number | null
+  let trueCount: number | null
+  let denominatorCount: number | null
+  if (reduce === "ARITHMETIC_MEAN") {
+    if (kind !== "NUMBER") fail(`${label}.ARITHMETIC_MEAN requires NUMBER`)
+    if (outputUnit !== inputUnit) fail(`${label}.ARITHMETIC_MEAN must preserve input unit`)
+    if (value.true_count !== null || value.denominator_count !== null) fail(`${label}.ARITHMETIC_MEAN count evidence must be null`)
+    trueCount = null
+    denominatorCount = null
   } else {
-    if (input.value_kind !== "BOOLEAN") fail(`${label}.BOOLEAN_TRUE_RATE requires BOOLEAN`)
-    if (input.output_unit !== "ratio_0_1") fail(`${label}.BOOLEAN_TRUE_RATE output unit must be ratio_0_1`)
-    assertNonNegativeSafeInteger(input.true_count, `${label}.true_count`)
-    assertNonNegativeSafeInteger(input.denominator_count, `${label}.denominator_count`)
-    if (input.denominator_count !== input.observed_count) {
-      fail(`${label}.denominator_count must equal observed_count`)
-    }
-    if ((input.true_count as number) > (input.denominator_count as number)) {
-      fail(`${label}.true_count exceeds denominator_count`)
-    }
+    if (kind !== "BOOLEAN") fail(`${label}.BOOLEAN_TRUE_RATE requires BOOLEAN`)
+    if (outputUnit !== "ratio_0_1") fail(`${label}.BOOLEAN_TRUE_RATE output unit must be ratio_0_1`)
+    trueCount = nonNegativeInt(value.true_count, `${label}.true_count`)
+    denominatorCount = nonNegativeInt(value.denominator_count, `${label}.denominator_count`)
+    if (denominatorCount !== observed) fail(`${label}.denominator_count must equal observed_count`)
+    if (trueCount > denominatorCount) fail(`${label}.true_count exceeds denominator_count`)
   }
 
-  if (input.status === "REDUCED") {
-    if (typeof input.reduced_value !== "number" || !Number.isFinite(input.reduced_value)) {
+  if (status === "REDUCED") {
+    if (typeof value.reduced_value !== "number" || !Number.isFinite(value.reduced_value)) {
       fail(`${label}.reduced_value must be finite for REDUCED evidence`)
     }
-    if (input.reducer === "BOOLEAN_TRUE_RATE") {
-      const expectedValue = (input.true_count as number) / (input.denominator_count as number)
-      if (input.reduced_value !== expectedValue) {
-        fail(`${label}.reduced_value does not match BOOLEAN_TRUE_RATE count evidence`)
-      }
+    reducedValue = value.reduced_value
+    if (reduce === "BOOLEAN_TRUE_RATE") {
+      const expectedRate = (trueCount as number) / (denominatorCount as number)
+      if (reducedValue !== expectedRate) fail(`${label}.reduced_value does not match BOOLEAN_TRUE_RATE count evidence`)
     }
-  } else if (input.reduced_value !== null) {
-    fail(`${label}.reduced_value must be null for INSUFFICIENT_EVIDENCE`)
+  } else {
+    if (value.reduced_value !== null) fail(`${label}.reduced_value must be null for INSUFFICIENT_EVIDENCE`)
+    reducedValue = null
   }
 
   return {
-    metric_id: input.metric_id,
-    input_unit: input.input_unit,
-    output_unit: input.output_unit,
-    value_kind: input.value_kind,
-    reducer: input.reducer,
-    missingness_policy: input.missingness_policy,
-    minimum_observed_count: input.minimum_observed_count,
-    expected_count: input.expected_count,
-    observed_count: input.observed_count,
-    missing_count: input.missing_count,
-    unavailable_count: input.unavailable_count,
-    status: input.status,
-    reduced_value: input.reduced_value as number | null,
-    true_count: input.true_count as number | null,
-    denominator_count: input.denominator_count as number | null,
+    metric_id: metricId,
+    input_unit: inputUnit,
+    output_unit: outputUnit,
+    value_kind: kind,
+    reducer: reduce,
+    missingness_policy: missing,
+    minimum_observed_count: minimum,
+    expected_count: expected,
+    observed_count: observed,
+    missing_count: missingCount,
+    unavailable_count: unavailableCount,
+    status,
+    reduced_value: reducedValue,
+    true_count: trueCount,
+    denominator_count: denominatorCount,
   }
 }
 
-function validateR4Metric(input: unknown, label: string): P2R4MetricComparison {
-  assertRecord(input, label)
-  assertExactKeys(input, R4_METRIC_KEYS, label)
-  assertCanonicalString(input.metric_id, `${label}.metric_id`)
-  assertCanonicalString(input.input_unit, `${label}.input_unit`)
-  assertCanonicalString(input.output_unit, `${label}.output_unit`)
-  if (input.value_kind !== "NUMBER" && input.value_kind !== "BOOLEAN") fail(`${label}.value_kind is unsupported`)
-  if (input.reducer !== "ARITHMETIC_MEAN" && input.reducer !== "BOOLEAN_TRUE_RATE") fail(`${label}.reducer is unsupported`)
-  if (
-    input.missingness_policy !== "REQUIRE_COMPLETE" &&
-    input.missingness_policy !== "OBSERVED_ONLY_WITH_COVERAGE"
-  ) {
-    fail(`${label}.missingness_policy is unsupported`)
-  }
-  assertPositiveSafeInteger(input.minimum_observed_count, `${label}.minimum_observed_count`)
-  assertPositiveSafeInteger(input.expected_count, `${label}.expected_count`)
-  if (input.direction !== "HIGHER_IS_BETTER" && input.direction !== "LOWER_IS_BETTER") {
-    fail(`${label}.direction is unsupported`)
-  }
-  if (input.status !== "COMPARABLE" && input.status !== "INSUFFICIENT_EVIDENCE") {
-    fail(`${label}.status is unsupported`)
-  }
+function validateMetric(input: unknown, label: string): P2R4MetricComparison {
+  const value = record(input, label)
+  exactKeys(value, METRIC_KEYS, label)
 
-  const leftSummary = validateSummaryMetric(input.left_summary, `${label}.left_summary`)
-  const rightSummary = validateSummaryMetric(input.right_summary, `${label}.right_summary`)
-  const semanticKeys = [
-    "metric_id",
-    "input_unit",
-    "output_unit",
-    "value_kind",
-    "reducer",
-    "missingness_policy",
-    "minimum_observed_count",
-    "expected_count",
-  ] as const
-  for (const key of semanticKeys) {
-    if (leftSummary[key] !== rightSummary[key]) fail(`${label} left/right summary semantics differ for ${key}`)
-    if (input[key] !== leftSummary[key]) fail(`${label}.${key} does not match summary evidence`)
-  }
+  const metricId = canonicalString(value.metric_id, `${label}.metric_id`)
+  const inputUnit = canonicalString(value.input_unit, `${label}.input_unit`)
+  const outputUnit = canonicalString(value.output_unit, `${label}.output_unit`)
+  const kind = valueKind(value.value_kind, `${label}.value_kind`)
+  const reduce = reducer(value.reducer, `${label}.reducer`)
+  const missing = missingness(value.missingness_policy, `${label}.missingness_policy`)
+  const minimum = positiveInt(value.minimum_observed_count, `${label}.minimum_observed_count`)
+  const expected = positiveInt(value.expected_count, `${label}.expected_count`)
+  const metricDirection = direction(value.direction, `${label}.direction`)
+  const leftSummary = validateSummary(value.left_summary, `${label}.left_summary`)
+  const rightSummary = validateSummary(value.right_summary, `${label}.right_summary`)
 
-  const expectedComparable = leftSummary.status === "REDUCED" && rightSummary.status === "REDUCED"
-  if (input.status !== (expectedComparable ? "COMPARABLE" : "INSUFFICIENT_EVIDENCE")) {
-    fail(`${label}.status does not match left/right summary evidence`)
-  }
-
-  if (!expectedComparable) {
-    if (input.left_value !== null || input.right_value !== null || input.raw_delta_left_minus_right !== null) {
-      fail(`${label} insufficient evidence requires null comparison values`)
+  for (const [key, expectedValue] of [
+    ["metric_id", metricId],
+    ["input_unit", inputUnit],
+    ["output_unit", outputUnit],
+    ["value_kind", kind],
+    ["reducer", reduce],
+    ["missingness_policy", missing],
+    ["minimum_observed_count", minimum],
+    ["expected_count", expected],
+  ] as const) {
+    if (leftSummary[key] !== expectedValue || rightSummary[key] !== expectedValue) {
+      fail(`${label}.${key} does not match left/right summary evidence`)
     }
+  }
+
+  const expectedStatus: P2R4ComparisonStatus =
+    leftSummary.status === "REDUCED" && rightSummary.status === "REDUCED"
+      ? "COMPARABLE"
+      : "INSUFFICIENT_EVIDENCE"
+  const status = comparisonStatus(value.status, `${label}.status`)
+  if (status !== expectedStatus) fail(`${label}.status does not match summary evidence`)
+
+  let leftValue: number | null
+  let rightValue: number | null
+  let delta: number | null
+  if (status === "INSUFFICIENT_EVIDENCE") {
+    if (value.left_value !== null || value.right_value !== null || value.raw_delta_left_minus_right !== null) {
+      fail(`${label} insufficient evidence requires null pairwise values`)
+    }
+    leftValue = null
+    rightValue = null
+    delta = null
   } else {
-    if (typeof input.left_value !== "number" || !Number.isFinite(input.left_value)) {
-      fail(`${label}.left_value must be finite for COMPARABLE evidence`)
+    if (typeof value.left_value !== "number" || !Number.isFinite(value.left_value)) fail(`${label}.left_value must be finite`)
+    if (typeof value.right_value !== "number" || !Number.isFinite(value.right_value)) fail(`${label}.right_value must be finite`)
+    leftValue = value.left_value
+    rightValue = value.right_value
+    if (leftValue !== leftSummary.reduced_value || rightValue !== rightSummary.reduced_value) {
+      fail(`${label} pairwise values do not match summary evidence`)
     }
-    if (typeof input.right_value !== "number" || !Number.isFinite(input.right_value)) {
-      fail(`${label}.right_value must be finite for COMPARABLE evidence`)
-    }
-    if (input.left_value !== leftSummary.reduced_value || input.right_value !== rightSummary.reduced_value) {
-      fail(`${label} comparison values do not match summary evidence`)
-    }
-    const delta = input.left_value - input.right_value
+    delta = leftValue - rightValue
     if (!Number.isFinite(delta)) fail(`${label}.raw_delta_left_minus_right would be non-finite`)
-    if (input.raw_delta_left_minus_right !== delta) {
-      fail(`${label}.raw_delta_left_minus_right does not match left_value - right_value`)
-    }
+    if (value.raw_delta_left_minus_right !== delta) fail(`${label}.raw_delta_left_minus_right does not match left_value - right_value`)
   }
 
   return {
-    metric_id: input.metric_id,
-    input_unit: input.input_unit,
-    output_unit: input.output_unit,
-    value_kind: input.value_kind,
-    reducer: input.reducer,
-    missingness_policy: input.missingness_policy,
-    minimum_observed_count: input.minimum_observed_count,
-    expected_count: input.expected_count,
-    direction: input.direction,
+    metric_id: metricId,
+    input_unit: inputUnit,
+    output_unit: outputUnit,
+    value_kind: kind,
+    reducer: reduce,
+    missingness_policy: missing,
+    minimum_observed_count: minimum,
+    expected_count: expected,
+    direction: metricDirection,
     left_summary: leftSummary,
     right_summary: rightSummary,
-    status: input.status,
-    left_value: input.left_value as number | null,
-    right_value: input.right_value as number | null,
-    raw_delta_left_minus_right: input.raw_delta_left_minus_right as number | null,
+    status,
+    left_value: leftValue,
+    right_value: rightValue,
+    raw_delta_left_minus_right: delta,
   }
 }
 
 function validateR4Comparison(input: unknown): P2R4Comparison {
-  const value = cloneCanonical<unknown>(input, "P2-R4 comparison")
-  assertRecord(value, "P2-R4 comparison")
-  assertExactKeys(value, R4_COMPARISON_KEYS, "P2-R4 comparison")
+  const cloned = cloneCanonical(input, "P2-R4 comparison")
+  const value = record(cloned, "P2-R4 comparison")
+  exactKeys(value, R4_COMPARISON_KEYS, "P2-R4 comparison")
   if (value.schema_version !== P2_R4_COMPARISON_SCHEMA) fail("P2-R4 comparison.schema_version is unsupported")
-  assertCanonicalString(value.benchmark_id, "P2-R4 comparison.benchmark_id")
-  assertCanonicalString(value.benchmark_protocol_version, "P2-R4 comparison.benchmark_protocol_version")
-  for (const key of [
-    "left_r2_report_identity",
-    "right_r2_report_identity",
-    "left_summary_identity",
-    "right_summary_identity",
-    "shared_evaluation_context_identity",
-    "comparison_policy_identity",
-    "comparison_identity",
-  ] as const) {
-    assertSha256(value[key], `P2-R4 comparison.${key}`)
-  }
+
+  const benchmarkId = canonicalString(value.benchmark_id, "P2-R4 comparison.benchmark_id")
+  const protocolVersion = canonicalString(value.benchmark_protocol_version, "P2-R4 comparison.benchmark_protocol_version")
   const leftSubject = validateSubject(value.left_subject, "P2-R4 comparison.left_subject")
   const rightSubject = validateSubject(value.right_subject, "P2-R4 comparison.right_subject")
   if (leftSubject.subject_id === rightSubject.subject_id) fail("P2-R4 comparison subject_id values must be distinct")
   if (leftSubject.system_version_commit_identity === rightSubject.system_version_commit_identity) {
     fail("P2-R4 comparison system_version_commit_identity values must be distinct")
   }
-  if (!Array.isArray(value.task_family_comparisons)) {
-    fail("P2-R4 comparison.task_family_comparisons must be an array")
-  }
-  const taskFamilyComparisons = value.task_family_comparisons.map((entry, familyIndex) => {
-    const label = `P2-R4 comparison.task_family_comparisons[${familyIndex}]`
-    assertRecord(entry, label)
-    assertExactKeys(entry, TASK_FAMILY_KEYS, label)
-    assertCanonicalString(entry.task_family, `${label}.task_family`)
-    if (!Array.isArray(entry.metrics) || entry.metrics.length === 0) fail(`${label}.metrics must be non-empty`)
-    const metrics = entry.metrics.map((metric, metricIndex) =>
-      validateR4Metric(metric, `${label}.metrics[${metricIndex}]`),
-    )
-    assertStrictlySorted(metrics.map((metric) => metric.metric_id), `${label}.metrics`)
-    return { task_family: entry.task_family, metrics }
-  })
-  assertStrictlySorted(
-    taskFamilyComparisons.map((entry) => entry.task_family),
-    "P2-R4 comparison.task_family_comparisons",
-  )
 
-  const identityInput = {
+  const leftR2 = sha256(value.left_r2_report_identity, "P2-R4 comparison.left_r2_report_identity")
+  const rightR2 = sha256(value.right_r2_report_identity, "P2-R4 comparison.right_r2_report_identity")
+  const leftSummary = sha256(value.left_summary_identity, "P2-R4 comparison.left_summary_identity")
+  const rightSummary = sha256(value.right_summary_identity, "P2-R4 comparison.right_summary_identity")
+  const contextIdentity = sha256(value.shared_evaluation_context_identity, "P2-R4 comparison.shared_evaluation_context_identity")
+  const policyIdentity = sha256(value.comparison_policy_identity, "P2-R4 comparison.comparison_policy_identity")
+  const comparisonIdentity = sha256(value.comparison_identity, "P2-R4 comparison.comparison_identity")
+
+  if (!Array.isArray(value.task_family_comparisons)) fail("P2-R4 comparison.task_family_comparisons must be an array")
+  const families = value.task_family_comparisons.map((entry, familyIndex) => {
+    const label = `P2-R4 comparison.task_family_comparisons[${familyIndex}]`
+    const family = record(entry, label)
+    exactKeys(family, FAMILY_KEYS, label)
+    const taskFamily = canonicalString(family.task_family, `${label}.task_family`)
+    if (!Array.isArray(family.metrics) || family.metrics.length === 0) fail(`${label}.metrics must be non-empty`)
+    const metrics = family.metrics.map((metric, metricIndex) => validateMetric(metric, `${label}.metrics[${metricIndex}]`))
+    strictlySorted(metrics.map((metric) => metric.metric_id), `${label}.metrics`)
+    return { task_family: taskFamily, metrics }
+  })
+  strictlySorted(families.map((family) => family.task_family), "P2-R4 comparison.task_family_comparisons")
+
+  const identityInput: Omit<P2R4Comparison, "comparison_identity"> = {
     schema_version: P2_R4_COMPARISON_SCHEMA,
-    benchmark_id: value.benchmark_id,
-    benchmark_protocol_version: value.benchmark_protocol_version,
+    benchmark_id: benchmarkId,
+    benchmark_protocol_version: protocolVersion,
     left_subject: leftSubject,
     right_subject: rightSubject,
-    left_r2_report_identity: value.left_r2_report_identity,
-    right_r2_report_identity: value.right_r2_report_identity,
-    left_summary_identity: value.left_summary_identity,
-    right_summary_identity: value.right_summary_identity,
-    shared_evaluation_context_identity: value.shared_evaluation_context_identity,
-    comparison_policy_identity: value.comparison_policy_identity,
-    task_family_comparisons: taskFamilyComparisons,
+    left_r2_report_identity: leftR2,
+    right_r2_report_identity: rightR2,
+    left_summary_identity: leftSummary,
+    right_summary_identity: rightSummary,
+    shared_evaluation_context_identity: contextIdentity,
+    comparison_policy_identity: policyIdentity,
+    task_family_comparisons: families,
   }
-  if (value.comparison_identity !== sha256Canonical(identityInput)) {
+  if (comparisonIdentity !== sha256Canonical(identityInput)) {
     fail("P2-R4 comparison.comparison_identity does not match canonical comparison evidence")
   }
-  return { ...identityInput, comparison_identity: value.comparison_identity }
+  return { ...identityInput, comparison_identity: comparisonIdentity }
 }
 
 function deriveRelation(metric: P2R4MetricComparison): P2R5Relation {
@@ -472,24 +445,24 @@ function deriveRelation(metric: P2R4MetricComparison): P2R5Relation {
   return left < right ? "LEFT_FAVORED_BY_DIRECTION" : "RIGHT_FAVORED_BY_DIRECTION"
 }
 
-function relationFromMetric(metric: P2R4MetricComparison): P2R5MetricRelation {
+function relationMetric(metric: P2R4MetricComparison): P2R5MetricRelation {
   return { ...metric, relation: deriveRelation(metric) }
 }
 
 function deepFreeze<T>(value: T): T {
   if (typeof value !== "object" || value === null || Object.isFrozen(value)) return value
-  const record = value as unknown as Record<string, unknown>
-  for (const key of Object.keys(record)) deepFreeze(record[key])
+  for (const child of Object.values(value as Record<string, unknown>)) deepFreeze(child)
   Object.freeze(value)
   return value
 }
 
-function buildRelationSet(comparison: P2R4Comparison): P2R5RelationSet {
+export function deriveP2R5Relations(comparisonInput: unknown): P2R5RelationSet {
+  const comparison = validateR4Comparison(comparisonInput)
   const taskFamilyRelations = comparison.task_family_comparisons.map((family) => ({
     task_family: family.task_family,
-    metrics: family.metrics.map(relationFromMetric),
+    metrics: family.metrics.map(relationMetric),
   }))
-  const identityInput = {
+  const identityInput: Omit<P2R5RelationSet, "relation_set_identity"> = {
     schema_version: P2_R5_RELATION_SET_SCHEMA,
     benchmark_id: comparison.benchmark_id,
     benchmark_protocol_version: comparison.benchmark_protocol_version,
@@ -500,71 +473,5 @@ function buildRelationSet(comparison: P2R4Comparison): P2R5RelationSet {
     comparison_policy_identity: comparison.comparison_policy_identity,
     task_family_relations: taskFamilyRelations,
   }
-  return {
-    ...identityInput,
-    relation_set_identity: sha256Canonical(identityInput),
-  }
-}
-
-export function relateP2R5(comparisonInput: unknown): P2R5RelationSet {
-  return deepFreeze(buildRelationSet(validateR4Comparison(comparisonInput)))
-}
-
-export function validateP2R5RelationSet(input: unknown): P2R5RelationSet {
-  const value = cloneCanonical<unknown>(input, "P2-R5 relation set")
-  assertRecord(value, "P2-R5 relation set")
-  assertExactKeys(value, R5_RELATION_SET_KEYS, "P2-R5 relation set")
-  if (value.schema_version !== P2_R5_RELATION_SET_SCHEMA) fail("P2-R5 relation set.schema_version is unsupported")
-  assertCanonicalString(value.benchmark_id, "P2-R5 relation set.benchmark_id")
-  assertCanonicalString(value.benchmark_protocol_version, "P2-R5 relation set.benchmark_protocol_version")
-  assertSha256(value.r4_comparison_identity, "P2-R5 relation set.r4_comparison_identity")
-  assertSha256(value.shared_evaluation_context_identity, "P2-R5 relation set.shared_evaluation_context_identity")
-  assertSha256(value.comparison_policy_identity, "P2-R5 relation set.comparison_policy_identity")
-  assertSha256(value.relation_set_identity, "P2-R5 relation set.relation_set_identity")
-  const leftSubject = validateSubject(value.left_subject, "P2-R5 relation set.left_subject")
-  const rightSubject = validateSubject(value.right_subject, "P2-R5 relation set.right_subject")
-  if (leftSubject.subject_id === rightSubject.subject_id) fail("P2-R5 relation set subject_id values must be distinct")
-  if (leftSubject.system_version_commit_identity === rightSubject.system_version_commit_identity) {
-    fail("P2-R5 relation set system_version_commit_identity values must be distinct")
-  }
-  if (!Array.isArray(value.task_family_relations)) fail("P2-R5 relation set.task_family_relations must be an array")
-  const taskFamilyRelations = value.task_family_relations.map((entry, familyIndex) => {
-    const label = `P2-R5 relation set.task_family_relations[${familyIndex}]`
-    assertRecord(entry, label)
-    assertExactKeys(entry, TASK_FAMILY_KEYS, label)
-    assertCanonicalString(entry.task_family, `${label}.task_family`)
-    if (!Array.isArray(entry.metrics) || entry.metrics.length === 0) fail(`${label}.metrics must be non-empty`)
-    const metrics = entry.metrics.map((metricInput, metricIndex) => {
-      const metricLabel = `${label}.metrics[${metricIndex}]`
-      assertRecord(metricInput, metricLabel)
-      assertExactKeys(metricInput, R5_METRIC_KEYS, metricLabel)
-      const r4Input: Record<string, unknown> = {}
-      for (const key of R4_METRIC_KEYS) r4Input[key] = metricInput[key]
-      const metric = validateR4Metric(r4Input, metricLabel)
-      const expectedRelation = deriveRelation(metric)
-      if (metricInput.relation !== expectedRelation) fail(`${metricLabel}.relation does not match metric evidence`)
-      return { ...metric, relation: expectedRelation }
-    })
-    assertStrictlySorted(metrics.map((metric) => metric.metric_id), `${label}.metrics`)
-    return { task_family: entry.task_family, metrics }
-  })
-  assertStrictlySorted(
-    taskFamilyRelations.map((entry) => entry.task_family),
-    "P2-R5 relation set.task_family_relations",
-  )
-  const identityInput = {
-    schema_version: P2_R5_RELATION_SET_SCHEMA,
-    benchmark_id: value.benchmark_id,
-    benchmark_protocol_version: value.benchmark_protocol_version,
-    r4_comparison_identity: value.r4_comparison_identity,
-    left_subject: leftSubject,
-    right_subject: rightSubject,
-    shared_evaluation_context_identity: value.shared_evaluation_context_identity,
-    comparison_policy_identity: value.comparison_policy_identity,
-    task_family_relations: taskFamilyRelations,
-  }
-  if (value.relation_set_identity !== sha256Canonical(identityInput)) {
-    fail("P2-R5 relation set.relation_set_identity does not match canonical relation evidence")
-  }
-  return deepFreeze({ ...identityInput, relation_set_identity: value.relation_set_identity })
+  return deepFreeze({ ...identityInput, relation_set_identity: sha256Canonical(identityInput) })
 }
