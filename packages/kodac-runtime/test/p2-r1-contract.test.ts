@@ -276,14 +276,22 @@ test("uninvoked participant and environment identities stay explicitly not-appli
   )
 })
 
-test("timestamps and absolute workspace metadata do not participate in result identity", () => {
+test("timestamps and absolute workspace metadata stay outside semantic identity", () => {
   const baseline = deriveResultIdentity(manifest[0])
-  const incidental = {
-    ...clone(manifest[0]),
+  const presentation = {
+    record: clone(manifest[0]),
     observed_at: "2099-01-01T00:00:00Z",
     absolute_workspace_path: "/tmp/arbitrary/worktree",
   }
-  assert.equal(deriveResultIdentity(incidental as P2R1ManifestRecord), baseline)
+  assert.equal(deriveResultIdentity(presentation.record), baseline)
+  assert.throws(
+    () => validateManifestRecord({ ...presentation.record, observed_at: presentation.observed_at }, development, holdout),
+    /keys are not canonical/,
+  )
+  assert.throws(
+    () => validateManifestRecord({ ...presentation.record, absolute_workspace_path: presentation.absolute_workspace_path }, development, holdout),
+    /keys are not canonical/,
+  )
 })
 
 test("repeated identical evidence-bearing inputs produce identical result identities", () => {
