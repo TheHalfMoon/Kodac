@@ -218,6 +218,9 @@ jobs:
           def github_expression(body: str) -> str:
               return "$" + "{{ " + body + " }}"
 
+          # The trusted workflow is qualified by exact-head external review and protected-main
+          # governance before merge. Once canonical, this base-controlled file is the trust
+          # anchor; it intentionally does not attempt circular self-authentication.
           repository = event_value("EVENT_REPOSITORY")
           pr_number = event_value("EVENT_PR_NUMBER")
           base_ref = event_value("EVENT_BASE_REF")
@@ -709,7 +712,7 @@ jobs:
           print(
               json.dumps(
                   {
-                      "version": "kodac-k6-r5-trusted-inspector-proof-v4",
+                      "version": "kodac-k6-r5-trusted-inspector-proof-v3",
                       "proof_model": "protected-base-plus-external-review-and-owner-proof-v1",
                       "base_sha": base_sha,
                       "head_sha": head_sha,
