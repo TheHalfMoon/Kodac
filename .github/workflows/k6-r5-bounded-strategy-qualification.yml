@@ -1,0 +1,453 @@
+name: k6-r5-bounded-strategy-qualification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
+      - "schema/k6-r5-bounded-strategy-proposal.schema.json"
+      - "packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts"
+      - "packages/kodac-runtime/src/evidence-router/strategy-proposal.ts"
+      - "packages/kodac-runtime/src/index.ts"
+      - "packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-strategy-qualification:
+    name: k6-r5-bounded-strategy-qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      K6_R5_AUTHORIZATION_MERGE_SHA: "31f5f9f3e05dd0feeda2b96b3221374c4bfe0032"
+      K6_R5_AUTHORIZATION_MERGE_TREE: "8f319e2e4238ffdcbd91dd6651a90e90c88abedb"
+      K6_R5_AUTHORIZATION_DOCUMENT_BLOB: "8747754cc8563f2506869393221a4dac084e4805"
+      K6_R5_IMPLEMENTATION_BRANCH: "feat/k6-r5-bounded-strategy-proposal"
+      PRE_R5_INDEX_BLOB: "74b9d62501ffce8f2cb053e3b72827de11c203d9"
+      R1_CONTRACTS_BLOB: "dc29c4ce85340312f28b67604cac01c1d775e370"
+      R2_ROUTE_PLAN_CONTRACTS_BLOB: "4ee85d8c0163d5318d0d900d733ba75afa814f7c"
+      R4_OUTCOME_MEMORY_CONTRACTS_BLOB: "6411a42e6fc0074e60edc10eaa27e00b3b197fca"
+      R4_OUTCOME_MEMORY_RUNTIME_BLOB: "9f9d0769c5ffab2d482574ea59418144d6dc49a6"
+      K6_R5_TRUSTED_WORKFLOW_BLOB: "5b6e4c97412e8c0617e808e90113651194b85a31"
+      PYTHONDONTWRITEBYTECODE: "1"
+
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Attest exact head, authorization, six-path scope, predecessor pins, and immutable Actions
+        shell: bash
+        env:
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          PR_HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PR_HEAD_SHA"
+          test "$REPOSITORY" = "TheHalfMoon/Kodac"
+          test "$PR_HEAD_REPOSITORY" = "$REPOSITORY"
+          test "$PR_BASE_REF" = "main"
+          test "$PR_HEAD_REF" = "$K6_R5_IMPLEMENTATION_BRANCH"
+          git merge-base --is-ancestor "$K6_R5_AUTHORIZATION_MERGE_SHA" "$PR_BASE_SHA"
+          test "$(git rev-parse "$K6_R5_AUTHORIZATION_MERGE_SHA^{tree}")" = "$K6_R5_AUTHORIZATION_MERGE_TREE"
+          authorization_path="docs/planning/KODAC_K6_R5_BOUNDED_STRATEGY_PROPOSAL_AND_QUALIFICATION_AUTHORIZATION_2026-08-27.md"
+          test "$(git rev-parse "$K6_R5_AUTHORIZATION_MERGE_SHA:$authorization_path")" = "$K6_R5_AUTHORIZATION_DOCUMENT_BLOB"
+          test "$(git rev-parse "$PR_BASE_SHA:$authorization_path")" = "$K6_R5_AUTHORIZATION_DOCUMENT_BLOB"
+          trusted_path=".github/workflows/k6-r5-trusted-qualification.yml"
+          test "$(git rev-parse "$PR_BASE_SHA:$trusted_path")" = "$K6_R5_TRUSTED_WORKFLOW_BLOB"
+
+          predecessors=(
+            "packages/kodac-runtime/src/evidence-router/contracts.ts:$R1_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/evidence-router/route-plan-contracts.ts:$R2_ROUTE_PLAN_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/evidence-router/outcome-memory-contracts.ts:$R4_OUTCOME_MEMORY_CONTRACTS_BLOB"
+            "packages/kodac-runtime/src/evidence-router/outcome-memory.ts:$R4_OUTCOME_MEMORY_RUNTIME_BLOB"
+          )
+          for entry in "${predecessors[@]}"; do
+            path="${entry%%:*}"
+            blob="${entry##*:}"
+            test "$(git rev-parse "$PR_BASE_SHA:$path")" = "$blob"
+            test "$(git rev-parse "HEAD:$path")" = "$blob"
+          done
+          test "$(git rev-parse "$PR_BASE_SHA:packages/kodac-runtime/src/index.ts")" = "$PRE_R5_INDEX_BLOB"
+
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r5-status-before"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r5-diff-before"
+          test ! -s "$RUNNER_TEMP/k6-r5-status-before"
+          test ! -s "$RUNNER_TEMP/k6-r5-diff-before"
+
+          mapfile -t changed < <(git diff --name-only "$PR_BASE_SHA" HEAD | LC_ALL=C sort)
+          expected=(
+            ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
+            "packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts"
+            "packages/kodac-runtime/src/evidence-router/strategy-proposal.ts"
+            "packages/kodac-runtime/src/index.ts"
+            "packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts"
+            "schema/k6-r5-bounded-strategy-proposal.schema.json"
+          )
+          test "${#changed[@]}" -eq "${#expected[@]}"
+          for i in "${!expected[@]}"; do test "${changed[$i]}" = "${expected[$i]}"; done
+          git diff --check "$PR_BASE_SHA" HEAD
+
+          git show "$PR_BASE_SHA:packages/kodac-runtime/src/index.ts" > "$RUNNER_TEMP/k6-r5-index-base"
+          base_size="$(wc -c < "$RUNNER_TEMP/k6-r5-index-base")"
+          head -c "$base_size" packages/kodac-runtime/src/index.ts | cmp - "$RUNNER_TEMP/k6-r5-index-base"
+          tail -c "+$((base_size + 1))" packages/kodac-runtime/src/index.ts > "$RUNNER_TEMP/k6-r5-index-suffix"
+          cat > "$RUNNER_TEMP/k6-r5-index-expected-suffix" <<'SUFFIX'
+          export * from "./evidence-router/strategy-proposal-contracts.ts"
+          export * from "./evidence-router/strategy-proposal.ts"
+          SUFFIX
+          cmp "$RUNNER_TEMP/k6-r5-index-suffix" "$RUNNER_TEMP/k6-r5-index-expected-suffix"
+
+          action_key="u""ses"
+          mapfile -t action_lines < <(grep -nE "(^|[^[:alnum:]_])${action_key}([^[:alnum:]_]|$)" .github/workflows/k6-r5-bounded-strategy-qualification.yml | cut -d: -f2-)
+          expected_actions=(
+            "      - ${action_key}: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4"
+            "      - ${action_key}: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4"
+            "      - ${action_key}: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6"
+          )
+          test "${#action_lines[@]}" -eq "${#expected_actions[@]}"
+          for i in "${!expected_actions[@]}"; do test "${action_lines[$i]}" = "${expected_actions[$i]}"; done
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.18.0"
+
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.12.1"
+          enable-cache: false
+
+      - name: Sync locked validation environment outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r5-schema-venv"
+          uv sync --frozen --dev
+
+      - name: Validate R5 schema/runtime parity and closed vocabularies
+        shell: bash
+        run: |
+          set -euo pipefail
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r5-schema-venv"
+          uv run --frozen --no-sync python <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          path = Path("schema/k6-r5-bounded-strategy-proposal.schema.json")
+          schema = json.loads(path.read_text())
+          Draft202012Validator.check_schema(schema)
+          assert schema["$id"] == "https://kodac.dev/schema/k6-r5-bounded-strategy-proposal.schema.json"
+          assert schema["$ref"] == "#/$defs/qualificationResult"
+          assert "does not" in str(schema.get("$comment", "")).lower()
+          for value in schema.get("$defs", {}).values():
+              if isinstance(value, dict) and value.get("type") == "object":
+                  assert value.get("additionalProperties") is False
+          PY
+          node --experimental-strip-types --test --test-name-pattern="schema/runtime parity|closed vocabularies" packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts
+
+      - name: Recompute R5 fixture strategy, trial-set, and qualification corpus identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --experimental-strip-types --test --test-name-pattern="fixed qualification corpus identity|fixture strategy identities|trial-set identity" packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts
+
+      - name: Prove forbidden R5 authority surfaces and live ruleset
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          node --experimental-vm-modules --input-type=module <<'NODE'
+          import fs from "node:fs"
+          import path from "node:path"
+          import vm from "node:vm"
+          import { stripTypeScriptTypes } from "node:module"
+
+          const root = "packages/kodac-runtime/src/evidence-router"
+          const expectedRuntimeImports = new Map([
+            ["strategy-proposal.ts", ["node:crypto", "node:util", "./contracts.ts", "./strategy-proposal-contracts.ts"]],
+            ["contracts.ts", ["node:crypto", "node:util"]],
+            ["strategy-proposal-contracts.ts", []],
+          ])
+          const expectedImportPrefixes = new Map([
+            ["strategy-proposal.ts", [
+              'import { createHash } from "node:crypto"',
+              'import { types as utilTypes } from "node:util"',
+              "",
+              "import {",
+              "  K6_R1_LIMITS,",
+              "  canonicalK6R1Json,",
+              "  validateK6R1RouteRequest,",
+              '} from "./contracts.ts"',
+              "import {",
+              "  K6_R5_LIMITS,",
+              "  K6_R5_PRIVACY_CLASSES,",
+              "  K6_R5_QUALIFICATION_OUTCOMES,",
+              "  K6_R5_QUALIFICATION_RESULT_VERSION,",
+              "  K6_R5_STRATEGY_EVIDENCE_VERSION,",
+              "  K6_R5_STRATEGY_KIND,",
+              "  K6_R5_STRATEGY_VERSION,",
+              "  type K6R5PrivacyClass,",
+              "  type K6R5QualificationOutcome,",
+              "  type K6R5QualificationResult,",
+              "  type K6R5QualificationResultIdentityInput,",
+              "  type K6R5Strategy,",
+              "  type K6R5StrategyEvidence,",
+              "  type K6R5StrategyEvidenceIdentityInput,",
+              "  type K6R5StrategyIdentityInput,",
+              "  type K6R5StrategyScope,",
+              '} from "./strategy-proposal-contracts.ts"',
+              "",
+              "",
+            ].join("\n")],
+            ["contracts.ts", [
+              'import { createHash } from "node:crypto"',
+              'import { types as utilTypes } from "node:util"',
+              "",
+              "",
+            ].join("\n")],
+            ["strategy-proposal-contracts.ts", ""],
+          ])
+          const allowedBuiltins = new Set(["node:crypto", "node:util"])
+          const sources = new Map()
+
+          for (const [file, expected] of expectedRuntimeImports) {
+            const source = fs.readFileSync(path.join(root, file), "utf8")
+            sources.set(file, source)
+
+            const expectedPrefix = expectedImportPrefixes.get(file)
+            if (typeof expectedPrefix !== "string" || !source.startsWith(expectedPrefix)) {
+              throw new Error(`runtime import declaration form drift: ${file}`)
+            }
+
+            let stripped
+            try {
+              stripped = stripTypeScriptTypes(source, { mode: "strip" })
+            } catch {
+              throw new Error(`TypeScript stripping failed for ${file}`)
+            }
+
+            let parsed
+            try {
+              parsed = new vm.SourceTextModule(stripped, { identifier: file })
+            } catch {
+              throw new Error(`module parsing failed for ${file}`)
+            }
+
+            const actual = [...parsed.dependencySpecifiers]
+            if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+              throw new Error(`runtime dependency allowlist drift: ${file}`)
+            }
+
+            const importKeywordCount = (source.match(/\bimport\b/g) ?? []).length
+            if (importKeywordCount !== actual.length) {
+              throw new Error(`dynamic, type-only, side-effect, or unrecognized import form forbidden: ${file}`)
+            }
+
+            for (const specifier of actual) {
+              if (specifier.startsWith("./")) {
+                const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(file), specifier))
+                if (!expectedRuntimeImports.has(resolved)) {
+                  throw new Error(`local runtime dependency escaped closure: ${file} -> ${specifier}`)
+                }
+              } else if (!allowedBuiltins.has(specifier)) {
+                throw new Error(`external runtime dependency forbidden: ${file} -> ${specifier}`)
+              }
+            }
+          }
+
+          const r5Contracts = sources.get("strategy-proposal-contracts.ts")
+          if ((r5Contracts.match(/\bimport\b/g) ?? []).length !== 0) {
+            throw new Error("R5 contracts gained imports")
+          }
+
+          const combined = [...sources.values()].join("\n")
+          for (const pattern of [
+            /\bExecutionGateway\b/i, /child_process/i, /node:fs/i, /node:path/i, /node:http/i, /node:https/i,
+            /node:net/i, /node:tls/i, /\bfetch\s*\(/, /\bprocess\.(?:env|cwd|chdir)/, /Math\.random/,
+            /Date\.now/, /new\s+Date\s*\(/, /\b(?:exec|spawn|fork)\s*\(/, /localeCompare/, /Intl\./,
+            /telemetry/i, /database/i, /automatic.?promotion/i
+          ]) {
+            if (pattern.test(combined)) throw new Error(`forbidden R5 authority surface: ${pattern}`)
+          }
+          NODE
+
+          python3 - <<'PY'
+          from datetime import datetime
+          import json
+          import os
+          import urllib.request
+
+          def need(condition, label):
+              if not condition:
+                  raise SystemExit(f"K6-R5 Stage B ruleset proof failed: {label}")
+
+          def instant(value):
+              need(isinstance(value, str) and bool(value), "ruleset timestamp missing")
+              normalized = value[:-1] + "+00:00" if value.endswith("Z") else value
+              try:
+                  parsed = datetime.fromisoformat(normalized)
+              except ValueError as exc:
+                  raise SystemExit("K6-R5 Stage B ruleset proof failed: ruleset timestamp invalid") from exc
+              need(parsed.tzinfo is not None and parsed.utcoffset() is not None, "ruleset timestamp lacks timezone")
+              return parsed
+
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  raise SystemExit("K6-R5 Stage B ruleset proof failed: GitHub API redirect forbidden")
+
+          token = os.environ["GH_TOKEN"]
+          request = urllib.request.Request(
+              "https://api.github.com/repos/TheHalfMoon/Kodac/rulesets/20707483",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {token}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "kodac-k6-r5-bounded-strategy-qualification",
+              },
+          )
+          opener = urllib.request.build_opener(NoRedirect())
+          with opener.open(request, timeout=20) as response:
+              ruleset = json.load(response)
+
+          need(ruleset["id"] == 20707483, "ruleset id drift")
+          if "node_id" in ruleset:
+              need(ruleset["node_id"] == "RRS_lACqUmVwb3NpdG9yec5NVN5LzgE7-Js", "ruleset node id drift")
+          need(instant(ruleset["updated_at"]) == instant("2026-08-11T21:30:21.316+03:00"), "ruleset timestamp drift")
+          need(ruleset["name"] == "Kodac canonical main protection v1", "ruleset name drift")
+          need(ruleset["target"] == "branch", "ruleset target drift")
+          need(ruleset["enforcement"] == "active", "ruleset enforcement drift")
+          if "source_type" in ruleset:
+              need(ruleset["source_type"] == "Repository", "ruleset source type drift")
+          if "source" in ruleset:
+              need(ruleset["source"] == "TheHalfMoon/Kodac", "ruleset source drift")
+          need(
+              ruleset["conditions"]["ref_name"] == {"exclude": [], "include": ["refs/heads/main"]},
+              "ruleset ref condition drift",
+          )
+
+          bypass_actors_visible = "bypass_actors" in ruleset
+          current_user_bypass_visible = "current_user_can_bypass" in ruleset
+          if bypass_actors_visible:
+              need(ruleset["bypass_actors"] == [], "visible bypass actors are non-canonical")
+          if current_user_bypass_visible:
+              need(ruleset["current_user_can_bypass"] == "never", "visible current-user bypass is non-canonical")
+
+          need(
+              [rule["type"] for rule in ruleset["rules"]] == [
+                  "deletion",
+                  "non_fast_forward",
+                  "pull_request",
+                  "required_status_checks",
+              ],
+              "ruleset rule ordering drift",
+          )
+          pr_params = ruleset["rules"][2]["parameters"]
+          need(
+              pr_params == {
+                  "required_approving_review_count": 0,
+                  "dismiss_stale_reviews_on_push": False,
+                  "required_reviewers": [],
+                  "require_code_owner_review": False,
+                  "require_last_push_approval": False,
+                  "require_extra_approval_for_unattributed_changes": True,
+                  "required_review_thread_resolution": True,
+                  "allowed_merge_methods": ["merge", "squash", "rebase"],
+              },
+              "pull-request rule parameters drift",
+          )
+          status_params = ruleset["rules"][3]["parameters"]
+          need(status_params["strict_required_status_checks_policy"] is True, "strict status policy disabled")
+          need(status_params["do_not_enforce_on_create"] is False, "status checks not enforced on create")
+          need(
+              status_params["required_status_checks"] == [
+                  {"context": "provenance", "integration_id": 15368},
+                  {"context": "legacy-tests", "integration_id": 15368},
+                  {"context": "k2-runtime-gate", "integration_id": 15368},
+              ],
+              "required status checks drift",
+          )
+
+          visibility = (
+              "AVAILABLE"
+              if bypass_actors_visible and current_user_bypass_visible
+              else "UNAVAILABLE_UNDER_ACTIONS_TOKEN"
+          )
+          print(
+              json.dumps(
+                  {
+                      "bypass_state_visibility": visibility,
+                      "external_owner_no_bypass_proof_required": True,
+                      "ruleset_id": 20707483,
+                  },
+                  sort_keys=True,
+                  separators=(",", ":"),
+              )
+          )
+          PY
+      - name: Install integrity-locked TypeScript validation tooling outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/k6-r5-typescript"
+          mkdir -p -- "$tool_dir"
+          cat > "$tool_dir/package.json" <<'JSON'
+          {"name":"k6-r5-typescript-validation","version":"1.0.0","private":true,"dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}}
+          JSON
+          cat > "$tool_dir/package-lock.json" <<'JSON'
+          {
+            "name":"k6-r5-typescript-validation","version":"1.0.0","lockfileVersion":3,"requires":true,
+            "packages":{
+              "":{"name":"k6-r5-typescript-validation","version":"1.0.0","dependencies":{"@types/node":"24.3.0","typescript":"5.9.3"}},
+              "node_modules/@types/node":{"version":"24.3.0","resolved":"https://registry.npmjs.org/@types/node/-/node-24.3.0.tgz","integrity":"sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==","dependencies":{"undici-types":"~7.10.0"}},
+              "node_modules/typescript":{"version":"5.9.3","resolved":"https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz","integrity":"sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==","bin":{"tsc":"bin/tsc","tsserver":"bin/tsserver"},"engines":{"node":">=14.17"}},
+              "node_modules/undici-types":{"version":"7.10.0","resolved":"https://registry.npmjs.org/undici-types/-/undici-types-7.10.0.tgz","integrity":"sha512-t5Fy/nfn+14LuOc2KNYg75vZqClpAiqscVvMygNnlsHBFpSXdJaYtXMcdNLpl/Qvc3P2cB3s6lOV51nqsFq4ag=="}
+            }
+          }
+          JSON
+          npm ci --prefix "$tool_dir" --ignore-scripts --no-audit --no-fund
+
+      - name: Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$RUNNER_TEMP/k6-r5-typescript/node_modules/typescript/bin/tsc" -p packages/kodac-runtime/tsconfig.json --noEmit --typeRoots "$RUNNER_TEMP/k6-r5-typescript/node_modules/@types"
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts
+          node --experimental-strip-types --check packages/kodac-runtime/src/evidence-router/strategy-proposal.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r5-bounded-strategy-proposal.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r4-privacy-governed-outcome-memory.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r2-deterministic-route-plan.test.ts
+          node --experimental-strip-types --test packages/kodac-runtime/test/k6-r1-model-provider-route-eligibility.test.ts
+          (cd packages/kodac-runtime && npm test)
+          export UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/k6-r5-schema-venv"
+          uv run --frozen --no-sync pytest -p no:cacheprovider
+          uv run --frozen --no-sync ruff check --no-cache .
+          uv run --frozen --no-sync python tools/validate_provenance.py
+
+      - name: Remove ephemeral TypeScript validation tooling
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf -- "$RUNNER_TEMP/k6-r5-typescript"
+
+      - name: Attest checkout unchanged after K6-R5 validation
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --porcelain=v1 -z --untracked-files=all --ignored=matching > "$RUNNER_TEMP/k6-r5-status-after"
+          git diff --binary HEAD -- > "$RUNNER_TEMP/k6-r5-diff-after"
+          cmp "$RUNNER_TEMP/k6-r5-status-before" "$RUNNER_TEMP/k6-r5-status-after"
+          cmp "$RUNNER_TEMP/k6-r5-diff-before" "$RUNNER_TEMP/k6-r5-diff-after"
+          test ! -s "$RUNNER_TEMP/k6-r5-status-after"
+          test ! -s "$RUNNER_TEMP/k6-r5-diff-after"
