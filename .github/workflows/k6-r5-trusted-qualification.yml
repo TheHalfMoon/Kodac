@@ -74,9 +74,25 @@ jobs:
 
           TRUSTED_REPAIR_PR_NUMBER = 228
           TRUSTED_REPAIR_BRANCH = "ci/k6-r5-trusted-qualification-observability-repair"
-          TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
-          STAGE_B_BRANCH = "feat/k6-r5-bounded-strategy-proposal"
+          TRUSTED_REPAIR_HEAD_SHA = "e7c0c09d8f053b38b97b5570c15fecbc0bbff052"
+          TRUSTED_REPAIR_MERGE_SHA = "0c151b3db8ab1487c5fcf1553060b4743ede155d"
+          TRUSTED_REPAIR_MERGE_TREE = "dbd3a571ebc4e4adaf91c911dfa5763fd7636039"
+          TRUSTED_REPAIR_WORKFLOW_BLOB = "9abba1ba237609908ad33afa2e9968e32c64a65c"
 
+          PIN_AUTH_PR_NUMBER = 232
+          PIN_AUTH_BRANCH = "docs/k6-r5-stage-b-split-proof-pin-amendment"
+          PIN_AUTH_HEAD_SHA = "328b602dbc86636bfa83da3e219ed010ddbc9cf1"
+          PIN_AUTH_MERGE_SHA = "2d4393fd08329507385fe06d90c3ddedff77bad9"
+          PIN_AUTH_MERGE_TREE = "dff0d45e689dd211bc6aff8840b6d38c10888e9c"
+          PIN_AUTH_PATH = "docs/planning/KODAC_K6_R5_STAGE_B_SPLIT_PROOF_PIN_AMENDMENT_AUTHORIZATION_2026-08-27.md"
+          PIN_AUTH_BLOB = "3488478717e4b5d9163e786395ec04676c259657"
+
+          PIN_REPAIR_PR_NUMBER = 0
+          PIN_REPAIR_BRANCH = "ci/k6-r5-stage-b-split-proof-pin-repair"
+          TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
+
+          STAGE_B_PR_NUMBER = 226
+          STAGE_B_BRANCH = "feat/k6-r5-bounded-strategy-proposal"
           STAGE_B_WORKFLOW_PATH = ".github/workflows/k6-r5-bounded-strategy-qualification.yml"
           STAGE_B_SCHEMA_PATH = "schema/k6-r5-bounded-strategy-proposal.schema.json"
           STAGE_B_CONTRACTS_PATH = "packages/kodac-runtime/src/evidence-router/strategy-proposal-contracts.ts"
@@ -118,7 +134,7 @@ jobs:
               "Sync locked validation environment outside the checkout": "288ae30bbb3ccc1c71de1a69bbc5d0f899237dadd71b7c66dba026edcf6323a3",
               "Validate R5 schema/runtime parity and closed vocabularies": "e6760c1cfe96344a4429ba1f8a9e4deaab4fb3025c29646a96bad9346eb95082",
               "Recompute R5 fixture strategy, trial-set, and qualification corpus identities": "1a53aaa2bd8335c26dcde5a0c489b41731ab5a8e1f69dfe08edc7617161b6e41",
-              "Prove forbidden R5 authority surfaces and live ruleset": "ea87cea4795f910e95c84beaffe3184c38ec1926289358225aaca276768a1d2c",
+              "Prove forbidden R5 authority surfaces and live ruleset": "b3ca1a533889b0c7feed3806a50466f2ccb72a514e3ae129adb4c47a85c9f726",
               "Install integrity-locked TypeScript validation tooling outside the checkout": "4b8ee02309647b7e4f023e874574f5c971573a4a8336daa7b972f7bf3ec0b125",
               "Run strict TypeScript, focused R5/adversarial/predecessor tests, full runtime, Python, Ruff, and provenance gates": "046f5bd1ec60241cd04d92b911ebe27f52fd659f6cf8aad353532b6a01f053c9",
               "Remove ephemeral TypeScript validation tooling": "7d7717cbae28f3c319b74d96168c76464c8e5064e8aca1827b919081cafbe748",
@@ -202,9 +218,6 @@ jobs:
           def github_expression(body: str) -> str:
               return "$" + "{{ " + body + " }}"
 
-          # The trusted workflow is qualified by exact-head external review and protected-main
-          # governance before merge. Once canonical, this base-controlled file is the trust
-          # anchor; it intentionally does not attempt circular self-authentication.
           repository = event_value("EVENT_REPOSITORY")
           pr_number = event_value("EVENT_PR_NUMBER")
           base_ref = event_value("EVENT_BASE_REF")
@@ -216,7 +229,7 @@ jobs:
 
           require(TOKEN != "", "GitHub token unavailable")
           require(repository == REPOSITORY, "repository mismatch")
-          require(pr_number.isdigit() and int(pr_number) > 0, "PR number invalid")
+          require(pr_number.isdigit() and int(pr_number) == STAGE_B_PR_NUMBER, "Stage B PR identity mismatch")
           require(base_ref == "main", "base branch mismatch")
           require(head_ref == STAGE_B_BRANCH, "candidate branch mismatch")
           require(head_repository == REPOSITORY, "candidate repository mismatch")
@@ -224,14 +237,17 @@ jobs:
           require(base_sha != head_sha, "base/head identity collision")
           require(workflow_sha == base_sha, "workflow did not execute from protected base")
 
-          live_pr = api_json(f"/repos/{REPOSITORY}/pulls/{int(pr_number)}")
+          live_pr = api_json(f"/repos/{REPOSITORY}/pulls/{STAGE_B_PR_NUMBER}")
           require(
-              live_pr.get("state") == "open"
+              live_pr.get("number") == STAGE_B_PR_NUMBER
+              and live_pr.get("state") == "open"
               and live_pr.get("draft") is False
               and live_pr.get("head", {}).get("sha") == head_sha
               and live_pr.get("head", {}).get("ref") == STAGE_B_BRANCH
-              and live_pr.get("base", {}).get("ref") == "main",
-              "live PR identity mismatch",
+              and live_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY
+              and live_pr.get("base", {}).get("ref") == "main"
+              and live_pr.get("base", {}).get("sha") == base_sha,
+              "live Stage B PR identity mismatch",
           )
           live_main = api_json(f"/repos/{REPOSITORY}/git/ref/heads/main").get("object", {}).get("sha")
           require(live_main == base_sha, "protected main moved during qualification")
@@ -308,51 +324,132 @@ jobs:
           require(file_at(base_sha, REPAIR_AUTH_PATH)[1] == REPAIR_AUTH_BLOB, "repair authorization not preserved")
           require(file_at(REPAIR_AUTH_MERGE_SHA, TRUSTED_WORKFLOW_PATH)[1] == STAGE_A_TRUSTED_WORKFLOW_BLOB, "pre-repair trusted workflow drift")
 
-          repair_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{base_sha}")
-          repair_parents = repair_merge.get("parents", [])
+          trusted_repair_pr = api_json(f"/repos/{REPOSITORY}/pulls/{TRUSTED_REPAIR_PR_NUMBER}")
           require(
-              repair_merge.get("verification", {}).get("verified") is True
-              and repair_merge.get("verification", {}).get("reason") == "valid"
-              and len(repair_parents) == 2
-              and repair_parents[0].get("sha") == REPAIR_AUTH_MERGE_SHA,
-              "trusted repair merge identity invalid",
-          )
-          repair_head_sha = repair_parents[1].get("sha")
-          require(isinstance(repair_head_sha, str) and SHA_RE.fullmatch(repair_head_sha) is not None, "trusted repair head unavailable")
-          repair_head_commit = api_json(f"/repos/{REPOSITORY}/git/commits/{repair_head_sha}")
-          require(repair_merge.get("tree", {}).get("sha") == repair_head_commit.get("tree", {}).get("sha"), "trusted repair merge tree mismatch")
-
-          repair_pr = api_json(f"/repos/{REPOSITORY}/pulls/{TRUSTED_REPAIR_PR_NUMBER}")
-          require(
-              repair_pr.get("merged") is True
-              and repair_pr.get("base", {}).get("sha") == REPAIR_AUTH_MERGE_SHA
-              and repair_pr.get("head", {}).get("sha") == repair_head_sha
-              and repair_pr.get("head", {}).get("ref") == TRUSTED_REPAIR_BRANCH
-              and repair_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY
-              and repair_pr.get("changed_files") == 1
-              and repair_pr.get("merge_commit_sha") == base_sha,
+              trusted_repair_pr.get("merged") is True
+              and trusted_repair_pr.get("base", {}).get("sha") == REPAIR_AUTH_MERGE_SHA
+              and trusted_repair_pr.get("head", {}).get("sha") == TRUSTED_REPAIR_HEAD_SHA
+              and trusted_repair_pr.get("head", {}).get("ref") == TRUSTED_REPAIR_BRANCH
+              and trusted_repair_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY
+              and trusted_repair_pr.get("changed_files") == 1
+              and trusted_repair_pr.get("merge_commit_sha") == TRUSTED_REPAIR_MERGE_SHA,
               "trusted repair PR identity invalid",
           )
-          repair_compare = compare(REPAIR_AUTH_MERGE_SHA, repair_head_sha)
-          repair_files = repair_compare.get("files", [])
+          trusted_repair_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{TRUSTED_REPAIR_MERGE_SHA}")
+          trusted_repair_parents = trusted_repair_merge.get("parents", [])
+          trusted_repair_head = api_json(f"/repos/{REPOSITORY}/git/commits/{TRUSTED_REPAIR_HEAD_SHA}")
           require(
-              repair_compare.get("merge_base_commit", {}).get("sha") == REPAIR_AUTH_MERGE_SHA
-              and repair_compare.get("behind_by") == 0
-              and repair_compare.get("ahead_by", 0) > 0
-              and len(repair_files) == 1
-              and repair_files[0].get("filename") == TRUSTED_WORKFLOW_PATH
-              and repair_files[0].get("status") == "modified"
-              and repair_files[0].get("previous_filename") in (None, ""),
+              trusted_repair_merge.get("tree", {}).get("sha") == TRUSTED_REPAIR_MERGE_TREE
+              and trusted_repair_merge.get("tree", {}).get("sha") == trusted_repair_head.get("tree", {}).get("sha")
+              and trusted_repair_merge.get("verification", {}).get("verified") is True
+              and trusted_repair_merge.get("verification", {}).get("reason") == "valid"
+              and len(trusted_repair_parents) == 2
+              and trusted_repair_parents[0].get("sha") == REPAIR_AUTH_MERGE_SHA
+              and trusted_repair_parents[1].get("sha") == TRUSTED_REPAIR_HEAD_SHA,
+              "trusted repair merge identity invalid",
+          )
+          trusted_repair_compare = compare(REPAIR_AUTH_MERGE_SHA, TRUSTED_REPAIR_HEAD_SHA)
+          trusted_repair_files = trusted_repair_compare.get("files", [])
+          require(
+              trusted_repair_compare.get("merge_base_commit", {}).get("sha") == REPAIR_AUTH_MERGE_SHA
+              and trusted_repair_compare.get("behind_by") == 0
+              and trusted_repair_compare.get("ahead_by", 0) > 0
+              and len(trusted_repair_files) == 1
+              and trusted_repair_files[0].get("filename") == TRUSTED_WORKFLOW_PATH
+              and trusted_repair_files[0].get("status") == "modified"
+              and trusted_repair_files[0].get("previous_filename") in (None, "")
+              and trusted_repair_files[0].get("sha") == TRUSTED_REPAIR_WORKFLOW_BLOB,
               "trusted repair scope invalid",
           )
-          base_workflow_text, base_workflow_blob = file_at(base_sha, TRUSTED_WORKFLOW_PATH)
-          repair_head_text, repair_head_blob = file_at(repair_head_sha, TRUSTED_WORKFLOW_PATH)
+          require(file_at(TRUSTED_REPAIR_HEAD_SHA, TRUSTED_WORKFLOW_PATH)[1] == TRUSTED_REPAIR_WORKFLOW_BLOB, "trusted repair head workflow blob drift")
+          require(file_at(TRUSTED_REPAIR_MERGE_SHA, TRUSTED_WORKFLOW_PATH)[1] == TRUSTED_REPAIR_WORKFLOW_BLOB, "trusted repair merge workflow blob drift")
+
+          pin_auth_pr = api_json(f"/repos/{REPOSITORY}/pulls/{PIN_AUTH_PR_NUMBER}")
           require(
-              base_workflow_text == repair_head_text
-              and base_workflow_blob == repair_head_blob
-              and repair_files[0].get("sha") == base_workflow_blob
-              and base_workflow_blob != STAGE_A_TRUSTED_WORKFLOW_BLOB,
-              "trusted repair workflow identity invalid",
+              pin_auth_pr.get("merged") is True
+              and pin_auth_pr.get("base", {}).get("sha") == TRUSTED_REPAIR_MERGE_SHA
+              and pin_auth_pr.get("head", {}).get("sha") == PIN_AUTH_HEAD_SHA
+              and pin_auth_pr.get("head", {}).get("ref") == PIN_AUTH_BRANCH
+              and pin_auth_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY
+              and pin_auth_pr.get("changed_files") == 1
+              and pin_auth_pr.get("merge_commit_sha") == PIN_AUTH_MERGE_SHA,
+              "pin authorization PR identity invalid",
+          )
+          pin_auth_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{PIN_AUTH_MERGE_SHA}")
+          pin_auth_parents = pin_auth_merge.get("parents", [])
+          pin_auth_head = api_json(f"/repos/{REPOSITORY}/git/commits/{PIN_AUTH_HEAD_SHA}")
+          require(
+              pin_auth_merge.get("tree", {}).get("sha") == PIN_AUTH_MERGE_TREE
+              and pin_auth_merge.get("tree", {}).get("sha") == pin_auth_head.get("tree", {}).get("sha")
+              and pin_auth_merge.get("verification", {}).get("verified") is True
+              and pin_auth_merge.get("verification", {}).get("reason") == "valid"
+              and len(pin_auth_parents) == 2
+              and pin_auth_parents[0].get("sha") == TRUSTED_REPAIR_MERGE_SHA
+              and pin_auth_parents[1].get("sha") == PIN_AUTH_HEAD_SHA,
+              "pin authorization merge identity invalid",
+          )
+          pin_auth_compare = compare(TRUSTED_REPAIR_MERGE_SHA, PIN_AUTH_HEAD_SHA)
+          pin_auth_files = pin_auth_compare.get("files", [])
+          require(
+              pin_auth_compare.get("merge_base_commit", {}).get("sha") == TRUSTED_REPAIR_MERGE_SHA
+              and pin_auth_compare.get("behind_by") == 0
+              and pin_auth_compare.get("ahead_by", 0) > 0
+              and len(pin_auth_files) == 1
+              and pin_auth_files[0].get("filename") == PIN_AUTH_PATH
+              and pin_auth_files[0].get("status") == "added"
+              and pin_auth_files[0].get("previous_filename") in (None, "")
+              and pin_auth_files[0].get("sha") == PIN_AUTH_BLOB,
+              "pin authorization scope invalid",
+          )
+          require(file_at(PIN_AUTH_HEAD_SHA, PIN_AUTH_PATH)[1] == PIN_AUTH_BLOB, "pin authorization head blob drift")
+          require(file_at(PIN_AUTH_MERGE_SHA, PIN_AUTH_PATH)[1] == PIN_AUTH_BLOB, "pin authorization merge blob drift")
+          require(file_at(PIN_AUTH_MERGE_SHA, TRUSTED_WORKFLOW_PATH)[1] == TRUSTED_REPAIR_WORKFLOW_BLOB, "trusted workflow drift before Unit B")
+
+          require(PIN_REPAIR_PR_NUMBER > 0, "Unit B PR registration unavailable")
+          pin_repair_pr = api_json(f"/repos/{REPOSITORY}/pulls/{PIN_REPAIR_PR_NUMBER}")
+          require(
+              pin_repair_pr.get("merged") is True
+              and pin_repair_pr.get("base", {}).get("sha") == PIN_AUTH_MERGE_SHA
+              and pin_repair_pr.get("head", {}).get("ref") == PIN_REPAIR_BRANCH
+              and pin_repair_pr.get("head", {}).get("repo", {}).get("full_name") == REPOSITORY
+              and pin_repair_pr.get("changed_files") == 1
+              and pin_repair_pr.get("merge_commit_sha") == base_sha,
+              "Unit B repair PR identity invalid",
+          )
+          pin_repair_head_sha = pin_repair_pr.get("head", {}).get("sha")
+          require(isinstance(pin_repair_head_sha, str) and SHA_RE.fullmatch(pin_repair_head_sha) is not None, "Unit B repair head unavailable")
+          pin_repair_merge = api_json(f"/repos/{REPOSITORY}/git/commits/{base_sha}")
+          pin_repair_parents = pin_repair_merge.get("parents", [])
+          pin_repair_head = api_json(f"/repos/{REPOSITORY}/git/commits/{pin_repair_head_sha}")
+          require(
+              pin_repair_merge.get("verification", {}).get("verified") is True
+              and pin_repair_merge.get("verification", {}).get("reason") == "valid"
+              and len(pin_repair_parents) == 2
+              and pin_repair_parents[0].get("sha") == PIN_AUTH_MERGE_SHA
+              and pin_repair_parents[1].get("sha") == pin_repair_head_sha
+              and pin_repair_merge.get("tree", {}).get("sha") == pin_repair_head.get("tree", {}).get("sha"),
+              "Unit B repair merge identity invalid",
+          )
+          pin_repair_compare = compare(PIN_AUTH_MERGE_SHA, pin_repair_head_sha)
+          pin_repair_files = pin_repair_compare.get("files", [])
+          require(
+              pin_repair_compare.get("merge_base_commit", {}).get("sha") == PIN_AUTH_MERGE_SHA
+              and pin_repair_compare.get("behind_by") == 0
+              and pin_repair_compare.get("ahead_by", 0) > 0
+              and len(pin_repair_files) == 1
+              and pin_repair_files[0].get("filename") == TRUSTED_WORKFLOW_PATH
+              and pin_repair_files[0].get("status") == "modified"
+              and pin_repair_files[0].get("previous_filename") in (None, ""),
+              "Unit B repair scope invalid",
+          )
+          base_workflow_text, base_workflow_blob = file_at(base_sha, TRUSTED_WORKFLOW_PATH)
+          pin_repair_head_text, pin_repair_head_blob = file_at(pin_repair_head_sha, TRUSTED_WORKFLOW_PATH)
+          require(
+              base_workflow_text == pin_repair_head_text
+              and base_workflow_blob == pin_repair_head_blob
+              and pin_repair_files[0].get("sha") == base_workflow_blob
+              and base_workflow_blob != TRUSTED_REPAIR_WORKFLOW_BLOB,
+              "Unit B repair workflow identity invalid",
           )
 
           for path, expected_blob in PREDECESSOR_BLOBS.items():
@@ -612,12 +709,17 @@ jobs:
           print(
               json.dumps(
                   {
-                      "version": "kodac-k6-r5-trusted-inspector-proof-v3",
+                      "version": "kodac-k6-r5-trusted-inspector-proof-v4",
                       "proof_model": "protected-base-plus-external-review-and-owner-proof-v1",
                       "base_sha": base_sha,
                       "head_sha": head_sha,
+                      "stage_b_pr": STAGE_B_PR_NUMBER,
                       "trusted_repair_pr": TRUSTED_REPAIR_PR_NUMBER,
-                      "trusted_repair_head_sha": repair_head_sha,
+                      "trusted_repair_head_sha": TRUSTED_REPAIR_HEAD_SHA,
+                      "pin_authorization_pr": PIN_AUTH_PR_NUMBER,
+                      "pin_authorization_merge_sha": PIN_AUTH_MERGE_SHA,
+                      "pin_repair_pr": PIN_REPAIR_PR_NUMBER,
+                      "pin_repair_head_sha": pin_repair_head_sha,
                       "trusted_workflow_blob": base_workflow_blob,
                       "candidate_workflow_blob": candidate_workflow_blob,
                       "bypass_state_visibility": (
