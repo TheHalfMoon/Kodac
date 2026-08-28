@@ -546,8 +546,8 @@ export function validateManifestRecord(
   const metrics = parseMetricDefinitions(value.metric_definitions, value.task_family)
   const record: P2R1ManifestRecord = {
     schema_version: P2_R1_MANIFEST_SCHEMA,
-    benchmark_id: value.benchmark_id,
-    benchmark_protocol_version: value.benchmark_protocol_version,
+    benchmark_id: value.benchmark_id as string,
+    benchmark_protocol_version: value.benchmark_protocol_version as string,
     corpus_id: value.corpus_id,
     corpus_digest: value.corpus_digest,
     corpus_role: value.corpus_role,
@@ -572,7 +572,7 @@ export function validateManifestRecord(
     source_provenance: sourceProvenance,
     contamination_status: value.contamination_status,
     metric_definitions: metrics,
-    result_identity: value.result_identity,
+    result_identity: value.result_identity as string,
   }
   if (record.result_identity !== deriveResultIdentity(record)) {
     fail("manifest result_identity does not match canonical evidence-bearing inputs")
