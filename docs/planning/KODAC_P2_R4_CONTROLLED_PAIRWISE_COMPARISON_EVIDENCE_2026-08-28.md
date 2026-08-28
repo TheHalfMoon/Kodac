@@ -11,7 +11,7 @@ PUBLIC SUPERIORITY CLAIMS = NOT AUTHORIZED
 WAIVER = NO
 ```
 
-This record binds the authorized P2-R4 implementation/test parent and its observed machine evidence. It does not self-certify its own future commit, tree, or blob identity, and it does not claim canonical closure before exact-final-head qualification, guarded merge, and post-merge proof.
+This record binds the authorized P2-R4 implementation/test lineage and observed machine/review evidence. It does not self-certify its own future commit, tree, or blob identity, and it does not claim canonical closure before exact-final-head qualification, guarded merge, and post-merge proof.
 
 ## Canonical authority
 
@@ -27,13 +27,22 @@ WAIVER = NO
 
 The implementation remains limited to the canonical authorization and cannot create P2-R5 or broader comparison authority by implication.
 
-## Exact authorized implementation path set
+## Canonical implementation allowlist and exact current candidate path set
 
-The P2-R4 implementation PR may change exactly these paths and no others:
+The canonical authorization permits exactly these path families for the one P2-R4 implementation PR:
+
+```text
+packages/kodac-runtime/bench/p2-r4/**
+packages/kodac-runtime/test/p2-r4-*.test.ts
+docs/planning/KODAC_P2_R4_CONTROLLED_PAIRWISE_COMPARISON_EVIDENCE_2026-08-28.md
+```
+
+After the exact-head review repair described below, the current candidate changes exactly these four paths inside that allowlist:
 
 ```text
 packages/kodac-runtime/bench/p2-r4/comparison.ts
 packages/kodac-runtime/test/p2-r4-comparison.test.ts
+packages/kodac-runtime/test/p2-r4-key-order.test.ts
 docs/planning/KODAC_P2_R4_CONTROLLED_PAIRWISE_COMPARISON_EVIDENCE_2026-08-28.md
 ```
 
@@ -41,7 +50,7 @@ No P2-R1, P2-R2, or P2-R3 bytes are modified by the implementation unit.
 
 ## Self-reference-safe implementation/test parent
 
-The implementation and focused tests were materialized before this evidence record so their exact bytes and machine proof could be bound without making the evidence file recursively claim its own future identity.
+The original implementation and focused test file were materialized before this evidence record so their exact bytes and machine proof could be bound without making the evidence file recursively claim its own future identity.
 
 ```text
 CANONICAL_BASE = 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
@@ -49,14 +58,14 @@ IMPLEMENTATION_COMMIT = 6f3ee3d1cec49234de5ad9a0db6b9206ff6c9bda
 IMPLEMENTATION_TEST_PARENT = 7046d374470c331fb740d9d66860512ba6790589
 IMPLEMENTATION_TEST_PARENT_TREE = 23a037ce82904aa98693123b364f99e80386495d
 IMPLEMENTATION_BLOB = 78c1417e51f1c36989ec7ec700a3424df3b58944
-TEST_BLOB = 844eba6eb456752925f914c732ccfccf2778b050
+ORIGINAL_TEST_BLOB = 844eba6eb456752925f914c732ccfccf2778b050
 PARENT_AHEAD_BY = 2
 PARENT_BEHIND_BY = 0
 ```
 
-At that parent, the base-to-head diff contained exactly the implementation and test paths above. The parent is historical evidence after this file is committed; it is not the final qualification head.
+At that parent, the base-to-head diff contained exactly the implementation and original focused-test paths above. The parent is historical evidence after later evidence/review-repair commits; it is not the final qualification head.
 
-This evidence file intentionally does not encode its own future blob or the future three-path final head/tree. Those values must be captured independently from live GitHub after this commit. Any later repository-byte change invalidates exact-head qualification and requires fresh proof.
+This evidence file intentionally does not encode its own future blob or the future final head/tree. Those values must be captured independently from live GitHub after every candidate-byte change. Any later repository-byte change invalidates exact-head qualification and requires fresh proof.
 
 ## Implemented bounded contract
 
@@ -90,7 +99,15 @@ It does not authorize unequal model/provider/configuration/prompt/environment/bu
 
 ## Focused test evidence
 
-The focused Node test file contains 26 named tests that collectively exercise the authorization's 28 required coverage bullets. Individual test functions intentionally combine closely related hostile-input or negative-space requirements rather than manufacturing one test function per numbered authorization bullet.
+The original focused test file contains 26 named tests. After exact-head semantic review identified that caller object-property insertion-order determinism lacked a dedicated proof, one additional authorized focused test file was added:
+
+```text
+REVIEW_REPAIR_COMMIT = 7a8f5a95162a48e81ebc1f7ed0182313ad2a52b9
+KEY_ORDER_TEST_PATH = packages/kodac-runtime/test/p2-r4-key-order.test.ts
+KEY_ORDER_TEST_BLOB = c15908c3dc4221f92347b97a93b9504fce65baf0
+```
+
+The candidate therefore contains 27 named P2-R4 tests across the two authorized test files. They collectively exercise the authorization's 28 required coverage bullets; individual test functions may combine closely related hostile-input or negative-space requirements.
 
 The focused coverage includes:
 
@@ -101,7 +118,8 @@ The focused coverage includes:
 - exact shared-context and subject-descriptor validation and identity binding;
 - explicit closed direction vocabulary and exact per-metric semantic matching;
 - derived-only `expected_count` and rejection of caller-supplied `expected_count`;
-- duplicate/unknown direction rejection and policy-order determinism;
+- duplicate/unknown direction rejection and direction-array-order determinism;
+- caller object-property insertion-order determinism across reports, summaries, shared context, subjects, and comparison policy, with identical canonical comparison bytes and `comparison_identity`;
 - uncompared metrics without explicit direction;
 - insufficient-evidence null pairwise values with preserved side summaries;
 - finite-subtraction overflow rejection;
@@ -115,7 +133,7 @@ The focused coverage includes:
 
 ## Pre-evidence parent machine proof
 
-The implementation/test parent `7046d374470c331fb740d9d66860512ba6790589` was exercised through PR #244 before this evidence file was added.
+The implementation/test parent `7046d374470c331fb740d9d66860512ba6790589` was exercised through PR #244 before the original evidence file was added.
 
 Governance:
 
@@ -149,7 +167,7 @@ skipped = 4
 todo = 0
 ```
 
-All 26 named P2-R4 focused tests passed in that run.
+All 26 named P2-R4 tests present at that historical parent passed in that run.
 
 The exact synthetic PR merge ref observed by the runtime job was:
 
@@ -163,13 +181,33 @@ with log description:
 Merge 7046d374470c331fb740d9d66860512ba6790589 into 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
 ```
 
-This parent proof establishes that the implementation/test bytes were machine-exercised before evidence materialization. It does not satisfy final exact-head qualification after this evidence commit.
+This parent proof establishes that the original implementation/test bytes were machine-exercised before evidence materialization. It does not satisfy qualification for any later head.
+
+## Exact-head semantic review repair
+
+CodeRabbit performed a substantive review of prior candidate head:
+
+```text
+PR = #244
+REVIEWED_HEAD = e3f7f4ad375e9fb3fe2bfe2281807dea5854931e
+REVIEWED_TREE = 68ed36e8831b0b654496c7b297e61ce676f86f61
+FINDING = required caller object-key-order determinism test missing
+DISPOSITION = VALID / REPAIRED FORWARD
+```
+
+The reviewer found that the implementation itself canonicalized caller objects, but the focused proof did not explicitly rebuild semantically identical caller inputs with different object-property insertion order. Because the canonical authorization requires that proof, the finding was material and the prior head could not be terminal-clean.
+
+The repair adds `packages/kodac-runtime/test/p2-r4-key-order.test.ts`. The test recursively rebuilds the left/right R2 reports, left/right R3 summaries, shared evaluation context, left/right subjects, and comparison policy with reversed object-property insertion order while preserving array order and semantic content. It requires both exact canonical comparison-byte equality and exact `comparison_identity` equality against the canonical-order call.
+
+The repair changes no runtime implementation byte and grants no new semantic or side-effect authority.
+
+All CI and semantic-review evidence tied to `e3f7f4ad375e9fb3fe2bfe2281807dea5854931e` is stale for final qualification after the repair and must not be reused.
 
 ## Final qualification still required
 
-After this record is committed, PR #244 must be qualified again on one frozen exact final head. Before merge, live GitHub must prove all of the following on that same head:
+After this reconciled evidence record is committed, PR #244 must be qualified again on one frozen exact final head. Before merge, live GitHub must prove all of the following on that same head:
 
-1. exactly the three authorized changed paths and all three final blobs;
+1. the complete changed-file set remains inside the exact canonical P2-R4 implementation allowlist and every final changed blob is captured;
 2. `behind_by=0` against protected canonical `main`;
 3. open, non-draft, mergeable PR state;
 4. exact-head governance success with trusted `provenance` and `legacy-tests`;
@@ -185,4 +223,4 @@ If the final head or canonical base moves, all stale exact-head qualification ev
 
 ## Candidate conclusion
 
-The bounded P2-R4 implementation and focused tests exist inside the exact canonical allowlist and have successful pre-evidence parent machine proof. This record itself is only candidate-time evidence. It does not make P2-R4 `CLOSED_CANONICAL`, does not authorize P2-R5, and does not support public superiority claims.
+The bounded P2-R4 implementation and focused tests remain inside the exact canonical allowlist. The valid exact-head key-order finding has been repaired forward without widening runtime semantics. This record itself is only candidate-time evidence. It does not make P2-R4 `CLOSED_CANONICAL`, does not authorize P2-R5, and does not support public superiority claims.
