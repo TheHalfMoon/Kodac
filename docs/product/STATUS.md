@@ -8,7 +8,7 @@ This status notice does not delete, rewrite, validate, or re-adopt those histori
 
 ## Canonical closed milestones
 
-K3, K4, K5, the bounded K6 R1-R5 milestone, P2-R1, and P2-R2 are canonically closed for their exact scopes.
+K3, K4, K5, the bounded K6 R1-R5 milestone, and P2-R1 through P2-R3 are canonically closed for their exact scopes.
 
 ```text
 K3 = CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -31,8 +31,9 @@ K6-R6+ = NOT REQUIRED FOR THIS BOUNDED CLOSEOUT / NOT AUTHORIZED
 
 P2-R1 = CLOSED_CANONICAL
 P2-R2 = CLOSED_CANONICAL
-P2-R3 = AUTHORIZATION CANDIDATE
-P2-R4+ = NOT AUTHORIZED
+P2-R3 = CLOSED_CANONICAL
+P2-R4 = AUTHORIZATION CANDIDATE / IMPLEMENTATION NOT YET EFFECTIVE
+P2-R5+ = NOT AUTHORIZED
 P2 = OPEN
 ```
 
@@ -43,60 +44,74 @@ P2-R1 authorization = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
 P2-R1 implementation = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
 P2-R2 authorization = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de
 P2-R2 implementation = PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
+P2-R3 authorization = PR #241 / d398983a457060dff0b700714d3eebbc4dce8e23
+P2-R3 implementation = PR #242 / 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
 ```
 
-P2-R1 closure established the deterministic canonical benchmark contract plus frozen development/holdout fixture and manifest spine. It did not authorize external execution, evaluator semantics, aggregation, ranking, product integration, persistence, telemetry, learning, release, or superiority claims.
+### P2-R3 canonical closure
 
-P2-R2 closure established the pure in-memory caller-observation runner and immutable report spine. Its immutable proof binds:
+P2-R3 is `CLOSED_CANONICAL` for its exact pure in-memory reducer-policy and task-family-summary scope.
 
 ```text
-QUALIFIED_HEAD = 46f455c21e294d92d2976d4398a26ffdf3f82c96
-QUALIFIED_TREE = d7957e6030a723efbdddc174651fe4da313ff84d
-MERGE = 4a0b2c67dbd707c18395b0898752c111ca6b16a9
-MERGE_PARENT_1 = f2b8d452e93ec207ebe04c9db7d47dc032df20de
-MERGE_PARENT_2 = 46f455c21e294d92d2976d4398a26ffdf3f82c96
+QUALIFIED_HEAD = 6e1b6aa27591e997cbe164fd335e8bee08b11f1c
+QUALIFIED_TREE = 3d040c6ae4b56573d55eb3b8dbecad3e79bdfdc3
+MERGE = 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
+MERGE_PARENT_1 = d398983a457060dff0b700714d3eebbc4dce8e23
+MERGE_PARENT_2 = 6e1b6aa27591e997cbe164fd335e8bee08b11f1c
 MERGE_VERIFICATION = verified / valid
-POST_MERGE_GOVERNANCE = 33180522055 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33180522073 / SUCCESS
+POST_MERGE_GOVERNANCE = 33188625032 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33188625005 / SUCCESS
+RULESET = 20707483 / active / no bypass
 ```
 
-The three canonical P2-R2 blobs match the qualified candidate, and ruleset `20707483` remained active with no bypass. The committed P2-R2 evidence file intentionally remains a historical candidate-time artifact; the later immutable GitHub object/check proof above establishes `P2-R2 = CLOSED_CANONICAL`.
+Canonical P2-R3 blobs:
 
-P2-R2 still does not authorize reducer policy, thresholds, comparison, ranking, external execution, provider/model/evaluator invocation, product integration, persistence, telemetry, learning, release, or superiority claims.
+```text
+packages/kodac-runtime/bench/p2-r3/summary.ts
+  = 1c0c79381ad89ca9051e0d37243a17f85ea19285
+packages/kodac-runtime/test/p2-r3-summary.test.ts
+  = 7abf8b25a90079928d441c376581357f69a9ec7d
+docs/planning/KODAC_P2_R3_TASK_FAMILY_SUMMARY_EVIDENCE_2026-08-28.md
+  = 238ae10cd8c62aa40453574be720213d90c160d4
+```
 
-## P2-R3 authorization candidate
+The committed P2-R3 evidence record intentionally remains a historical candidate-time artifact; immutable later GitHub object/check proof establishes canonical closure.
+
+P2-R3 authorizes only explicit reducers (`ARITHMETIC_MEAN`, `BOOLEAN_TRUE_RATE`), explicit missingness (`REQUIRE_COMPLETE`, `OBSERVED_ONLY_WITH_COVERAGE`), task-family-separated summaries, and deterministic identities. It does not grant comparison, ranking, threshold, promotion, external execution, persistence, product, release, or superiority authority.
+
+## P2-R4 authorization candidate
 
 The next proposed bounded KodacBench slice is:
 
 ```text
-P2-R3 = EXPLICIT REDUCER POLICY + TASK-FAMILY SUMMARY SPINE
-P2-R3 IMPLEMENTATION = AUTHORIZED ONLY AFTER THE EXACT P2-R3 AUTHORIZATION RECORD IS CANONICAL
-P2-R4+ = NOT AUTHORIZED
+P2-R4 = CONTROLLED PAIRWISE COMPARISON OF ALREADY-MATERIALIZED R2/R3 EVIDENCE
+P2-R4 IMPLEMENTATION = AUTHORIZED ONLY AFTER THE EXACT P2-R4 AUTHORIZATION RECORD IS CANONICAL
+P2-R5+ = NOT AUTHORIZED
 GENERAL KODACBENCH = NOT CLOSED
+PUBLIC SUPERIORITY CLAIMS = NOT AUTHORIZED
+WAIVER = NO
 ```
 
 Candidate authority:
 
-- `docs/planning/KODAC_P2_R3_TASK_FAMILY_SUMMARY_AUTHORIZATION_2026-08-28.md`
+- `docs/planning/KODAC_P2_R4_CONTROLLED_PAIRWISE_COMPARISON_AUTHORIZATION_2026-08-28.md`
 
-The proposed R3 implementation consumes one validated P2-R2 report plus an explicit versioned per-metric policy and emits deterministic immutable summaries while preserving task-family separation and exact missing/unavailable coverage.
+The proposed R4 slice is pure, local, deterministic, and in-memory. It may compare exactly two already-materialized benchmark evidence sets only after revalidating and cross-binding their P2-R2 reports and P2-R3 summaries.
 
-The authorized reducer vocabulary is intentionally narrow:
+The pair must prove exact benchmark/protocol/manifest/task topology equality and use one shared ADR-0010 evaluation context identity for both sides. The only controlled dimension intentionally allowed to differ in this slice is each subject's system/version/commit identity; raw artifact/log identities may differ because they identify each side's evidence.
+
+Per-metric direction must be explicit and limited to:
 
 ```text
-ARITHMETIC_MEAN
-BOOLEAN_TRUE_RATE
+HIGHER_IS_BETTER
+LOWER_IS_BETTER
 ```
 
-No reducer may be inferred merely from value type. `ARITHMETIC_MEAN` applies only to finite numeric observed values and preserves the declared input unit. `BOOLEAN_TRUE_RATE` applies only to boolean observed values and exposes numerator/denominator with output unit `ratio_0_1`. Missing/unavailable values are never converted to zero or false.
+R4 may materialize only per-task-family/per-metric left value, right value, and raw `left - right` delta when both sides have sufficient reduced evidence. It may not emit a winner, loser, better/worse verdict, ranking, leaderboard, blended score, threshold, significance claim, promotion decision, or public superiority claim.
 
-The only proposed missingness policies are `REQUIRE_COMPLETE` and `OBSERVED_ONLY_WITH_COVERAGE`; incomplete evidence must remain visible in expected/observed/missing/unavailable counts.
+The proposed slice grants no provider/model/reviewer/evaluator/tool execution, benchmark execution, network/secrets, subprocess/sandbox, dependency, CLI/product integration, P2-R1/R2/R3 mutation, persistence/file output, telemetry, training/learning, routing/promotion, Done Gate expansion, release, or ruleset authority.
 
-P2-R3 explicitly does **not** authorize directionality, pass/fail thresholds, comparison of systems/strategies/models/providers/configurations/reports, weighted or blended scores, cross-task normalization, Pareto dominance, statistical significance, rankings, leaderboards, `best`, `winner`, `superior`, promotion, or public claims.
-
-The proposed slice remains pure/in-memory and denies provider/model/reviewer/evaluator/tool invocation, network/secrets, subprocess/sandbox execution, new dependencies, CLI/product integration, P2-R1/P2-R2 mutation, persistence/file output, telemetry, training/learning, strategy execution/promotion, Done Gate expansion, ruleset bypass, and release authority.
-
-Candidate text does not itself grant implementation authority. Until the exact five-path authorization unit qualifies, merges normally into protected `main`, and passes required post-merge proof, P2-R3 implementation remains not yet effective.
+Candidate text does not itself grant implementation authority. Until the exact five-path authorization unit qualifies on one frozen exact head, merges normally into protected `main`, and passes required post-merge proof, P2-R4 implementation remains not effective.
 
 ## Preserved non-grants
 
@@ -106,11 +121,14 @@ K3-R7+ = NOT AUTHORIZED
 K4-R6+ = NOT AUTHORIZED
 K5-R6+ = NOT AUTHORIZED
 K6-R6+ = NOT AUTHORIZED
-P2-R4+ = NOT AUTHORIZED
+P2-R5+ = NOT AUTHORIZED
 P3-P8 IMPLEMENTATION = NOT AUTHORIZED
 
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT AUTHORIZED
-SYSTEM / STRATEGY / MODEL / PROVIDER / REPORT COMPARISON = NOT AUTHORIZED
+BENCHMARK TASK EXECUTION = NOT AUTHORIZED
+MODEL / PROVIDER / CONFIGURATION / PROMPT / ENVIRONMENT COMPARISON = NOT AUTHORIZED BY R4
+N-WAY RANKING / LEADERBOARD / WINNER / SUPERIORITY = NOT AUTHORIZED
+THRESHOLD / STATISTICAL SIGNIFICANCE / PROMOTION = NOT AUTHORIZED
 ROUTE / FALLBACK / RETRY / STRATEGY EXECUTION = NOT AUTHORIZED
 AUTOMATIC ROUTING ADVANCEMENT / STRATEGY PROMOTION = NOT AUTHORIZED
 TRUST-POLICY MUTATION = NOT AUTHORIZED
@@ -128,7 +146,6 @@ AUTOFIX EXECUTION = NOT AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT AUTHORIZED
 CODE / DONOR / EXTERNAL DATA INTAKE = NOT AUTHORIZED
-UNLISTED REDUCER / THRESHOLD / DIRECTION / RANKING = NOT AUTHORIZED
 PUBLIC LEADERBOARD / GENERAL SUPERIORITY CLAIM = NOT AUTHORIZED
 RULESET CHANGE / BYPASS = NOT AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / PUBLIC VERSION / BRAND LAUNCH = NOT AUTHORIZED
@@ -136,6 +153,6 @@ PUBLIC RELEASE / PACKAGE PUBLICATION / PUBLIC VERSION / BRAND LAUNCH = NOT AUTHO
 
 ## Next engineering boundary
 
-If and only if the exact P2-R3 authorization candidate becomes canonical and its post-merge proof succeeds, the next eligible repository unit is the one bounded P2-R3 implementation PR described by that authorization.
+This exact branch is documentation/governance only. If and only if the P2-R4 authorization candidate becomes canonical and its post-merge proof succeeds, the next eligible repository unit is exactly one bounded P2-R4 implementation PR within the allowlist named by that authorization.
 
 Engineering milestone closure and benchmark infrastructure remain separate from public release, packaging, production-readiness, support, compatibility, and superiority claims.
