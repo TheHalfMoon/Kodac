@@ -87,7 +87,7 @@ jobs:
           PIN_AUTH_PATH = "docs/planning/KODAC_K6_R5_STAGE_B_SPLIT_PROOF_PIN_AMENDMENT_AUTHORIZATION_2026-08-27.md"
           PIN_AUTH_BLOB = "3488478717e4b5d9163e786395ec04676c259657"
 
-          PIN_REPAIR_PR_NUMBER = 0
+          PIN_REPAIR_PR_NUMBER = 233
           PIN_REPAIR_BRANCH = "ci/k6-r5-stage-b-split-proof-pin-repair"
           TRUSTED_WORKFLOW_PATH = ".github/workflows/k6-r5-trusted-qualification.yml"
 
