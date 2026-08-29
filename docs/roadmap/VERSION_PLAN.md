@@ -4,46 +4,43 @@
 
 Kodac engineering milestones and public product versions are separate governance tracks.
 
-This file records the **current version/release boundary**. It reports canonical engineering state; it does not authorize implementation, package publication, release, brand launch, provider/model access, persistence, learning, or side effects.
+This file records the current engineering/version boundary. It does not authorize implementation, package publication, release, brand launch, provider/model access, persistence, learning, benchmark execution, or side effects.
 
 Always read live GitHub truth, root `AGENTS.md`, `docs/roadmap/NEXT.md`, and the exact active authorization before acting.
 
-## Current engineering state
+## Current engineering state on this closeout candidate
 
 ```text
 K0/K1 = CLOSED
 K2 = CLOSED
 K3 = CLOSED FOR CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
-KRI-P0 = CANONICAL PLANNING AUTHORITY
 KRI-R1 THROUGH KRI-R4 = CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
 K4 = CLOSED FOR CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
 K5 = CLOSED FOR CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE
 K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
-
 P2-R1 = CLOSED_CANONICAL
 P2-R2 = CLOSED_CANONICAL
 P2-R3 = CLOSED_CANONICAL
 P2-R4 = CLOSED_CANONICAL
 P2-R5 = CLOSED_CANONICAL
-P2 BOUNDED R1-R5 CLOSEOUT = NOT YET CANONICAL
-P2-R6+ = NOT_AUTHORIZED
+P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL IFF THIS CLOSEOUT MERGE GATE PASSES
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
+P2-R6+ = NOT_AUTHORIZED
 P3-P8 IMPLEMENTATION = NOT_AUTHORIZED
-WAIVER = NO
 ```
 
-P2-R5 canonical closure is anchored by PR #246 authorization merge `f1f33a01a3d5c764ac59a292464322c3c7c7b3de` and PR #247 implementation merge `7e92fece64807c03981091cd825f2c5e848356ce`, with qualified head `7e63cdfb689be15efea14bfe8b1862cccced73a2`, tree `4242fbad9e25d3332460324ac5e8277838ff468c`, verified/valid merge signature, post-merge Governance run `33199492928` SUCCESS, and post-merge K2 runtime run `33199492770` SUCCESS.
+The P2 bounded-closeout authorization is canonical through PR #249 / `cb8315eb9e73f36586d37123fca5fe45c040da2b`. The conditional P2 closure statement above is not canonical closure until the exact six-path closeout candidate qualifies, merges, and completes mandatory post-merge proof.
 
 ## Engineering milestone status is not release status
 
 The following implications are invalid:
 
 ```text
-P2-R1 THROUGH P2-R5 CLOSED_CANONICAL
+P2 BOUNDED R1-R5 CLOSED
+!= P2 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
-!= REAL PROVIDER / MODEL BENCHMARK EXECUTION AUTHORIZED
-!= GLOBAL WINNER / SUPERIORITY CLAIM AUTHORIZED
+!= REAL PROVIDER / MODEL BENCHMARK EXECUTION
 != PUBLIC RELEASE READY
 != PACKAGE PUBLISHABLE
 != PUBLIC VERSION DECLARED
@@ -53,13 +50,23 @@ P2-R1 THROUGH P2-R5 CLOSED_CANONICAL
 != BRAND LAUNCH AUTHORIZED
 ```
 
-The bounded P2 R1-R5 surface remains deterministic and caller-materialized. R4 provides controlled per-metric raw comparison under an exact shared context. R5 provides metric-local direction-aware relations only. Neither grants global aggregation, thresholds, statistics, execution, promotion, persistence, release, or public superiority authority.
+The bounded R1-R5 surface is a deterministic local engineering measurement/evidence spine:
+
+```text
+R1 contract + repository-authored synthetic frozen fixture/manifest spine
+R2 caller-observation validation/report
+R3 explicit reducer/missingness + task-family summaries
+R4 controlled per-metric raw comparison
+R5 metric-local declared-direction relation
+```
+
+None of those slices invokes a real provider/model benchmark participant or creates general/public benchmark evidence by composition.
 
 ## Public product versions
 
-Public product versions may later use identifiers such as `0.x` or `1.x`, but no specific public version number is authorized by this document.
+No specific public version number is authorized by this document.
 
-Current public-release authority remains:
+Current release authority remains:
 
 ```text
 PUBLIC RELEASE VERSION = NOT_AUTHORIZED
@@ -91,37 +98,33 @@ CODE / DONOR IMPORT = NOT_AUTHORIZED BY THIS FILE
 CONCRETE EXTERNAL REVIEWER / MODEL / PROVIDER ADAPTER = NOT_AUTHORIZED BY THIS FILE
 PROVIDER NETWORK / SECRET HANDLING = NOT_AUTHORIZED BY THIS FILE
 PROVIDER / MODEL / REVIEWER / EVALUATOR INVOCATION = NOT_AUTHORIZED BY THIS FILE
+REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED BY THIS FILE
 ROUTE / FALLBACK / RETRY / STRATEGY EXECUTION = NOT_AUTHORIZED BY THIS FILE
-PERSISTENT REVIEW / PROOF / ROUTE / OUTCOME STORAGE = NOT_AUTHORIZED BY THIS FILE
+PERSISTENT REVIEW / PROOF / ROUTE / BENCHMARK / OUTCOME STORAGE = NOT_AUTHORIZED BY THIS FILE
 TELEMETRY / UPLOAD = NOT_AUTHORIZED BY THIS FILE
 TRAINING / LEARNING = NOT_AUTHORIZED BY THIS FILE
 CROSS-REPOSITORY AGGREGATION / LEARNING = NOT_AUTHORIZED BY THIS FILE
 AUTOMATIC STRATEGY PROMOTION / TRUST-POLICY MUTATION = NOT_AUTHORIZED BY THIS FILE
 AUTOFIX EXECUTION = NOT_AUTHORIZED BY THIS FILE
-REPOSITORY WRITE / REVIEW / APPROVAL / MERGE AUTHORITY FROM KRI/K5/K6/P2 = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED BY THIS FILE
 K2 EXECUTION-AUTHORITY EXPANSION = NOT_AUTHORIZED BY THIS FILE
 DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 ```
 
-## Next engineering action
+## Next engineering action after successful bounded P2 closeout
 
-After and only after this exact R5 closeout reconciliation becomes canonical and passes applicable post-merge proof, the next eligible unit is:
+After and only after the exact closeout becomes canonical and its required post-merge proof succeeds, the next eligible unit is:
 
 ```text
-P2 BOUNDED R1-R5 CLOSEOUT AUTHORIZATION-CANDIDATE PREPARATION ONLY
-P2 CLOSEOUT = NOT CANONICAL YET
-P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3 IMPLEMENTATION = NOT_AUTHORIZED
+P3 CONTEXT ENGINE V2 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
+P3 IMPLEMENTATION = NOT_AUTHORIZED UNTIL A SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
 ```
 
-A future bounded closeout may prove the already-canonical R1-R5 engineering surface only. It may not publish a benchmark, authorize provider/model execution, establish a universal benchmark corpus, claim product superiority, or create release/version authority.
-
-If broader benchmark semantics are later required, they need a separately justified P2-R6+ authorization candidate. The label alone does not create a requirement or authority.
+That planning step may define a future minimum-sufficient-evidence context contract, but does not authorize embeddings, providers/models, network/secrets, new dependencies, persistence, repository-local learning, cross-repository access, or product integration.
 
 ## Future release-gate direction
 
-A future public-release authorization should separately prove the applicable subsets of:
+A future public-release authorization should separately prove applicable subsets of:
 
 - supported product scope and user-facing surfaces;
 - installation, upgrade, and rollback behavior;
@@ -129,9 +132,9 @@ A future public-release authorization should separately prove the applicable sub
 - security and trust posture;
 - provenance/license completeness;
 - required CI and supported platforms;
-- packaging and distribution artifacts;
+- packaging/distribution artifacts;
 - benchmark/claim evidence;
-- documentation and support expectations;
+- documentation/support expectations;
 - brand/name/trademark status.
 
 This is planning direction only, not an authorized release checklist or release decision.
@@ -139,9 +142,9 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
+- P2 bounded-closeout authorization: `docs/planning/KODAC_P2_BOUNDED_R1_R5_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
+- P2 bounded-closeout candidate evidence: `docs/planning/KODAC_P2_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
-- P2-R5 authorization: `docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_AUTHORIZATION_2026-08-28.md`
-- P2-R5 implementation evidence: `docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_EVIDENCE_2026-08-28.md`
 - Durable improvement sequence: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`

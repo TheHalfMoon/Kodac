@@ -4,13 +4,13 @@
 
 ## Authority
 
-This file is navigation/status only. It does not authorize implementation.
+This file is navigation/status only. It does not create implementation, execution, release, provider/model, persistence, learning, or merge authority.
 
 Before any mutation:
 
-1. re-read live GitHub `main`, open PRs, exact heads, changed files, CI, reviews, threads, mergeability, and active ruleset;
+1. re-read live GitHub `main`, open PRs, exact heads, changed files, checks, reviews, threads, mergeability, and the active ruleset;
 2. read root `AGENTS.md`;
-3. read the governing ADRs and the exact canonical authorization record for the active unit;
+3. read the governing ADRs and the exact canonical authorization for the active unit;
 4. execute only that unit and its explicit allowlist.
 
 Live GitHub and exact canonical authorization records override this page.
@@ -26,105 +26,116 @@ P2-R2 = CLOSED_CANONICAL
 P2-R3 = CLOSED_CANONICAL
 P2-R4 = CLOSED_CANONICAL
 P2-R5 = CLOSED_CANONICAL
-P2-R6+ = NOT AUTHORIZED
+P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL IFF THIS CLOSEOUT MERGE GATE PASSES
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
+P2-R6+ = NOT AUTHORIZED
 P3-P8 = NOT AUTHORIZED
 WAIVER = NO
 ```
 
-P2-R5 closed canonically through:
+The conditional P2 closeout statement above is **not** canonical closure merely because it appears in this candidate. It becomes effective only if the exact six-path closeout candidate qualifies, merges normally into protected `main`, and passes mandatory post-merge proof.
+
+---
+
+# NOW — bounded P2 R1-R5 closeout candidate
+
+Canonical closeout authorization:
 
 ```text
-P2_R5_AUTHORIZATION = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de
-P2_R5_QUALIFIED_FINAL_HEAD = 7e63cdfb689be15efea14bfe8b1862cccced73a2
-P2_R5_QUALIFIED_FINAL_TREE = 4242fbad9e25d3332460324ac5e8277838ff468c
-P2_R5_IMPLEMENTATION_MERGE = PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
-MERGE_PARENT_1 = f1f33a01a3d5c764ac59a292464322c3c7c7b3de
-MERGE_PARENT_2 = 7e63cdfb689be15efea14bfe8b1862cccced73a2
-MERGE_VERIFICATION = verified / valid
-POST_MERGE_GOVERNANCE = 33199492928 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33199492770 / SUCCESS
+AUTHORIZATION_PR = #249
+AUTHORIZATION_MERGE = cb8315eb9e73f36586d37123fca5fe45c040da2b
+AUTHORIZATION_CANDIDATE_HEAD = ffb97239d09388cb292ed4855af0366bd653a080
+AUTHORIZATION_CANDIDATE_TREE = d389da562f11faebef8a468e13267b712671fd56
+AUTHORIZATION_BLOB = d648caed2971f30799ec67b4be6b25a0ecb0df64
+AUTHORIZATION_POST_MERGE_GOVERNANCE = 33234298601 / SUCCESS
+AUTHORIZATION_K2_PUSH = NOT_APPLICABLE_BY_DOCS_ONLY_PUSH_PATH_FILTER
 RULESET = 20707483 / active / no bypass
 WAIVER = NO
 ```
 
-Canonical P2-R5 implementation blobs:
+Active unit:
 
 ```text
-packages/kodac-runtime/bench/p2-r5/relation.ts
-  = e55e2ce138ab88132f0fddb79faa3ecac8db4e14
-packages/kodac-runtime/test/p2-r5-relation.test.ts
-  = ce9406bb3befca3222241e8f470bb90945d6aaf8
-docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_EVIDENCE_2026-08-28.md
-  = 8bb343916cece955bd1f78d284ccdf8e5d87ed0d
-```
-
-Historical WIP evidence remains preserved: head `9169883db3239289f76886a75cb5563a8d65c099` failed K2 run `33198255234` during Typecheck on the three runtime platforms. Tests did not run on that head. The defect was repaired forward without rebase, force-push, waiver, or history rewrite.
-
-R5 established only a pure, task-family-separated, metric-local direction-aware relation over an independently revalidated serialized R4 comparison. It emits only:
-
-```text
-LEFT_FAVORED_BY_DIRECTION
-RIGHT_FAVORED_BY_DIRECTION
-EQUAL_RAW_VALUE
-INSUFFICIENT_EVIDENCE
-```
-
-It did not create a global winner, ranking, threshold/tolerance, statistics, promotion, execution, persistence, product, release, or public superiority authority.
-
----
-
-# NOW — P2-R5 canonical closeout reconciliation
-
-This branch is current-state reconciliation only.
-
-```text
-ACTIVE_UNIT = P2-R5 CANONICAL CLOSEOUT RECONCILIATION
-IMPLEMENTATION_AUTHORITY = NONE
+ACTIVE_UNIT = P2 BOUNDED R1-R5 CANONICAL CLOSEOUT CANDIDATE
+RUNTIME_IMPLEMENTATION_AUTHORITY = NONE
 P2-R6+ IMPLEMENTATION AUTHORITY = NONE
 P3-P8 IMPLEMENTATION AUTHORITY = NONE
 ```
 
-The reconciliation may update only current roadmap/status/version views. It may not implement another benchmark slice or close P2 overall by implication.
+Exact authorized closeout paths:
 
-After and only after this exact reconciliation qualifies, merges normally into protected `main`, and passes applicable post-merge proof, the next eligible repository unit is **P2 bounded R1-R5 closeout authorization-candidate preparation only**.
+```text
+docs/planning/KODAC_P2_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md
+docs/product/STATUS.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/ROADMAP.md
+docs/roadmap/VERSION_PLAN.md
+docs/roadmap/NEXT.md
+```
+
+No seventh path is authorized.
+
+The closeout evidence binds the canonical R1-R5 authorization/implementation chain, exact qualified heads/trees/blobs/checks, material fix-forward history, no-authority-by-composition rules, and the existing no-bypass ruleset. Historical R1-R5 authorization/evidence records remain immutable inputs and are not rewritten.
 
 ---
 
-# THEN — bounded P2 closeout authorization-candidate preparation
+# Bounded closeout meaning
 
-R1-R5 now form a coherent bounded measurement spine:
+R1-R5 form only this deterministic engineering spine:
 
 ```text
-R1 = contract + frozen fixture/manifest spine
-R2 = deterministic caller-observation report spine
-R3 = explicit reducer + task-family summaries
-R4 = controlled pairwise raw comparison
-R5 = metric-local direction-aware relation
+R1 = contract + repository-authored synthetic frozen fixture/manifest spine
+R2 = caller-observation validation + immutable deterministic report
+R3 = explicit reducer/missingness policy + task-family summaries
+R4 = controlled per-metric raw pairwise comparison
+R5 = metric-local declared-direction relation
 ```
 
-A separate closeout candidate may prove only that exact bounded R1-R5 engineering surface and preserve its negative space. It must not claim that KodacBench has executed real provider/model benchmarks, that a universal benchmark corpus exists, that any system is globally superior, or that public benchmark/release authority exists.
+Even after successful bounded closeout:
 
-No P2-R6 implementation is required or authorized merely because the label exists. If later work needs broader benchmark semantics beyond R5, the R5 authorization explicitly requires a new P2-R6+ authorization candidate.
+```text
+BOUNDED R1-R5 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
+BOUNDED R1-R5 CLOSED != REAL PROVIDER / MODEL BENCHMARK EXECUTION
+BOUNDED R1-R5 CLOSED != UNIVERSAL BENCHMARK CORPUS
+BOUNDED R1-R5 CLOSED != GLOBAL WINNER / RANKING / SUPERIORITY
+BOUNDED R1-R5 CLOSED != DONOR REPLACEMENT / PROMOTION
+BOUNDED R1-R5 CLOSED != PRODUCT / PACKAGE / RELEASE READY
+BOUNDED R1-R5 CLOSED != P2-R6+ AUTHORITY
+BOUNDED R1-R5 CLOSED != P3 IMPLEMENTATION AUTHORITY
+```
 
-P3 remains fail-closed until the bounded P2 closeout itself becomes canonical and a separate P3 authorization exists.
+---
+
+# THEN — P3 definition/planning authorization candidate only
+
+After and only after the bounded P2 closeout itself becomes canonical and post-merge proven, the next eligible repository work is:
+
+```text
+P3 CONTEXT ENGINE V2 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
+P3 IMPLEMENTATION = NOT AUTHORIZED
+```
+
+P3 planning may define a later deny-by-default gate around minimum-sufficient-evidence context selection. It may not infer provider/model execution, embeddings, network/secret access, persistence, repository-local learning, new dependencies, product integration, or cross-repository access from roadmap prose.
 
 ---
 
 # Preserved non-grants
 
 ```text
-PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL EXECUTION = NOT AUTHORIZED
-BENCHMARK TASK EXECUTION = NOT AUTHORIZED
+PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT EXECUTION = NOT AUTHORIZED
+REAL BENCHMARK TASK EXECUTION = NOT AUTHORIZED
 NETWORK / SECRETS / SUBPROCESS / SANDBOX EXECUTION = NOT AUTHORIZED
-PERSISTENCE / TELEMETRY / LEARNING = NOT AUTHORIZED
+PERSISTENCE / DATABASE / TELEMETRY / UPLOAD = NOT AUTHORIZED
+TRAINING / FINE-TUNING / ONLINE LEARNING = NOT AUTHORIZED
+CROSS-REPOSITORY AGGREGATION / LEARNING = NOT AUTHORIZED
 NEW DEPENDENCIES / DONOR INTAKE = NOT AUTHORIZED
 THRESHOLDS / TOLERANCE BANDS / STATISTICS = NOT AUTHORIZED
 N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT AUTHORIZED
-PROMOTION / DONOR REPLACEMENT DECISION = NOT AUTHORIZED
-PUBLIC SUPERIORITY CLAIM / RELEASE = NOT AUTHORIZED
+DONOR REPLACEMENT / STRATEGY PROMOTION = NOT AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT AUTHORIZED
+AUTOFIX = NOT AUTHORIZED BY P2 CLOSEOUT
+PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT AUTHORIZED
 RULESET CHANGE / BYPASS = NOT AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT AUTHORIZED
 P3-P8 IMPLEMENTATION = NOT AUTHORIZED
@@ -134,21 +145,21 @@ P3-P8 IMPLEMENTATION = NOT AUTHORIZED
 
 # Stop rules
 
-Stop rather than invent authority when the next implementation lacks a canonical authorization, live state moves after qualification, required checks/reviews fail or become stale, a material finding remains unresolved, the changed-file set exceeds the active allowlist, a new dependency/provider/tool is required without admission, or work would expand execution/persistence/learning/release/completion authority by implication.
+Stop rather than invent authority if the closeout diff exceeds the six authorized paths, canonical `main` moves after qualification, required checks/reviews become stale or fail, a material finding remains unresolved, a new dependency/tool/provider/model would be required, or any later work would expand execution/persistence/learning/release/completion authority by implication.
 
-No force-push, rebase, destructive history rewriting, stale-head reuse, or silent waiver.
+No force-push, rebase, destructive history rewrite, stale-head reuse, or silent waiver.
 
 ---
 
 # Navigation
 
-- How to work: `AGENTS.md`
+- Working rules: `AGENTS.md`
 - Current action: `docs/roadmap/NEXT.md`
+- P2 closeout authorization: `docs/planning/KODAC_P2_BOUNDED_R1_R5_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
+- P2 closeout candidate evidence: `docs/planning/KODAC_P2_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Version/release boundary: `docs/roadmap/VERSION_PLAN.md`
 - Product authority status: `docs/product/STATUS.md`
-- P2-R5 authorization: `docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_AUTHORIZATION_2026-08-28.md`
-- P2-R5 historical implementation evidence: `docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_EVIDENCE_2026-08-28.md`
 - Durable plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Benchmark governance: `docs/adr/ADR-0010-benchmark-first-donor-selection.md`
