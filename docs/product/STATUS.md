@@ -2,7 +2,7 @@
 
 The pre-existing files in `docs/product/` remain preserved historical planning inputs. They do not override accepted Kodac ADRs, live GitHub truth, current roadmap views, or exact canonical authorization/evidence records.
 
-## Canonical engineering state on this closeout candidate
+## Canonical engineering state
 
 ```text
 K3 = CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -15,96 +15,92 @@ P2-R2 = CLOSED_CANONICAL
 P2-R3 = CLOSED_CANONICAL
 P2-R4 = CLOSED_CANONICAL
 P2-R5 = CLOSED_CANONICAL
-P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL IFF THIS CLOSEOUT MERGE GATE PASSES
+P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
-P3-P8 = NOT_AUTHORIZED
+
+P3-R1 DETERMINISTIC CONTEXT SELECTION PLAN FOUNDATION = CLOSED_CANONICAL
+P3-R2+ = NOT_AUTHORIZED
+P4-P8 = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-The conditional bounded P2 closure statement is not canonical merely because it is present in this candidate. It becomes true only if the exact authorized six-path closeout candidate qualifies on one frozen head, merges normally into protected `main`, and completes mandatory post-merge proof.
-
-## Canonical P2 anchors
+## Canonical P3-R1 anchors
 
 ```text
-P2-R1 authorization  = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
-P2-R1 implementation = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
-P2-R2 authorization  = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de
-P2-R2 implementation = PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
-P2-R3 authorization  = PR #241 / d398983a457060dff0b700714d3eebbc4dce8e23
-P2-R3 implementation = PR #242 / 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
-P2-R4 authorization  = PR #243 / 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
-P2-R4 implementation = PR #244 / a97436df6008e37baf544345893b414d70b40c19
-P2-R4 reconciliation = PR #245 / 16c2e410fe3e62eb0c5bed6f0640dffd9c5e1f4f
-P2-R5 authorization  = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de
-P2-R5 implementation = PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
-P2-R5 reconciliation = PR #248 / e911bd68988163d9b4cbfab9f7f2c99b6067c3fd
-P2 closeout authorization = PR #249 / cb8315eb9e73f36586d37123fca5fe45c040da2b
+AUTHORIZATION_PR = #251
+AUTHORIZATION_MERGE = 2b3ce25fe4b8e108840208cdf7a7018ba6262fd6
+AUTHORIZATION_BLOB = efd4ff29ae6660b4e1d9a2c9e75d45537bfd3a35
+IMPLEMENTATION_PR = #252
+QUALIFIED_HEAD = feee83d214bb2ed47e25b730e8c6840538d57882
+QUALIFIED_TREE = 027f0f3258e17cef6f0f8df8164853f206d42afb
+IMPLEMENTATION_MERGE = ba3caabef0b36649a1d556ff287237ca2a455ab2
+POST_MERGE_GOVERNANCE = 33237323000 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33237323003 / SUCCESS
+RULESET = 20707483 / active / no bypass
+WAIVER = NO
 ```
 
-## Active bounded closeout
+The merge is signed and valid, its ordered parents are the pre-merge canonical main followed by the exact qualified P3-R1 head, its merge tree equals the qualified tree, and all four P3-R1 path blobs match the qualified candidate.
 
-PR #249 authorizes only one documentation/evidence closeout candidate across exactly six paths. The closeout record must bind live GitHub proof for the canonical R1-R5 chain, exact qualified heads/trees/blobs/checks, material repair/failure history, no-authority-by-composition rules, and active protected-main ruleset.
+## Bounded P3-R1 meaning
 
-No runtime, workflow, dependency, provider/model, persistence, telemetry, learning, package, release, or ruleset mutation is authorized by the closeout.
+P3-R1 provides a deterministic, pure, in-memory context-selection-plan foundation over caller-materialized evidence. It establishes canonical identity binding, descriptive evidence lanes, provenance/reasons/grouping preservation, explicit budget facts, completeness/omitted-evidence semantics, abstention, validated supplied K3-R6 relation evidence, hostile-input fail-closed behavior, and deep immutability.
 
-## Bounded P2 meaning
-
-The closed slices remain narrow:
+It does **not** establish:
 
 ```text
-R1 = deterministic contract + repository-authored synthetic frozen fixture/manifest spine
-R2 = deterministic caller-observation report
-R3 = explicit reducer/missingness + task-family summaries
-R4 = controlled per-metric raw comparison
-R5 = metric-local declared-direction relation
+A BETTER CONTEXT STRATEGY
+A REPOSITORY-OWNED RANKING / WEIGHTING POLICY
+BENCHMARK-BACKED QUALITY IMPROVEMENT
+GENERAL / PUBLIC KODACBENCH COMPLETION
+EMBEDDING / VECTOR / LEARNED RETRIEVAL
+PROVIDER / MODEL EXECUTION
+REPOSITORY ACQUISITION OR NEW INDEXING
+PERSISTENCE / TELEMETRY / LEARNING
+CLI / API / PRODUCT / AGENT-LOOP INTEGRATION
+P3-R2+ AUTHORITY
 ```
 
-Even if the closeout gate succeeds:
+## Current docs-only reconciliation
 
-```text
-BOUNDED R1-R5 CLOSED != P2 OVERALL CLOSED
-BOUNDED R1-R5 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-BOUNDED R1-R5 CLOSED != REAL PROVIDER / MODEL BENCHMARK EXECUTION
-BOUNDED R1-R5 CLOSED != GLOBAL WINNER / RANKING / SUPERIORITY
-BOUNDED R1-R5 CLOSED != THRESHOLD / STATISTICAL CLAIM
-BOUNDED R1-R5 CLOSED != DONOR REPLACEMENT / PROMOTION
-BOUNDED R1-R5 CLOSED != PRODUCT / RELEASE / PACKAGE READY
-BOUNDED R1-R5 CLOSED != P2-R6+ AUTHORITY
-BOUNDED R1-R5 CLOSED != P3 IMPLEMENTATION AUTHORITY
-```
+The current candidate updates current roadmap/status/version views to reflect already-proven P3-R1 closure. It is documentation only and creates no runtime or later-stage implementation authority.
 
-## Next engineering boundary after successful closeout
+These reconciled bytes become canonical only if this exact candidate qualifies, merges normally into protected `main`, and completes required post-merge proof.
 
-After and only after the exact bounded P2 closeout becomes canonical and post-merge proven, the next eligible unit is **P3 Context Engine v2 definition/planning and authorization-candidate preparation only**.
+## Next engineering boundary after reconciliation
 
-That future planning unit may specify a deny-by-default minimum-sufficient-evidence context contract. It does not authorize P3 runtime implementation, embeddings, providers/models, network/secrets, new dependencies, persistence, repository-local learning, cross-repository access, or product integration.
+After and only after this reconciliation becomes canonical and post-merge proven, the next eligible unit is **P3-R2 definition/planning and authorization-candidate preparation only**.
+
+A later R2 authorization may define a pure deterministic declared selection-policy application boundary over canonical P3-R1 plans. Such a slice must remain policy-explicit and evidence-preserving; it must not silently choose or promote a winning strategy or claim quality improvement without benchmark evidence.
 
 ## Preserved non-grants
 
 ```text
-KRI-R5+ IMPLEMENTATION = NOT AUTHORIZED
-K3-R7+ = NOT AUTHORIZED
-K4-R6+ = NOT AUTHORIZED
-K5-R6+ = NOT AUTHORIZED
-K6-R6+ = NOT AUTHORIZED
-P2-R6+ IMPLEMENTATION = NOT AUTHORIZED
-P3-P8 IMPLEMENTATION = NOT AUTHORIZED
+KRI-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+K3-R7+ = NOT_AUTHORIZED
+K4-R6+ = NOT_AUTHORIZED
+K5-R6+ = NOT_AUTHORIZED
+K6-R6+ = NOT_AUTHORIZED
+P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R2+ IMPLEMENTATION = NOT_AUTHORIZED
+P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
-PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT AUTHORIZED
-REAL BENCHMARK TASK EXECUTION = NOT AUTHORIZED
-N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT AUTHORIZED
-THRESHOLD / TOLERANCE / STATISTICS / SIGNIFICANCE = NOT AUTHORIZED
-DONOR REPLACEMENT / PROMOTION = NOT AUTHORIZED
-PERSISTENCE / DATABASE / BENCHMARK FILE OUTPUT = NOT AUTHORIZED
-TELEMETRY / UPLOAD / ANALYTICS EGRESS = NOT AUTHORIZED
-TRAINING / FINE-TUNING / ONLINE LEARNING = NOT AUTHORIZED
-CROSS-REPOSITORY AGGREGATION / LEARNING = NOT AUTHORIZED
-K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT AUTHORIZED
-NEW DEPENDENCIES / DONOR INTAKE = NOT AUTHORIZED
-PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT AUTHORIZED
-RULESET CHANGE / BYPASS = NOT AUTHORIZED
+PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
+REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED BY THIS RECONCILIATION
+N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT_AUTHORIZED
+THRESHOLD / TOLERANCE / STATISTICS / SIGNIFICANCE = NOT_AUTHORIZED
+DONOR REPLACEMENT / PROMOTION = NOT_AUTHORIZED
+EMBEDDINGS / VECTOR DB / LEARNED RERANKER = NOT_AUTHORIZED
+PERSISTENCE / DATABASE / BENCHMARK FILE OUTPUT = NOT_AUTHORIZED
+TELEMETRY / UPLOAD / ANALYTICS EGRESS = NOT_AUTHORIZED
+TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
+CROSS-REPOSITORY AGGREGATION / LEARNING = NOT_AUTHORIZED
+K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
+NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
+PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
+RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
