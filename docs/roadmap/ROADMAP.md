@@ -2,18 +2,26 @@
 
 ## Authority
 
-This file is a current engineering roadmap view. It does not create implementation authority. Live GitHub, `AGENTS.md`, governing ADRs, and the exact canonical authorization record for the active unit always win.
+This file is a current engineering roadmap view. It does not create implementation, execution, dependency, release, provider/model, persistence, learning, or merge authority. Live GitHub, root `AGENTS.md`, governing ADRs, and the exact canonical authorization for the active unit always win.
 
 ## Canonical truth anchors
 
 ```text
-K6 closeout merge  = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
-P2-R1 auth / impl  = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397 -> PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
-P2-R2 auth / impl  = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de -> PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
-P2-R3 auth / impl  = PR #241 / d398983a457060dff0b700714d3eebbc4dce8e23 -> PR #242 / 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
-P2-R4 auth / impl  = PR #243 / 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26 -> PR #244 / a97436df6008e37baf544345893b414d70b40c19
-P2-R5 auth / impl  = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de -> PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
-Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
+K6 bounded closeout       = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
+P2-R1 authorization      = PR #237 / 1cd2fc4de1eb5849cbe2519ae1699bc2acc56397
+P2-R1 implementation     = PR #238 / c499c8ac098cca9719eaad3cacadd2af7d1c0a1f
+P2-R2 authorization      = PR #239 / f2b8d452e93ec207ebe04c9db7d47dc032df20de
+P2-R2 implementation     = PR #240 / 4a0b2c67dbd707c18395b0898752c111ca6b16a9
+P2-R3 authorization      = PR #241 / d398983a457060dff0b700714d3eebbc4dce8e23
+P2-R3 implementation     = PR #242 / 20cb3d2e277513fc3cefa71fe9fda03f25fd418a
+P2-R4 authorization      = PR #243 / 6f5bba88fcb9b646ed6b66bfd67b4a8c81fd3a26
+P2-R4 implementation     = PR #244 / a97436df6008e37baf544345893b414d70b40c19
+P2-R4 reconciliation     = PR #245 / 16c2e410fe3e62eb0c5bed6f0640dffd9c5e1f4f
+P2-R5 authorization      = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de
+P2-R5 implementation     = PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
+P2-R5 reconciliation     = PR #248 / e911bd68988163d9b4cbfab9f7f2c99b6067c3fd
+P2 closeout authorization = PR #249 / cb8315eb9e73f36586d37123fca5fe45c040da2b
+Improvement plan         = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
 ## Current milestone state
@@ -27,105 +35,107 @@ Improvement plan  = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 | K4 | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
 | K5 | **CLOSED for canonical K5-R1 through K5-R5 bounded proof-review scope** | Done Gate unchanged |
 | K6 | **CLOSED_CANONICAL for bounded R1-R5 scope** | No execution/persistence/learning/promotion authority by composition |
-| P2-R1 | **CLOSED_CANONICAL** | Contract + frozen fixture/manifest spine |
+| P2-R1 | **CLOSED_CANONICAL** | Contract + repository-authored synthetic fixture/manifest spine |
 | P2-R2 | **CLOSED_CANONICAL** | Deterministic caller-observation report spine |
-| P2-R3 | **CLOSED_CANONICAL** | Explicit reducer policy + task-family summaries |
+| P2-R3 | **CLOSED_CANONICAL** | Explicit reducers/missingness + task-family summaries |
 | P2-R4 | **CLOSED_CANONICAL** | Controlled pairwise raw-delta comparison only |
 | P2-R5 | **CLOSED_CANONICAL** | Metric-local direction-aware relation only |
-| P2 overall | **OPEN** | Bounded R1-R5 closeout not yet canonical; general/public KodacBench not closed |
-| P2-R6+ | **NOT_AUTHORIZED** | Only required if a later separately authorized broader benchmark semantic is needed |
-| P3-P8 | **NOT_AUTHORIZED** | Later improvement stages require separate authority |
+| P2 bounded R1-R5 closeout | **CONDITIONAL CLOSEOUT CANDIDATE** | Closed only after exact six-path merge + post-merge proof |
+| P2 overall | **OPEN** | General/public KodacBench is not closed |
+| P2-R6+ | **NOT_AUTHORIZED** | Separate justified authorization required if broader semantics are later needed |
+| P3 Context Engine v2 | **NOT_AUTHORIZED** | Definition/planning authorization candidate becomes next only after bounded P2 closeout |
+| P4-P8 | **NOT_AUTHORIZED** | Later stages require their ordered dependencies and separate authority |
 
 Engineering milestone state is separate from public release status.
 
-## P2-R5 canonical closure
+## P2 bounded closeout candidate
 
-P2-R5 is closed for its exact pure in-memory metric-local directional-relation scope.
+The canonical closeout authorization is PR #249 / `cb8315eb9e73f36586d37123fca5fe45c040da2b`. It authorizes exactly one documentation/evidence closeout candidate across six paths and grants no runtime implementation authority.
 
-```text
-AUTHORIZATION = PR #246 / f1f33a01a3d5c764ac59a292464322c3c7c7b3de
-QUALIFIED_HEAD = 7e63cdfb689be15efea14bfe8b1862cccced73a2
-QUALIFIED_TREE = 4242fbad9e25d3332460324ac5e8277838ff468c
-MERGE = PR #247 / 7e92fece64807c03981091cd825f2c5e848356ce
-MERGE_PARENT_1 = f1f33a01a3d5c764ac59a292464322c3c7c7b3de
-MERGE_PARENT_2 = 7e63cdfb689be15efea14bfe8b1862cccced73a2
-MERGE_VERIFICATION = verified / valid
-POST_MERGE_GOVERNANCE = 33199492928 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33199492770 / SUCCESS
-RULESET = 20707483 / active / no bypass
-WAIVER = NO
-```
-
-Canonical R5 blobs:
+The candidate may establish only:
 
 ```text
-packages/kodac-runtime/bench/p2-r5/relation.ts
-  = e55e2ce138ab88132f0fddb79faa3ecac8db4e14
-packages/kodac-runtime/test/p2-r5-relation.test.ts
-  = ce9406bb3befca3222241e8f470bb90945d6aaf8
-docs/planning/KODAC_P2_R5_DIRECTIONAL_METRIC_RELATION_EVIDENCE_2026-08-28.md
-  = 8bb343916cece955bd1f78d284ccdf8e5d87ed0d
+P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 ```
 
-The implementation independently revalidates the serialized R4 comparison it consumes, preserves task-family separation and raw `left - right` evidence, and adds only the four authorized metric-local relations. Exact equality has no tolerance. Insufficient evidence cannot infer a side relation.
+and only after exact-head qualification, guarded merge, and mandatory post-merge proof.
 
-Historical WIP K2 run `33198255234` remains a failure at Typecheck on head `9169883db3239289f76886a75cb5563a8d65c099`; tests did not run there. The defect was repaired forward and final qualification/post-merge proof passed without waiver or history rewriting.
-
-R5 does **not** create a global winner/loser verdict, ranking, leaderboard, threshold/tolerance, blended score, statistics, significance, promotion, provider/model execution, benchmark execution, persistence, telemetry, product integration, release, or public superiority claim.
-
-## Next proposed P2 unit
-
-After this reconciliation itself becomes canonical and post-merge proven, the next eligible work is **P2 bounded R1-R5 closeout authorization-candidate preparation only**.
-
-That closeout candidate may prove only the exact bounded engineering spine already canonical through R1-R5. It must preserve:
+The bounded R1-R5 spine is:
 
 ```text
-GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-REAL PROVIDER / MODEL BENCHMARK EXECUTION = NOT AUTHORIZED
-GLOBAL SUPERIORITY / WINNER CLAIMS = NOT AUTHORIZED
-P2-R6+ IMPLEMENTATION = NOT AUTHORIZED
-P3 IMPLEMENTATION = NOT AUTHORIZED
+R1 contract + synthetic frozen fixture/manifest spine
+-> R2 deterministic caller-observation report
+-> R3 explicit reducer/missingness + task-family summary
+-> R4 controlled per-metric raw comparison
+-> R5 metric-local declared-direction relation
 ```
 
-No R6 slice is implied. The R5 authorization says broader benchmark semantics, if actually needed, must become a new P2-R6+ authorization candidate rather than being absorbed into R5.
+The closeout evidence preserves material fix-forward history rather than rewriting the program as clean-first-pass, including R1 strict-type/hostile-canonicalization repair, R4 authorization/key-order repairs and post-merge Linux timing retry, and the R5 WIP TypeScript failure.
+
+## What bounded P2 closure does not mean
+
+```text
+P2 BOUNDED R1-R5 CLOSED
+!= P2 OVERALL CLOSED
+!= GENERAL / PUBLIC KODACBENCH COMPLETE
+!= REAL PROVIDER / MODEL BENCHMARK EXECUTION
+!= UNIVERSAL BENCHMARK CORPUS
+!= GLOBAL WINNER / RANKING / SUPERIORITY
+!= THRESHOLD / STATISTICAL CLAIM
+!= DONOR REPLACEMENT / PROMOTION
+!= PRODUCT / PACKAGE / RELEASE READY
+!= P2-R6+ AUTHORITY
+!= P3 IMPLEMENTATION AUTHORITY
+```
+
+The repository therefore remains fail-closed around broad comparison claims and real benchmark execution.
 
 ## Ordered improvement program
 
 ```text
-K6 bounded closeout
--> P2 KodacBench bounded measurement spine
-   -> R1 contract + frozen fixture/manifest spine [CLOSED_CANONICAL]
-   -> R2 local deterministic runner/report [CLOSED_CANONICAL]
-   -> R3 explicit reducer/task-family summary [CLOSED_CANONICAL]
-   -> R4 controlled pairwise raw comparison [CLOSED_CANONICAL]
-   -> R5 direction-aware per-metric relation [CLOSED_CANONICAL]
-   -> bounded R1-R5 closeout [AUTHORIZATION CANDIDATE PREPARATION ONLY]
-   -> R6+ only if separately justified and authorized [NOT_AUTHORIZED]
--> P3 Context Engine v2 [NOT_AUTHORIZED]
--> P4 Reviewer Intelligence v2 [NOT_AUTHORIZED]
--> P5 Finding Verifier Fabric [NOT_AUTHORIZED]
--> P6 Security Validation [NOT_AUTHORIZED]
--> P7 Bounded Autofix [NOT_AUTHORIZED]
--> P8 Product / Distribution Hardening [NOT_AUTHORIZED]
+K6 bounded closeout [CLOSED_CANONICAL]
+-> P2 bounded deterministic measurement spine
+   -> R1 [CLOSED_CANONICAL]
+   -> R2 [CLOSED_CANONICAL]
+   -> R3 [CLOSED_CANONICAL]
+   -> R4 [CLOSED_CANONICAL]
+   -> R5 [CLOSED_CANONICAL]
+   -> bounded R1-R5 closeout [CURRENT CONDITIONAL CANDIDATE]
+   -> R6+ [NOT_AUTHORIZED / NOT REQUIRED MERELY BY LABEL]
+-> P3 Context Engine v2
+   -> definition/planning/authorization candidate only after bounded P2 closeout
+   -> implementation only after a separate exact canonical authorization
+-> P4 Reviewer Intelligence v2
+-> P5 Finding Verifier Fabric
+-> P6 Security Validation
+-> P7 Bounded Autofix
+-> P8 Product / Distribution Hardening
 ```
+
+## P3 next-stage direction — planning only
+
+After and only after bounded P2 closeout becomes canonical, the next eligible work is P3 definition/planning and authorization-candidate preparation. The durable plan describes P3 as optimizing **minimum sufficient evidence**, not maximum context volume, using potential lexical/symbol, relation/dependency, tests, architecture/spec, and history evidence lanes with explicit budgets, reasons, dilution controls, and abstention.
+
+That roadmap direction does not authorize P3 implementation. In particular, embeddings, providers/models, network/secret access, new dependencies, persistence, repository-local experience retrieval, cross-repository access, and product integration remain fail-closed until separately authorized.
 
 ## Preserved authority boundaries
 
 ```text
 INTELLIGENCE != AUTHORITY
 BENCHMARK EVIDENCE != EXECUTION AUTHORITY
+TASK-FAMILY SUMMARY != GLOBAL SCORE
 RAW DELTA != GLOBAL WINNER
 PER-METRIC DIRECTIONAL RELATION != PRODUCT SUPERIORITY
-BOUNDED P2 CLOSEOUT != PUBLIC / GENERAL BENCHMARK CLAIM
 K2 SIDE-EFFECT AUTHORITY = UNCHANGED
 K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
-P2-R6+ = NOT AUTHORIZED
-P3-P8 = NOT AUTHORIZED
+P2-R6+ IMPLEMENTATION = NOT AUTHORIZED
+P3-P8 IMPLEMENTATION = NOT AUTHORIZED
 NEW DEPENDENCIES / DONOR INTAKE = NOT AUTHORIZED
 PROVIDER / MODEL / REVIEWER / EVALUATOR EXECUTION = NOT AUTHORIZED
+REAL BENCHMARK TASK EXECUTION = NOT AUTHORIZED
 PERSISTENCE / TELEMETRY / LEARNING = NOT AUTHORIZED
 PUBLIC RELEASE / SUPERIORITY CLAIM = NOT AUTHORIZED
 RULESET CHANGE / BYPASS = NOT AUTHORIZED
 ```
 
-Every later unit remains fail-closed until its separate authorization, exact-head qualification, guarded merge, and required post-merge proof succeed.
+Every later unit remains fail-closed until its own exact authorization, qualification, guarded merge, and required post-merge proof succeed.
