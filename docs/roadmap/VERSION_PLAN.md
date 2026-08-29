@@ -8,7 +8,7 @@ This file records the current engineering/version boundary. It does not authoriz
 
 Always read live GitHub truth, root `AGENTS.md`, `docs/roadmap/NEXT.md`, and the exact active authorization before acting.
 
-## Current engineering state on this closeout candidate
+## Current engineering state
 
 ```text
 K0/K1 = CLOSED
@@ -18,28 +18,25 @@ KRI-R1 THROUGH KRI-R4 = CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
 K4 = CLOSED FOR CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
 K5 = CLOSED FOR CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE
 K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
-P2-R1 = CLOSED_CANONICAL
-P2-R2 = CLOSED_CANONICAL
-P2-R3 = CLOSED_CANONICAL
-P2-R4 = CLOSED_CANONICAL
-P2-R5 = CLOSED_CANONICAL
-P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL IFF THIS CLOSEOUT MERGE GATE PASSES
+P2-R1 THROUGH P2-R5 = CLOSED_CANONICAL
+P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
-P3-P8 IMPLEMENTATION = NOT_AUTHORIZED
+P3-R1 = CLOSED_CANONICAL
+P3-R2+ = NOT_AUTHORIZED
+P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 ```
 
-The P2 bounded-closeout authorization is canonical through PR #249 / `cb8315eb9e73f36586d37123fca5fe45c040da2b`. The conditional P2 closure statement above is not canonical closure until the exact six-path closeout candidate qualifies, merges, and completes mandatory post-merge proof.
+P3-R1 closed canonically through PR #252 / `ba3caabef0b36649a1d556ff287237ca2a455ab2` after exact-head qualification and mandatory post-merge Governance/K2 proof.
 
-## Engineering milestone status is not release status
-
-The following implications are invalid:
+## P3-R1 is not a release milestone
 
 ```text
-P2 BOUNDED R1-R5 CLOSED
-!= P2 OVERALL CLOSED
+P3-R1 CLOSED_CANONICAL
+!= P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
+!= A BETTER CONTEXT STRATEGY PROVEN
 != REAL PROVIDER / MODEL BENCHMARK EXECUTION
 != PUBLIC RELEASE READY
 != PACKAGE PUBLISHABLE
@@ -50,17 +47,7 @@ P2 BOUNDED R1-R5 CLOSED
 != BRAND LAUNCH AUTHORIZED
 ```
 
-The bounded R1-R5 surface is a deterministic local engineering measurement/evidence spine:
-
-```text
-R1 contract + repository-authored synthetic frozen fixture/manifest spine
-R2 caller-observation validation/report
-R3 explicit reducer/missingness + task-family summaries
-R4 controlled per-metric raw comparison
-R5 metric-local declared-direction relation
-```
-
-None of those slices invokes a real provider/model benchmark participant or creates general/public benchmark evidence by composition.
+P3-R1 is only a pure deterministic context-selection-plan engineering foundation. It introduces no provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
 
 ## Public product versions
 
@@ -91,7 +78,8 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ = NOT_AUTHORIZED
-P3-P8 IMPLEMENTATION = NOT_AUTHORIZED
+P3-R2+ = NOT_AUTHORIZED
+P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT_AUTHORIZED BY THIS FILE
 CODE / DONOR IMPORT = NOT_AUTHORIZED BY THIS FILE
@@ -111,16 +99,18 @@ K2 EXECUTION-AUTHORITY EXPANSION = NOT_AUTHORIZED BY THIS FILE
 DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 ```
 
-## Next engineering action after successful bounded P2 closeout
+## Current reconciliation and next engineering action
 
-After and only after the exact closeout becomes canonical and its required post-merge proof succeeds, the next eligible unit is:
+The current docs-only candidate reconciles current status/navigation views with the already-proven P3-R1 closure. It creates no implementation or release authority.
+
+After and only after this reconciliation becomes canonical and post-merge proven, the next eligible engineering unit is:
 
 ```text
-P3 CONTEXT ENGINE V2 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
-P3 IMPLEMENTATION = NOT_AUTHORIZED UNTIL A SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
+P3-R2 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
+P3-R2 IMPLEMENTATION = NOT_AUTHORIZED UNTIL A SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
 ```
 
-That planning step may define a future minimum-sufficient-evidence context contract, but does not authorize embeddings, providers/models, network/secrets, new dependencies, persistence, repository-local learning, cross-repository access, or product integration.
+The conservative R2 planning direction is a deterministic declared policy-application boundary over P3-R1 plans. It may later validate and apply an explicit caller-declared ordering policy under exact budgets, but it may not silently select a repository-owned winning policy or make a quality/superiority claim.
 
 ## Future release-gate direction
 
@@ -142,8 +132,8 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P2 bounded-closeout authorization: `docs/planning/KODAC_P2_BOUNDED_R1_R5_CLOSEOUT_AUTHORIZATION_2026-08-28.md`
-- P2 bounded-closeout candidate evidence: `docs/planning/KODAC_P2_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`
+- P3-R1 authorization: `docs/planning/KODAC_P3_R1_DETERMINISTIC_CONTEXT_SELECTION_PLAN_AUTHORIZATION_2026-08-29.md`
+- P3-R1 evidence: `docs/planning/KODAC_P3_R1_DETERMINISTIC_CONTEXT_SELECTION_PLAN_EVIDENCE_2026-08-29.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
