@@ -3,18 +3,18 @@
 ## Status
 
 ```text
-DOCUMENT TYPE: FOUNDER-AUTHORIZED IMPLEMENTATION GATE CANDIDATE
+DOCUMENT TYPE = FOUNDER-AUTHORIZED IMPLEMENTATION GATE CANDIDATE
 P3-R1 DETERMINISTIC CONTEXT SELECTION PLAN FOUNDATION = CLOSED_CANONICAL
 P3-R1 ROADMAP / STATUS RECONCILIATION = CLOSED_CANONICAL
 P3-R2 IMPLEMENTATION = AUTHORIZED ONLY AFTER THIS RECORD IS CANONICAL AND POST-MERGE PROVEN
-P3-R3+ = NOT AUTHORIZED
-P4-P8 = NOT AUTHORIZED
+P3-R3+ = NOT_AUTHORIZED
+P4-P8 = NOT_AUTHORIZED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-PUBLIC QUALITY / WINNER / SUPERIORITY CLAIMS = NOT AUTHORIZED
+PUBLIC QUALITY / WINNER / SUPERIORITY CLAIMS = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-This record is deny-by-default. It creates no effective P3-R2 implementation authority while it is only a branch or pull-request candidate.
+This record is deny-by-default. While it is only a branch or pull-request candidate it creates no effective P3-R2 implementation authority.
 
 ## Exact canonical baseline
 
@@ -38,28 +38,34 @@ CURRENT_USER_CAN_BYPASS = never
 WAIVER = NO
 ```
 
-Governing sources include `AGENTS.md`, current roadmap/status views, `KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`, ADR-0010, the provider-neutral review quorum amendment, canonical P3-R1 authorization/evidence, and canonical P3-R1/K3 contracts and source.
+Governing sources are live GitHub truth, `AGENTS.md`, current roadmap/status views, `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`, ADR-0010, the provider-neutral review quorum amendment, canonical P3-R1 authorization/evidence, and canonical P3-R1/K3 contracts and source.
 
-If protected `main`, repository governance, or a more-specific canonical authority conflicts with this candidate before merge, this candidate is stale and must be reconciled forward without rebase, force-push, destructive history rewriting, stale evidence reuse, bypass, or silent waiver.
+If protected `main`, repository governance, or a more-specific canonical authority conflicts with this candidate before merge, this candidate is stale and must be reconciled forward. No rebase, force-push, destructive history rewriting, stale evidence reuse, bypass, or silent waiver is authorized.
 
 ## Superseded non-authority predecessor
 
 PR #254 / head `e82ac8b459d0e0081091c5fb3a1ce654e56353f4` is closed-unmerged non-authority.
 
-CodeRabbit comment `5461676857` identified a valid material contract defect: the prior candidate required P3-R2 to independently prove a serialized `ContextSelectionPlan` from the plan alone, but canonical P3-R1 does not retain every request-identity preimage field in the plan. In particular, caller completeness is combined with relation completeness before the plan is emitted, so a plan-only consumer cannot reconstruct the original P3-R1 request identity fail-closed.
+CodeRabbit comment `5461676857` identified a valid material defect: a serialized P3-R1 `ContextSelectionPlan` does not retain every preimage field needed to prove canonical `requestIdentity` from the plan alone. This replacement accepts that finding and removes plan-only derivation trust entirely.
 
-This replacement does not waive or reinterpret that defect. It removes the ambiguous trust boundary entirely.
+PR #255 exact head `538ca184f84696ad07d19df052e2af95949eb608` then received CodeRabbit comment `5461752885`, which correctly identified two additional material ambiguities:
+
+1. P3-R1 `budget-exceeded` lacked an explicit P3-R2 transition;
+2. the P3-R2 result contract allowed unspecified helper subobjects.
+
+This revision accepts both findings. It explicitly defines `budget-exceeded` behavior and closes every P3-R2 result key and nested record shape. All CI/review evidence from earlier PR #255 heads is stale after this revision.
 
 ```text
 PR #254 = CLOSED_UNMERGED / NON_AUTHORITY HISTORY
-PR #254 CI / REVIEW = STALE FOR THIS REPLACEMENT
-VALID FINDING = ACCEPTED
+PR #254 CI / REVIEW = STALE
+PR #255 EARLIER HEAD CI / REVIEW = STALE AFTER HEAD MOVEMENT
+VALID FINDINGS = ACCEPTED
 WAIVER = NO
 ```
 
 ## Exact authorization-candidate changed path
 
-This replacement authorization candidate may change exactly one path:
+This authorization candidate may change exactly one path:
 
 ```text
 docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_AUTHORIZATION_2026-08-29.md
@@ -67,7 +73,13 @@ docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_AUTHORIZATION_2026-0
 
 No source, test, workflow, dependency, lockfile, roadmap, status, fixture, benchmark corpus, provider/model, persistence, telemetry, package, release, ruleset, or historical canonical record is in this candidate allowlist.
 
-## P3-R2 trust boundary
+## Objective
+
+Authorize, only after this record becomes canonical and post-merge proven, one pure deterministic P3-R2 module that applies one explicit caller-declared context-selection policy to one canonical P3-R1 plan reconstructed from its complete request preimage.
+
+P3-R2 is policy application, not policy discovery, quality ranking, strategy promotion, or another context engine.
+
+## Closed trust boundary
 
 P3-R2 MUST NOT accept a caller-claimed serialized P3-R1 plan as derivation truth.
 
@@ -76,48 +88,29 @@ The only authorized derivation input is:
 ```text
 UNTRUSTED COMPLETE P3-R1 ContextSelectionPlanRequest
 + UNTRUSTED EXACT-KEY P3-R2 DECLARED POLICY
--> canonical buildContextSelectionPlan(planRequest)
+-> canonical buildContextSelectionPlan(planRequestValue)
 -> TRUSTED REBUILT P3-R1 PLAN
 -> STRICT POLICY BINDING TO REBUILT PLAN
 -> DETERMINISTIC POLICY APPLICATION
--> IMMUTABLE P3-R2 RESULT
+-> CLOSED IMMUTABLE P3-R2 RESULT
 ```
 
-The future P3-R2 implementation is explicitly authorized to import and invoke the already-canonical pure function:
+The future implementation is explicitly authorized to import and invoke the already-canonical pure function:
 
 ```text
 packages/kodac-runtime/src/context-selection-plan/context-selection-plan.ts
   buildContextSelectionPlan(inputValue: unknown)
 ```
 
-It is also authorized to import P3-R1 contract constants/types read-only.
+It may import P3-R1 contract constants/types read-only. It may not modify P3-R1 or K3 bytes.
 
-This is not authority to modify P3-R1, execute K3-R5, query K3-R6, acquire repository data, or add any side effect. `buildContextSelectionPlan` is used solely as the canonical P3-R1 derivation and validation boundary over caller-supplied in-memory request data.
+`buildContextSelectionPlan(planRequestValue)` is the sole canonical P3-R1 derivation/validation boundary. No semantic policy decision may occur before it succeeds.
 
-After reconstruction, policy application MUST use the returned canonical P3-R1 plan object. It MUST NOT use unvalidated semantic fields read from a caller-claimed plan object, because no caller-claimed plan object is part of the P3-R2 contract.
+No caller-claimed plan object is part of the P3-R2 public contract.
 
-## Why this boundary is contract-closed
+## Exact future public function boundary
 
-Canonical P3-R1 `buildContextSelectionPlan` already validates and derives from the complete request:
-
-- request version and kind;
-- task identity;
-- repository/snapshot/content identities;
-- candidates and candidate identities;
-- candidate-set identity;
-- optional full K3-R6 relation results and their bindings;
-- request item/byte budgets;
-- caller completeness;
-- aggregated plan completeness;
-- abstention;
-- request identity;
-- plan identity.
-
-P3-R2 therefore does not need to reverse an irreversible projection from a serialized plan. It reconstructs the exact canonical P3-R1 plan from the full request preimage and binds all later policy semantics to that rebuilt plan.
-
-## Exact future P3-R2 function boundary
-
-The implementation may choose internal helper names, but the public module function must be semantically equivalent to:
+The public module function must be semantically equivalent to:
 
 ```text
 applyDeclaredContextSelectionPolicy(
@@ -126,25 +119,46 @@ applyDeclaredContextSelectionPolicy(
 ) -> ContextSelectionPolicyApplication
 ```
 
-Procedure order is mandatory:
+Mandatory procedure order:
 
-1. call canonical `buildContextSelectionPlan(planRequestValue)`;
-2. obtain the trusted rebuilt P3-R1 plan;
-3. validate the exact-key P3-R2 policy against that rebuilt plan;
-4. derive the canonical policy identity;
-5. if the rebuilt plan is `insufficient-evidence`, preserve abstention and emit no selected/omitted candidate invention;
-6. otherwise derive the deterministic declared candidate traversal order;
-7. apply group/item/byte constraints with the closed precedence below;
-8. build selected and omitted records from the rebuilt P3-R1 candidates only;
-9. preserve source plan completeness, abstention, identities, and relation evidence;
-10. derive the application identity from the exact result semantic projection excluding its own identity field;
-11. deep-freeze the result.
+1. invoke canonical `buildContextSelectionPlan(planRequestValue)`;
+2. retain only the returned trusted rebuilt P3-R1 plan as source-plan truth;
+3. require `rebuiltPlan.state` to be exactly one of `ready-for-policy`, `budget-exceeded`, or `insufficient-evidence`;
+4. validate the exact-key P3-R2 policy against that rebuilt plan;
+5. derive `policyIdentity` from the exact normalized policy projection;
+6. if `rebuiltPlan.state == insufficient-evidence`, require zero rebuilt candidates, preserve canonical abstention, and emit the closed `insufficient-evidence` result without inventing selected or omitted candidates;
+7. if `rebuiltPlan.state == ready-for-policy`, traverse every rebuilt candidate under the declared policy;
+8. if `rebuiltPlan.state == budget-exceeded`, ALSO traverse every rebuilt candidate under the declared P3-R2 policy; do not reject the source plan merely because P3-R1 reported its complete candidate set exceeded P3-R1 budget facts;
+9. for both non-abstained source states, apply the exact group/item/byte precedence defined below, and preserve the original source state unchanged as `sourcePlanState`;
+10. build selected/omitted arrays only from rebuilt P3-R1 candidates;
+11. derive the closed result state from selected/omitted counts;
+12. copy source completeness, source abstention, and relation evidence exactly from the rebuilt plan;
+13. derive `applicationIdentity` from the exact result projection defined below, excluding only `applicationIdentity` itself;
+14. deep-freeze the full result.
 
-No semantic policy decision may occur before step 1 succeeds.
+### Explicit `budget-exceeded` semantics
+
+Canonical P3-R1 may return `budget-exceeded` when its complete candidate set exceeds the P3-R1 request budget facts. P3-R2 does not reinterpret or erase that fact.
+
+For `budget-exceeded`:
+
+```text
+POLICY APPLICATION = REQUIRED
+SOURCE PLAN REJECTION SOLELY DUE TO budget-exceeded = FORBIDDEN
+sourcePlanState = budget-exceeded
+source completeness / abstention / relation evidence = PRESERVED
+R2 maxSelectedItems <= rebuiltPlan.budget.maxItems
+R2 maxSelectedUtf8Bytes <= rebuiltPlan.budget.maxUtf8Bytes
+ALL rebuilt candidates = traversed exactly once
+```
+
+The purpose of R2 is precisely to realize a deterministic declared bounded subset. A `budget-exceeded` source plan therefore remains usable as policy input while its source-state fact stays visible in the result.
+
+Any source-plan state outside the three closed P3-R1 states above fails closed as an implementation invariant violation.
 
 ## Exact policy contract
 
-A valid policy is an exact-key plain JSON-compatible object with exactly these semantic fields:
+A valid policy is an exact-key plain JSON-compatible object with exactly these fields and no others:
 
 ```text
 version
@@ -177,9 +191,7 @@ be <= 512 UTF-8 bytes
 match ^[A-Za-z0-9][A-Za-z0-9._:/-]*$
 ```
 
-This intentionally reuses the canonical P3-R1 stable-id alphabet/bound.
-
-The policy bindings MUST equal the rebuilt plan exactly:
+Policy bindings MUST equal the rebuilt plan exactly:
 
 ```text
 planIdentity       == rebuiltPlan.planIdentity
@@ -189,11 +201,11 @@ contentIdentity    == rebuiltPlan.contentIdentity
 taskIdentity       == rebuiltPlan.taskIdentity
 ```
 
-A mismatch fails closed. There is no cross-plan, cross-repository, cross-snapshot, cross-content, or cross-task policy reuse.
+A mismatch fails closed. Cross-plan, cross-repository, cross-snapshot, cross-content, and cross-task policy reuse are forbidden.
 
 ## Closed lane policy
 
-`lanePriority` is mandatory semantic input and must be a dense exact permutation containing each canonical P3-R1 lane exactly once:
+`lanePriority` is mandatory and must be a dense exact permutation containing each canonical P3-R1 lane exactly once:
 
 ```text
 explicit-target
@@ -206,7 +218,7 @@ lexical-fallback
 
 No omission, duplicate, unknown lane, wildcard, default permutation, repository-chosen fallback, or inferred order is authorized.
 
-Changing lane priority changes policy identity and may change output order/selection. That is caller-declared policy behavior, not a quality claim.
+Changing lane priority changes policy identity and may change deterministic selection. This is caller-declared mechanism behavior, not a quality claim.
 
 ## Closed budget and grouping policy
 
@@ -220,24 +232,24 @@ All three limits are mandatory positive safe integers:
 
 P3-R2 may narrow P3-R1 request budgets but may never expand them.
 
-No hidden budget, adaptive budget, learned cap, per-lane score threshold, or repository-owned default is authorized.
+No hidden/adaptive budget, learned cap, per-lane score threshold, or repository-owned default is authorized.
 
 ## Deterministic candidate traversal order
 
-For a non-abstained rebuilt plan, derive one total order using only:
+For `ready-for-policy` and `budget-exceeded`, derive one total order using only:
 
-1. index of `candidate.lane` in caller-declared `lanePriority`;
-2. lowercase canonical P3-R1 `candidateIdentity` lexical order inside one lane.
+1. the index of `candidate.lane` in caller-declared `lanePriority`;
+2. lowercase canonical P3-R1 `candidateIdentity` lexical order within one lane.
 
-The candidate identity tie-break is a deterministic serialization/selection tie-break only. It is not relevance, confidence, utility, reward, correctness, preference, priority quality, or superiority.
+The identity tie-break is a deterministic serialization/selection tie-break only. It is not relevance, confidence, utility, reward, correctness, preference, priority quality, or superiority.
 
-P3-R2 must not inspect or acquire candidate text. It must not compute lexical overlap, graph centrality, structural importance, historical success, model/provider scores, embeddings, learned relevance, or any other new ranking feature.
+P3-R2 must not inspect/acquire candidate text or compute lexical overlap, graph centrality, structural importance, historical success, provider/model scores, embeddings, learned relevance, or any other new ranking feature.
 
 ## Closed selection and omission procedure
 
-Traverse candidates in the declared total order.
+Traverse every rebuilt candidate exactly once in the declared total order.
 
-For each candidate, evaluate exactly this precedence:
+For each candidate evaluate exactly this precedence:
 
 ```text
 1. GROUP CAP
@@ -257,25 +269,21 @@ byte-budget
 Rules:
 
 - if the candidate grouping key already has `maxPerGroupingKey` selected candidates, omit with `group-cap`;
-- else if selected item count already equals `maxSelectedItems`, omit with `item-budget`;
-- else if selecting the candidate would make selected UTF-8 bytes exceed `maxSelectedUtf8Bytes`, omit with `byte-budget`;
-- else select it and increment selected item, byte, and grouping-key counters;
-- after `byte-budget` omission, continue traversal so a later smaller candidate may fit;
-- no candidate may be silently truncated, merged, rewritten, replaced, dropped, or evaluated twice;
-- selected plus omitted candidates MUST partition every rebuilt-plan candidate exactly once.
+- else if selected item count equals `maxSelectedItems`, omit with `item-budget`;
+- else if checked addition of candidate `utf8Bytes` would exceed `maxSelectedUtf8Bytes`, omit with `byte-budget`;
+- else select it and increment selected item, selected byte, and grouping-key counters;
+- after `byte-budget` omission continue traversal so a later smaller candidate may fit;
+- never truncate, merge, rewrite, replace, silently drop, or evaluate a candidate twice;
+- for each non-abstained source plan, `selectedCandidates` plus the candidate contained in every `omittedCandidates` record MUST partition the rebuilt candidate array exactly once by `candidateIdentity`;
+- arithmetic uses safe-integer checked addition and fails closed on overflow/impossible source values.
 
-Arithmetic must use safe-integer checked addition and fail closed on overflow or impossible source values.
+## Closed result contract
 
-## Exact result contract
+No unspecified helper object, extension object, metadata bag, arbitrary semantic field, or implementation-defined key is authorized anywhere in the P3-R2 result.
 
-Exact constants:
+### Exact top-level keys
 
-```text
-version = p3-r2-context-selection-policy-application-v1
-kind = context_selection_policy_application
-```
-
-The result must preserve semantic equivalents of exactly these core fields, with helper subobjects allowed only when their keys are closed by the implementation contract:
+A result is an exact-key plain object containing exactly these keys and no others:
 
 ```text
 version
@@ -305,22 +313,66 @@ sourceAbstention
 relationEvidence
 ```
 
-Each selected candidate is the complete normalized canonical P3-R1 candidate record from the rebuilt plan.
-
-Each omitted record contains exactly:
+Exact constants:
 
 ```text
-candidate = complete normalized canonical P3-R1 candidate
-reason = group-cap | item-budget | byte-budget
+version = p3-r2-context-selection-policy-application-v1
+kind = context_selection_policy_application
 ```
 
-Selected candidate array and omitted record array preserve traversal order. They are semantic ordered arrays and must not be independently resorted afterward.
+### Exact selected candidate schema
 
-The result must preserve rebuilt-plan relation evidence exactly as read-only semantic data. It may not execute or expand relation evidence.
+Each `selectedCandidates[i]` is exactly one canonical normalized P3-R1 `ContextSelectionCandidate` object returned in `rebuiltPlan.candidates`.
 
-## Exact result states
+P3-R2 MUST copy/preserve that canonical candidate semantic record without adding, removing, renaming, rewriting, or recomputing any candidate field. The selected record therefore has exactly the canonical P3-R1 candidate keys and values present in the rebuilt plan; no P3-R2 candidate extension key is authorized.
 
-Closed vocabulary:
+`selectedCandidates` preserves R2 traversal order.
+
+### Exact omitted record schema
+
+Each `omittedCandidates[i]` is an exact-key plain object with exactly:
+
+```text
+candidate
+reason
+```
+
+`candidate` is exactly the canonical normalized P3-R1 candidate object from the rebuilt plan, with no added/removed/rewritten candidate key.
+
+`reason` is exactly one of:
+
+```text
+group-cap
+item-budget
+byte-budget
+```
+
+No other omission field or reason is authorized.
+
+`omittedCandidates` preserves R2 traversal order among omitted candidates.
+
+### Exact source metadata schemas
+
+`sourceCompleteness` is exactly the canonical `rebuiltPlan.completeness` object, with identical keys and values and no P3-R2 extension.
+
+`sourceAbstention` is exactly the canonical `rebuiltPlan.abstention` object, with identical keys and values and no P3-R2 extension.
+
+`relationEvidence` is exactly the canonical `rebuiltPlan.relationEvidence` ordered array, with each canonical relation-binding object preserved identically and no P3-R2 extension.
+
+`sourcePlanState` is exactly the rebuilt plan state: `ready-for-policy`, `budget-exceeded`, or `insufficient-evidence`.
+
+### Derived counters
+
+```text
+usedSelectedItems = selectedCandidates.length
+usedSelectedUtf8Bytes = safe checked sum of candidate.utf8Bytes across selectedCandidates
+```
+
+These counters are facts, not inputs or ranking scores.
+
+## Closed result state machine
+
+Result `state` is exactly one of:
 
 ```text
 selected-all-candidates
@@ -329,26 +381,99 @@ budget-constrained-empty
 insufficient-evidence
 ```
 
-Meanings:
+Derivation is mandatory and exclusive:
 
-- `insufficient-evidence`: rebuilt P3-R1 plan has `state=insufficient-evidence` and canonical abstention; selected and omitted arrays are empty because no source candidates exist;
-- `budget-constrained-empty`: rebuilt plan has candidates but explicit R2 constraints select none; all source candidates appear in omitted records;
-- `selected-subset`: at least one candidate selected and at least one omitted;
-- `selected-all-candidates`: every rebuilt-plan candidate selected and omitted array empty.
+```text
+if sourcePlanState == insufficient-evidence:
+  require rebuilt candidate count == 0
+  require selectedCandidates.length == 0
+  require omittedCandidates.length == 0
+  state = insufficient-evidence
 
-P3-R1 completeness and abstention remain separate source metadata. R2 deterministic policy application never upgrades incomplete source evidence to complete.
+else if selectedCandidates.length == rebuilt candidate count:
+  require omittedCandidates.length == 0
+  state = selected-all-candidates
 
-## Identity semantics
+else if selectedCandidates.length == 0:
+  require omittedCandidates.length == rebuilt candidate count
+  state = budget-constrained-empty
 
-`policyIdentity` is SHA-256 over the canonical normalized policy semantic projection containing all policy fields above except no derived identity field is part of the policy input.
+else:
+  require selectedCandidates.length > 0
+  require omittedCandidates.length > 0
+  require selected + omitted == rebuilt candidate count
+  state = selected-subset
+```
 
-`applicationIdentity` is SHA-256 over the canonical result semantic projection containing every result field except `applicationIdentity` itself.
+A non-abstained rebuilt plan cannot produce `insufficient-evidence`. An abstained rebuilt plan cannot produce any selected/omitted candidate.
 
-Canonicalization must be deterministic sorted-key JSON semantics for unordered object properties, preserve semantic array order, reject unsupported/non-JSON structures, reject cycles, and remain independent of wall-clock time, local absolute path, environment, process state, locale, network state, provider state, randomness, and caller property insertion order.
+P3-R1 completeness and source state remain independent source facts. P3-R2 never upgrades incomplete source evidence to complete and never rewrites `budget-exceeded` to `ready-for-policy`.
 
-## Hostile-input requirements
+## Closed identity semantics
 
-Before unsafe evaluation, P3-R2 policy/result helpers must fail closed on:
+### Policy identity
+
+`policyIdentity` is lowercase SHA-256 over deterministic canonical sorted-key JSON of exactly this normalized projection and no other value:
+
+```text
+{
+  version,
+  kind,
+  policyId,
+  planIdentity,
+  repositoryIdentity,
+  snapshotIdentity,
+  contentIdentity,
+  taskIdentity,
+  lanePriority,
+  maxSelectedItems,
+  maxSelectedUtf8Bytes,
+  maxPerGroupingKey
+}
+```
+
+No derived identity field is part of the policy input.
+
+### Application identity
+
+`applicationIdentity` is lowercase SHA-256 over deterministic canonical sorted-key JSON of exactly the complete result top-level projection below, excluding only `applicationIdentity` itself:
+
+```text
+{
+  version,
+  kind,
+  policyIdentity,
+  policyId,
+  planIdentity,
+  requestIdentity,
+  candidateSetIdentity,
+  repositoryIdentity,
+  snapshotIdentity,
+  contentIdentity,
+  taskIdentity,
+  state,
+  lanePriority,
+  maxSelectedItems,
+  maxSelectedUtf8Bytes,
+  maxPerGroupingKey,
+  usedSelectedItems,
+  usedSelectedUtf8Bytes,
+  selectedCandidates,
+  omittedCandidates,
+  sourcePlanState,
+  sourceCompleteness,
+  sourceAbstention,
+  relationEvidence
+}
+```
+
+Because every nested record shape above is closed, this projection cannot acquire implementation-defined semantic fields.
+
+Canonicalization preserves semantic array order, sorts unordered object keys, rejects unsupported/non-JSON structures and cycles, and is independent of clock, absolute path, environment, process state, locale, network, provider state, randomness, and caller property insertion order.
+
+## Hostile-input and structural validation requirements
+
+Before unsafe evaluation, P3-R2 policy/result helpers fail closed on:
 
 ```text
 Proxy objects
@@ -363,15 +488,15 @@ unsupported versions/kinds
 cycles
 undefined / bigint / function / symbol values
 non-finite numbers
-unsafe or impossible integers
-oversized policyId
-invalid stable-id alphabet
+unsafe/impossible integers
+oversized/invalid policyId
 lane duplicates/omissions/extras
 identity mismatches
 resource-bound violations
+unexpected source plan state
 ```
 
-The P3-R1 request itself is validated by canonical `buildContextSelectionPlan`; P3-R2 must not weaken or bypass that validation.
+The complete P3-R1 request itself is validated only by canonical `buildContextSelectionPlan`; P3-R2 must not weaken, bypass, or recreate a looser P3-R1 validator.
 
 ## Authorized implementation allowlist
 
@@ -386,11 +511,11 @@ docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_EVIDENCE_2026-08-29.
 
 No fifth path is authorized.
 
-Read-only direct imports from canonical P3-R1 source/contracts are authorized. Mutation of P3-R1/K3 bytes is not.
+Read-only imports from canonical P3-R1 source/contracts are authorized. Mutation of P3-R1/K3 bytes is not.
 
 No export barrel, package manifest, CLI, application integration, workflow, dependency, lockfile, fixture, benchmark corpus, roadmap, status, persistence, telemetry, provider/model configuration, release, or ruleset path is authorized.
 
-If implementation needs any additional path or P3-R1/K3 contract change, stop and create separate canonical authority.
+If implementation needs an additional path or P3-R1/K3 contract change, stop and create separate canonical authority.
 
 ## Purity and side-effect invariants
 
@@ -423,139 +548,148 @@ This authorization does not grant:
 - P3-R3 or later P3 implementation;
 - caller-claimed plan trust or plan-only derivation validation;
 - repository-owned default/winning policy;
-- automatic policy choice, mutation, optimization, adaptation, or promotion;
-- numeric relevance/quality weights, blended scores, thresholds, confidence, rewards, utility, or hidden ranking features;
-- benchmark execution, result generation, policy comparison, winner, best, superior, SOTA, or quality-improvement claims;
-- embeddings, vector databases, ANN indexes, learned rerankers/classifiers, or semantic-model retrieval;
-- K3-R5 context-engine invocation;
-- K3-R6 graph construction/query execution;
-- repository crawling/scanning/indexing/file/history reads or context-text acquisition;
-- provider/model/reviewer/evaluator/tool/agent execution;
-- network/secrets/subprocess/sandbox/external-service authority;
-- persistence/database/telemetry/upload/analytics/training/online learning/repository-local experience retrieval;
-- cross-repository retrieval/aggregation/learning/policy transfer;
-- new dependencies or donor intake/replacement;
-- CLI/API/product/agent-loop/reviewer/gateway/routing/retry/autofix/release integration;
-- P3-R1 or K3 source/contract/test/evidence mutation;
-- K2/K5/Done Gate/PROVEN_READY expansion;
-- P2-R6+ or P4-P8 implementation;
-- general/public KodacBench completion;
-- package publication/public release/version/production/security/support/brand claims;
-- ruleset mutation or bypass.
+- automatic policy choice, mutation, optimization, promotion, or learning;
+- numeric quality score, ranking weight, threshold, confidence, reward, significance rule, or universal score;
+- benchmark execution, benchmark corpus mutation, benchmark result generation, or any quality/superiority claim;
+- embeddings, vector databases, ANN, learned rerankers/classifiers, model-scored retrieval, or provider/model invocation;
+- K3-R5 context-engine execution or mutation;
+- K3-R6 relation-graph construction/query execution or mutation;
+- repository crawling, scanning, indexing, history reads, new filesystem acquisition, or ast-grep execution;
+- network, secrets, sandbox, subprocess, persistence, database, telemetry, upload, analytics, training, fine-tuning, online learning, or cross-repository retrieval/learning;
+- new dependencies, donor intake, or donor replacement;
+- CLI, API, product, agent-loop, reviewer, gateway, routing, retry, autofix, or release integration;
+- P2-R6+ implementation;
+- P4-P8 implementation;
+- K2/K5/Done Gate/`PROVEN_READY` authority expansion;
+- package publication, public release/version declaration, production-readiness, compatibility/support/security, benchmark, winner, best, superior, or brand-launch claims;
+- GitHub ruleset mutation or bypass.
 
-## Required implementation tests
+## Required focused implementation tests
 
-The later implementation PR must prove at least:
+The future implementation PR must prove at least:
 
-1. P3-R2 calls canonical `buildContextSelectionPlan` on the complete untrusted request before policy semantics are read/applied;
-2. malformed/tampered P3-R1 request identities, candidates, relation results, completeness, budgets, and hostile structures fail through canonical P3-R1 validation;
-3. no caller-claimed serialized plan object is accepted as derivation truth;
-4. policy exact keys, version, kind, `policyId` byte/alphabet bounds, and all bindings validate fail-closed;
-5. cross-plan/repository/snapshot/content/task policy reuse fails;
-6. lanePriority contains all six lanes exactly once and has no default;
-7. changing lane priority changes policy identity and observable order where applicable;
-8. same-lane candidate identity lexical tie-break is deterministic and never materializes a score;
-9. item/byte/group limits are positive safe integers and cannot exceed rebuilt-plan authority;
-10. group-cap omission and reason;
-11. item-budget omission and reason;
-12. byte-budget omission and reason;
-13. omission precedence group -> item -> byte;
-14. traversal continues after byte omission and later smaller candidate may fit;
-15. selected + omitted partition every source candidate exactly once;
-16. selected/omitted records preserve complete rebuilt P3-R1 candidate semantics/provenance without trust upgrade;
-17. relation evidence is preserved exactly and never executed;
-18. source incompleteness remains incomplete;
-19. source P3-R1 insufficient-evidence produces R2 insufficient-evidence without invention;
-20. all-budget-omitted candidates produce budget-constrained-empty, distinct from insufficient-evidence;
-21. all selected -> selected-all-candidates;
-22. strict non-empty subset -> selected-subset;
-23. identical semantic inputs produce identical policy/application identities;
-24. object insertion order is non-semantic while policy/result array order remains semantic;
-25. identity projections exclude their own derived identity field and reject tampering where applicable;
-26. hostile Proxy/accessor/symbol/sparse/cyclic/non-plain/unknown/unsupported/non-finite/oversized inputs fail closed;
-27. arithmetic overflow fails closed;
-28. nested returned structures are deeply frozen and detached from caller mutation;
-29. exact result version/kind and closed states/reasons are enforced;
-30. no quality score/weight/threshold/winner/promotion/default policy is materialized;
-31. no repository acquisition/K3 execution/network/subprocess/provider/persistence/telemetry/training/side effect occurs;
-32. focused tests pass on every repository-supported runtime CI platform;
-33. all repository-required CI remains green.
+1. canonical `buildContextSelectionPlan` is invoked before policy semantics;
+2. malformed P3-R1 requests fail through the canonical builder;
+3. no caller-claimed serialized plan is accepted by the public R2 function;
+4. `ready-for-policy` is accepted and applied deterministically;
+5. `budget-exceeded` is accepted, every source candidate is traversed exactly once, the result preserves `sourcePlanState=budget-exceeded`, and R2 limits do not exceed P3-R1 budgets;
+6. `insufficient-evidence` preserves source abstention and produces zero selected/omitted candidates;
+7. unexpected source state fails closed as an invariant violation;
+8. exact policy key set is enforced; unknown/missing keys fail;
+9. `policyId` alphabet and 512-byte bound are enforced;
+10. policy identities must match rebuilt plan/repository/snapshot/content/task identities;
+11. lane priority is an exact dense six-lane permutation;
+12. no default lane priority exists;
+13. item/byte/group limits are positive safe integers and cannot expand rebuilt-plan budgets;
+14. traversal is lane priority then canonical candidateIdentity only;
+15. semantically irrelevant caller object insertion order does not affect identities/results;
+16. group-cap precedes item-budget, which precedes byte-budget;
+17. traversal continues after a byte-budget omission;
+18. selected plus omitted exactly partition every non-abstained rebuilt candidate once;
+19. selected records equal canonical rebuilt candidates without added/removed/rewritten keys;
+20. omitted records have exactly `candidate` and `reason` keys;
+21. source completeness equals rebuilt plan completeness exactly;
+22. source abstention equals rebuilt plan abstention exactly;
+23. relation evidence equals rebuilt plan relation evidence exactly;
+24. result top-level exact-key enforcement rejects any added helper/metadata/extension key;
+25. every nested P3-R2-owned object has exactly its authorized key set;
+26. result state derivation follows the closed state machine exactly;
+27. used counters equal selected length and checked selected byte sum;
+28. `policyIdentity` projection is exactly the authorized policy projection;
+29. `applicationIdentity` projection includes every authorized result field except itself and no unspecified field;
+30. candidate/relation/source trust metadata is never upgraded or rewritten;
+31. hostile Proxy/accessor/symbol/sparse/cyclic/non-plain/unknown-field structures fail closed;
+32. nested returned structures are deeply frozen;
+33. no repository/filesystem/network/subprocess/provider/model/persistence/telemetry/learning behavior exists;
+34. no quality score, weight, threshold, winner, benchmark result, or superiority verdict is materialized;
+35. focused tests and all existing required repository CI pass on the exact final head.
 
-Tests use in-memory/repository-authored values inside the one authorized test path; no new fixture path or network access.
+Fixtures must be in-memory in the authorized test path or reuse canonical data without adding a fixture path or network access.
 
 ## Required implementation evidence record
 
-The later implementation PR must create exactly:
+The future implementation PR must create exactly:
 
 ```text
 docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_EVIDENCE_2026-08-29.md
 ```
 
-It must bind the canonical authorization merge/blob, implementation base/head/tree, four final blobs, unchanged canonical P3-R1 blobs, focused/full CI results, runtime matrix, two distinct external substantive terminal-clean exact-head semantic review channels, zero unresolved findings/threads, active no-bypass ruleset, forward-only repair history, purity/non-grants, guarded merge conditions, and required post-merge proof.
+It must bind at least:
 
-Candidate-time evidence must not fabricate future merge facts. If evidence materialization moves the implementation head, all earlier exact-head CI/review is pre-final evidence only and the evidence-bearing final head must be requalified.
+- canonical authorization merge identity and authorization blob;
+- implementation base SHA/tree;
+- exact final implementation head/tree;
+- exact four changed paths and final blobs;
+- focused commands/results;
+- required exact-head Governance and K2 qualification;
+- applicable supported-platform runtime qualification;
+- at least two distinct independent external substantive terminal-clean exact-head semantic reviewer channels;
+- zero unresolved material findings/actionable threads;
+- active no-bypass ruleset proof;
+- preserved purity/non-grants;
+- guarded normal merge conditions;
+- post-merge protected-main/ordered-parent/tree/blob/signature/applicable-check proof before P3-R2 may be called canonical or complete.
+
+Candidate-time evidence must not claim future merge/post-merge facts as completed.
 
 ## Authorization-candidate qualification gate
 
-This replacement one-path authorization candidate may merge only when one frozen exact head proves:
+This one-path authorization candidate may merge only when one frozen exact head proves all of:
 
-1. canonical `main` is the expected baseline above or the candidate is forward-reconciled without destructive history rewrite;
+1. protected `main` remains the exact canonical base above or the candidate is reconciled forward without destructive history rewriting;
 2. `behind_by=0`;
-3. changed-file set is exactly this one authorization path;
-4. exact candidate head/tree/document blob are captured;
-5. required exact-head `provenance`, `legacy-tests`, and `k2-runtime-gate` contexts succeed as applicable;
-6. at least two distinct independent external substantive semantic reviewer channels are terminal-clean on this exact head under the provider-neutral quorum;
-7. skipped, billing, outage, status-only, summary-only, self-review, stale-head, or duplicate-provider output does not count;
-8. unresolved material correctness/security/governance/authority/evidence/contract/testability/scope findings = 0;
-9. unresolved actionable review threads = 0;
-10. PR is open, non-draft, mergeable, and not behind protected main;
-11. ruleset `20707483` remains active with required contexts/thread resolution, `bypass_actors=[]`, and `current_user_can_bypass=never`;
-12. `WAIVER=NO`;
-13. merge uses normal history-preserving `merge` semantics guarded by exact `expected_head_sha`;
-14. no force-push, rebase, stale evidence reuse, bypass, or silent waiver occurs.
+3. changed-file set is exactly the one authorization path with no rename/copy source;
+4. no runtime source/test/workflow/dependency/lockfile/fixture/roadmap/status/package/release/ruleset path changes;
+5. exact final candidate head/tree/document blob are captured;
+6. required exact-head CI is terminal success, including `provenance`, `legacy-tests`, and `k2-runtime-gate` as applicable;
+7. at least two distinct independently operated external semantic reviewer/model-system channels each provide a substantive terminal-clean assessment bound to the exact final head;
+8. rate-limit, billing, outage, skipped review, status-only, summary-only, self-review, stale-head, or duplicate-provider output does not count;
+9. unresolved material correctness/security/governance/authority/evidence/contract/testability/scope findings = 0;
+10. unresolved actionable review threads = 0;
+11. PR is open, non-draft, mergeable, and not behind protected `main`;
+12. ruleset `20707483` remains active with required thread resolution and required contexts `provenance`, `legacy-tests`, and `k2-runtime-gate`;
+13. bypass actors remain empty and current user cannot bypass;
+14. `WAIVER=NO`;
+15. merge is a normal history-preserving guarded merge using exact qualified `expected_head_sha`;
+16. no force-push, rebase, destructive history rewrite, stale evidence reuse, bypass, or silent waiver occurs.
 
-Any candidate head change invalidates prior exact-head CI and review qualification.
+Any head change invalidates all prior exact-head CI/reviewer qualification.
 
 ## Mandatory authorization post-merge proof
 
-P3-R2 implementation authority becomes effective only after proving:
-
-1. protected main equals the authorization merge SHA;
-2. ordered parent 1 equals exact pre-merge main;
-3. ordered parent 2 equals exact qualified authorization head;
-4. merge tree equals qualified candidate tree;
-5. canonical authorization blob equals candidate blob;
-6. GitHub merge verification/signature is valid where supplied;
-7. applicable post-merge Governance is terminal success;
-8. path-filtered absence of K2 push is only `NOT_APPLICABLE`, never mislabeled success;
-9. ruleset remains active/no-bypass;
-10. PR merged/closed and no material post-merge invalidation exists;
-11. `WAIVER=NO`.
-
-Only then may repository work state:
+P3-R2 implementation authority becomes effective only after all of:
 
 ```text
-P3-R2 DECLARED CONTEXT SELECTION POLICY APPLICATION = AUTHORIZED / NOT YET CLOSED_CANONICAL
+PR = MERGED NORMALLY
+PROTECTED main = EXACT MERGE SHA
+MERGE PARENT 1 = EXACT PRE-MERGE CANONICAL main
+MERGE PARENT 2 = EXACT QUALIFIED AUTHORIZATION HEAD
+MERGE TREE = EXACT QUALIFIED AUTHORIZATION TREE
+AUTHORIZATION BLOB ON main = EXACT QUALIFIED BLOB
+MERGE SIGNATURE = verified / valid
+POST-MERGE GOVERNANCE = SUCCESS
+K2 PUSH APPLICABILITY = RECORDED TRUTHFULLY; DOCS-ONLY PATH FILTER MAY MAKE RUNTIME PUSH NOT_APPLICABLE
+RULESET 20707483 = active / no bypass
+WAIVER = NO
 ```
 
-## P3-R2 completion boundary
+Only then may one implementation branch start from that canonical authorization merge and touch the exact four implementation paths.
 
-The later implementation is `CLOSED_CANONICAL` only after exact four-path scope, final-head Governance and full K2 runtime matrix, focused tests, two distinct terminal-clean external semantic reviewer channels, zero unresolved material findings/threads, exact head/tree/four blobs, active no-bypass ruleset, guarded normal merge, and post-merge main/parents/tree/blobs/signature/Governance/K2/ruleset proof.
+## After P3-R2 implementation closure
 
-Successful P3-R2 closure establishes only the deterministic caller-declared policy application primitive. It does not establish that any policy is better.
+P3-R2 closure, if later achieved, establishes only the bounded deterministic declared-policy application mechanism.
 
-## Next-stage boundary
+It does not prove that any lane order, grouping cap, budget, policy, context set, or resulting selection is better than K3-R5 or any alternative.
 
-No P3-R3 implementation is authorized here. After P3-R2 closure and roadmap/status reconciliation, the next P3 unit must be separately defined from live repository truth. Any repository-owned policy comparison, promotion, or context-quality improvement claim must be benchmark-backed under ADR-0010 before canonicalization.
+Any repository-owned default policy, policy comparison, benchmark-backed promotion, quality claim, or P3-R3+ work requires a separate later exact canonical authorization under ADR-0010.
+
+Roadmap/status reconciliation after canonical P3-R2 implementation closure is documentation work only and must not silently create P3-R3 implementation authority.
 
 ```text
+P3-R2 MECHANISM != BETTER CONTEXT
+DECLARED POLICY != REPOSITORY-OWNED WINNING POLICY
+DETERMINISTIC SELECTION != QUALITY RANKING
 P3-R2 CLOSED != P3 OVERALL CLOSED
-P3-R2 CLOSED != BETTER CONTEXT PROVEN
-P3-R2 CLOSED != REPOSITORY-OWNED POLICY CHOSEN
-P3-R2 CLOSED != EMBEDDINGS AUTHORIZED
-P3-R2 CLOSED != MODEL RERANKING AUTHORIZED
-P3-R2 CLOSED != PRODUCT INTEGRATION AUTHORIZED
 P3-R2 CLOSED != P3-R3 AUTHORIZED
+WAIVER = NO
 ```
-
-`WAIVER=NO`
