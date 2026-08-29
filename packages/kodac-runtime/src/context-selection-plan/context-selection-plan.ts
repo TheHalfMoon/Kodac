@@ -197,6 +197,13 @@ function canonicalStringArray(value: unknown, label: string, maximum: number, ma
   return Object.freeze(normalized.sort(compareStrings))
 }
 
+function orderedDigestArray(value: unknown, label: string, maximum: number): readonly string[] {
+  const values = denseArrayValues(value, label, maximum)
+  const normalized = values.map((item, index) => digest(item, `${label}[${index}]`))
+  if (new Set(normalized).size !== normalized.length) throw new TypeError(`${label} contains duplicate identities`)
+  return Object.freeze(normalized)
+}
+
 function deepFreeze<T>(value: T, ancestors = new WeakSet<object>()): T {
   if (value !== null && typeof value === "object" && !Object.isFrozen(value)) {
     if (ancestors.has(value)) throw new TypeError("normalized context selection plan must not be cyclic")
@@ -261,8 +268,7 @@ function relationHit(value: unknown, graphIdentity: string, label: string): Rela
   const normalizedEntity = entity(record.entity, `${label}.entity`)
   const nodeIdentity = digest(record.nodeIdentity, `${label}.nodeIdentity`)
   const depth = positiveInteger(record.depth, `${label}.depth`, K3_R6_LIMITS.maxQueryDepth)
-  const edgeIdentities = canonicalStringArray(record.edgeIdentities, `${label}.edgeIdentities`, K3_R6_LIMITS.maxEvidenceChainEdges, 64)
-  for (const edgeIdentity of edgeIdentities) if (!SHA256.test(edgeIdentity)) throw new TypeError(`${label}.edgeIdentities must contain lowercase SHA-256 identities`)
+  const edgeIdentities = orderedDigestArray(record.edgeIdentities, `${label}.edgeIdentities`, K3_R6_LIMITS.maxEvidenceChainEdges)
   if (edgeIdentities.length !== depth) throw new TypeError(`${label}.edgeIdentities length must equal depth`)
   const chainIdentity = digest(record.chainIdentity, `${label}.chainIdentity`)
   const expectedChain = sha256({ version: K3_R6_RELATION_RESULT_VERSION, graphIdentity, edgeIdentities })
