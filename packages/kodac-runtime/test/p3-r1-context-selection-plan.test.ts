@@ -15,7 +15,9 @@ import {
   K3_R6_IMPACT_RELATION_KINDS,
   K3_R6_RELATION_QUERY_VERSION,
   K3_R6_RELATION_RESULT_VERSION,
+  type RelationEntity,
   type RelationGraphQueryResult,
+  type RelationQueryHit,
 } from "../src/relation-graph/contracts.ts"
 
 const REPOSITORY_ID = "a".repeat(64)
@@ -25,6 +27,7 @@ const GRAPH_ID = "d".repeat(64)
 const NODE_ID = "e".repeat(64)
 const EDGE_ID = "f".repeat(64)
 const SECOND_EDGE_ID = "0".repeat(64)
+const ORDERING_EDGE_ID = `${"0".repeat(63)}1`
 const SOURCE_ID = "1".repeat(64)
 
 function compareStrings(left: string, right: string): number {
@@ -120,6 +123,46 @@ function relationResult(options: { incomplete?: boolean, depthTwo?: boolean } = 
     completeness,
     hits: [hit],
   }
+  return { ...base, resultIdentity: sha256(base) }
+}
+
+function depthOneHit(nodeIdentity: string, entity: RelationEntity, edgeIdentity: string): RelationQueryHit {
+  const edgeIdentities = [edgeIdentity]
+  return {
+    nodeIdentity,
+    entity,
+    depth: 1,
+    chainIdentity: sha256({ version: K3_R6_RELATION_RESULT_VERSION, graphIdentity: GRAPH_ID, edgeIdentities }),
+    edgeIdentities,
+  }
+}
+
+function symbolOrderingRelationResult(mode: "qualified-name" | "source-span"): RelationGraphQueryResult {
+  const { resultIdentity: _ignored, ...seed } = relationResult()
+  const firstEntity: RelationEntity = mode === "qualified-name"
+    ? { kind: "symbol", path: "src/shared.ts", symbol: "zeta", qualifiedName: "a.scope", sourceSpan: null }
+    : {
+      kind: "symbol", path: "src/shared.ts", symbol: "same", qualifiedName: "same.scope",
+      sourceSpan: { path: "src/shared.ts", startLine: 1, startColumn: 1, endLine: 1, endColumn: 3 },
+    }
+  const secondEntity: RelationEntity = mode === "qualified-name"
+    ? { kind: "symbol", path: "src/shared.ts", symbol: "alpha", qualifiedName: "z.scope", sourceSpan: null }
+    : {
+      kind: "symbol", path: "src/shared.ts", symbol: "same", qualifiedName: "same.scope",
+      sourceSpan: { path: "src/shared.ts", startLine: 2, startColumn: 1, endLine: 2, endColumn: 3 },
+    }
+  const firstEdge = mode === "source-span" ? ORDERING_EDGE_ID : EDGE_ID
+  const secondEdge = mode === "source-span" ? SECOND_EDGE_ID : ORDERING_EDGE_ID
+  const hits = [
+    depthOneHit("6".repeat(64), firstEntity, firstEdge),
+    depthOneHit("7".repeat(64), secondEntity, secondEdge),
+  ].sort((left, right) => (
+    left.depth - right.depth
+    || compareStrings(left.entity.path, right.entity.path)
+    || compareStrings(canonicalize(left.entity), canonicalize(right.entity))
+    || compareStrings(left.chainIdentity, right.chainIdentity)
+  ))
+  const base = { ...seed, hits }
   return { ...base, resultIdentity: sha256(base) }
 }
 
@@ -261,6 +304,18 @@ test("P3-R1 preserves semantic order for multi-edge K3-R6 evidence chains", () =
     hits: [{ ...relation.hits[0], edgeIdentities: reversedEdges }],
   }
   assert.throws(() => buildContextSelectionPlan(request({ relationResults: [malformed], candidates: [] })), /chainIdentity mismatch/)
+})
+
+test("P3-R1 matches canonical K3-R6 same-path symbol ordering by qualified name", () => {
+  const relation = symbolOrderingRelationResult("qualified-name")
+  const plan = buildContextSelectionPlan(request({ relationResults: [relation], candidates: [] }))
+  assert.equal(plan.relationEvidence[0].resultIdentity, relation.resultIdentity)
+})
+
+test("P3-R1 matches canonical K3-R6 same-path symbol ordering by source span", () => {
+  const relation = symbolOrderingRelationResult("source-span")
+  const plan = buildContextSelectionPlan(request({ relationResults: [relation], candidates: [] }))
+  assert.equal(plan.relationEvidence[0].resultIdentity, relation.resultIdentity)
 })
 
 test("P3-R1 keeps incomplete relation evidence explicitly incomplete", () => {
