@@ -24,6 +24,7 @@ const CONTENT_ID = "c".repeat(64)
 const GRAPH_ID = "d".repeat(64)
 const NODE_ID = "e".repeat(64)
 const EDGE_ID = "f".repeat(64)
+const SECOND_EDGE_ID = "0".repeat(64)
 const SOURCE_ID = "1".repeat(64)
 
 function compareStrings(left: string, right: string): number {
@@ -76,7 +77,7 @@ function request(overrides: Partial<ContextSelectionPlanRequest> = {}): ContextS
   }
 }
 
-function relationResult(options: { incomplete?: boolean } = {}): RelationGraphQueryResult {
+function relationResult(options: { incomplete?: boolean, depthTwo?: boolean } = {}): RelationGraphQueryResult {
   const relations = [...K3_R6_IMPACT_RELATION_KINDS]
   const maxDepth = 2
   const maxResults = 8
@@ -92,11 +93,12 @@ function relationResult(options: { incomplete?: boolean } = {}): RelationGraphQu
     maxDepth,
     maxResults,
   })
-  const edgeIdentities = [EDGE_ID]
+  const edgeIdentities = options.depthTwo ? [EDGE_ID, SECOND_EDGE_ID] : [EDGE_ID]
+  const depth = edgeIdentities.length
   const hit = {
     nodeIdentity: "2".repeat(64),
     entity: { kind: "file" as const, path: "src/consumer.ts", symbol: null, qualifiedName: null, sourceSpan: null },
-    depth: 1,
+    depth,
     chainIdentity: sha256({ version: K3_R6_RELATION_RESULT_VERSION, graphIdentity: GRAPH_ID, edgeIdentities }),
     edgeIdentities,
   }
@@ -246,6 +248,19 @@ test("P3-R1 validates supplied K3-R6 relation result bindings and identities wit
 
   assert.throws(() => buildContextSelectionPlan(request({ relationResults: [{ ...relation, snapshotIdentity: "9".repeat(64) }], candidates: [] })), /binding does not match/)
   assert.throws(() => buildContextSelectionPlan(request({ relationResults: [{ ...relation, resultIdentity: "9".repeat(64) }], candidates: [] })), /resultIdentity mismatch/)
+})
+
+test("P3-R1 preserves semantic order for multi-edge K3-R6 evidence chains", () => {
+  const relation = relationResult({ depthTwo: true })
+  const plan = buildContextSelectionPlan(request({ relationResults: [relation], candidates: [] }))
+  assert.equal(plan.relationEvidence[0].resultIdentity, relation.resultIdentity)
+
+  const reversedEdges = [...relation.hits[0].edgeIdentities].reverse()
+  const malformed = {
+    ...relation,
+    hits: [{ ...relation.hits[0], edgeIdentities: reversedEdges }],
+  }
+  assert.throws(() => buildContextSelectionPlan(request({ relationResults: [malformed], candidates: [] })), /chainIdentity mismatch/)
 })
 
 test("P3-R1 keeps incomplete relation evidence explicitly incomplete", () => {
