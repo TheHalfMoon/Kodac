@@ -20,7 +20,7 @@ WAIVER = NO
 
 This record is deny-by-default. While it is only a branch or pull-request candidate it creates no effective P3-R3 implementation authority.
 
-P3-R3 in this record is a **pairwise metric-evidence binding mechanism**, not a benchmark runner, policy search system, ranking system, promotion gate, default selector, or quality claim.
+P3-R3 in this record is a **pairwise metric-evidence binding mechanism**. It is not a benchmark runner, policy search system, ranking system, promotion gate, default selector, or quality claim.
 
 ---
 
@@ -70,13 +70,46 @@ P2-R5 directional relation derivation
   blob = e55e2ce138ab88132f0fddb79faa3ecac8db4e14
 ```
 
-Governing sources are live GitHub truth, root `AGENTS.md`, current roadmap/status/version views, `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`, ADR-0010, the provider-neutral semantic-review quorum amendment, canonical P2 R1-R5 evidence contracts, and canonical P3-R1/P3-R2 authorization/evidence/contracts.
+Governing sources are live GitHub truth, root `AGENTS.md`, current roadmap/status/version views, `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`, ADR-0010, the provider-neutral semantic-review quorum amendment, canonical P2 R1-R5 contracts/evidence, and canonical P3-R1/P3-R2 authorization/evidence/contracts.
 
 If protected `main`, repository governance, or a more-specific canonical authority conflicts with this candidate before merge, this candidate is stale and must be reconciled forward. No rebase, force-push, destructive history rewriting, stale evidence reuse, bypass, or silent waiver is authorized.
 
 ---
 
-## 2. Exact authorization-candidate path
+## 2. Accepted review finding and forward repair
+
+PR #258 initial head `170d5576d3ff9b9158743f5a06c411864e8e9cde` received a valid material CodeRabbit finding in issue comment `5462306569`.
+
+The initial candidate incorrectly described canonical P3-R2 `policyIdentity` / `applicationIdentity` values as `sha256:<hex>` identities. Canonical P3-R2 actually derives those identities with `digest("hex")`, so they are bare lowercase 64-character hexadecimal strings.
+
+This revision accepts that finding without waiver and closes the grammar explicitly:
+
+```text
+P3-R2 policyIdentity grammar      = ^[0-9a-f]{64}$
+P3-R2 applicationIdentity grammar = ^[0-9a-f]{64}$
+P2 lowercase SHA-256 identity grammar = ^sha256:[0-9a-f]{64}$
+sha256Canonical(...) output grammar    = ^sha256:[0-9a-f]{64}$
+```
+
+Therefore:
+
+- trusted P3-R2 `policyIdentity` and `applicationIdentity` values remain bare 64-hex exactly as canonical P3-R2 emits them;
+- the derived P3-R3 subject ID embeds the bare P3-R2 application identity without adding a prefix to that embedded identity;
+- `sha256Canonical(...)` remains the canonical P2/P3 helper that returns `sha256:<64 lowercase hex>`;
+- P2 subject `system_version_commit_identity`, P2 comparison/relation identities, and other inherited P2 SHA-256 identities retain the `sha256:` prefix.
+
+All CI/review evidence from head `170d5576d3ff9b9158743f5a06c411864e8e9cde` is stale after this forward repair and MUST NOT be reused for final qualification.
+
+```text
+VALID_FINDING = ACCEPTED
+REPAIR = FORWARD_ONLY
+STALE_PRIOR_HEAD_CI_REVIEW = YES
+WAIVER = NO
+```
+
+---
+
+## 3. Exact authorization-candidate path
 
 This authorization candidate may change exactly one path:
 
@@ -90,7 +123,7 @@ Any byte change after qualification invalidates all prior exact-head CI and sema
 
 ---
 
-## 3. Objective
+## 4. Objective
 
 Authorize, only after this exact record becomes canonical and post-merge proven, one pure deterministic P3-R3 mechanism that:
 
@@ -101,13 +134,13 @@ Authorize, only after this exact record becomes canonical and post-merge proven,
 5. binds the P2 comparison subjects to the two exact trusted P3-R2 policy applications;
 6. requires one bounded `context-selection` task-family metric set covering the seven context-evidence dimensions named by the durable master plan;
 7. preserves every per-metric P2-R5 relation without aggregation; and
-8. emits one immutable deterministic **metric-evidence record** that reports only whether all seven required metric slots are comparable or whether one or more remain `INSUFFICIENT_EVIDENCE`.
+8. emits one immutable deterministic metric-evidence record that reports only whether all seven required metric slots are comparable or whether one or more remain `INSUFFICIENT_EVIDENCE`.
 
 The R3 state is structural metric-evidence status only. It is not a quality verdict and does not authorize any policy decision.
 
 ---
 
-## 4. Closed trust boundary
+## 5. Closed trust boundary
 
 P3-R3 MUST NOT accept any caller-claimed serialized P3-R2 application result or caller-claimed serialized P2-R5 relation set as derivation truth.
 
@@ -149,7 +182,7 @@ No P3-R3 semantic decision may occur before both P3-R2 application calls and the
 
 ---
 
-## 5. Exact future public function boundary
+## 6. Exact future public function boundary
 
 The public R3 function must be semantically equivalent to:
 
@@ -167,27 +200,28 @@ Mandatory procedure order:
 
 1. invoke canonical P3-R2 `applyDeclaredContextSelectionPolicy(planRequestValue, leftPolicyValue)`;
 2. invoke canonical P3-R2 `applyDeclaredContextSelectionPolicy(planRequestValue, rightPolicyValue)`;
-3. require both trusted applications to bind the same `planIdentity`, `requestIdentity`, `candidateSetIdentity`, `repositoryIdentity`, `snapshotIdentity`, `contentIdentity`, and `taskIdentity`;
-4. require distinct `policyIdentity` values;
-5. require distinct `applicationIdentity` values;
-6. invoke canonical P2-R5 `deriveP2R5Relations(p2R4ComparisonValue)`;
-7. retain only the returned trusted P2-R5 relation set as pairwise metric-relation truth;
-8. validate the exact-key P3-R3 evidence declaration;
-9. derive the expected left and right benchmark subject bindings from the trusted P3-R2 applications and the canonical P3-R2 implementation merge identity;
-10. require exact left/right P2 subject binding to those derived identities;
-11. require declaration benchmark/protocol/evaluation-context/comparison-policy bindings to equal the trusted P2-R5 relation-set fields;
-12. require exactly one P2-R5 task family named `context-selection`;
-13. require exactly seven distinct metrics in that family and one exact mapping for each required context-evidence dimension;
-14. preserve all seven trusted P2-R5 metric relation records exactly, in canonical P2-R5 metric order;
-15. derive the closed metric-evidence state using only P2-R5 `status` values;
-16. derive the exact evidence identity from the closed semantic projection excluding only the identity field itself; and
-17. deep-freeze the entire output.
+3. validate trusted P3-R2 `policyIdentity` / `applicationIdentity` values using the canonical bare-lowercase-64-hex grammar;
+4. require both trusted applications to bind the same `planIdentity`, `requestIdentity`, `candidateSetIdentity`, `repositoryIdentity`, `snapshotIdentity`, `contentIdentity`, and `taskIdentity`;
+5. require distinct `policyIdentity` values;
+6. require distinct `applicationIdentity` values;
+7. invoke canonical P2-R5 `deriveP2R5Relations(p2R4ComparisonValue)`;
+8. retain only the returned trusted P2-R5 relation set as pairwise metric-relation truth;
+9. validate the exact-key P3-R3 evidence declaration;
+10. derive the expected left and right benchmark subject bindings from the trusted P3-R2 applications and the canonical P3-R2 implementation merge identity;
+11. require exact left/right P2 subject binding to those derived identities;
+12. require declaration benchmark/protocol/evaluation-context/comparison-policy bindings to equal the trusted P2-R5 relation-set fields;
+13. require exactly one P2-R5 task family named `context-selection`;
+14. require exactly seven distinct metrics in that family and one exact mapping for each required context-evidence dimension;
+15. preserve all seven trusted P2-R5 metric relation records exactly, in canonical P2-R5 metric order;
+16. derive the closed metric-evidence state using only P2-R5 `status` values;
+17. derive the exact evidence identity from the closed semantic projection excluding only the identity field itself; and
+18. deep-freeze the entire output.
 
 Failure of any step fails closed. No fallback, default mapping, inferred benchmark, inferred policy, automatic repair, or partial binding is authorized.
 
 ---
 
-## 6. P3-R2 application-pair invariants
+## 7. P3-R2 application-pair invariants and identity grammars
 
 The two applications MUST come from the same complete `planRequestValue` and therefore MUST share exactly:
 
@@ -203,6 +237,13 @@ taskIdentity
 
 The implementation must assert those equalities after the two canonical P3-R2 calls rather than assuming them.
 
+The trusted P3-R2 identities are exact canonical bare digests:
+
+```text
+policyIdentity      matches ^[0-9a-f]{64}$
+applicationIdentity matches ^[0-9a-f]{64}$
+```
+
 The policies MUST have distinct `policyIdentity` values and the resulting applications MUST have distinct `applicationIdentity` values.
 
 No requirement that one policy select more, less, earlier, later, or different candidates is authorized. Exact equality of one or more benchmark metric values remains valid evidence and is represented only through canonical P2-R5 `EQUAL_RAW_VALUE` relation semantics.
@@ -211,7 +252,7 @@ No P3-R3 helper may inspect candidate text, acquire repository files, execute K3
 
 ---
 
-## 7. Closed P2 evidence boundary
+## 8. Closed P2 evidence boundary
 
 The future implementation accepts exactly one complete P2-R4 comparison as untrusted input and MUST pass it to canonical `deriveP2R5Relations(...)`.
 
@@ -229,11 +270,17 @@ The trusted returned relation set must use exact canonical P2-R5 schema:
 p2-r5-directional-metric-relation-set/v1
 ```
 
+Inherited P2 SHA-256 identities retain canonical grammar:
+
+```text
+^sha256:[0-9a-f]{64}$
+```
+
 R3 may preserve and cross-bind P2-R5 fields, but may not reinterpret `LEFT_FAVORED_BY_DIRECTION`, `RIGHT_FAVORED_BY_DIRECTION`, `EQUAL_RAW_VALUE`, or `INSUFFICIENT_EVIDENCE` as a global quality verdict.
 
 ---
 
-## 8. Exact P3-R3 evidence declaration
+## 9. Exact P3-R3 evidence declaration
 
 The declaration is one exact-key plain JSON-compatible object containing exactly:
 
@@ -269,17 +316,17 @@ match ^[A-Za-z0-9][A-Za-z0-9._:/-]*$
 The following declaration fields MUST equal the trusted P2-R5 relation set exactly:
 
 ```text
-benchmarkId                    == relationSet.benchmark_id
-benchmarkProtocolVersion       == relationSet.benchmark_protocol_version
+benchmarkId                     == relationSet.benchmark_id
+benchmarkProtocolVersion        == relationSet.benchmark_protocol_version
 sharedEvaluationContextIdentity == relationSet.shared_evaluation_context_identity
 comparisonPolicyIdentity        == relationSet.comparison_policy_identity
 ```
 
-Both identity fields must use canonical lowercase `sha256:` grammar.
+The two identity fields above must match canonical P2 lowercase `sha256:` grammar.
 
 ---
 
-## 9. Required context-evidence dimensions
+## 10. Required context-evidence dimensions
 
 `dimensionMetricBindings` is mandatory, dense, exact length seven, and must contain exactly one record for each dimension in this exact semantic order:
 
@@ -318,7 +365,7 @@ This contract defines dimension coverage only. It does not define how any benchm
 
 ---
 
-## 10. Exact benchmark-subject binding
+## 11. Exact benchmark-subject binding
 
 P3-R3 must derive subject identity from trusted P3-R2 application truth rather than accepting a caller-declared subject mapping.
 
@@ -328,7 +375,13 @@ For each side, derive the canonical subject ID exactly as:
 context-policy-application:<applicationIdentity>
 ```
 
-where `<applicationIdentity>` is the trusted lowercase `sha256:` P3-R2 application identity.
+where `<applicationIdentity>` is the trusted canonical P3-R2 bare lowercase 64-character hexadecimal application identity matching:
+
+```text
+^[0-9a-f]{64}$
+```
+
+No `sha256:` prefix is added inside this subject ID.
 
 For each side, derive `system_version_commit_identity` as:
 
@@ -336,9 +389,15 @@ For each side, derive `system_version_commit_identity` as:
 sha256Canonical({
   version: "p3-r3-context-policy-benchmark-subject-v1",
   p3R2ImplementationMerge: "458f62e85f4af2e13bfd78f5a6c3582d9330c911",
-  policyIdentity: <trusted policyIdentity>,
-  applicationIdentity: <trusted applicationIdentity>
+  policyIdentity: <trusted bare-64-hex policyIdentity>,
+  applicationIdentity: <trusted bare-64-hex applicationIdentity>
 })
+```
+
+The result of `sha256Canonical(...)` MUST match:
+
+```text
+^sha256:[0-9a-f]{64}$
 ```
 
 The trusted P2-R5 left and right subject descriptors MUST satisfy exactly:
@@ -356,7 +415,7 @@ Left/right side order is semantic and must not be reordered based on metric valu
 
 ---
 
-## 11. Closed metric-evidence state
+## 12. Closed metric-evidence state
 
 P3-R3 output `metricEvidenceState` is exactly one of:
 
@@ -377,13 +436,13 @@ else:
 
 No relation label participates in this state derivation.
 
-In particular, R3 MUST NOT count favored metrics, compute a majority, aggregate deltas, normalize values, weight dimensions, rank subjects, calculate a score, infer a winner, or convert `all-required-metrics-comparable` into policy-acceptance authority.
+R3 MUST NOT count favored metrics, compute a majority, aggregate deltas, normalize values, weight dimensions, rank subjects, calculate a score, infer a winner, or convert `all-required-metrics-comparable` into policy-acceptance authority.
 
 `all-required-metrics-comparable` means only that all seven required metric slots contain comparable P2 evidence. It does not mean sufficient chronology/contamination evidence, statistically meaningful difference, acceptable quality, policy promotion, production readiness, or superiority.
 
 ---
 
-## 12. Explicit chronology / contamination limitation
+## 13. Explicit chronology / contamination limitation
 
 Canonical P2-R1 carries chronology and contamination facts, but P2-R4/P2-R5 do not retain those fields in their pairwise relation output.
 
@@ -395,7 +454,7 @@ This limitation is intentional and prevents R3 from overstating the evidence tha
 
 ---
 
-## 13. Closed P3-R3 output contract
+## 14. Closed P3-R3 output contract
 
 The output is one exact-key deeply immutable plain object containing exactly:
 
@@ -443,9 +502,9 @@ p3R2ImplementationMerge = 458f62e85f4af2e13bfd78f5a6c3582d9330c911
 taskFamily = context-selection
 ```
 
-`leftPolicyId`, `leftPolicyIdentity`, `leftApplicationIdentity`, and `leftApplicationState` are copied exactly from the trusted left P3-R2 application.
+`leftPolicyId`, `leftPolicyIdentity`, `leftApplicationIdentity`, and `leftApplicationState` are copied exactly from the trusted left P3-R2 application. The two identity values retain canonical bare-64-hex P3-R2 grammar.
 
-`rightPolicyId`, `rightPolicyIdentity`, `rightApplicationIdentity`, and `rightApplicationState` are copied exactly from the trusted right P3-R2 application.
+`rightPolicyId`, `rightPolicyIdentity`, `rightApplicationIdentity`, and `rightApplicationState` are copied exactly from the trusted right P3-R2 application. The two identity values retain canonical bare-64-hex P3-R2 grammar.
 
 Shared plan/request/repository/snapshot/content/task identities are copied only after exact equality across both trusted P3-R2 applications is proven.
 
@@ -462,6 +521,8 @@ leftSubject
 rightSubject
 ```
 
+All inherited P2 SHA-256 identity fields retain canonical `sha256:<64 lowercase hex>` grammar.
+
 `dimensionMetricBindings` is the normalized exact declaration array.
 
 `metricRelations` is exactly the trusted P2-R5 `context-selection` metric array, preserving canonical P2-R5 order and every canonical metric evidence field without extension or rewriting.
@@ -470,9 +531,15 @@ No arbitrary metadata bag, extension object, score field, verdict field, decisio
 
 ---
 
-## 14. Closed identity semantics
+## 15. Closed identity semantics
 
-`evidenceIdentity` is lowercase `sha256:` over deterministic canonical sorted-key JSON of the exact normalized output semantic projection excluding only `evidenceIdentity` itself.
+`evidenceIdentity` is the output of canonical P2-R1 `sha256Canonical(...)` over deterministic canonical sorted-key JSON of the exact normalized output semantic projection excluding only `evidenceIdentity` itself.
+
+Therefore `evidenceIdentity` grammar is exactly:
+
+```text
+^sha256:[0-9a-f]{64}$
+```
 
 Identity semantics must preserve semantic array order for:
 
@@ -485,7 +552,7 @@ No timestamp, locale, random value, hostname, process environment, workspace pat
 
 ---
 
-## 15. Hostile-input and canonicalization requirements
+## 16. Hostile-input and canonicalization requirements
 
 P3-R3 must remain fail-closed.
 
@@ -504,7 +571,8 @@ The R3 declaration and any R3-owned structure must reject at minimum:
 - unknown or missing fields;
 - unsupported versions/kinds;
 - malformed/bounded-string violations;
-- malformed lowercase `sha256:` identities;
+- malformed P3-R2 bare-64-hex identities if an impossible trusted predecessor value is encountered;
+- malformed inherited P2 lowercase `sha256:` identities;
 - wrong task family;
 - wrong dimension order;
 - missing, duplicate, or unknown dimensions;
@@ -524,7 +592,7 @@ Returned output and every nested object/array must be detached from caller-owned
 
 ---
 
-## 16. Explicitly forbidden semantics
+## 17. Explicitly forbidden semantics
 
 P3-R3 may not materialize, infer, claim, or authorize any of the following:
 
@@ -567,7 +635,7 @@ Per-metric `LEFT_FAVORED_BY_DIRECTION` / `RIGHT_FAVORED_BY_DIRECTION` values are
 
 ---
 
-## 17. External authority non-grants
+## 18. External authority non-grants
 
 This authorization does not grant:
 
@@ -605,7 +673,7 @@ P3-R3 is pure, deterministic, local, in-memory evidence transformation only.
 
 ---
 
-## 18. Exact future implementation allowlist
+## 19. Exact future implementation allowlist
 
 If and only if this exact authorization record becomes canonical and post-merge proven, exactly one P3-R3 implementation PR becomes eligible within this exact four-path allowlist:
 
@@ -626,7 +694,7 @@ The implementation evidence record may describe candidate-time and exact-head qu
 
 ---
 
-## 19. Minimum focused test obligations
+## 20. Minimum focused test obligations
 
 The future P3-R3 implementation must provide focused tests collectively proving at least:
 
@@ -639,46 +707,47 @@ The future P3-R3 implementation must provide focused tests collectively proving 
 7. canonical P2-R5 derivation is used for the complete P2-R4 comparison;
 8. malformed/tampered P2-R4 comparison fails through canonical P2-R5;
 9. caller-claimed serialized P2-R5 relation set is not accepted;
-10. left/right plan/request/candidate-set/repository/snapshot/content/task binding equality is enforced;
-11. equal policy identities fail closed;
-12. equal application identities fail closed;
-13. exact R3 declaration keys/version/kind/task-family are enforced;
-14. qualification ID bounds/grammar are enforced;
-15. benchmark ID and protocol binding are enforced;
-16. shared-evaluation-context identity binding is enforced;
-17. comparison-policy identity binding is enforced;
-18. exact seven-dimension array order is enforced;
-19. missing/unknown/duplicate dimension fails closed;
-20. duplicate metric IDs fail closed;
-21. exact one `context-selection` task family is enforced;
-22. extra/missing P2 metrics relative to declared seven fail closed;
-23. derived left subject ID binding is enforced;
-24. derived right subject ID binding is enforced;
-25. derived left system/version subject identity binding is enforced;
-26. derived right system/version subject identity binding is enforced;
-27. left/right raw artifact log set identities are preserved from P2 evidence;
-28. all seven comparable statuses -> `all-required-metrics-comparable`;
-29. any insufficient metric -> `one-or-more-required-metrics-insufficient`;
-30. relation values do not influence metric-evidence-state derivation;
-31. exact P2 metric relation evidence is preserved without rewriting;
-32. no favored-count, score, rank, threshold, winner, decision, recommendation, or promotion field exists;
-33. chronology/contamination is not inferred or materialized;
-34. object insertion order does not alter evidence identity;
-35. semantic dimension array order remains fixed and identity-bearing;
-36. hostile Proxy/accessor/symbol/non-plain/sparse/extended declaration inputs fail closed;
-37. invalid/non-JSON declaration values fail closed;
-38. subject-binding identity derivation is deterministic;
-39. output identity projection is deterministic and self-reference-free;
-40. returned output is deeply frozen and detached from caller mutation;
-41. no repository/filesystem/network/provider/model/subprocess/persistence/telemetry side effect occurs;
-42. no P2/P3 predecessor byte is modified;
-43. canonical runtime typecheck/test suite remains green on all applicable K2 matrix platforms.
+10. trusted P3-R2 policy/application identity grammar is exactly bare lowercase 64-hex;
+11. left/right plan/request/candidate-set/repository/snapshot/content/task binding equality is enforced;
+12. equal policy identities fail closed;
+13. equal application identities fail closed;
+14. exact R3 declaration keys/version/kind/task-family are enforced;
+15. qualification ID bounds/grammar are enforced;
+16. benchmark ID and protocol binding are enforced;
+17. shared-evaluation-context identity binding is enforced;
+18. comparison-policy identity binding is enforced;
+19. exact seven-dimension array order is enforced;
+20. missing/unknown/duplicate dimension fails closed;
+21. duplicate metric IDs fail closed;
+22. exact one `context-selection` task family is enforced;
+23. extra/missing P2 metrics relative to declared seven fail closed;
+24. derived left subject ID uses the bare P3-R2 application identity and is enforced;
+25. derived right subject ID uses the bare P3-R2 application identity and is enforced;
+26. derived left `system_version_commit_identity` uses `sha256Canonical(...)` and is enforced;
+27. derived right `system_version_commit_identity` uses `sha256Canonical(...)` and is enforced;
+28. left/right raw artifact log set identities are preserved from P2 evidence;
+29. all seven comparable statuses -> `all-required-metrics-comparable`;
+30. any insufficient metric -> `one-or-more-required-metrics-insufficient`;
+31. relation values do not influence metric-evidence-state derivation;
+32. exact P2 metric relation evidence is preserved without rewriting;
+33. no favored-count, score, rank, threshold, winner, decision, recommendation, or promotion field exists;
+34. chronology/contamination is not inferred or materialized;
+35. object insertion order does not alter evidence identity;
+36. semantic dimension array order remains fixed and identity-bearing;
+37. hostile Proxy/accessor/symbol/non-plain/sparse/extended declaration inputs fail closed;
+38. invalid/non-JSON declaration values fail closed;
+39. subject-binding identity derivation is deterministic and respects both identity grammars;
+40. output identity projection is deterministic and self-reference-free;
+41. returned output is deeply frozen and detached from caller mutation;
+42. no repository/filesystem/network/provider/model/subprocess/persistence/telemetry side effect occurs;
+43. no P2/P3 predecessor byte is modified;
+44. canonical runtime typecheck/test suite remains green on all applicable K2 matrix platforms.
 
 Tests may use in-memory synthetic canonical objects only. This authorization does not permit adding or mutating P2/P3 benchmark fixture/corpus files merely to test R3.
 
 ---
 
-## 20. Exact-head implementation qualification requirements
+## 21. Exact-head implementation qualification requirements
 
 A future implementation candidate is not merge-authorized until one frozen exact head proves all of:
 
@@ -709,14 +778,14 @@ A reviewer service error, billing notice, skipped review, summary-only response,
 
 ---
 
-## 21. Authorization-candidate adoption gate
+## 22. Authorization-candidate adoption gate
 
 This one-document authorization candidate itself remains non-canonical until its exact final head proves:
 
 1. base ref is exactly protected `main`;
 2. live canonical main is `ecee96c1a0d4bf73c5d41b369edfa9950ae1ea0c`, or this record is reconciled forward to any newer canonical truth before qualification;
 3. `behind_by=0`;
-4. changed-file set is exactly the one authorization path in Section 2;
+4. changed-file set is exactly the one authorization path in Section 3;
 5. exact candidate head, tree, and authorization document blob are captured;
 6. Governance required contexts are terminal success on the exact head;
 7. K2 pull-request classifier and stable `k2-runtime-gate` are terminal success on the exact head, with runtime matrix honestly recorded as non-applicable/skipped for this docs-only candidate when classified that way;
@@ -745,7 +814,7 @@ It may not say implemented, benchmarked, promoted, superior, or closed merely be
 
 ---
 
-## 22. Required implementation evidence record
+## 23. Required implementation evidence record
 
 The authorized implementation evidence path is exactly:
 
@@ -771,7 +840,7 @@ Future merge/post-merge facts must be captured externally after they exist; cand
 
 ---
 
-## 23. Post-implementation closure boundary
+## 24. Post-implementation closure boundary
 
 Even after a future P3-R3 implementation merge and post-merge proof, only the bounded pairwise metric-evidence binding mechanism may become `CLOSED_CANONICAL`.
 
@@ -781,7 +850,7 @@ No P3-R4+ implementation, benchmark execution, corpus mutation, policy promotion
 
 ---
 
-## 24. Final non-grant summary
+## 25. Final non-grant summary
 
 ```text
 P3-R3 AUTHORIZATION CANDIDATE != P3-R3 IMPLEMENTED
