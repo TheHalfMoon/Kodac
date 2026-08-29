@@ -24,19 +24,22 @@ P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
 P3-R1 = CLOSED_CANONICAL
-P3-R2+ = NOT_AUTHORIZED
+P3-R2 = CLOSED_CANONICAL
+P3-R3+ = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
+WAIVER = NO
 ```
 
-P3-R1 closed canonically through PR #252 / `ba3caabef0b36649a1d556ff287237ca2a455ab2` after exact-head qualification and mandatory post-merge Governance/K2 proof.
+P3-R2 closed canonically through PR #256 / `458f62e85f4af2e13bfd78f5a6c3582d9330c911` after exact-head qualification, two independent substantive semantic reviewer channels, normal guarded merge, and mandatory post-merge Governance/K2 proof. Post-merge K2 `33249447008` preserved its first unrelated H4-R3G-D Ubuntu failure as history and reached SUCCESS only after a same-merge Ubuntu rerun and successful stable gate.
 
-## P3-R1 is not a release milestone
+## P3-R2 is not a release milestone
 
 ```text
-P3-R1 CLOSED_CANONICAL
+P3-R2 CLOSED_CANONICAL
 != P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
-!= A BETTER CONTEXT STRATEGY PROVEN
+!= A REPOSITORY-OWNED DEFAULT CONTEXT POLICY
+!= A WINNING / SUPERIOR CONTEXT STRATEGY PROVEN
 != REAL PROVIDER / MODEL BENCHMARK EXECUTION
 != PUBLIC RELEASE READY
 != PACKAGE PUBLISHABLE
@@ -47,7 +50,7 @@ P3-R1 CLOSED_CANONICAL
 != BRAND LAUNCH AUTHORIZED
 ```
 
-P3-R1 is only a pure deterministic context-selection-plan engineering foundation. It introduces no provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
+P3-R2 is only a pure deterministic caller-declared context-policy application mechanism. It introduces no repository-owned policy choice, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
 
 ## Public product versions
 
@@ -78,7 +81,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ = NOT_AUTHORIZED
-P3-R2+ = NOT_AUTHORIZED
+P3-R3+ = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT_AUTHORIZED BY THIS FILE
@@ -101,16 +104,16 @@ DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 
 ## Current reconciliation and next engineering action
 
-The current docs-only candidate reconciles current status/navigation views with the already-proven P3-R1 closure. It creates no implementation or release authority.
+The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R2 closure. It creates no implementation or release authority.
 
 After and only after this reconciliation becomes canonical and post-merge proven, the next eligible engineering unit is:
 
 ```text
-P3-R2 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
-P3-R2 IMPLEMENTATION = NOT_AUTHORIZED UNTIL A SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
+P3-R3 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
+P3-R3 IMPLEMENTATION = NOT_AUTHORIZED UNTIL A SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
 ```
 
-The conservative R2 planning direction is a deterministic declared policy-application boundary over P3-R1 plans. It may later validate and apply an explicit caller-declared ordering policy under exact budgets, but it may not silently select a repository-owned winning policy or make a quality/superiority claim.
+The evidence-driven R3 planning direction is a bounded context-policy comparison/qualification contract under ADR-0010 and the existing P2 measurement spine. It may define reproducible evidence requirements for a later policy decision, but this reconciliation does not execute benchmarks, mutate benchmark corpora, select a repository-owned default/winner, or make a quality/superiority claim.
 
 ## Future release-gate direction
 
@@ -132,9 +135,10 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R1 authorization: `docs/planning/KODAC_P3_R1_DETERMINISTIC_CONTEXT_SELECTION_PLAN_AUTHORIZATION_2026-08-29.md`
-- P3-R1 evidence: `docs/planning/KODAC_P3_R1_DETERMINISTIC_CONTEXT_SELECTION_PLAN_EVIDENCE_2026-08-29.md`
+- P3-R2 authorization: `docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_AUTHORIZATION_2026-08-29.md`
+- P3-R2 evidence: `docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_EVIDENCE_2026-08-29.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
 - Durable improvement sequence: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
+- Benchmark governance: `docs/adr/ADR-0010-benchmark-first-donor-selection.md`
