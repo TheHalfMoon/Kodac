@@ -259,7 +259,7 @@ function entity(value: unknown, label: string): RelationEntity {
 }
 
 function entitySelector(value: RelationEntity): string {
-  return value.kind === "file" ? `file\0${value.path}` : `symbol\0${value.path}\0${value.symbol ?? ""}\0${value.qualifiedName ?? ""}`
+  return canonicalize(value)
 }
 
 function relationHit(value: unknown, graphIdentity: string, label: string): RelationQueryHit {
