@@ -72,7 +72,7 @@ No fifth path is authorized. No P3-R1/P3-R2 source or test path, P2 R1-R5 source
 
 ## Self-reference-safe exact-head binding rule
 
-This evidence file cannot embed the blob or commit identity produced by materializing itself without recursive identity dependence. It therefore binds the exact parent and three pre-evidence implementation/test blobs above.
+This evidence file cannot embed the blob or commit identity produced by materializing itself without recursive identity dependence. It therefore binds the exact parent and three pre-evidence implementation/test blobs above, then records later forward repairs by their already-existing parent commit and non-self-referential path blobs.
 
 Final qualification must externally capture from one frozen exact final PR head:
 
@@ -87,6 +87,34 @@ Final qualification must externally capture from one frozen exact final PR head:
 9. active ruleset/no-bypass evidence.
 
 Any repository-byte change after that capture makes prior exact-head checks and review evidence stale and requires fresh qualification.
+
+## Accepted exact-head review finding and forward repair
+
+Exact head `4ba75a4eada44fe83f570592254c5f050d7ef240` received a material automated Codex review finding in review thread `PRRT_kwDOTVTeS86daaBO`, review comment database ID `3886803666`.
+
+The finding correctly identified that the implementation contained several authorization-required invariants but the focused test file did not yet prove all of the explicit Section 20 merge-gate obligations. The missing direct proofs included malformed left/right policy rejection, duplicate metric IDs, right-subject binding, left/right system-version binding, raw-artifact identity preservation, relation-label independence of the comparability-only state, and caller-mutation detachment.
+
+The finding is accepted without waiver. A forward-only test repair was committed as:
+
+```text
+REPAIR_COMMIT = 753a1b0cb2aae13c2998738c1ccc4a9128ffbbd5
+REPAIR_PARENT = 4ba75a4eada44fe83f570592254c5f050d7ef240
+REPAIRED_TEST_BLOB = 8afd1a80a0adca146f8d5c85ff40581920309d4f
+SOURCE_BLOB_CHANGE = NONE
+AUTHORIZATION_ALLOWLIST_EXPANSION = NONE
+WAIVER = NO
+```
+
+The repair changes only the already-authorized focused test path. It adds direct negative/positive proofs for the accepted finding and strengthens adjacent declaration-binding and hostile-value coverage. No runtime source, dependency, workflow, fixture/corpus, benchmark execution, product, release, ruleset, or predecessor byte was changed.
+
+All CI and semantic-review evidence bound to `4ba75a4eada44fe83f570592254c5f050d7ef240` or any earlier head is stale for final qualification after this repair. The prior exact-head Cubic clean assessment and prior CodeRabbit/Codex evidence may remain historical evidence only; they do not count toward the final-head quorum. Final qualification must restart on the exact head produced after this evidence update.
+
+```text
+VALID_FINDING = ACCEPTED
+REPAIR = FORWARD_ONLY
+STALE_PRIOR_HEAD_CI_REVIEW = YES
+WAIVER = NO
+```
 
 ## Implemented bounded contract
 
@@ -175,24 +203,31 @@ Repository runtime command:
 npm test
 ```
 
-Focused coverage includes:
+Focused coverage now includes:
 
 - canonical all-comparable R3 evidence realization;
 - exact output constants and top-level key set;
 - canonical bare P3-R2 identity grammar and prefixed P2/P3-R3 identity grammar;
 - exact `evidenceIdentity` projection;
 - insufficient-evidence preservation with no aggregate verdict;
-- P3-R2 validation before later evidence inputs;
+- malformed P3-R1 request rejection through canonical P3-R2 before later evidence access;
+- malformed left and right P3-R2 policy rejection through canonical P3-R2;
 - canonical P2-R5 validation before the R3 declaration is touched;
 - distinct P3-R2 policy/application requirements;
-- exact P2 subject cross-binding;
-- declaration exact keys/constants/P2 identity binding;
+- negative left and right P2 subject-ID cross-binding proofs;
+- negative left and right `system_version_commit_identity` cross-binding proofs;
+- positive left/right subject identity and raw-artifact-log identity preservation;
+- declaration exact keys/constants and benchmark/protocol/shared-context/comparison-policy binding;
 - bounded qualification and metric stable-ID grammars;
-- exact dense seven-dimension semantic order;
+- exact dense seven-dimension semantic order and exact closed dimension set;
 - sparse/extended-array rejection;
+- duplicate declaration metric-ID rejection;
 - exact declared/trusted metric-set equality;
 - Proxy/accessor/symbol/non-plain declaration rejection;
+- invalid non-JSON declaration value rejection;
 - declaration object-property insertion-order independence;
+- explicit relation-label independence of `metricEvidenceState`;
+- caller-mutation detachment after return;
 - deep immutability;
 - canonical P2 metric order preservation;
 - absence of winner/score/rank/threshold/promotion/default-policy output fields.
