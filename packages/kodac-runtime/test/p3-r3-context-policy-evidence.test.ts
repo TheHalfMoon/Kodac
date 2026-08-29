@@ -392,6 +392,37 @@ test("P3-R3 fails malformed left and right policies through canonical R2 validat
   )
 })
 
+test("P3-R3 validates the right canonical R2 application before touching P2 or R3 inputs", () => {
+  const input = fixture()
+  const hostileComparison = new Proxy({}, { get: () => { throw new Error("comparison touched") } })
+  const hostileDeclaration = new Proxy({}, { get: () => { throw new Error("declaration touched") } })
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      { ...input.rightPolicy, version: "future" },
+      hostileComparison,
+      hostileDeclaration,
+    ),
+    /unsupported P3-R2 declared policy contract/,
+  )
+})
+
+test("P3-R3 public boundary rejects caller-claimed serialized R2 applications", () => {
+  const input = fixture()
+  const claimedApplication = applyDeclaredContextSelectionPolicy(input.planRequest, input.leftPolicy)
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      claimedApplication,
+      input.rightPolicy,
+      input.p2Comparison,
+      input.evidenceDeclaration,
+    ),
+    /declaredPolicy/,
+  )
+})
+
 test("P3-R3 executes canonical P2-R5 validation before touching the R3 declaration", () => {
   const input = fixture()
   input.p2Comparison.comparison_identity = identity("tampered")
@@ -406,6 +437,46 @@ test("P3-R3 executes canonical P2-R5 validation before touching the R3 declarati
     ),
     /P2-R5 contract violation:.*comparison_identity/,
   )
+})
+
+test("P3-R3 public boundary rejects caller-claimed serialized P2-R5 relation sets", () => {
+  const input = fixture()
+  const claimedRelationSet = {
+    schema_version: "p2-r5-directional-metric-relation-set/v1",
+    relation_set_identity: identity("claimed-r5"),
+  }
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      claimedRelationSet,
+      input.evidenceDeclaration,
+    ),
+    /P2-R5 contract violation/,
+  )
+})
+
+test("P3-R3 enforces canonical R2 shared-plan binding on each declared policy", () => {
+  const input = fixture()
+  for (const [field, value, expected] of [
+    ["planIdentity", "d".repeat(64), /planIdentity does not match rebuilt plan/],
+    ["repositoryIdentity", "e".repeat(64), /repositoryIdentity does not match rebuilt plan/],
+    ["snapshotIdentity", "f".repeat(64), /snapshotIdentity does not match rebuilt plan/],
+    ["contentIdentity", "1".repeat(64), /contentIdentity does not match rebuilt plan/],
+    ["taskIdentity", "task:other", /taskIdentity does not match rebuilt plan/],
+  ] as const) {
+    assert.throws(
+      () => buildContextPolicyPairwiseMetricEvidence(
+        input.planRequest,
+        input.leftPolicy,
+        { ...input.rightPolicy, [field]: value },
+        input.p2Comparison,
+        input.evidenceDeclaration,
+      ),
+      expected,
+    )
+  }
 })
 
 test("P3-R3 requires distinct canonical R2 policies and applications", () => {
@@ -506,6 +577,36 @@ test("P3-R3 validates exact declaration keys, constants, and every P2 declaratio
     ),
     /missing required field: qualificationId/,
   )
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      input.p2Comparison,
+      { ...input.evidenceDeclaration, version: "future" },
+    ),
+    /unsupported P3-R3 evidence declaration contract/,
+  )
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      input.p2Comparison,
+      { ...input.evidenceDeclaration, kind: "future" },
+    ),
+    /unsupported P3-R3 evidence declaration contract/,
+  )
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      input.p2Comparison,
+      { ...input.evidenceDeclaration, taskFamily: "other-family" },
+    ),
+    /taskFamily must be context-selection/,
+  )
   for (const [patch, expected] of [
     [{ benchmarkId: "other-benchmark" }, /benchmarkId does not match/],
     [{ benchmarkProtocolVersion: "v2" }, /benchmarkProtocolVersion does not match/],
@@ -600,6 +701,19 @@ test("P3-R3 requires the exact dense seven-dimension semantic order and closed d
     /dimension must be recall-at-k/,
   )
 
+  const duplicateDimension = input.evidenceDeclaration.dimensionMetricBindings.map((binding) => ({ ...binding })) as Array<{ dimension: string; metricId: string }>
+  duplicateDimension[1]!.dimension = duplicateDimension[0]!.dimension
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      input.p2Comparison,
+      { ...input.evidenceDeclaration, dimensionMetricBindings: duplicateDimension },
+    ),
+    /dimension must be precision-at-k/,
+  )
+
   const sparse: unknown[] = []
   sparse.length = 7
   sparse[0] = input.evidenceDeclaration.dimensionMetricBindings[0]
@@ -644,6 +758,59 @@ test("P3-R3 rejects duplicate declaration metric IDs", () => {
   )
 })
 
+test("P3-R3 requires exactly one context-selection P2 task family", () => {
+  const input = fixture()
+  input.p2Comparison.task_family_comparisons.push({
+    task_family: "other-family",
+    metrics: input.p2Comparison.task_family_comparisons[0]!.metrics.map((metric) => ({
+      ...metric,
+      left_summary: { ...metric.left_summary },
+      right_summary: { ...metric.right_summary },
+    })),
+  })
+  rebindComparisonIdentity(input.p2Comparison)
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      input.p2Comparison,
+      input.evidenceDeclaration,
+    ),
+    /must contain exactly one task family/,
+  )
+})
+
+test("P3-R3 requires exactly seven trusted P2 metrics", () => {
+  const missing = fixture()
+  missing.p2Comparison.task_family_comparisons[0]!.metrics.pop()
+  rebindComparisonIdentity(missing.p2Comparison)
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      missing.planRequest,
+      missing.leftPolicy,
+      missing.rightPolicy,
+      missing.p2Comparison,
+      missing.evidenceDeclaration,
+    ),
+    /must contain exactly 7 metrics/,
+  )
+
+  const extra = fixture()
+  extra.p2Comparison.task_family_comparisons[0]!.metrics.push(numericMetric("z_extra_metric", 99, 98))
+  rebindComparisonIdentity(extra.p2Comparison)
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      extra.planRequest,
+      extra.leftPolicy,
+      extra.rightPolicy,
+      extra.p2Comparison,
+      extra.evidenceDeclaration,
+    ),
+    /must contain exactly 7 metrics/,
+  )
+})
+
 test("P3-R3 requires the declaration metric set to equal the trusted seven-metric P2 set", () => {
   const input = fixture()
   const bindings = input.evidenceDeclaration.dimensionMetricBindings.map((binding) => ({ ...binding }))
@@ -660,7 +827,7 @@ test("P3-R3 requires the declaration metric set to equal the trusted seven-metri
   )
 })
 
-test("P3-R3 rejects Proxy, accessor, symbol, and non-plain declaration structures", () => {
+test("P3-R3 rejects Proxy, accessor, symbol, non-enumerable, and non-plain declaration structures", () => {
   const input = fixture()
   const proxy = new Proxy(input.evidenceDeclaration, {})
   assert.throws(
@@ -685,6 +852,19 @@ test("P3-R3 rejects Proxy, accessor, symbol, and non-plain declaration structure
       accessor,
     ),
     /must be a data property/,
+  )
+
+  const nonEnumerable = { ...input.evidenceDeclaration } as Record<string, unknown>
+  Object.defineProperty(nonEnumerable, "qualificationId", { value: "qualification:hidden", enumerable: false })
+  assert.throws(
+    () => buildContextPolicyPairwiseMetricEvidence(
+      input.planRequest,
+      input.leftPolicy,
+      input.rightPolicy,
+      input.p2Comparison,
+      nonEnumerable,
+    ),
+    /must be enumerable/,
   )
 
   const symbol = { ...input.evidenceDeclaration, [Symbol("hidden")]: true }
@@ -749,7 +929,7 @@ test("P3-R3 is deterministic across declaration object insertion order while arr
   assert.equal(first.evidenceIdentity, second.evidenceIdentity)
 })
 
-test("P3-R3 preserves raw-artifact identities from trusted P2 evidence", () => {
+test("P3-R3 preserves raw-artifact identities and exact trusted P2 metric evidence", () => {
   const input = fixture()
   const result = buildContextPolicyPairwiseMetricEvidence(
     input.planRequest,
@@ -760,6 +940,32 @@ test("P3-R3 preserves raw-artifact identities from trusted P2 evidence", () => {
   )
   assert.equal(result.leftSubject.raw_artifact_log_set_identity, input.p2Comparison.left_subject.raw_artifact_log_set_identity)
   assert.equal(result.rightSubject.raw_artifact_log_set_identity, input.p2Comparison.right_subject.raw_artifact_log_set_identity)
+
+  const sourceMetrics = input.p2Comparison.task_family_comparisons[0]!.metrics
+  assert.equal(result.metricRelations.length, sourceMetrics.length)
+  for (let index = 0; index < sourceMetrics.length; index += 1) {
+    const source = sourceMetrics[index]!
+    const actual = result.metricRelations[index]!
+    for (const key of [
+      "metric_id",
+      "input_unit",
+      "output_unit",
+      "value_kind",
+      "reducer",
+      "missingness_policy",
+      "minimum_observed_count",
+      "expected_count",
+      "direction",
+      "status",
+      "left_value",
+      "right_value",
+      "raw_delta_left_minus_right",
+    ] as const) {
+      assert.deepEqual(actual[key], source[key])
+    }
+    assert.deepEqual(actual.left_summary, source.left_summary)
+    assert.deepEqual(actual.right_summary, source.right_summary)
+  }
 })
 
 test("P3-R3 metric-evidence state is independent of favored relation labels", () => {
@@ -786,6 +992,58 @@ test("P3-R3 metric-evidence state is independent of favored relation labels", ()
   assert.notEqual(second.metricRelations[0]!.relation, firstRelation)
   assert.equal(first.metricEvidenceState, "all-required-metrics-comparable")
   assert.equal(second.metricEvidenceState, "all-required-metrics-comparable")
+})
+
+test("P3-R3 materializes no chronology, contamination, aggregate, decision, or promotion semantics", () => {
+  const { result } = build()
+  for (const forbidden of [
+    "chronology",
+    "contamination",
+    "holdout",
+    "favoredCount",
+    "majority",
+    "score",
+    "rank",
+    "threshold",
+    "winner",
+    "decision",
+    "recommendation",
+    "promotion",
+    "defaultPolicy",
+    "significance",
+    "confidenceInterval",
+  ] as const) {
+    assert.equal(Object.hasOwn(result, forbidden), false)
+  }
+})
+
+test("P3-R3 subject-binding derivation is deterministic and preserves both identity grammars", () => {
+  const input = fixture()
+  const left = applyDeclaredContextSelectionPolicy(input.planRequest, input.leftPolicy)
+  const right = applyDeclaredContextSelectionPolicy(input.planRequest, input.rightPolicy)
+  const first = buildContextPolicyPairwiseMetricEvidence(
+    input.planRequest,
+    input.leftPolicy,
+    input.rightPolicy,
+    input.p2Comparison,
+    input.evidenceDeclaration,
+  )
+  const second = buildContextPolicyPairwiseMetricEvidence(
+    input.planRequest,
+    input.leftPolicy,
+    input.rightPolicy,
+    input.p2Comparison,
+    input.evidenceDeclaration,
+  )
+
+  assert.deepEqual(first.leftSubject, second.leftSubject)
+  assert.deepEqual(first.rightSubject, second.rightSubject)
+  assert.match(left.applicationIdentity, /^[0-9a-f]{64}$/)
+  assert.match(right.applicationIdentity, /^[0-9a-f]{64}$/)
+  assert.match(first.leftSubject.system_version_commit_identity, /^sha256:[0-9a-f]{64}$/)
+  assert.match(first.rightSubject.system_version_commit_identity, /^sha256:[0-9a-f]{64}$/)
+  assert.equal(first.leftSubject.subject_id, `context-policy-application:${left.applicationIdentity}`)
+  assert.equal(first.rightSubject.subject_id, `context-policy-application:${right.applicationIdentity}`)
 })
 
 test("P3-R3 returns deeply frozen detached evidence and preserves canonical P2 relation order", () => {
