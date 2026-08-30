@@ -25,21 +25,34 @@ GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
 P3-R1 = CLOSED_CANONICAL
 P3-R2 = CLOSED_CANONICAL
-P3-R3+ = NOT_AUTHORIZED
+P3-R3 = CLOSED_CANONICAL
+P3 OVERALL = OPEN
+P3-R4+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R2 closed canonically through PR #256 / `458f62e85f4af2e13bfd78f5a6c3582d9330c911` after exact-head qualification, two independent substantive semantic reviewer channels, normal guarded merge, and mandatory post-merge Governance/K2 proof. Post-merge K2 `33249447008` preserved its first unrelated H4-R3G-D Ubuntu failure as history and reached SUCCESS only after a same-merge Ubuntu rerun and successful stable gate.
-
-## P3-R2 is not a release milestone
+P3-R3 closed canonically through PR #260 / `cd7c28b4f823e9570daf73448c5f3b9b9b540d2e` after exact-head Governance/K2 qualification, two distinct independent substantive semantic reviewer channels, guarded normal merge, and mandatory post-merge Governance/K2 proof.
 
 ```text
-P3-R2 CLOSED_CANONICAL
+P3_R3_QUALIFIED_HEAD = 2071014a9e8761a84167e2fa7a44ba40b4df36da
+P3_R3_QUALIFIED_TREE = 46c2c5ff7af396ffa1377d0c597b398547c5087c
+P3_R3_POST_MERGE_GOVERNANCE = 33302704761 / SUCCESS
+P3_R3_POST_MERGE_K2_RUNTIME = 33302704758 / SUCCESS
+RULESET = 20707483 / active / no bypass
+```
+
+Pre-merge timing retry history remains disclosed: two Ubuntu attempts hit the unchanged pre-existing H4-R3G-B timing assertion, while P3-R3 remained unchanged; a controlled retry on the identical head passed. No waiver or unrelated H4 mutation was used.
+
+## P3-R3 is not a release milestone
+
+```text
+P3-R3 CLOSED_CANONICAL
 != P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
 != A REPOSITORY-OWNED DEFAULT CONTEXT POLICY
 != A WINNING / SUPERIOR CONTEXT STRATEGY PROVEN
+!= CHRONOLOGY / CONTAMINATION / SIGNIFICANCE QUALIFICATION
 != REAL PROVIDER / MODEL BENCHMARK EXECUTION
 != PUBLIC RELEASE READY
 != PACKAGE PUBLISHABLE
@@ -50,15 +63,14 @@ P3-R2 CLOSED_CANONICAL
 != BRAND LAUNCH AUTHORIZED
 ```
 
-P3-R2 is only a pure deterministic caller-declared context-policy application mechanism. It introduces no repository-owned policy choice, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
+P3-R3 is only a pure deterministic pairwise metric-evidence binding mechanism. It introduces no repository-owned policy choice, benchmark execution, chronology/contamination inference, significance threshold, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
 
-## Public product versions
+## Repository visibility versus release authority
 
-No specific public version number is authorized by this document.
-
-Current release authority remains:
+The GitHub repository is currently public. Repository visibility is an access setting, not a product/version authorization.
 
 ```text
+PUBLIC GITHUB REPOSITORY = YES
 PUBLIC RELEASE VERSION = NOT_AUTHORIZED
 PACKAGE PUBLICATION = NOT_AUTHORIZED
 RELEASE CHANNEL = NOT_AUTHORIZED
@@ -70,7 +82,7 @@ BRAND LAUNCH = NOT_AUTHORIZED
 KODAC NAME / TRADEMARK CLEARANCE = NOT_ESTABLISHED
 ```
 
-Version numbering, release channels, package publication, installation/upgrade promises, compatibility guarantees, support expectations, benchmark claims, security claims, and brand decisions require separate evidence and explicit authority.
+Version numbering, release channels, package publication, installation/upgrade promises, compatibility guarantees, support expectations, benchmark claims, security claims, quality claims, and brand decisions require separate evidence and explicit authority.
 
 ## Current implementation boundaries relevant to versioning
 
@@ -81,7 +93,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ = NOT_AUTHORIZED
-P3-R3+ = NOT_AUTHORIZED
+P3-R4+ = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT_AUTHORIZED BY THIS FILE
@@ -104,16 +116,17 @@ DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 
 ## Current reconciliation and next engineering action
 
-The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R2 closure. It creates no implementation or release authority.
+The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R3 closure. It creates no implementation or release authority.
 
-After and only after this reconciliation becomes canonical and post-merge proven, the next eligible engineering unit is:
+After and only after this reconciliation becomes canonical and post-merge proven, later P3 work is limited to bounded definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
 
 ```text
-P3-R3 DEFINITION / PLANNING / AUTHORIZATION-CANDIDATE PREPARATION ONLY
-P3-R3 IMPLEMENTATION = NOT_AUTHORIZED UNTIL A SEPARATE EXACT CANONICAL AUTHORIZATION BECOMES EFFECTIVE
+P3-R4+ IMPLEMENTATION = NOT_AUTHORIZED
+REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
+REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
 
-The evidence-driven R3 planning direction is a bounded context-policy comparison/qualification contract under ADR-0010 and the existing P2 measurement spine. It may define reproducible evidence requirements for a later policy decision, but this reconciliation does not execute benchmarks, mutate benchmark corpora, select a repository-owned default/winner, or make a quality/superiority claim.
+Any future slice involving chronology, contamination, holdout sufficiency, statistical acceptance, promotion, embeddings, learned reranking, provider/model execution, persistence, or product integration must define its exact evidence, trust, authority, and non-grant boundary before implementation.
 
 ## Future release-gate direction
 
@@ -135,8 +148,8 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R2 authorization: `docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_AUTHORIZATION_2026-08-29.md`
-- P3-R2 evidence: `docs/planning/KODAC_P3_R2_DECLARED_CONTEXT_SELECTION_POLICY_EVIDENCE_2026-08-29.md`
+- P3-R3 authorization: `docs/planning/KODAC_P3_R3_CONTEXT_POLICY_PAIRWISE_METRIC_EVIDENCE_AUTHORIZATION_2026-08-29.md`
+- P3-R3 evidence: `docs/planning/KODAC_P3_R3_CONTEXT_POLICY_PAIRWISE_METRIC_EVIDENCE_2026-08-29.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
