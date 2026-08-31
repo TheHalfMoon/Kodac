@@ -465,8 +465,8 @@ test("P3-R4 declaration is exact-key, constant-bound, bounded, and hostile-input
   const input = makeFixture()
   assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, extra: true } } as Fixture), /unknown field/)
   assert.throws(() => build({ ...input, provenanceDeclaration: { version: input.provenanceDeclaration.version, kind: input.provenanceDeclaration.kind } } as Fixture), /missing required field/)
-  assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, version: "future-version" } } as Fixture), /unsupported P3-R4 provenance declaration contract/)
-  assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, kind: "future-kind" } } as Fixture), /unsupported P3-R4 provenance declaration contract/)
+  assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, version: "future-version" } } as unknown as Fixture), /unsupported P3-R4 provenance declaration contract/)
+  assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, kind: "future-kind" } } as unknown as Fixture), /unsupported P3-R4 provenance declaration contract/)
   assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, qualificationId: " bad " } } as Fixture), /canonical NUL-free string|stable-id alphabet/)
   assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, qualificationId: "a".repeat(513) } } as Fixture), /exceeds 512 UTF-8 bytes/)
 
@@ -496,9 +496,11 @@ test("P3-R4 rejects malformed predecessor evidence through canonical predecessor
   badHoldout.extra = true
   assert.throws(() => build({ ...input, holdoutRaw: badHoldout } as Fixture), /P2-R1 contract violation/)
 
-  const badP3 = clone(input.p3Declaration)
+  const badP3 = clone(input.p3Declaration) as unknown as {
+    dimensionMetricBindings: Array<{ metricId: string }>
+  }
   badP3.dimensionMetricBindings[0]!.metricId = "unknown-metric"
-  assert.throws(() => build({ ...input, p3Declaration: badP3 } as Fixture), /P3-R3 contract violation/)
+  assert.throws(() => build({ ...input, p3Declaration: badP3 } as unknown as Fixture), /P3-R3 contract violation/)
 })
 
 test("P3-R4 manifest permutations preserve the exact P2-R2-compatible digest and output identity", () => {
