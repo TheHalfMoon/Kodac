@@ -2,7 +2,7 @@
 
 ## Authority
 
-This file is a current engineering roadmap view. It does not create implementation, execution, dependency, release, provider/model, persistence, learning, benchmark, or merge authority. Live GitHub, root `AGENTS.md`, governing ADRs, and the exact canonical authorization/evidence record for the active unit always win.
+This file is a current engineering roadmap view. It does not create implementation, execution, dependency, release, provider/model, persistence, learning, benchmark, or merge authority. Live GitHub, root `AGENTS.md`, governing ADRs, and exact canonical authorization/evidence records always win.
 
 ## Canonical truth anchors
 
@@ -10,34 +10,32 @@ This file is a current engineering roadmap view. It does not create implementati
 K6 bounded closeout       = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
 P2 bounded closeout       = PR #250 / 0e48553f00618706955b11db795643ee710fe04a
 P3-R1 implementation      = PR #252 / ba3caabef0b36649a1d556ff287237ca2a455ab2
-P3-R1 reconciliation      = PR #253 / f0b18b3d6be10818195e2aef9f3d4123a2b9d3a2
-P3-R2 authorization       = PR #255 / 69f74cef1f9cc36ed8db123cc30b65e881aa147e
 P3-R2 implementation      = PR #256 / 458f62e85f4af2e13bfd78f5a6c3582d9330c911
-P3-R2 reconciliation      = PR #257 / ecee96c1a0d4bf73c5d41b369edfa9950ae1ea0c
-P3-R3 authorization       = PR #258 / 70553fef18c992b1ec819720e051258372af75d8
 P3-R3 implementation      = PR #260 / cd7c28b4f823e9570daf73448c5f3b9b9b540d2e
-P3-R3 reconciliation      = PR #261 / 0d26a7b7225c4ccc48a52b137ca526684a37d974
-P3-R4 authorization       = PR #262 / 954455a3dce6e1d0663501504265abd4194addce
 P3-R4 implementation      = PR #264 / ad63bab64512f8ac24c0f849b58b64ecf41a8709
+P3-R4 reconciliation      = PR #265 / ff6682d0266b44dcc25c7d1100a7af9519ad26e6
+P3-R5 authorization       = PR #266 / 41599d88d2b18f2714848452d20fc8ff00232f31
+P3-R5 implementation      = PR #267 / ae8a8d46f529a6782e39e3ae1787220cef603b8f
 Improvement master plan   = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
-P3-R4 exact implementation proof:
+P3-R5 exact implementation proof:
 
 ```text
-AUTHORIZATION_QUALIFIED_HEAD = d68d7b0e13c7099db4a3c9bb8c6b4283a916550a
-AUTHORIZATION_QUALIFIED_TREE = fdfa7498641496ae82cf77d5ce3560b0327a129b
-AUTHORIZATION_BLOB = d7827c154182b037f91f1addb8ca44f1798e02aa
-QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
-QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
-MERGE = ad63bab64512f8ac24c0f849b58b64ecf41a8709
-POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
+AUTHORIZATION_QUALIFIED_HEAD = 4826c57b909eeb3357eec59a6aa9641cbffb190f
+AUTHORIZATION_QUALIFIED_TREE = 08f843206e981f338c278f08d9492a5d90f9d2c0
+AUTHORIZATION_BLOB = 8e8fc94b2f260d055f413e2e595a5eea894877b6
+AUTHORIZATION_MERGE = 41599d88d2b18f2714848452d20fc8ff00232f31
+QUALIFIED_HEAD = 33847308b30327a5a290eee7f4c0382b3205a576
+QUALIFIED_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
+MERGE = ae8a8d46f529a6782e39e3ae1787220cef603b8f
+POST_MERGE_GOVERNANCE = 33359263671 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33359263703 / SUCCESS AFTER IDENTICAL-MERGE-SHA RETRY
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-The P3-R4 merge is GitHub-signed and valid. Its ordered parents are authorization merge `954455a3dce6e1d0663501504265abd4194addce` followed by exact qualified implementation head `8faa95a3157ccfaf1cc8723e10f95b10880f35e5`; its merge tree equals the qualified tree.
+The P3-R5 merge is GitHub-signed and valid. Ordered parents are authorization merge `41599d88d2b18f2714848452d20fc8ff00232f31` followed by exact qualified implementation head `33847308b30327a5a290eee7f4c0382b3205a576`; the merge tree equals the qualified tree.
 
 ## Current milestone state
 
@@ -58,28 +56,28 @@ The P3-R4 merge is GitHub-signed and valid. Its ordered parents are authorizatio
 | P3-R2 | **CLOSED_CANONICAL** | Caller-declared deterministic policy-application mechanism only |
 | P3-R3 | **CLOSED_CANONICAL** | Pairwise seven-metric evidence binding and comparability state only |
 | P3-R4 | **CLOSED_CANONICAL** | Literal benchmark-provenance evidence binding only |
-| P3 overall | **OPEN** | No repository-owned default, promotion, benchmark execution, or quality-improvement claim established |
-| P3-R5+ | **NOT_AUTHORIZED** | Separate exact canonical authorization required |
+| P3-R5 | **CLOSED_CANONICAL** | Caller-declared criterion-match evidence only |
+| P3 overall | **OPEN** | No repository-owned default, promotion, benchmark execution, or public quality claim established |
+| P3-R6+ | **NOT_AUTHORIZED** | Separate exact canonical authorization required |
 | P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
 
 Engineering milestone state is separate from public release status.
 
-## P3-R4 bounded result
+## P3-R5 bounded result
 
-P3-R4 adds deterministic provenance binding on top of canonical P3-R3 and P2 evidence. It:
+P3-R5 adds deterministic caller-declared qualification evidence on top of canonical P3-R3 and P3-R4 evidence. It:
 
-- hardens all untrusted public inputs before semantic reuse;
-- reconstructs canonical P2-R4 comparison truth through `compareP2R4(...)`;
-- reconstructs canonical P3-R3 truth through `buildContextPolicyPairwiseMetricEvidence(...)`;
-- validates canonical P2-R1 manifest/development/holdout evidence through `validateManifestSet(...)`;
-- reproduces exact P2-R2 manifest ordering by `task_family`, then `case_id`, then `result_identity`, using lexical comparison;
-- binds both report identities and both report manifest digests to the reconstructed comparison;
-- binds every relevant case by `case_id` and `r1_result_identity` and independently binds left/right metric ID+unit topology to manifest definitions;
-- preserves chronology, contamination, corpus role, anchors, and source provenance as literal evidence only;
-- returns a deterministic, detached, deeply frozen evidence record;
+- hardens all public inputs through the canonical JSON boundary before semantic reuse;
+- reconstructs canonical P2-R4, P3-R3, and P3-R4 truth rather than trusting caller-serialized predecessor evidence;
+- binds one qualification identity to the reconstructed benchmark/protocol/task-family/policy evidence;
+- applies exactly seven caller-declared metric criteria to the seven canonical P3-R3 dimensions;
+- permits only literal direction-aware relation membership and preserves `INSUFFICIENT_EVIDENCE` fail-closed;
+- evaluates required corpus roles and allowed chronology/contamination statuses only as literal P3-R4 evidence;
+- uses exact insufficient-first aggregate precedence;
+- returns deterministic detached deeply frozen evidence;
 - performs no repository/filesystem/network/provider/model/persistence side effect.
 
-P3-R4 does not decide holdout sufficiency, contamination freedom, significance, acceptance, superiority, winner/default/promotion, release, or product integration.
+P3-R5 does not decide global superiority, repository default/promotion, statistical significance, holdout sufficiency, contamination freedom, release, or product integration.
 
 ## Ordered improvement program
 
@@ -93,11 +91,13 @@ K6 bounded closeout [CLOSED_CANONICAL]
    -> R2 roadmap/status reconciliation [CLOSED_CANONICAL]
    -> R3 pairwise metric-evidence binding [CLOSED_CANONICAL]
    -> R3 roadmap/status reconciliation [CLOSED_CANONICAL]
-   -> R4 benchmark-provenance evidence binding authorization [CLOSED_CANONICAL]
-   -> R4 implementation [CLOSED_CANONICAL]
-   -> R4 roadmap/status reconciliation [CURRENT DOCS-ONLY CANDIDATE]
+   -> R4 benchmark-provenance evidence binding [CLOSED_CANONICAL]
+   -> R4 roadmap/status reconciliation [CLOSED_CANONICAL]
+   -> R5 declared context-policy qualification evidence authorization [CLOSED_CANONICAL]
+   -> R5 implementation [CLOSED_CANONICAL]
+   -> R5 roadmap/status reconciliation [CURRENT DOCS-ONLY CANDIDATE]
    -> next bounded P3 definition / planning / authorization-candidate work [ONLY AFTER RECONCILIATION]
-   -> P3-R5+ implementation [NOT_AUTHORIZED]
+   -> P3-R6+ implementation [NOT_AUTHORIZED]
 -> P4 Reviewer Intelligence v2 [NOT_AUTHORIZED]
 -> P5 Finding Verifier Fabric [NOT_AUTHORIZED]
 -> P6 Security Validation [NOT_AUTHORIZED]
@@ -109,7 +109,7 @@ K6 bounded closeout [CLOSED_CANONICAL]
 
 After this reconciliation becomes canonical and post-merge proven, later P3 work remains definition/planning/authorization-candidate preparation only until a separate exact canonical authorization becomes effective.
 
-The durable P3 goal remains minimum sufficient evidence rather than maximum context volume. A future bounded slice may define the next missing qualification dimension, but it must not infer execution, promotion, release, or implementation authority from planning text.
+The durable P3 goal remains minimum sufficient evidence rather than maximum context volume. A future bounded slice may define the next missing evidence or decision boundary, but planning text must not infer implementation, execution, promotion, release, or public-claim authority.
 
 Explicitly postponed unless separately authorized:
 
@@ -134,15 +134,18 @@ P3-R1 PLAN FOUNDATION != BETTER CONTEXT POLICY
 P3-R2 DECLARED POLICY APPLICATION != WINNING CONTEXT POLICY
 P3-R3 PAIRWISE METRIC EVIDENCE != POLICY PROMOTION QUALIFICATION
 P3-R4 BENCHMARK PROVENANCE EVIDENCE != HOLDOUT ACCEPTANCE OR POLICY PROMOTION
+P3-R5 CALLER-DECLARED CRITERIA MATCH != REPOSITORY WINNER / DEFAULT / PROMOTION
+CALLER POLICY != REPOSITORY POLICY
 LATER-IN-TIME != SUFFICIENT HOLDOUT
 NONE-KNOWN != PROVEN UNCONTAMINATED
-P3-R4 CLOSED != P3 OVERALL CLOSED
-P3-R4 CLOSED != P3-R5+ AUTHORIZED
+COMPARABLE != STATISTICALLY SIGNIFICANT
+P3-R5 CLOSED != P3 OVERALL CLOSED
+P3-R5 CLOSED != P3-R6+ AUTHORIZED
 K2 SIDE-EFFECT AUTHORITY = UNCHANGED
 K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 PROVIDER / MODEL / REVIEWER / EVALUATOR EXECUTION = NOT_AUTHORIZED

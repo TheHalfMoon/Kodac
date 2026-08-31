@@ -23,71 +23,71 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P3-R2 | **CLOSED_CANONICAL** | Deterministic caller-declared policy-application mechanism only |
 | P3-R3 | **CLOSED_CANONICAL** | Pairwise seven-metric evidence binding and comparability state only |
 | P3-R4 | **CLOSED_CANONICAL** | Deterministic literal benchmark-provenance evidence binding only |
-| P3 overall | **OPEN** | No repository-owned default/promotion, benchmark execution, or quality-improvement claim established |
-| P3-R5+ | **NOT_AUTHORIZED** | Separate exact canonical authorization required |
+| P3-R5 | **CLOSED_CANONICAL** | Deterministic caller-declared criterion-match evidence only |
+| P3 overall | **OPEN** | No repository-owned default/promotion, benchmark execution, or public quality claim established |
+| P3-R6+ | **NOT_AUTHORIZED** | Separate exact canonical authorization required |
 | P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
 
-## P3-R4 canonical anchors
+## P3-R5 canonical anchors
 
 ```text
-P3_R4_AUTHORIZATION_PR = #262
-P3_R4_AUTHORIZATION_QUALIFIED_HEAD = d68d7b0e13c7099db4a3c9bb8c6b4283a916550a
-P3_R4_AUTHORIZATION_QUALIFIED_TREE = fdfa7498641496ae82cf77d5ce3560b0327a129b
-P3_R4_AUTHORIZATION_BLOB = d7827c154182b037f91f1addb8ca44f1798e02aa
-P3_R4_AUTHORIZATION_MERGE = 954455a3dce6e1d0663501504265abd4194addce
-P3_R4_IMPLEMENTATION_PR = #264
-P3_R4_QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
-P3_R4_QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
-P3_R4_MERGE = ad63bab64512f8ac24c0f849b58b64ecf41a8709
-P3_R4_POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
-P3_R4_POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
+P3_R5_AUTHORIZATION_PR = #266
+P3_R5_AUTHORIZATION_QUALIFIED_HEAD = 4826c57b909eeb3357eec59a6aa9641cbffb190f
+P3_R5_AUTHORIZATION_QUALIFIED_TREE = 08f843206e981f338c278f08d9492a5d90f9d2c0
+P3_R5_AUTHORIZATION_BLOB = 8e8fc94b2f260d055f413e2e595a5eea894877b6
+P3_R5_AUTHORIZATION_MERGE = 41599d88d2b18f2714848452d20fc8ff00232f31
+P3_R5_IMPLEMENTATION_PR = #267
+P3_R5_QUALIFIED_HEAD = 33847308b30327a5a290eee7f4c0382b3205a576
+P3_R5_QUALIFIED_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
+P3_R5_MERGE = ae8a8d46f529a6782e39e3ae1787220cef603b8f
+P3_R5_POST_MERGE_GOVERNANCE = 33359263671 / SUCCESS
+P3_R5_POST_MERGE_K2_RUNTIME = 33359263703 / SUCCESS AFTER IDENTICAL-MERGE-SHA RETRY
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical P3-R4 path blobs:
+Canonical P3-R5 path blobs:
 
 ```text
-contracts.ts = 90965256d7f8aeeef5f88698c6fe2d2c53433b85
-context-policy-provenance.ts = 2ab4d6ac0c538da4678e1119f599b8dbfde07d8d
-p3-r4-context-policy-provenance.test.ts = 52621ace5e3c880d443ec9169035f70ac29c2ba1
-P3-R4 evidence = 3cea25de280aed867a65aafe7b72c6e619fba864
+contracts.ts = 5f9f33bf6a3a7e4378e443621b913e76b9ab0ad7
+context-policy-qualification.ts = 358e0c4713644e0275010d20961d6409040411ca
+p3-r5-context-policy-qualification.test.ts = a331cf19adf7c89044f23ad3d423ffd07688ba92
+P3-R5 evidence = 4ff828e8ceec4c5e2b115568e256ef85bae3e208
 ```
 
-The implementation merge is signed and valid, its ordered parents are the canonical P3-R4 authorization merge followed by the exact qualified P3-R4 implementation head, its merge tree equals the qualified tree, and all four P3-R4 blobs match the qualified candidate.
+The implementation merge is signed and valid, its ordered parents are the canonical P3-R5 authorization merge followed by the exact qualified P3-R5 implementation head, its merge tree equals the qualified tree, and all four P3-R5 blobs match the qualified candidate.
 
-Post-merge proof is complete on the exact merge SHA: Governance `provenance` + `legacy-tests` passed; K2 classifier, Ubuntu/macOS/Windows Typecheck + Test + Patch benchmark hook, and the stable `k2-runtime-gate` all passed; ruleset `20707483` remained active/no-bypass.
+Post-merge proof is complete on the exact merge SHA. Governance `provenance` + `legacy-tests` passed. The initial Ubuntu K2 attempt hit one unchanged pre-existing H4-R3G-B timing assertion; that H4 test blob was byte-identical across the P3-R5 base and merge. An identical-merge-SHA failed-job retry then proved Ubuntu/macOS/Windows Typecheck + Test + Patch benchmark hook and stable `k2-runtime-gate` success. No repository bytes changed during the retry.
 
-## P3-R4 exit meaning
+## P3-R5 exit meaning
 
-P3-R4 closes only the deterministic benchmark-provenance evidence binding mechanism:
+P3-R5 closes only the deterministic caller-declared qualification-evidence mechanism:
 
 ```text
-TRUSTED P3-R3 EVIDENCE RECONSTRUCTION
-+ TRUSTED P2-R4 COMPARISON RECONSTRUCTION
-+ VALIDATED P2-R1 MANIFEST / DEVELOPMENT / HOLDOUT PROVENANCE
-+ EXACT P2-R2 MANIFEST DIGEST REPRODUCTION
-+ EXACT REPORT / CASE / METRIC TOPOLOGY CROSS-BINDING
--> LITERAL CHRONOLOGY / CONTAMINATION / CORPUS-ROLE EVIDENCE
--> CLOSED IMMUTABLE PROVENANCE EVIDENCE RECORD
+TRUSTED P2-R4 / P3-R3 / P3-R4 EVIDENCE RECONSTRUCTION
++ EXACT SEVEN-DIMENSION CALLER-DECLARED RELATION CRITERIA
++ LITERAL CORPUS-ROLE / CHRONOLOGY / CONTAMINATION CRITERIA
++ INSUFFICIENT-EVIDENCE-FIRST AGGREGATE PRECEDENCE
+-> CALLER-DECLARED CRITERION-MATCH EVIDENCE
+-> CLOSED IMMUTABLE QUALIFICATION EVIDENCE RECORD
 ```
 
-It does not execute a benchmark, establish holdout sufficiency, prove contamination freedom, select or promote a repository-owned context strategy, or establish that any strategy is better.
+It does not execute a benchmark, establish holdout sufficiency, prove contamination freedom, establish significance, select or promote a repository-owned context strategy, or establish that any strategy is better.
 
 ```text
-P3-R4 CLOSED != P3 OVERALL CLOSED
-P3-R4 CLOSED != REPOSITORY DEFAULT / WINNER
-P3-R4 CLOSED != BENCHMARK EXECUTION
-P3-R4 CLOSED != HOLDOUT ACCEPTANCE / SIGNIFICANCE PROOF
-P3-R4 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-P3-R4 CLOSED != PROVIDER / MODEL EXECUTION
-P3-R4 CLOSED != PRODUCT INTEGRATION
-P3-R4 CLOSED != P3-R5+ AUTHORITY
+P3-R5 CLOSED != P3 OVERALL CLOSED
+P3-R5 CLOSED != REPOSITORY DEFAULT / WINNER / PROMOTION
+P3-R5 CLOSED != BENCHMARK EXECUTION
+P3-R5 CLOSED != HOLDOUT ACCEPTANCE / SIGNIFICANCE PROOF
+P3-R5 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
+P3-R5 CLOSED != PROVIDER / MODEL EXECUTION
+P3-R5 CLOSED != PRODUCT INTEGRATION
+P3-R5 CLOSED != P3-R6+ AUTHORITY
 ```
 
 ## Current reconciliation milestone
 
-The current docs-only candidate reconciles current roadmap/status/version views with the already-proven P3-R4 closure. It creates no runtime authority and must itself qualify, merge normally, and complete post-merge proof before these current-view bytes become canonical.
+The current docs-only candidate reconciles current roadmap/status/version views with the already-proven P3-R5 closure. It creates no runtime authority and must itself qualify, merge normally, and complete post-merge proof before these current-view bytes become canonical.
 
 Exact current-view path set:
 
@@ -104,7 +104,7 @@ docs/product/STATUS.md
 After and only after this reconciliation becomes canonical and post-merge proven, later P3 work is limited to definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
 
 ```text
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
@@ -120,7 +120,7 @@ GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
 N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / STRATEGY PROMOTION = NOT_AUTHORIZED
 THRESHOLD / SIGNIFICANCE / UNIVERSAL QUALITY SCORE = NOT_AUTHORIZED
-HOLDOUT SUFFICIENCY / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED BY R4 EVIDENCE
+HOLDOUT SUFFICIENCY / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED BY P3-R5
 EMBEDDINGS / VECTOR DB / LEARNED RERANKER = NOT_AUTHORIZED
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -128,7 +128,7 @@ NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 CLI / API / PRODUCT / AGENT-LOOP INTEGRATION = NOT_AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED

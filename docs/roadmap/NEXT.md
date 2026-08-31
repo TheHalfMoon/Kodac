@@ -31,71 +31,72 @@ P3-R1 DETERMINISTIC CONTEXT SELECTION PLAN FOUNDATION = CLOSED_CANONICAL
 P3-R2 DECLARED CONTEXT SELECTION POLICY APPLICATION = CLOSED_CANONICAL
 P3-R3 CONTEXT POLICY PAIRWISE METRIC EVIDENCE = CLOSED_CANONICAL
 P3-R4 CONTEXT POLICY BENCHMARK PROVENANCE EVIDENCE BINDING = CLOSED_CANONICAL
+P3-R5 DECLARED CONTEXT POLICY QUALIFICATION EVIDENCE = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R4 closure is bounded. It establishes only a pure deterministic mechanism that reconstructs trusted P2-R4 and P3-R3 evidence, validates canonical P2-R1 manifest/development/holdout provenance, reproduces the exact P2-R2 manifest digest ordering, cross-binds exact report/case/metric topology, and emits immutable literal benchmark-provenance evidence.
+P3-R5 closes only the bounded caller-declared qualification-evidence mechanism. It determines whether exact caller-declared criteria match canonically reconstructed P3-R3 metric relations and literal P3-R4 provenance evidence.
 
-It does **not** execute a benchmark, prove a policy is better, establish holdout sufficiency, infer contamination-free status, choose a default/winner, authorize promotion, invoke providers/models, integrate product/runtime surfaces, persist results, publish a package/release, or authorize P3-R5+.
+It does **not** execute a benchmark, select a repository winner/default, authorize promotion, establish statistical significance, establish holdout sufficiency or unbiasedness, prove contamination freedom, invoke providers/models, integrate product/runtime surfaces, persist results, publish a package/release, or authorize P3-R6+.
 
 ---
 
-# P3-R4 canonical proof anchors
+# P3-R5 canonical proof anchors
 
 Authorization:
 
 ```text
-AUTHORIZATION_PR = #262
-AUTHORIZATION_QUALIFIED_HEAD = d68d7b0e13c7099db4a3c9bb8c6b4283a916550a
-AUTHORIZATION_QUALIFIED_TREE = fdfa7498641496ae82cf77d5ce3560b0327a129b
-AUTHORIZATION_BLOB = d7827c154182b037f91f1addb8ca44f1798e02aa
-AUTHORIZATION_MERGE = 954455a3dce6e1d0663501504265abd4194addce
+AUTHORIZATION_PR = #266
+AUTHORIZATION_QUALIFIED_HEAD = 4826c57b909eeb3357eec59a6aa9641cbffb190f
+AUTHORIZATION_QUALIFIED_TREE = 08f843206e981f338c278f08d9492a5d90f9d2c0
+AUTHORIZATION_BLOB = 8e8fc94b2f260d055f413e2e595a5eea894877b6
+AUTHORIZATION_MERGE = 41599d88d2b18f2714848452d20fc8ff00232f31
 ```
 
 Implementation:
 
 ```text
-IMPLEMENTATION_PR = #264
-QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
-QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
-MERGE = ad63bab64512f8ac24c0f849b58b64ecf41a8709
-MERGE_PARENT_1 = 954455a3dce6e1d0663501504265abd4194addce
-MERGE_PARENT_2 = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
-MERGE_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
+IMPLEMENTATION_PR = #267
+QUALIFIED_HEAD = 33847308b30327a5a290eee7f4c0382b3205a576
+QUALIFIED_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
+MERGE = ae8a8d46f529a6782e39e3ae1787220cef603b8f
+MERGE_PARENT_1 = 41599d88d2b18f2714848452d20fc8ff00232f31
+MERGE_PARENT_2 = 33847308b30327a5a290eee7f4c0382b3205a576
+MERGE_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
 MERGE_VERIFICATION = verified / valid
-PRE_MERGE_GOVERNANCE = 33354884568 / SUCCESS
-PRE_MERGE_K2_RUNTIME = 33354884553 / SUCCESS
-POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
+PRE_MERGE_GOVERNANCE = 33358638262 / SUCCESS
+PRE_MERGE_K2_RUNTIME = 33358638231 / SUCCESS
+POST_MERGE_GOVERNANCE = 33359263671 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33359263703 / SUCCESS AFTER IDENTICAL-MERGE-SHA RETRY
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 SEMANTIC_REVIEW_QUORUM = CodeRabbit + Codex / exact-head clean
 UNRESOLVED_ACTIONABLE_THREADS = 0
 WAIVER = NO
 ```
 
-Canonical P3-R4 blobs:
+Canonical P3-R5 blobs:
 
 ```text
-packages/kodac-runtime/bench/p3-r4/contracts.ts
-  90965256d7f8aeeef5f88698c6fe2d2c53433b85
-packages/kodac-runtime/bench/p3-r4/context-policy-provenance.ts
-  2ab4d6ac0c538da4678e1119f599b8dbfde07d8d
-packages/kodac-runtime/test/p3-r4-context-policy-provenance.test.ts
-  52621ace5e3c880d443ec9169035f70ac29c2ba1
-docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_EVIDENCE_2026-08-30.md
-  3cea25de280aed867a65aafe7b72c6e619fba864
+packages/kodac-runtime/bench/p3-r5/contracts.ts
+  5f9f33bf6a3a7e4378e443621b913e76b9ab0ad7
+packages/kodac-runtime/bench/p3-r5/context-policy-qualification.ts
+  358e0c4713644e0275010d20961d6409040411ca
+packages/kodac-runtime/test/p3-r5-context-policy-qualification.test.ts
+  a331cf19adf7c89044f23ad3d423ffd07688ba92
+docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_EVIDENCE_2026-08-31.md
+  4ff828e8ceec4c5e2b115568e256ef85bae3e208
 ```
 
-Post-merge Governance proved both `provenance` and `legacy-tests` success. Post-merge K2 proved the runtime-change classifier, Ubuntu/macOS/Windows Typecheck + Test + Patch benchmark hook, and stable `k2-runtime-gate` success on the exact merge SHA.
+Post-merge Governance proved `provenance` and `legacy-tests` success. The first post-merge Ubuntu K2 attempt hit one unchanged pre-existing H4-R3G-B timing assertion; the H4-R3G-B test blob remained byte-identical across the P3-R5 base and merge. An identical-merge-SHA failed-job retry then proved Ubuntu/macOS/Windows Typecheck + Test + Patch benchmark hook and the stable `k2-runtime-gate` success without repository mutation.
 
 ---
 
-# NOW — P3-R4 closeout reconciliation candidate
+# NOW — P3-R5 closeout reconciliation candidate
 
-The active repository unit is documentation-only reconciliation of current roadmap/status/version views with the already-proven P3-R4 canonical closure.
+The active repository unit is documentation-only reconciliation of current roadmap/status/version views with the already-proven P3-R5 canonical closure.
 
 Exact reconciliation path set:
 
@@ -109,7 +110,7 @@ docs/product/STATUS.md
 
 ```text
 RUNTIME IMPLEMENTATION AUTHORITY = NONE
-P3-R5+ IMPLEMENTATION AUTHORITY = NONE
+P3-R6+ IMPLEMENTATION AUTHORITY = NONE
 P4-P8 IMPLEMENTATION AUTHORITY = NONE
 REAL BENCHMARK EXECUTION AUTHORITY = NONE
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION AUTHORITY = NONE
@@ -124,7 +125,7 @@ This reconciliation must itself qualify and merge normally before these current-
 Only after this reconciliation becomes canonical and post-merge proven may the repository prepare the next bounded P3 definition/planning/authorization candidate, if justified by canonical sequencing and a separate exact authorization record.
 
 ```text
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
@@ -151,7 +152,7 @@ CLI / API / PRODUCT / AGENT-LOOP INTEGRATION = NOT_AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
@@ -162,8 +163,8 @@ WAIVER = NO
 
 - Working rules: `AGENTS.md`
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R4 authorization: `docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_AUTHORIZATION_2026-08-30.md`
-- P3-R4 evidence: `docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_EVIDENCE_2026-08-30.md`
+- P3-R5 authorization: `docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_AUTHORIZATION_2026-08-31.md`
+- P3-R5 evidence: `docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_EVIDENCE_2026-08-31.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Version/release boundary: `docs/roadmap/VERSION_PLAN.md`

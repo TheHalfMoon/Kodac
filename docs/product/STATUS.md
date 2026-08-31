@@ -20,48 +20,49 @@ P3-R1 DETERMINISTIC CONTEXT SELECTION PLAN FOUNDATION = CLOSED_CANONICAL
 P3-R2 DECLARED CONTEXT SELECTION POLICY APPLICATION = CLOSED_CANONICAL
 P3-R3 CONTEXT POLICY PAIRWISE METRIC EVIDENCE = CLOSED_CANONICAL
 P3-R4 CONTEXT POLICY BENCHMARK PROVENANCE EVIDENCE BINDING = CLOSED_CANONICAL
+P3-R5 DECLARED CONTEXT POLICY QUALIFICATION EVIDENCE = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-## Canonical P3-R4 anchors
+## Canonical P3-R5 anchors
 
 ```text
-AUTHORIZATION_PR = #262
-AUTHORIZATION_QUALIFIED_HEAD = d68d7b0e13c7099db4a3c9bb8c6b4283a916550a
-AUTHORIZATION_QUALIFIED_TREE = fdfa7498641496ae82cf77d5ce3560b0327a129b
-AUTHORIZATION_BLOB = d7827c154182b037f91f1addb8ca44f1798e02aa
-AUTHORIZATION_MERGE = 954455a3dce6e1d0663501504265abd4194addce
-IMPLEMENTATION_PR = #264
-QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
-QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
-IMPLEMENTATION_MERGE = ad63bab64512f8ac24c0f849b58b64ecf41a8709
-POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
-POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
+AUTHORIZATION_PR = #266
+AUTHORIZATION_QUALIFIED_HEAD = 4826c57b909eeb3357eec59a6aa9641cbffb190f
+AUTHORIZATION_QUALIFIED_TREE = 08f843206e981f338c278f08d9492a5d90f9d2c0
+AUTHORIZATION_BLOB = 8e8fc94b2f260d055f413e2e595a5eea894877b6
+AUTHORIZATION_MERGE = 41599d88d2b18f2714848452d20fc8ff00232f31
+IMPLEMENTATION_PR = #267
+QUALIFIED_HEAD = 33847308b30327a5a290eee7f4c0382b3205a576
+QUALIFIED_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
+IMPLEMENTATION_MERGE = ae8a8d46f529a6782e39e3ae1787220cef603b8f
+POST_MERGE_GOVERNANCE = 33359263671 / SUCCESS
+POST_MERGE_K2_RUNTIME = 33359263703 / SUCCESS AFTER IDENTICAL-MERGE-SHA RETRY
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-The merge is signed and valid, its ordered parents are the canonical P3-R4 authorization merge followed by the exact qualified implementation head, its merge tree equals the qualified tree, and all four P3-R4 path blobs match the qualified candidate.
+The merge is signed and valid, its ordered parents are the canonical P3-R5 authorization merge followed by the exact qualified implementation head, its merge tree equals the qualified tree, and all four P3-R5 path blobs match the qualified candidate.
 
-Canonical P3-R4 blobs:
+Canonical P3-R5 blobs:
 
 ```text
-contracts.ts = 90965256d7f8aeeef5f88698c6fe2d2c53433b85
-context-policy-provenance.ts = 2ab4d6ac0c538da4678e1119f599b8dbfde07d8d
-p3-r4-context-policy-provenance.test.ts = 52621ace5e3c880d443ec9169035f70ac29c2ba1
-P3-R4 evidence = 3cea25de280aed867a65aafe7b72c6e619fba864
+contracts.ts = 5f9f33bf6a3a7e4378e443621b913e76b9ab0ad7
+context-policy-qualification.ts = 358e0c4713644e0275010d20961d6409040411ca
+p3-r5-context-policy-qualification.test.ts = a331cf19adf7c89044f23ad3d423ffd07688ba92
+P3-R5 evidence = 4ff828e8ceec4c5e2b115568e256ef85bae3e208
 ```
 
-Post-merge Governance and the complete runtime-sensitive K2 matrix/gate passed on the exact merge SHA. The active ruleset remained no-bypass.
+Post-merge Governance passed. The first Ubuntu K2 attempt encountered one unchanged pre-existing H4-R3G-B timing assertion; that H4 test path was byte-identical across the P3-R5 base and merge. An identical-merge-SHA retry completed Ubuntu/macOS/Windows Typecheck + Test + Patch benchmark hook and stable `k2-runtime-gate` successfully without any repository mutation.
 
-## Bounded P3-R4 meaning
+## Bounded P3-R5 meaning
 
-P3-R4 reconstructs trusted P2-R4 and P3-R3 evidence, validates canonical P2-R1 manifest/development/holdout provenance, reproduces the exact P2-R2 manifest digest ordering, and binds report identities, case identities, R1 result identities, manifest digest, and both report metric ID/unit topologies to the same trusted provenance substrate.
+P3-R5 reconstructs trusted P2-R4, P3-R3, and P3-R4 evidence and applies only exact caller-declared criteria to canonical metric relations and literal provenance facts.
 
-It preserves chronology, contamination, corpus role, anchors, and source provenance as literal evidence only and returns a deterministic detached deeply frozen record.
+It preserves insufficient evidence fail-closed, applies the fixed aggregate precedence, and returns deterministic detached deeply frozen criterion-match evidence.
 
 It does **not** establish:
 
@@ -79,22 +80,23 @@ PROVIDER / MODEL EXECUTION
 REPOSITORY ACQUISITION OR NEW INDEXING
 PERSISTENCE / TELEMETRY / LEARNING
 CLI / API / PRODUCT / AGENT-LOOP INTEGRATION
-P3-R5+ AUTHORITY
+P3-R6+ AUTHORITY
 ```
 
-Literal provenance remains non-decisional:
+Criterion matching remains non-decisional:
 
 ```text
+caller-declared match != repository winner/default/promotion
 later-in-time != sufficient holdout
 none-known != proven uncontaminated
 holdout != unbiased
-all-required-metrics-comparable != acceptable
-favored relation != winner
+comparable != statistically significant
+favored relation != global superiority
 ```
 
 ## Current docs-only reconciliation
 
-The current candidate updates current roadmap/status/version views to reflect already-proven P3-R4 closure. It is documentation only and creates no runtime or later-stage implementation authority.
+The current candidate updates current roadmap/status/version views to reflect already-proven P3-R5 closure. It is documentation only and creates no runtime or later-stage implementation authority.
 
 These reconciled bytes become canonical only if this exact candidate qualifies, merges normally into protected `main`, and completes required post-merge proof.
 
@@ -115,7 +117,7 @@ After and only after this reconciliation becomes canonical and post-merge proven
 This reconciliation does not execute a benchmark, choose a winner/default, establish holdout sufficiency, infer contamination freedom/significance, or claim quality improvement.
 
 ```text
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
@@ -143,7 +145,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
@@ -152,7 +154,7 @@ GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
 N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / STRATEGY PROMOTION = NOT_AUTHORIZED
 THRESHOLD / TOLERANCE / STATISTICS / SIGNIFICANCE = NOT_AUTHORIZED
-HOLDOUT SUFFICIENCY / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED BY R4
+HOLDOUT SUFFICIENCY / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED BY P3-R5
 DONOR REPLACEMENT / PROMOTION = NOT_AUTHORIZED
 EMBEDDINGS / VECTOR DB / LEARNED RERANKER = NOT_AUTHORIZED
 PERSISTENCE / DATABASE / BENCHMARK FILE OUTPUT = NOT_AUTHORIZED
