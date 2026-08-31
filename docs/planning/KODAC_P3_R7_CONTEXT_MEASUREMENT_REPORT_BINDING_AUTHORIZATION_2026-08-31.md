@@ -19,18 +19,34 @@ WAIVER = NO
 
 This record proposes one bounded future P3-R7 mechanism. It is not effective implementation authority while it exists only on a branch or pull request. It becomes effective only after its own exact-head qualification, guarded normal merge, and complete post-merge adoption proof.
 
-The designation `P3-R7` is not inferred from numbering or merely from P3-R6 closure. It is justified by one concrete remaining canonical composition gap described below.
+The designation `P3-R7` is not inferred from numbering or merely from P3-R6 closure. It is justified by one concrete remaining canonical composition gap: P3-R6 creates deterministic measurement evidence for one exact context-selection case, while P2-R2 independently creates a deterministic report from caller-supplied observations, and no canonical P3 boundary currently binds one reconstructed R6 evidence record to the exact P2-R2 report generated from those observations.
+
+This candidate intentionally authorizes only a **single-case report-binding boundary**. Multi-case subject composition is not designed or authorized here.
 
 ---
 
-## 2. Exact canonical baseline
+## 2. Exact canonical baseline and sequencing proof
 
 ```text
 CANONICAL_MAIN = ac002f5ef6bf9f338e1106b7b200dd5eb062e776
+
 P3_R1_THROUGH_R5 = CLOSED_CANONICAL
 P3_R6_CONTEXT_MEASUREMENT_OBSERVATION = CLOSED_CANONICAL
+
+P3_R6_IMPLEMENTATION_PR = #272
+P3_R6_IMPLEMENTATION_MERGE = c045ae50f42fcfeede37bbd3290b1d3a7cb5bb91
+
 P3_R6_RECONCILIATION_PR = #273
+P3_R6_RECONCILIATION_QUALIFIED_HEAD = 9ff1047f9e286787f2e6ab44ac462a2d918edb4b
+P3_R6_RECONCILIATION_QUALIFIED_TREE = ff079b0cfbe1ab7640adc792fdbf476b3b7b63b7
 P3_R6_RECONCILIATION_MERGE = ac002f5ef6bf9f338e1106b7b200dd5eb062e776
+P3_R6_RECONCILIATION_MERGE_VERIFICATION = verified / valid
+P3_R6_RECONCILIATION_POST_MERGE_GOVERNANCE = 33423715777 / SUCCESS
+P3_R6_RECONCILIATION_POST_MERGE_PROVENANCE = 99592071291 / SUCCESS
+P3_R6_RECONCILIATION_POST_MERGE_LEGACY_TESTS = 99592071581 / SUCCESS
+P3_R6_RECONCILIATION_POST_MERGE_K2_PUSH = NOT_APPLICABLE_BY_DOCS_ONLY_PUSH_PATH_FILTER
+P3_R6_RECONCILIATION_POST_MERGE_PROOF_COMMENT = #273 / 5482689759
+
 P3_OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P3_R7_PLUS_IMPLEMENTATION = NOT_AUTHORIZED BEFORE A MORE-SPECIFIC RECORD BECOMES CANONICAL
@@ -39,20 +55,31 @@ RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical predecessor code remains read-only to this authorization candidate:
+Canonical P3-R6 implementation blobs remain read-only to this candidate:
+
+```text
+packages/kodac-runtime/bench/p3-r6/contracts.ts
+  6b12541182cc0c28072efcb3966e570d3cdeefbe
+packages/kodac-runtime/bench/p3-r6/context-measurement-observation.ts
+  f31bb7f1cc89ddc6a6eacf1be546c54f135cffca
+packages/kodac-runtime/test/p3-r6-context-measurement-observation.test.ts
+  0ef67ed8249a03f79bac6ccf132a8dade56a79d4
+docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_EVIDENCE_2026-08-31.md
+  c8c156947f17aef62625acb5ea93c6bc9c0018a8
+```
+
+Canonical predecessor code also remains read-only:
 
 ```text
 packages/kodac-runtime/bench/p2-r2/runner.ts
   84849214b516fa465451146c9336ea5d825bdeeb
 packages/kodac-runtime/bench/p3-r3/contracts.ts
   7383bca3962b054f8b3798f0e8c1a26ccd675c6a
-packages/kodac-runtime/bench/p3-r6/contracts.ts
-  6b12541182cc0c28072efcb3966e570d3cdeefbe
-packages/kodac-runtime/bench/p3-r6/context-measurement-observation.ts
-  f31bb7f1cc89ddc6a6eacf1be546c54f135cffca
 ```
 
-Live GitHub truth, root `AGENTS.md`, `docs/roadmap/NEXT.md`, governing ADRs, canonical P2/P3 predecessor records, and this record after canonical adoption remain controlling.
+`docs/roadmap/NEXT.md` explicitly states that live GitHub and exact canonical authorization/evidence records override that navigation page. Its `THEN` condition permits later bounded P3 definition/planning/authorization-candidate work only after the five-path P3-R6 reconciliation becomes canonical and post-merge proven. The exact #273 merge and post-merge proof above satisfy that condition. This record does not infer implementation authority from the stale `NOW` heading or from numbering; it relies on the exact canonical #273 adoption proof and remains only an authorization candidate until separately qualified and adopted.
+
+Live GitHub truth, root `AGENTS.md`, `docs/roadmap/NEXT.md`, governing ADRs, canonical predecessor records, and this record after canonical adoption remain controlling.
 
 ---
 
@@ -70,39 +97,34 @@ No second path is authorized for adoption of this record.
 
 ## 4. Concrete remaining gap
 
-Canonical P3-R6 now provides one pure deterministic measurement boundary for one exact context-selection case:
+Canonical P3-R6 provides:
 
 ```text
 EXACT P3-R1 REQUEST PREIMAGE
 + EXACT CALLER-DECLARED P3-R2 POLICY
-+ VALIDATED P2-R1 MANIFEST/CORPUS INPUTS
++ VALIDATED P2-R1 MANIFEST / DEVELOPMENT / HOLDOUT INPUTS
 + ONE CLOSED R6 MEASUREMENT DECLARATION
 -> ONE CANONICAL P3-R6 MEASUREMENT EVIDENCE RECORD
 -> EXACTLY SEVEN P2-R2-COMPATIBLE OBSERVATIONS
 ```
 
-Canonical P2-R2 separately provides:
+Canonical P2-R2 independently provides:
 
 ```text
-VALIDATED P2-R1 MANIFEST/CORPUS INPUTS
+VALIDATED P2-R1 MANIFEST / DEVELOPMENT / HOLDOUT INPUTS
 + CALLER-SUPPLIED P2-R2 OBSERVATION SET
 -> DETERMINISTIC P2-R2 REPORT
 ```
 
-Canonical P3-R3 then consumes a trusted P2-R4 comparison derived later in the P2 evidence chain. It does not consume P3-R6 evidence directly.
+Repository search on canonical `main` finds no downstream P3 consumer of `ContextPolicyMeasurementEvidence`. Therefore the missing bounded bridge is not another measurement formula. It is one proof-preserving composition boundary that reconstructs one exact R6 evidence record from its original preimages, passes only its canonical observations into `runP2R2Report(...)`, proves that the P2-R2 report contains no semantic slots outside that R6 measurement, and binds both identities in one deterministic P3 evidence record.
 
-The current repository has no canonical P3 mechanism that:
+This candidate does **not** attempt multi-case aggregation. That restriction is necessary because:
 
-1. reconstructs a complete set of P3-R6 case measurements from their original preimages;
-2. proves that the case set belongs to one common declared context-selection policy identity;
-3. proves closed, duplicate-free case coverage for one supplied context-selection benchmark manifest set;
-4. concatenates only the canonical R6 observations from those reconstructed measurements;
-5. runs canonical `runP2R2Report(...)` over that exact observation set; and
-6. binds the resulting P2-R2 report identity back to the exact R6 measurement-evidence identities and observation-set identity.
+1. P2-R2 always materializes every validated manifest record and every declared metric slot, inserting `missing` slots when observations are absent;
+2. a partial case subset, a mixed-task-family manifest, or extra manifest metrics would therefore create P2-R2 report semantics not represented by the R6 evidence record; and
+3. canonical P3-R2 `policyIdentity` includes plan/repository/snapshot/content/task-bound fields, so it is not a case-invariant multi-case strategy identity.
 
-Repository search on the canonical baseline finds `ContextPolicyMeasurementEvidence` only in the P3-R6 contract/implementation and its authorization surface; there is no downstream P3 consumer. `runP2R2Report(...)` remains a generic P2 boundary and does not bind a P2-R2 report to canonical R6 measurement evidence.
-
-Therefore the next bounded gap is report binding/composition, not benchmark execution, policy promotion, or a new retrieval strategy.
+No new cross-case strategy identity is invented by this authorization.
 
 ---
 
@@ -119,7 +141,7 @@ docs/planning/KODAC_P3_R7_CONTEXT_MEASUREMENT_REPORT_BINDING_EVIDENCE_2026-08-31
 
 No fifth path is authorized.
 
-The future implementation may not modify P2/P3 predecessor source or tests, manifests, corpora, fixtures, workflows, dependencies, lockfiles, provider/model configuration, persistence, telemetry, product surfaces, release surfaces, or rulesets.
+The future implementation may not modify P2/P3 predecessor source or tests, manifests, development/holdout corpora, fixtures, result files, workflows, dependencies, lockfiles, provider/model/evaluator configuration, persistence, telemetry, product surfaces, release surfaces, or rulesets.
 
 ---
 
@@ -129,52 +151,39 @@ A future implementation may expose one pure deterministic function semantically 
 
 ```text
 buildContextPolicyMeasurementReportBinding(
-  caseMeasurementPreimagesValue,
+  planRequestValue,
+  policyValue,
   manifestInput,
   developmentInput,
   holdoutInput,
+  measurementDeclarationValue,
   reportDeclarationValue,
 ) -> ContextPolicyMeasurementReportEvidence
 ```
 
 The function must perform no ambient side effect.
 
-`caseMeasurementPreimagesValue` is a caller-supplied closed array. Each entry contains only the original inputs required to reconstruct one canonical P3-R6 measurement:
-
-```text
-planRequestValue
-policyValue
-measurementDeclarationValue
-```
-
-The future implementation must not trust caller-serialized P3-R1 plans, P3-R2 applications, P3-R6 evidence, P2-R2 observations, or P2-R2 reports as substitutes for canonical reconstruction.
+Caller-serialized P3-R1 plans, P3-R2 applications, P3-R6 evidence, P2-R2 observations, or P2-R2 reports must never substitute for canonical reconstruction.
 
 ---
 
-## 7. Mandatory deterministic procedure
+## 7. Closed single-case manifest boundary
 
-The future implementation must:
+Before producing P3-R7 evidence, the future implementation must fail closed unless the canonical validated P2-R1 manifest set satisfies **all** of these properties:
 
-1. harden/snapshot all public inputs before semantic reuse;
-2. validate the supplied P2-R1 manifest/development/holdout set through canonical `validateManifestSet(...)` or through canonical `runP2R2Report(...)` as part of the closed procedure;
-3. require a non-empty dense plain case-preimage array with a deterministic canonical order;
-4. reconstruct every case by invoking canonical `buildContextPolicyMeasurementObservations(...)` using the same supplied manifest/development/holdout inputs;
-5. require every reconstructed measurement to bind task family `context-selection`;
-6. require all reconstructed measurements to share one exact canonical `policyIdentity`;
-7. require every measurement to bind the same exact `r1ManifestSetDigest`;
-8. require unique `caseId`, unique `measurementId`, and unique `measurementEvidenceIdentity` values;
-9. require the case set to cover exactly every `context-selection` manifest case admitted by the future closed report declaration, with no unknown, duplicate, or omitted admitted case;
-10. require each admitted case to bind exactly the seven canonical P3 dimensions and preserve its exact manifest metric IDs and units;
-11. concatenate only the seven canonical observations emitted by each reconstructed R6 measurement;
-12. reject duplicate `(case_id, metric_id)` observation slots;
-13. call canonical `runP2R2Report(manifestInput, developmentInput, holdoutInput, observations)`;
-14. require the returned report `r1_manifest_set_digest` to equal the common reconstructed R6 `r1ManifestSetDigest`;
-15. require the returned report `observation_set_digest` to equal the canonical digest of the exact concatenated normalized R6 observation set;
-16. retain the ordered R6 measurement-evidence identities, their deterministic set digest, the P2-R2 report identity, and the complete normalized report declaration;
-17. derive one deterministic P3-R7 evidence identity from the complete normalized result projection, excluding only that identity field itself; and
-18. return a detached deeply frozen result.
+```text
+TOTAL MANIFEST RECORD COUNT = 1
+SOLE TASK FAMILY = context-selection
+SOLE CASE ID = report declaration caseId
+SOLE R1 RESULT IDENTITY = report declaration r1ResultIdentity
+SOLE METRIC-DEFINITION COUNT = 7
+```
 
-No repository-owned judgment, ranking, reduction, threshold, significance calculation, or promotion occurs in this procedure.
+The sole record's seven metric definitions must be an exact one-to-one set match for the reconstructed P3-R6 `measurementDeclaration.dimensionMetricBindings` after binding each R6 dimension to the exact manifest `metric_id` and `unit`. No eighth metric, omitted metric, duplicate metric, cross-task-family metric, unknown metric, or unit mismatch is allowed.
+
+This restriction is deliberate. It ensures canonical `runP2R2Report(...)` cannot add an unbound case or an unbound `missing` metric slot to the report.
+
+A future broader multi-case or mixed-family report boundary requires a separate explicit authorization and must first define a valid case-invariant subject/strategy identity and complete P2 report-coverage semantics. This record does not do so.
 
 ---
 
@@ -187,7 +196,8 @@ version
 kind
 reportBindingId
 taskFamily
-admittedCaseIds
+caseId
+r1ResultIdentity
 ```
 
 Required literals:
@@ -198,32 +208,39 @@ kind = build_context_policy_measurement_report_binding
 taskFamily = context-selection
 ```
 
-`reportBindingId` is a caller-owned canonical identifier.
+`reportBindingId` must be an explicit caller-owned canonical identifier.
 
-`admittedCaseIds` must be a non-empty strictly sorted duplicate-free array. Every admitted case must exist in the validated P2-R1 manifest set and must have task family `context-selection`. Every reconstructed R6 case must be admitted exactly once, and every admitted case must have exactly one reconstructed R6 measurement preimage.
+`caseId` and `r1ResultIdentity` must match both the sole validated manifest record and the canonically reconstructed P3-R6 measurement evidence. Unknown fields, missing fields, unsupported literals, non-canonical identifiers, or mismatches fail closed.
 
-This declaration does not create or mutate a benchmark manifest and does not define repository benchmark truth.
+The complete normalized declaration is retained in the result and bound into the P3-R7 evidence identity.
 
 ---
 
-## 9. Required cross-case invariants
+## 9. Mandatory deterministic procedure
 
-The future implementation must fail closed unless:
+The future implementation must:
 
-```text
-ALL CASES SHARE ONE POLICY IDENTITY
-ALL CASES SHARE ONE R1 MANIFEST-SET DIGEST
-ALL CASES ARE CONTEXT-SELECTION CASES
-ADMITTED CASE COVERAGE IS EXACT
-CASE IDS ARE UNIQUE
-MEASUREMENT IDS ARE UNIQUE
-MEASUREMENT EVIDENCE IDENTITIES ARE UNIQUE
-OBSERVATION SLOTS ARE UNIQUE
-EVERY CASE CONTRIBUTES EXACTLY SEVEN R6 OBSERVATIONS
-NO CALLER-SUPPLIED SERIALIZED R6/P2 RESULT IS TRUSTED
-```
+1. harden/snapshot all public inputs before semantic reuse;
+2. validate the supplied manifest/development/holdout inputs through canonical P2-R1 validation semantics;
+3. enforce the exact single-case/single-family/seven-metric manifest boundary in Section 7;
+4. normalize the closed report declaration in Section 8;
+5. reconstruct one canonical P3-R6 measurement by invoking canonical `buildContextPolicyMeasurementObservations(...)` with the same manifest/development/holdout inputs;
+6. require the reconstructed R6 task family, case ID, R1 result identity, and manifest-set digest to match the validated sole manifest record and report declaration;
+7. require the reconstructed R6 evidence to contain exactly seven observations and exactly seven dimension bindings;
+8. require a one-to-one match between the seven R6 observation `(metric_id, unit)` slots, the seven R6 dimension bindings, and the seven sole-record manifest metric definitions;
+9. require every R6 observation status to be `observed` or `unavailable`; R6 may never contribute a synthetic `missing` observation;
+10. call canonical `runP2R2Report(manifestInput, developmentInput, holdoutInput, r6Evidence.observations)`;
+11. require the returned P2-R2 report to contain exactly one case, exactly one `context-selection` task-family section, exactly seven metric slots, and no metric with `measurement_status = missing`;
+12. require every P2-R2 report metric slot to exactly match the corresponding reconstructed R6 observation by `case_id`, `r1_result_identity`, `task_family`, `metric_id`, `unit`, `measurement_status`, and `value`;
+13. require the returned report `r1_manifest_set_digest` to equal reconstructed R6 `r1ManifestSetDigest`;
+14. retain reconstructed R6 `observationSetDigest` as the source R6 observation-order identity;
+15. retain returned P2-R2 `observation_set_digest` as the canonical P2-R2 normalized observation-set identity;
+16. **not require those two observation digests to be equal**, because canonical R6 hashes its seven observations in canonical P3 dimension order while P2-R2 normalizes/sorts observations by its own report contract before deriving `observation_set_digest`;
+17. retain the exact reconstructed R6 measurement evidence identity and exact generated P2-R2 report identity;
+18. derive one deterministic P3-R7 evidence identity from the complete normalized result projection, excluding only `reportEvidenceIdentity` itself; and
+19. return a detached deeply frozen result.
 
-The same policy identity requirement is semantic, not merely a shared `policyId` label. Two policies with the same label but different canonical policy identity must fail closed.
+The future implementation must not reinterpret, reweight, rank, reduce, statistically evaluate, or promote any measurement.
 
 ---
 
@@ -238,43 +255,56 @@ reportEvidenceIdentity
 reportDeclaration
 reportBindingId
 policyIdentity
+applicationIdentity
+measurementEvidenceIdentity
+caseId
+r1ResultIdentity
 benchmarkId
 benchmarkProtocolVersion
 r1ManifestSetDigest
-measurementEvidenceIdentities
-measurementEvidenceSetDigest
-observationSetDigest
+r6ObservationSetDigest
+p2R2ObservationSetDigest
 p2R2ReportIdentity
 p2R2Report
 ```
 
-The exact schema must be closed and reject unknown fields on public serialized declarations.
+Required result literals must be versioned and closed. Public serialized declarations reject unknown fields.
 
-The nested P2-R2 report remains P2 evidence. P3-R7 only proves its derivation/binding to the reconstructed R6 measurement set; it does not reinterpret P2 metric values or statuses.
+The nested P2-R2 report remains P2 evidence. P3-R7 proves only that this exact locally generated report is fully covered by one exact canonically reconstructed R6 measurement evidence record. It does not reinterpret P2 metric values or statuses.
+
+`policyIdentity` remains the case-bound canonical P3-R2 identity reconstructed through R6. This record does not treat it as a multi-case strategy identity.
 
 ---
 
 ## 11. Edge-case discipline
 
-The future implementation must test and fail closed for at least:
+The future implementation must fail closed for at least:
 
-- empty/sparse/Proxy/accessor/symbol-bearing case arrays or declarations;
-- unknown or extra declaration fields;
-- duplicate or unsorted admitted case IDs;
-- unknown/cross-task-family admitted cases;
-- omitted admitted cases or extra reconstructed cases;
-- duplicate case IDs or measurement IDs;
-- mixed policy identities;
-- mixed manifest-set digests;
-- malformed or caller-forged serialized R6/P2 evidence attempts;
-- any case that fails canonical R6 reconstruction;
-- duplicate observation slots after composition;
-- digest mismatch between R6 evidence, concatenated observations, and P2-R2 report;
+- Proxy/accessor/symbol-bearing/cyclic/non-canonical public inputs;
+- unknown or extra report-declaration fields;
+- unsupported version/kind/task-family literals;
+- zero manifest records or more than one manifest record;
+- any non-`context-selection` manifest record;
+- report-declaration case or R1 result mismatch;
+- fewer or more than seven manifest metric definitions;
+- duplicate, unknown, omitted, cross-task-family, or unit-mismatched metric definitions/bindings;
+- any canonical R6 reconstruction failure;
+- R6 evidence with anything other than exactly seven observations;
+- any R6-to-P2 slot mismatch;
+- any generated P2-R2 report containing a `missing` metric slot;
+- any P2 report case/family/metric count outside the closed boundary;
+- R1 manifest-set digest mismatch;
+- caller-forged serialized R6/P2 intermediate evidence attempts;
 - mutation attempts against returned evidence;
 - input mutation after call entry affecting semantics; and
 - any ambient filesystem/network/process/persistence side effect.
 
-Positive tests must include multiple context-selection cases under one exact policy identity, unavailable R6 metrics where canonically valid, deterministic ordering under equivalent caller array ordering, and exact repeatability.
+Positive tests must include:
+
+- a sole context-selection case whose seven metrics include both `observed` and canonically valid `unavailable` statuses;
+- deterministic repeatability;
+- proof that equivalent benign caller object-key ordering does not change normalized identity; and
+- proof that R6 and P2-R2 observation digests are retained under their distinct canonical ordering semantics without false equality assumptions.
 
 ---
 
@@ -285,6 +315,8 @@ This authorization does not grant:
 ```text
 REAL BENCHMARK TASK EXECUTION
 BENCHMARK PARTICIPANT EXECUTION
+MULTI-CASE / MIXED-FAMILY / MULTI-POLICY REPORT COMPOSITION
+CASE-INVARIANT STRATEGY / SUBJECT IDENTITY
 BENCHMARK CORPUS / MANIFEST / FIXTURE CREATION OR MUTATION
 REPOSITORY-OWNED GOLD TRUTH
 MODEL / PROVIDER / REVIEWER / EVALUATOR / TOOL INVOCATION
@@ -323,6 +355,7 @@ This authorization record itself must not merge until one frozen exact head prov
 - Governance `provenance` and `legacy-tests` terminal success on the exact head;
 - K2 pull-request classifier and stable `k2-runtime-gate` terminal success, with docs-only runtime-matrix applicability represented honestly;
 - at least two distinct independently operated external substantive semantic reviewer/model-system channels terminal-clean on the exact head and current relevant metadata;
+- every previously reported material finding explicitly re-adjudicated as fixed or non-defect on the current exact head;
 - zero unresolved material findings and zero unresolved actionable review threads;
 - ruleset `20707483` active with `bypass_actors=[]` and `current_user_can_bypass=never`;
 - guarded normal merge with the exact qualified expected head; and
@@ -339,12 +372,13 @@ No force-push, rebase, destructive history rewrite, stale evidence reuse, review
 If and only if this exact authorization record qualifies, merges normally, and passes complete post-merge proof:
 
 ```text
-P3-R7 CONTEXT MEASUREMENT REPORT BINDING IMPLEMENTATION = AUTHORIZED
+P3-R7 SINGLE-CASE CONTEXT MEASUREMENT REPORT BINDING IMPLEMENTATION = AUTHORIZED
 P3-R7 IMPLEMENTATION ALLOWLIST = EXACT FOUR PATHS IN SECTION 5
 P3-R7 IMPLEMENTATION = NOT YET CLOSED_CANONICAL
 P3 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
+MULTI-CASE / CASE-INVARIANT STRATEGY COMPOSITION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 P3-R8+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
