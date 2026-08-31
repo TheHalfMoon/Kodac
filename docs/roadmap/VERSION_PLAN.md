@@ -26,33 +26,34 @@ P2-R6+ = NOT_AUTHORIZED
 P3-R1 = CLOSED_CANONICAL
 P3-R2 = CLOSED_CANONICAL
 P3-R3 = CLOSED_CANONICAL
+P3-R4 = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R4+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R3 closed canonically through PR #260 / `cd7c28b4f823e9570daf73448c5f3b9b9b540d2e` after exact-head Governance/K2 qualification, two distinct independent substantive semantic reviewer channels, guarded normal merge, and mandatory post-merge Governance/K2 proof.
+P3-R4 closed canonically through PR #264 / `ad63bab64512f8ac24c0f849b58b64ecf41a8709` after exact-head Governance/K2 qualification, two distinct independent substantive semantic reviewer channels, guarded normal merge, and mandatory post-merge Governance/K2 proof.
 
 ```text
-P3_R3_QUALIFIED_HEAD = 2071014a9e8761a84167e2fa7a44ba40b4df36da
-P3_R3_QUALIFIED_TREE = 46c2c5ff7af396ffa1377d0c597b398547c5087c
-P3_R3_POST_MERGE_GOVERNANCE = 33302704761 / SUCCESS
-P3_R3_POST_MERGE_K2_RUNTIME = 33302704758 / SUCCESS
+P3_R4_AUTHORIZATION_PR = #262
+P3_R4_AUTHORIZATION_MERGE = 954455a3dce6e1d0663501504265abd4194addce
+P3_R4_QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
+P3_R4_QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
+P3_R4_POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
+P3_R4_POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
 RULESET = 20707483 / active / no bypass
 ```
 
-Pre-merge timing retry history remains disclosed: two Ubuntu attempts hit the unchanged pre-existing H4-R3G-B timing assertion, while P3-R3 remained unchanged; a controlled retry on the identical head passed. No waiver or unrelated H4 mutation was used.
-
-## P3-R3 is not a release milestone
+## P3-R4 is not a release milestone
 
 ```text
-P3-R3 CLOSED_CANONICAL
+P3-R4 CLOSED_CANONICAL
 != P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
 != A REPOSITORY-OWNED DEFAULT CONTEXT POLICY
 != A WINNING / SUPERIOR CONTEXT STRATEGY PROVEN
-!= CHRONOLOGY / CONTAMINATION / SIGNIFICANCE QUALIFICATION
+!= HOLDOUT SUFFICIENCY / CONTAMINATION-FREE / SIGNIFICANCE QUALIFICATION
 != REAL PROVIDER / MODEL BENCHMARK EXECUTION
 != PUBLIC RELEASE READY
 != PACKAGE PUBLISHABLE
@@ -63,7 +64,17 @@ P3-R3 CLOSED_CANONICAL
 != BRAND LAUNCH AUTHORIZED
 ```
 
-P3-R3 is only a pure deterministic pairwise metric-evidence binding mechanism. It introduces no repository-owned policy choice, benchmark execution, chronology/contamination inference, significance threshold, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
+P3-R4 is only a pure deterministic benchmark-provenance evidence-binding mechanism. It introduces no repository-owned policy choice, benchmark execution, significance threshold, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
+
+Literal provenance is not a decision:
+
+```text
+later-in-time != sufficient holdout
+none-known != proven uncontaminated
+holdout != unbiased
+all-required-metrics-comparable != acceptable
+favored relation != winner
+```
 
 ## Repository visibility versus release authority
 
@@ -93,7 +104,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ = NOT_AUTHORIZED
-P3-R4+ = NOT_AUTHORIZED
+P3-R5+ = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT_AUTHORIZED BY THIS FILE
@@ -116,17 +127,27 @@ DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 
 ## Current reconciliation and next engineering action
 
-The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R3 closure. It creates no implementation or release authority.
+The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R4 closure. It creates no implementation or release authority.
+
+Exact path set:
+
+```text
+docs/roadmap/NEXT.md
+docs/roadmap/ROADMAP.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/VERSION_PLAN.md
+docs/product/STATUS.md
+```
 
 After and only after this reconciliation becomes canonical and post-merge proven, later P3 work is limited to bounded definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
 
 ```text
-P3-R4+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
 
-Any future slice involving chronology, contamination, holdout sufficiency, statistical acceptance, promotion, embeddings, learned reranking, provider/model execution, persistence, or product integration must define its exact evidence, trust, authority, and non-grant boundary before implementation.
+Any future slice involving holdout-sufficiency decisions, statistical acceptance, promotion, embeddings, learned reranking, provider/model execution, persistence, product integration, or release/public claims must define its exact evidence, trust, authority, and non-grant boundary before implementation.
 
 ## Future release-gate direction
 
@@ -148,8 +169,8 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R3 authorization: `docs/planning/KODAC_P3_R3_CONTEXT_POLICY_PAIRWISE_METRIC_EVIDENCE_AUTHORIZATION_2026-08-29.md`
-- P3-R3 evidence: `docs/planning/KODAC_P3_R3_CONTEXT_POLICY_PAIRWISE_METRIC_EVIDENCE_2026-08-29.md`
+- P3-R4 authorization: `docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_AUTHORIZATION_2026-08-30.md`
+- P3-R4 evidence: `docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_EVIDENCE_2026-08-30.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
