@@ -177,7 +177,7 @@ Mandatory procedure order:
 5. validate one exact caller measurement declaration against the reconstructed P3-R2 application and one exact `context-selection` manifest case;
 6. derive all seven measurement outcomes only from the reconstructed application, validated manifest binding, and caller-supplied evaluation facts defined below;
 7. emit exactly seven P2-R2-compatible observation records in canonical dimension order;
-8. derive one deterministic measurement evidence identity from the complete normalized projection excluding only its own identity field; and
+8. derive one deterministic measurement evidence identity from the complete normalized result projection, including the complete normalized measurement declaration, excluding only `measurementEvidenceIdentity` itself; and
 9. return a detached deeply frozen result.
 
 Caller-serialized P3-R1 plans, P3-R2 applications, P3-R3 evidence, or P3-R5 qualification records must never substitute for canonical reconstruction.
@@ -211,6 +211,8 @@ context-selection
 `dimensionMetricBindings` must contain exactly one binding for each of the seven canonical P3 context evidence dimensions. Each binding must identify one metric declared by that exact validated P2-R1 case and preserve its exact unit. Unknown, duplicate, omitted, cross-case, or cross-task-family bindings fail closed.
 
 This authorization does not add or mutate a repository benchmark manifest. If the caller's supplied validated manifest does not declare all seven required context-selection metrics, measurement fails closed.
+
+The future implementation must retain the complete normalized declaration after validation. The normalized declaration is semantic evidence input, not transient validation state, and must be bound into the result and its identity exactly as specified in Section 10.
 
 ---
 
@@ -344,10 +346,11 @@ value = boolean | finite number | null according to the exact metric semantics a
 
 `missing` is not produced by this P3-R6 v1 mechanism. If required evaluation facts are structurally absent or invalid, the function fails closed rather than silently converting malformed input to `missing`.
 
-The future result may also bind:
+The future result must bind:
 
 ```text
 measurementEvidenceIdentity
+measurementDeclaration
 measurementId
 applicationIdentity
 policyIdentity
@@ -365,6 +368,10 @@ observationSetDigest
 observations
 ```
 
+`measurementDeclaration` must be the complete normalized closed declaration from Section 7 exactly as validated, including `dimensionMetricBindings`, `goldCandidateIdentities`, and `utilizedCandidateIdentities`. The returned result therefore preserves the exact caller evaluation facts that determined the observations.
+
+`measurementEvidenceIdentity` must be derived from the complete normalized result projection including `measurementDeclaration` and `observations`, excluding only the `measurementEvidenceIdentity` field itself. No identity preimage, projection, digest shortcut, or downstream P2-R2 report identity may omit the normalized declaration or substitute the observation set for those declaration facts. Distinct valid normalized declarations must remain identity-distinct even when they happen to produce identical observation values.
+
 No report aggregation is performed by P3-R6. Canonical P2-R2 remains the report boundary if a caller later passes these observations to `runP2R2Report(...)`.
 
 ---
@@ -379,6 +386,7 @@ A future implementation must:
 - preserve canonical P3 dimension order in the emitted observation array;
 - use repository canonical string ordering for set-like normalized inputs;
 - derive identities through canonical serialization and lowercase `sha256:<64 hex>` identities;
+- bind the complete normalized measurement declaration into the returned evidence projection and `measurementEvidenceIdentity` preimage, excluding only the identity field itself;
 - reject NaN, infinities, negative byte counts, impossible subset relations, cross-snapshot identities, and manifest/application mismatches;
 - return detached deeply frozen output; and
 - perform no filesystem, network, subprocess, secret, provider, model, telemetry, persistence, clock, randomness, or environment access.
