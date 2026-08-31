@@ -24,45 +24,60 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P3-R3 | **CLOSED_CANONICAL** | Pairwise seven-metric evidence / comparability only |
 | P3-R4 | **CLOSED_CANONICAL** | Literal benchmark-provenance evidence binding only |
 | P3-R5 | **CLOSED_CANONICAL** | Caller-declared criterion-match evidence only |
-| P3 bounded R1-R5 engineering closeout | **CONDITIONAL ON THIS EXACT SIX-PATH MERGE + POST-MERGE PROOF** | Authorized by PR #269 / `cce6b1aab6d5c2909728ad80133718cfd97b4897` |
+| P3 bounded R1-R5 engineering closeout | **CLOSED_CANONICAL** | PR #270 / `9d75115f66f34ef8ee1e1a093705a5cba21f8f49` |
+| P3-R6 | **CLOSED_CANONICAL** | Pure deterministic seven-dimension measurement/observation materialization only |
+| P3-R6 current-view reconciliation | **CURRENT DOCS-ONLY UNIT / NOT YET CLOSED_CANONICAL** | Five current roadmap/status/version views only |
 | P3 overall | **OPEN** | No repository policy/default/promotion, benchmark execution, or public quality claim established |
-| P3-R6+ | **NOT_AUTHORIZED** | No R6 requirement or authority is inferred from R1-R5 closure |
+| P3-R7+ | **NOT_AUTHORIZED** | No later implementation authority is inferred from R6 closure |
 | P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
 
 Engineering milestone state is separate from public release status.
 
-## P3 bounded closeout authority
+## Canonical P3-R6 proof
 
 ```text
-CLOSEOUT_AUTHORIZATION_PR = #269
-CLOSEOUT_AUTHORIZATION_QUALIFIED_HEAD = 6e0d5c94aca116a6904bef458209fed931d870c3
-CLOSEOUT_AUTHORIZATION_QUALIFIED_TREE = 4b4fc143cecf5d754494aa1748135b7f4a2693c7
-CLOSEOUT_AUTHORIZATION_BLOB = f5894f1a8ec3af39e54f2997865f534e196e30e8
-CLOSEOUT_AUTHORIZATION_MERGE = cce6b1aab6d5c2909728ad80133718cfd97b4897
-CLOSEOUT_AUTHORIZATION_VERIFICATION = verified / valid
-PRE_MERGE_GOVERNANCE = 33360478597 / SUCCESS
-PRE_MERGE_K2 = 33360478582 / classifier + stable gate SUCCESS / runtime SKIPPED AS DOCS-ONLY
-POST_MERGE_GOVERNANCE = 33360736529 / SUCCESS
-POST_MERGE_K2_PUSH = NOT_APPLICABLE_BY_DOCS_ONLY_PUSH_PATH_FILTER
-SEMANTIC_REVIEW_QUORUM = CodeRabbit + Codex / exact-head clean
+P3_R1_R5_CLOSEOUT_PR = #270
+P3_R1_R5_CLOSEOUT_MERGE = 9d75115f66f34ef8ee1e1a093705a5cba21f8f49
+
+P3_R6_AUTHORIZATION_PR = #271
+P3_R6_AUTHORIZATION_QUALIFIED_HEAD = 5412c1c8ac2629ae6d4d0c87981b3b5ce14116e0
+P3_R6_AUTHORIZATION_QUALIFIED_TREE = bfde96cf637006e142e920b1dd3a132b11adab37
+P3_R6_AUTHORIZATION_BLOB = 3eaf04d6e2ed558692ee1f08f0557ac6a3c4a8b1
+P3_R6_AUTHORIZATION_MERGE = 2441cf9b6006859a4bc05cfe196a033fe31b56c9
+P3_R6_AUTHORIZATION_POST_MERGE_GOVERNANCE = 33416874486 / SUCCESS
+
+P3_R6_IMPLEMENTATION_PR = #272
+P3_R6_QUALIFIED_HEAD = 202cbf2b8082ddde52738e07373ba24322a5265c
+P3_R6_QUALIFIED_TREE = 85d3cb932fc477525a05eed6a5ee1e4ffe43e4a1
+P3_R6_IMPLEMENTATION_MERGE = c045ae50f42fcfeede37bbd3290b1d3a7cb5bb91
+MERGE_PARENT_1 = 2441cf9b6006859a4bc05cfe196a033fe31b56c9
+MERGE_PARENT_2 = 202cbf2b8082ddde52738e07373ba24322a5265c
+MERGE_TREE = 85d3cb932fc477525a05eed6a5ee1e4ffe43e4a1
+MERGE_VERIFICATION = verified / valid
+PRE_MERGE_GOVERNANCE = 33418354648 / SUCCESS
+PRE_MERGE_K2 = 33418354658 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
+POST_MERGE_GOVERNANCE = 33419477062 / SUCCESS
+POST_MERGE_K2 = 33419477059 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
+SEMANTIC_REVIEW_QUORUM = Cubic + CodeRabbit / exact-head and current-metadata terminal clean
+UNRESOLVED_ACTIONABLE_THREADS = 0
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Exact current closeout allowlist:
+Canonical R6 implementation blobs:
 
 ```text
-docs/planning/KODAC_P3_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-31.md
-docs/product/STATUS.md
-docs/roadmap/MILESTONES.md
-docs/roadmap/ROADMAP.md
-docs/roadmap/VERSION_PLAN.md
-docs/roadmap/NEXT.md
+packages/kodac-runtime/bench/p3-r6/contracts.ts
+  6b12541182cc0c28072efcb3966e570d3cdeefbe
+packages/kodac-runtime/bench/p3-r6/context-measurement-observation.ts
+  f31bb7f1cc89ddc6a6eacf1be546c54f135cffca
+packages/kodac-runtime/test/p3-r6-context-measurement-observation.test.ts
+  0ef67ed8249a03f79bac6ccf132a8dade56a79d4
+docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_EVIDENCE_2026-08-31.md
+  c8c156947f17aef62625acb5ea93c6bc9c0018a8
 ```
 
-No seventh path is authorized.
-
-## Canonical P3 R1-R5 ledger
+## Canonical P3 ledger
 
 ```text
 R1: #251 authorization -> #252 implementation -> #253 reconciliation
@@ -70,11 +85,13 @@ R2: #255 authorization -> #256 implementation -> #257 reconciliation
 R3: #258 authorization -> #260 implementation -> #261 reconciliation
 R4: #262 authorization -> #264 implementation -> #265 reconciliation
 R5: #266 authorization -> #267 implementation -> #268 reconciliation
+R1-R5 closeout: #269 authorization -> #270 closeout
+R6: #271 authorization -> #272 implementation -> current-view reconciliation pending
 ```
 
-The complete canonical heads, trees, blobs, check evidence, bounded meanings, and material repair/failure/service history are bound in the closeout evidence record. Closed-unmerged/superseded candidates are preserved as non-authority rather than folded into the canonical chain.
+The detailed heads, trees, blobs, check evidence, bounded meanings, forward repairs, service failures, retries, and superseded/non-authority history remain in the canonical planning/evidence records. Current-view reconciliation does not rewrite that history.
 
-## Bounded R1-R5 exit meaning
+## Bounded P3 R1-R6 meaning
 
 ```text
 R1 = deterministic context-selection-plan foundation
@@ -82,53 +99,52 @@ R2 = deterministic caller-declared policy application
 R3 = pairwise seven-metric evidence binding / comparability-only state
 R4 = literal benchmark-provenance evidence binding
 R5 = caller-declared criterion-match evidence
+R6 = deterministic seven-dimension measurement materialization from one canonical reconstructed R2 application plus explicit caller evaluation facts
 ```
 
-The five mechanisms remain evidence-only boundaries:
+These remain evidence-only boundaries:
 
 ```text
-P3 BOUNDED R1-R5 CLOSED != P3 OVERALL CLOSED
-P3 BOUNDED R1-R5 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-P3 BOUNDED R1-R5 CLOSED != REAL BENCHMARK TASK EXECUTION
-P3 BOUNDED R1-R5 CLOSED != REPOSITORY DEFAULT / WINNER / PROMOTION
-P3 BOUNDED R1-R5 CLOSED != HOLDOUT SUFFICIENCY / CONTAMINATION FREEDOM
-P3 BOUNDED R1-R5 CLOSED != STATISTICAL SIGNIFICANCE / ACCEPTANCE
-P3 BOUNDED R1-R5 CLOSED != PROVIDER / MODEL EXECUTION
-P3 BOUNDED R1-R5 CLOSED != PRODUCT / RELEASE / PACKAGE READY
-P3 BOUNDED R1-R5 CLOSED != P3-R6+ AUTHORITY
-P3 BOUNDED R1-R5 CLOSED != P4 AUTHORITY
+P3 R1-R6 CLOSED != P3 OVERALL CLOSED
+P3 R1-R6 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
+P3 R1-R6 CLOSED != REAL BENCHMARK TASK EXECUTION
+P3 R1-R6 CLOSED != REPOSITORY DEFAULT / WINNER / PROMOTION
+P3 R1-R6 CLOSED != HOLDOUT SUFFICIENCY / CONTAMINATION FREEDOM
+P3 R1-R6 CLOSED != STATISTICAL SIGNIFICANCE / ACCEPTANCE
+P3 R1-R6 CLOSED != PROVIDER / MODEL EXECUTION
+P3 R1-R6 CLOSED != PRODUCT / RELEASE / PACKAGE READY
+P3 R1-R6 CLOSED != P3-R7+ AUTHORITY
+P3 R1-R6 CLOSED != P4 AUTHORITY
 ```
 
-## Material-history requirement
+## Current reconciliation qualification
 
-Closeout evidence preserves rather than rewrites:
+The current-view reconciliation may change exactly:
 
-- R1 semantic edge-order and canonical entity-order repairs plus identical-head H4 timing retry;
-- R2 closed-unmerged PR #254, replacement authorization repairs, same-head/same-merge H4 retries, and topology-over-narrative handling of the merge-message typo;
-- R3 closed-unmerged PR #259, direct focused-test repair, hosted-runner/public-visibility history, and identical-head H4 retries;
-- R4 three material Codex P1 authorization repairs, implementation type/test/proof repairs, and Draft PR #263 administrative non-authority;
-- R5 provenance-state and aggregate-precedence repairs plus the identical-merge-SHA post-merge K2 retry.
+```text
+docs/roadmap/NEXT.md
+docs/roadmap/ROADMAP.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/VERSION_PLAN.md
+docs/product/STATUS.md
+```
 
-## Closeout qualification state
+No sixth path belongs to this unit. It becomes canonical only after one frozen exact head proves exact five-path containment, `behind_by=0`, applicable Governance/K2 checks, two distinct substantive external semantic review channels, zero actionable findings/threads, active no-bypass ruleset, guarded merge with exact expected head, and mandatory post-merge main/parents/tree/five-blobs/signature/check/ruleset proof.
 
-The current branch is a documentation/evidence candidate only. It may be called `CLOSED_CANONICAL` only after one frozen exact head proves the exact six paths, `behind_by=0`, Governance, docs-only K2 classifier/stable gate, two distinct substantive external semantic reviewer channels, zero actionable findings/threads, active no-bypass ruleset, guarded merge with exact expected head, and mandatory post-merge main/parents/tree/six-blobs/signature/check/ruleset proof.
+## Next boundary after reconciliation
 
-## Next boundary after successful closeout
-
-No P3-R6 requirement is inferred by sequence alone. After a successful bounded closeout, later P3 work remains definition/planning/authorization-candidate preparation only unless a more-specific canonical authority exists then.
+Only after the R6 current-view reconciliation itself becomes canonical and post-merge proven may later P3 definition/planning/authorization-candidate work be considered, if justified by a concrete canonical gap. No `P3-R7` requirement is inferred by sequence alone.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 ```
-
-Any future measured-context execution, benchmark execution/corpus mutation, statistical/holdout acceptance, repository policy promotion, embeddings/learned reranking, provider/model execution, persistence, product integration, public claim, or release requires its own exact authority.
 
 ## Preserved non-grants
 
 ```text
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT EXECUTION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
-BENCHMARK CORPUS / MANIFEST MUTATION = NOT_AUTHORIZED
+BENCHMARK CORPUS / MANIFEST / FIXTURE MUTATION = NOT_AUTHORIZED
 GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
 N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / STRATEGY PROMOTION = NOT_AUTHORIZED
@@ -142,11 +158,11 @@ NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 CLI / API / PRODUCT / AGENT-LOOP INTEGRATION = NOT_AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R7+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-Repository visibility is currently public, but engineering milestone closure remains separate from public versioning, package publication, production readiness, support, compatibility, benchmark claims, security claims, quality claims, and brand launch.
+Repository visibility is currently public, but engineering milestone closure remains separate from public versioning, package publication, production readiness, support, compatibility, security claims, benchmark claims, quality claims, and brand launch.
