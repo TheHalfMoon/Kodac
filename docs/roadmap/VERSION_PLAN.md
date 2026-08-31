@@ -27,28 +27,29 @@ P3-R1 = CLOSED_CANONICAL
 P3-R2 = CLOSED_CANONICAL
 P3-R3 = CLOSED_CANONICAL
 P3-R4 = CLOSED_CANONICAL
+P3-R5 = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R4 closed canonically through PR #264 / `ad63bab64512f8ac24c0f849b58b64ecf41a8709` after exact-head Governance/K2 qualification, two distinct independent substantive semantic reviewer channels, guarded normal merge, and mandatory post-merge Governance/K2 proof.
+P3-R5 closed canonically through PR #267 / `ae8a8d46f529a6782e39e3ae1787220cef603b8f` after exact-head Governance/K2 qualification, two distinct independent substantive semantic reviewer channels, guarded normal merge, and mandatory post-merge Governance/K2 proof.
 
 ```text
-P3_R4_AUTHORIZATION_PR = #262
-P3_R4_AUTHORIZATION_MERGE = 954455a3dce6e1d0663501504265abd4194addce
-P3_R4_QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
-P3_R4_QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
-P3_R4_POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
-P3_R4_POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
+P3_R5_AUTHORIZATION_PR = #266
+P3_R5_AUTHORIZATION_MERGE = 41599d88d2b18f2714848452d20fc8ff00232f31
+P3_R5_QUALIFIED_HEAD = 33847308b30327a5a290eee7f4c0382b3205a576
+P3_R5_QUALIFIED_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
+P3_R5_POST_MERGE_GOVERNANCE = 33359263671 / SUCCESS
+P3_R5_POST_MERGE_K2_RUNTIME = 33359263703 / SUCCESS AFTER IDENTICAL-MERGE-SHA RETRY
 RULESET = 20707483 / active / no bypass
 ```
 
-## P3-R4 is not a release milestone
+## P3-R5 is not a release milestone
 
 ```text
-P3-R4 CLOSED_CANONICAL
+P3-R5 CLOSED_CANONICAL
 != P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
 != A REPOSITORY-OWNED DEFAULT CONTEXT POLICY
@@ -64,16 +65,19 @@ P3-R4 CLOSED_CANONICAL
 != BRAND LAUNCH AUTHORIZED
 ```
 
-P3-R4 is only a pure deterministic benchmark-provenance evidence-binding mechanism. It introduces no repository-owned policy choice, benchmark execution, significance threshold, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
+P3-R5 is only a pure deterministic caller-declared qualification-evidence mechanism. It introduces no repository-owned policy choice, benchmark execution, significance threshold, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
 
-Literal provenance is not a decision:
+Criterion matching is not a release or quality decision:
 
 ```text
+caller-declared match != repository winner
+caller-declared match != repository default
+caller-declared match != promotion
 later-in-time != sufficient holdout
 none-known != proven uncontaminated
 holdout != unbiased
-all-required-metrics-comparable != acceptable
-favored relation != winner
+comparable != statistically significant
+favored relation != global superiority
 ```
 
 ## Repository visibility versus release authority
@@ -104,7 +108,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ = NOT_AUTHORIZED
-P3-R5+ = NOT_AUTHORIZED
+P3-R6+ = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT_AUTHORIZED BY THIS FILE
@@ -127,7 +131,7 @@ DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 
 ## Current reconciliation and next engineering action
 
-The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R4 closure. It creates no implementation or release authority.
+The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R5 closure. It creates no implementation or release authority.
 
 Exact path set:
 
@@ -142,7 +146,7 @@ docs/product/STATUS.md
 After and only after this reconciliation becomes canonical and post-merge proven, later P3 work is limited to bounded definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
 
 ```text
-P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
@@ -169,8 +173,8 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R4 authorization: `docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_AUTHORIZATION_2026-08-30.md`
-- P3-R4 evidence: `docs/planning/KODAC_P3_R4_CONTEXT_POLICY_BENCHMARK_PROVENANCE_EVIDENCE_2026-08-30.md`
+- P3-R5 authorization: `docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_AUTHORIZATION_2026-08-31.md`
+- P3-R5 evidence: `docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_EVIDENCE_2026-08-31.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
