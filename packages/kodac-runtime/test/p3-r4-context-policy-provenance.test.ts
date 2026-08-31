@@ -76,6 +76,7 @@ const CONTENT_ID = "c".repeat(64)
 
 function clone<T>(value: T): T { return structuredClone(value) }
 function identity(seed: string): string { return sha256Canonical({ seed }) }
+function compareStrings(left: string, right: string): number { return left < right ? -1 : left > right ? 1 : 0 }
 function load(name: string): unknown {
   return JSON.parse(readFileSync(new URL(`./fixtures/p2-r1/${name}`, import.meta.url), "utf8"))
 }
@@ -394,6 +395,8 @@ test("P3-R4 binds trusted P3-R3 to exact literal P2-R1 provenance", () => {
   assert.equal(result.taskFamily, "context-selection")
   assert.equal(result.leftR2ReportIdentity, input.left.report_identity)
   assert.equal(result.rightR2ReportIdentity, input.right.report_identity)
+  assert.equal(result.r1ManifestSetDigest, input.left.r1_manifest_set_digest)
+  assert.equal(result.r1ManifestSetDigest, input.right.r1_manifest_set_digest)
   assert.deepEqual(Object.keys(result).sort(), RESULT_KEYS)
   assert.equal(result.caseProvenance.length, 4)
   for (const entry of result.caseProvenance) {
@@ -461,14 +464,14 @@ test("P3-R4 independently binds complete report metric topology to manifest defi
 test("P3-R4 declaration is exact-key, constant-bound, bounded, and hostile-input fail-closed", () => {
   const input = makeFixture()
   assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, extra: true } } as Fixture), /unknown field/)
+  assert.throws(() => build({ ...input, provenanceDeclaration: { version: input.provenanceDeclaration.version, kind: input.provenanceDeclaration.kind } } as Fixture), /missing required field/)
+  assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, version: "future-version" } } as Fixture), /unsupported P3-R4 provenance declaration contract/)
+  assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, kind: "future-kind" } } as Fixture), /unsupported P3-R4 provenance declaration contract/)
   assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, qualificationId: " bad " } } as Fixture), /canonical NUL-free string|stable-id alphabet/)
   assert.throws(() => build({ ...input, provenanceDeclaration: { ...input.provenanceDeclaration, qualificationId: "a".repeat(513) } } as Fixture), /exceeds 512 UTF-8 bytes/)
 
   let invoked = false
-  const accessor: Record<string, unknown> = {
-    kind: P3_R4_PROVENANCE_DECLARATION_KIND,
-    qualificationId: "qualification:hostile",
-  }
+  const accessor: Record<string, unknown> = { kind: P3_R4_PROVENANCE_DECLARATION_KIND, qualificationId: "qualification:hostile" }
   Object.defineProperty(accessor, "version", { enumerable: true, get() { invoked = true; return P3_R4_PROVENANCE_DECLARATION_VERSION } })
   assert.throws(() => build({ ...input, provenanceDeclaration: accessor } as Fixture), /P2-R1 contract violation|P3-R4 contract violation/)
   assert.equal(invoked, false)
@@ -485,4 +488,165 @@ test("P3-R4 rejects malformed predecessor evidence through canonical predecessor
   const badManifest = clone(input.manifestRaw) as Array<P2R1ManifestRecord & { extra?: boolean }>
   badManifest[0]!.extra = true
   assert.throws(() => build({ ...input, manifestRaw: badManifest } as Fixture), /P2-R1 contract violation/)
+
+  const badDevelopment = clone(input.developmentRaw) as Record<string, unknown>
+  badDevelopment.extra = true
+  assert.throws(() => build({ ...input, developmentRaw: badDevelopment } as Fixture), /P2-R1 contract violation/)
+  const badHoldout = clone(input.holdoutRaw) as Record<string, unknown>
+  badHoldout.extra = true
+  assert.throws(() => build({ ...input, holdoutRaw: badHoldout } as Fixture), /P2-R1 contract violation/)
+
+  const badP3 = clone(input.p3Declaration)
+  badP3.dimensionMetricBindings[0]!.metricId = "unknown-metric"
+  assert.throws(() => build({ ...input, p3Declaration: badP3 } as Fixture), /P3-R3 contract violation/)
+})
+
+test("P3-R4 manifest permutations preserve the exact P2-R2-compatible digest and output identity", () => {
+  const input = makeFixture()
+  const expected = build(input)
+  const permuted = { ...input, manifestRaw: [...input.manifestRaw].reverse() } as Fixture
+  const actual = build(permuted)
+  assert.equal(actual.r1ManifestSetDigest, expected.r1ManifestSetDigest)
+  assert.equal(actual.provenanceEvidenceIdentity, expected.provenanceEvidenceIdentity)
+})
+
+test("P3-R4 comparator proof matches genuine multi-family P2-R2 ordering and rejects a different deterministic ordering", () => {
+  const input = makeFixture()
+  const manifest = clone(input.manifestRaw)
+  manifest[0]!.task_family = "z-family"
+  manifest[1]!.task_family = "a-family"
+  manifest[2]!.task_family = "m-family"
+  manifest[3]!.task_family = "context-selection"
+  const correct = [...manifest].sort((left, right) =>
+    compareStrings(left.task_family, right.task_family) ||
+    compareStrings(left.case_id, right.case_id) ||
+    compareStrings(left.result_identity, right.result_identity),
+  )
+  const wrong = [...manifest].sort((left, right) =>
+    compareStrings(left.case_id, right.case_id) ||
+    compareStrings(left.task_family, right.task_family) ||
+    compareStrings(left.result_identity, right.result_identity),
+  )
+  assert.notDeepEqual(correct.map((entry) => entry.case_id), wrong.map((entry) => entry.case_id))
+  assert.notEqual(sha256Canonical(correct), sha256Canonical(wrong))
+  const source = readFileSync(new URL("../bench/p3-r4/context-policy-provenance.ts", import.meta.url), "utf8")
+  assert.match(source, /compareStrings\(left\.task_family, right\.task_family\)[\s\S]*compareStrings\(left\.case_id, right\.case_id\)[\s\S]*compareStrings\(left\.result_identity, right\.result_identity\)/)
+})
+
+test("P3-R4 rejects extra and duplicate relevant report cases", () => {
+  const extra = makeFixture((left, right) => {
+    for (const report of [left, right]) {
+      const added = clone(report.task_family_sections[0]!.cases[0]!)
+      added.case_id = "case-extra"
+      added.r1_result_identity = identity("case-extra")
+      report.task_family_sections[0]!.cases.push(added)
+      report.task_family_sections[0]!.cases.sort((a, b) => compareStrings(a.case_id, b.case_id))
+    }
+  })
+  assert.throws(() => build(extra), /case cardinality does not match validated P2-R1 manifest/)
+
+  assert.throws(() => makeFixture((left, right) => {
+    for (const report of [left, right]) {
+      report.task_family_sections[0]!.cases.push(clone(report.task_family_sections[0]!.cases[0]!))
+    }
+  }), /P2-R3 contract violation|P2-R4 contract violation/)
+})
+
+test("P3-R4 fails closed for left and right extra/missing/unit/duplicate metric topology drift", () => {
+  type Mutator = (report: P2R2Report) => void
+  const mutations: Mutator[] = [
+    (report) => {
+      for (const reportCase of report.task_family_sections[0]!.cases) {
+        const extra = clone(reportCase.metrics[0]!)
+        extra.metric_id = "zz_extra_metric"
+        reportCase.metrics.push(extra)
+        reportCase.metrics.sort((a, b) => compareStrings(a.metric_id, b.metric_id))
+      }
+    },
+    (report) => { for (const reportCase of report.task_family_sections[0]!.cases) reportCase.metrics.shift() },
+    (report) => { for (const reportCase of report.task_family_sections[0]!.cases) reportCase.metrics[0]!.unit = "different-unit" },
+    (report) => { for (const reportCase of report.task_family_sections[0]!.cases) reportCase.metrics[1]!.metric_id = reportCase.metrics[0]!.metric_id },
+  ]
+  for (const side of ["left", "right"] as const) {
+    for (const mutate of mutations) {
+      assert.throws(
+        () => makeFixture((left, right) => mutate(side === "left" ? left : right)),
+        /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/,
+      )
+    }
+  }
+})
+
+test("P3-R4 fails closed on benchmark, protocol, and task-family predecessor drift", () => {
+  assert.throws(() => makeFixture((left) => { left.benchmark_id = "different-benchmark" }), /P2-R3 contract violation|P2-R4 contract violation/)
+  assert.throws(() => makeFixture((left) => { left.benchmark_protocol_version = "different-protocol" }), /P2-R3 contract violation|P2-R4 contract violation/)
+  assert.throws(() => makeFixture((left, right) => {
+    left.task_family_sections[0]!.task_family = "wrong-family"
+    right.task_family_sections[0]!.task_family = "wrong-family"
+  }), /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/)
+})
+
+test("P3-R4 declaration rejects symbol, non-enumerable, custom-prototype, sparse, extended, and non-JSON structures", () => {
+  const input = makeFixture()
+  const symbolObject = { ...input.provenanceDeclaration } as Record<string | symbol, unknown>
+  symbolObject[Symbol("hidden")] = true
+  const nonEnumerable = { ...input.provenanceDeclaration }
+  Object.defineProperty(nonEnumerable, "hidden", { value: true, enumerable: false })
+  const customPrototype = Object.create({ inherited: true }) as Record<string, unknown>
+  Object.assign(customPrototype, input.provenanceDeclaration)
+  const sparse = new Array(3)
+  sparse[0] = input.provenanceDeclaration.version
+  const extended = [input.provenanceDeclaration.version]
+  ;(extended as unknown as Record<string, unknown>).extra = true
+  const nonJsonValues = [undefined, 1n, Number.NaN, () => true]
+  for (const value of [symbolObject, nonEnumerable, customPrototype, sparse, extended, ...nonJsonValues]) {
+    assert.throws(
+      () => build({ ...input, provenanceDeclaration: value } as Fixture),
+      /P2-R1 contract violation|P3-R4 contract violation/,
+    )
+  }
+})
+
+test("P3-R4 hardens each public untrusted input before semantic reuse", () => {
+  const input = makeFixture()
+  const keys = [
+    "planRequest", "leftPolicy", "rightPolicy", "left", "leftSummary", "right", "rightSummary", "shared",
+    "leftSubject", "rightSubject", "comparePolicy", "p3Declaration", "manifestRaw", "developmentRaw", "holdoutRaw", "provenanceDeclaration",
+  ] as const
+  for (const key of keys) {
+    let trapInvoked = false
+    const hostile = new Proxy({}, { ownKeys() { trapInvoked = true; throw new Error("must-not-run") } })
+    assert.throws(
+      () => build({ ...input, [key]: hostile } as Fixture),
+      /P2-R1 contract violation|P2-R4 contract violation|P3-R3 contract violation|P3-R4 contract violation/,
+    )
+    assert.equal(trapInvoked, false, `proxy trap executed for ${key}`)
+  }
+})
+
+test("P3-R4 object insertion order is non-semantic while semantic case-array order remains identity-bearing", () => {
+  const input = makeFixture()
+  const expected = build(input)
+  const reorderedDeclaration = {
+    qualificationId: input.provenanceDeclaration.qualificationId,
+    kind: input.provenanceDeclaration.kind,
+    version: input.provenanceDeclaration.version,
+  }
+  const reordered = build({ ...input, provenanceDeclaration: reorderedDeclaration } as Fixture)
+  assert.equal(reordered.provenanceEvidenceIdentity, expected.provenanceEvidenceIdentity)
+  const { provenanceEvidenceIdentity: _ignored, ...projection } = expected
+  const reversedProjection = { ...projection, caseProvenance: [...projection.caseProvenance].reverse() }
+  assert.notEqual(sha256Canonical(reversedProjection), expected.provenanceEvidenceIdentity)
+})
+
+test("P3-R4 production source is pure local evidence transformation with no ambient side-effect surface", () => {
+  const source = readFileSync(new URL("../bench/p3-r4/context-policy-provenance.ts", import.meta.url), "utf8")
+  for (const forbidden of [
+    "node:fs", "node:child_process", "node:net", "node:http", "node:https", "node:dns", "fetch(", "process.env", "Deno.", "Bun.",
+  ]) {
+    assert.equal(source.includes(forbidden), false, `forbidden side-effect surface: ${forbidden}`)
+  }
+  assert.match(source, /validateManifestSet/)
+  assert.match(source, /compareP2R4/)
+  assert.match(source, /buildContextPolicyPairwiseMetricEvidence/)
 })
