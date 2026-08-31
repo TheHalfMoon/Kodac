@@ -9,42 +9,62 @@ This file is a current engineering roadmap view. It does not create implementati
 ```text
 K6 bounded closeout       = PR #236 / ed4fb16e8bbaf960812285671062c9b2abf597a8
 P2 bounded closeout       = PR #250 / 0e48553f00618706955b11db795643ee710fe04a
-P3-R1 implementation      = PR #252 / ba3caabef0b36649a1d556ff287237ca2a455ab2
-P3-R1 reconciliation      = PR #253 / f0b18b3d6be10818195e2aef9f3d4123a2b9d3a2
-P3-R2 implementation      = PR #256 / 458f62e85f4af2e13bfd78f5a6c3582d9330c911
-P3-R2 reconciliation      = PR #257 / ecee96c1a0d4bf73c5d41b369edfa9950ae1ea0c
-P3-R3 implementation      = PR #260 / cd7c28b4f823e9570daf73448c5f3b9b9b540d2e
-P3-R3 reconciliation      = PR #261 / 0d26a7b7225c4ccc48a52b137ca526684a37d974
-P3-R4 implementation      = PR #264 / ad63bab64512f8ac24c0f849b58b64ecf41a8709
-P3-R4 reconciliation      = PR #265 / ff6682d0266b44dcc25c7d1100a7af9519ad26e6
-P3-R5 implementation      = PR #267 / ae8a8d46f529a6782e39e3ae1787220cef603b8f
-P3-R5 reconciliation      = PR #268 / f5be14e44abe1d9d3c85f77c36c1af0fa557e2cc
-P3 bounded closeout auth   = PR #269 / cce6b1aab6d5c2909728ad80133718cfd97b4897
+P3 bounded R1-R5 closeout = PR #270 / 9d75115f66f34ef8ee1e1a093705a5cba21f8f49
+P3-R6 authorization       = PR #271 / 2441cf9b6006859a4bc05cfe196a033fe31b56c9
+P3-R6 implementation      = PR #272 / c045ae50f42fcfeede37bbd3290b1d3a7cb5bb91
 Improvement master plan   = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
-P3 bounded-closeout authorization proof:
+The canonical P3 R1-R5 chain remains:
 
 ```text
-AUTHORIZATION_QUALIFIED_HEAD = 6e0d5c94aca116a6904bef458209fed931d870c3
-AUTHORIZATION_QUALIFIED_TREE = 4b4fc143cecf5d754494aa1748135b7f4a2693c7
-AUTHORIZATION_BLOB = f5894f1a8ec3af39e54f2997865f534e196e30e8
-AUTHORIZATION_MERGE = cce6b1aab6d5c2909728ad80133718cfd97b4897
-AUTHORIZATION_MERGE_PARENT_1 = f5be14e44abe1d9d3c85f77c36c1af0fa557e2cc
-AUTHORIZATION_MERGE_PARENT_2 = 6e0d5c94aca116a6904bef458209fed931d870c3
-AUTHORIZATION_MERGE_TREE = 4b4fc143cecf5d754494aa1748135b7f4a2693c7
-AUTHORIZATION_VERIFICATION = verified / valid
-PRE_MERGE_GOVERNANCE = 33360478597 / SUCCESS
-PRE_MERGE_K2 = 33360478582 / classifier + stable gate SUCCESS / runtime SKIPPED AS DOCS-ONLY
-POST_MERGE_GOVERNANCE = 33360736529 / SUCCESS
-POST_MERGE_K2_PUSH = NOT_APPLICABLE_BY_DOCS_ONLY_PUSH_PATH_FILTER
-SEMANTIC_REVIEW_QUORUM = CodeRabbit + Codex / exact-head clean
+R1: #251 authorization -> #252 implementation -> #253 reconciliation
+R2: #255 authorization -> #256 implementation -> #257 reconciliation
+R3: #258 authorization -> #260 implementation -> #261 reconciliation
+R4: #262 authorization -> #264 implementation -> #265 reconciliation
+R5: #266 authorization -> #267 implementation -> #268 reconciliation
+R1-R5 bounded closeout: #269 authorization -> #270 closeout
+R6: #271 authorization -> #272 implementation
+```
+
+## P3-R6 canonical proof
+
+```text
+AUTHORIZATION_QUALIFIED_HEAD = 5412c1c8ac2629ae6d4d0c87981b3b5ce14116e0
+AUTHORIZATION_QUALIFIED_TREE = bfde96cf637006e142e920b1dd3a132b11adab37
+AUTHORIZATION_BLOB = 3eaf04d6e2ed558692ee1f08f0557ac6a3c4a8b1
+AUTHORIZATION_MERGE = 2441cf9b6006859a4bc05cfe196a033fe31b56c9
+AUTHORIZATION_POST_MERGE_GOVERNANCE = 33416874486 / SUCCESS
+
+IMPLEMENTATION_QUALIFIED_HEAD = 202cbf2b8082ddde52738e07373ba24322a5265c
+IMPLEMENTATION_QUALIFIED_TREE = 85d3cb932fc477525a05eed6a5ee1e4ffe43e4a1
+IMPLEMENTATION_MERGE = c045ae50f42fcfeede37bbd3290b1d3a7cb5bb91
+MERGE_PARENT_1 = 2441cf9b6006859a4bc05cfe196a033fe31b56c9
+MERGE_PARENT_2 = 202cbf2b8082ddde52738e07373ba24322a5265c
+MERGE_TREE = 85d3cb932fc477525a05eed6a5ee1e4ffe43e4a1
+MERGE_VERIFICATION = verified / valid
+PRE_MERGE_GOVERNANCE = 33418354648 / SUCCESS
+PRE_MERGE_K2 = 33418354658 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
+POST_MERGE_GOVERNANCE = 33419477062 / SUCCESS
+POST_MERGE_K2 = 33419477059 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
+SEMANTIC_REVIEW_QUORUM = Cubic + CodeRabbit / exact-head and current-metadata terminal clean
 UNRESOLVED_ACTIONABLE_THREADS = 0
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-The authorization merge is GitHub-signed and valid. Its ordered parents are the pre-authorization canonical `main` followed by the exact qualified authorization head, its merge tree equals the qualified tree, and the authorization blob on canonical `main` equals the qualified candidate blob.
+Canonical R6 implementation blobs:
+
+```text
+packages/kodac-runtime/bench/p3-r6/contracts.ts
+  6b12541182cc0c28072efcb3966e570d3cdeefbe
+packages/kodac-runtime/bench/p3-r6/context-measurement-observation.ts
+  f31bb7f1cc89ddc6a6eacf1be546c54f135cffca
+packages/kodac-runtime/test/p3-r6-context-measurement-observation.test.ts
+  0ef67ed8249a03f79bac6ccf132a8dade56a79d4
+docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_EVIDENCE_2026-08-31.md
+  c8c156947f17aef62625acb5ea93c6bc9c0018a8
+```
 
 ## Current milestone state
 
@@ -56,60 +76,46 @@ The authorization merge is GitHub-signed and valid. Its ordered parents are the 
 | KRI-R1 through KRI-R4 | **CANONICAL / COMPLETE** | KRI-R5+ not authorized |
 | K4 | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
 | K5 | **CLOSED for canonical K5-R1 through K5-R5 bounded proof-review scope** | Done Gate unchanged |
-| K6 | **CLOSED_CANONICAL for bounded R1-R5 scope** | No execution/persistence/learning/promotion authority by composition |
+| K6 | **CLOSED_CANONICAL for bounded R1-R5 scope** | No later authority by composition |
 | P2-R1 through P2-R5 | **CLOSED_CANONICAL** | Deterministic bounded measurement/evidence spine |
 | P2 bounded R1-R5 closeout | **CLOSED_CANONICAL** | General/public KodacBench remains open |
 | P2 overall | **OPEN** | General/public KodacBench is not closed |
-| P2-R6+ | **NOT_AUTHORIZED** | Separate justified authorization required if broader semantics are later needed |
-| P3-R1 | **CLOSED_CANONICAL** | Deterministic context-selection-plan foundation only |
-| P3-R2 | **CLOSED_CANONICAL** | Caller-declared deterministic policy-application mechanism only |
-| P3-R3 | **CLOSED_CANONICAL** | Pairwise seven-metric evidence binding and comparability state only |
-| P3-R4 | **CLOSED_CANONICAL** | Literal benchmark-provenance evidence binding only |
-| P3-R5 | **CLOSED_CANONICAL** | Caller-declared criterion-match evidence only |
-| P3 bounded R1-R5 closeout | **CONDITIONAL ON THIS EXACT SIX-PATH CANDIDATE MERGE + POST-MERGE PROOF** | Exact authority is PR #269 / `cce6b1aab6d5c2909728ad80133718cfd97b4897` |
+| P2-R6+ | **NOT_AUTHORIZED** | Separate justified authorization required |
+| P3-R1 through P3-R5 | **CLOSED_CANONICAL** | Bounded deterministic context/evidence mechanisms |
+| P3 bounded R1-R5 closeout | **CLOSED_CANONICAL** | PR #270 / `9d75115f66f34ef8ee1e1a093705a5cba21f8f49` |
+| P3-R6 | **CLOSED_CANONICAL** | Pure deterministic context-measurement observation materializer only |
 | P3 overall | **OPEN** | No repository-owned default/promotion, benchmark execution, or public quality claim established |
-| P3-R6+ | **NOT_AUTHORIZED** | No R6 requirement or implementation authority is inferred from R1-R5 closure |
-| P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
+| P3-R7+ | **NOT_AUTHORIZED** | No later slice is implied by numbering |
+| P4-P8 | **NOT_AUTHORIZED** | Ordered dependencies and separate authority required |
 
 Engineering milestone state is separate from public release status.
 
-## Bounded P3 R1-R5 result
+## Bounded P3 R1-R6 result
 
-The five canonical slices form a deterministic evidence spine only:
+The canonical P3 units remain evidence mechanisms, not repository decisions:
 
 ```text
 R1 = deterministic context-selection-plan foundation
-R2 = deterministic caller-declared context-selection-policy application
-R3 = pairwise seven-metric evidence binding and comparability-only state
+R2 = deterministic caller-declared policy application
+R3 = pairwise seven-metric evidence binding / comparability-only state
 R4 = literal benchmark-provenance evidence binding
 R5 = caller-declared criterion-match evidence
+R6 = deterministic materialization of seven P2-R2-compatible observations from one exact reconstructed R2 application plus explicit caller evaluation facts
 ```
 
-The exact closeout evidence record binds canonical authorization/implementation/reconciliation ancestry, qualified heads/trees/blobs, applicable CI proof, material repair/failure/service history, and cross-slice non-grants:
-
-`docs/planning/KODAC_P3_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-31.md`
-
-Composition remains non-decisional:
+R6 preserves the same non-decisional boundary:
 
 ```text
-INTELLIGENCE != AUTHORITY
-MORE CONTEXT != BETTER CONTEXT
-DETERMINISTIC PLAN != BETTER CONTEXT STRATEGY
-CALLER POLICY != REPOSITORY POLICY
-PAIRWISE METRIC EVIDENCE != GLOBAL WINNER
-LITERAL PROVENANCE != HOLDOUT SUFFICIENCY
-LATER-IN-TIME != SUFFICIENT HOLDOUT
-NONE-KNOWN != PROVEN UNCONTAMINATED
-HOLDOUT ROLE != UNBIASED
-COMPARABLE != STATISTICALLY SIGNIFICANT
-FAVORED METRIC RELATION != GLOBAL SUPERIORITY
-CALLER-DECLARED CRITERIA MATCH != REPOSITORY WINNER / DEFAULT / PROMOTION
-P3 BOUNDED R1-R5 CLOSED != P3 OVERALL CLOSED
-P3 BOUNDED R1-R5 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-P3 BOUNDED R1-R5 CLOSED != REAL BENCHMARK TASK EXECUTION
-P3 BOUNDED R1-R5 CLOSED != P3-R6+ AUTHORITY
-P3 BOUNDED R1-R5 CLOSED != P4 AUTHORITY
+MEASUREMENT MATERIALIZATION != BENCHMARK PARTICIPANT EXECUTION
+CALLER GOLD / UTILIZATION FACTS != REPOSITORY TRUTH
+SEVEN OBSERVATIONS != GLOBAL WINNER
+P2-R2 COMPATIBILITY != GENERAL KODACBENCH COMPLETION
+R6 CLOSED_CANONICAL != P3 OVERALL CLOSED
+R6 CLOSED_CANONICAL != P3-R7+ AUTHORITY
+R6 CLOSED_CANONICAL != P4 AUTHORITY
 ```
+
+Detailed repair/failure/service history remains in the immutable authorization/evidence chain rather than being rewritten in this current view.
 
 ## Ordered improvement program
 
@@ -117,21 +123,13 @@ P3 BOUNDED R1-R5 CLOSED != P4 AUTHORITY
 K6 bounded closeout [CLOSED_CANONICAL]
 -> P2 bounded deterministic measurement spine [R1-R5 CLOSED_CANONICAL]
 -> P3 Context Engine v2
-   -> R1 deterministic context selection plan foundation [CLOSED_CANONICAL]
-   -> R1 roadmap/status reconciliation [CLOSED_CANONICAL]
-   -> R2 declared context-selection policy application [CLOSED_CANONICAL]
-   -> R2 roadmap/status reconciliation [CLOSED_CANONICAL]
-   -> R3 pairwise metric-evidence binding [CLOSED_CANONICAL]
-   -> R3 roadmap/status reconciliation [CLOSED_CANONICAL]
-   -> R4 benchmark-provenance evidence binding [CLOSED_CANONICAL]
-   -> R4 roadmap/status reconciliation [CLOSED_CANONICAL]
-   -> R5 declared context-policy qualification evidence authorization [CLOSED_CANONICAL]
-   -> R5 implementation [CLOSED_CANONICAL]
-   -> R5 roadmap/status reconciliation [CLOSED_CANONICAL]
-   -> bounded R1-R5 closeout authorization [CLOSED_CANONICAL]
-   -> bounded R1-R5 closeout [CURRENT SIX-PATH DOCS/EVIDENCE CANDIDATE]
-   -> next bounded P3 definition / planning / authorization-candidate work [ONLY AFTER SUCCESSFUL CLOSEOUT]
-   -> P3-R6+ implementation [NOT_AUTHORIZED]
+   -> R1-R5 mechanisms [CLOSED_CANONICAL]
+   -> bounded R1-R5 closeout [CLOSED_CANONICAL]
+   -> R6 context measurement observation authorization [CLOSED_CANONICAL]
+   -> R6 implementation [CLOSED_CANONICAL]
+   -> R6 current-view roadmap/status reconciliation [CURRENT DOCS-ONLY UNIT]
+   -> later bounded P3 definition / planning / authorization-candidate work [ONLY IF JUSTIFIED AFTER RECONCILIATION]
+   -> P3-R7+ implementation [NOT_AUTHORIZED]
 -> P4 Reviewer Intelligence v2 [NOT_AUTHORIZED]
 -> P5 Finding Verifier Fabric [NOT_AUTHORIZED]
 -> P6 Security Validation [NOT_AUTHORIZED]
@@ -139,32 +137,27 @@ K6 bounded closeout [CLOSED_CANONICAL]
 -> P8 Product / Distribution Hardening [NOT_AUTHORIZED]
 ```
 
-## Current exact closeout scope
+## Current reconciliation scope
 
 ```text
-docs/planning/KODAC_P3_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-31.md
-docs/product/STATUS.md
-docs/roadmap/MILESTONES.md
-docs/roadmap/ROADMAP.md
-docs/roadmap/VERSION_PLAN.md
 docs/roadmap/NEXT.md
+docs/roadmap/ROADMAP.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/VERSION_PLAN.md
+docs/product/STATUS.md
 ```
 
-No seventh path is authorized. No runtime source/test, historical P3 authorization/evidence, workflow, dependency, lockfile, benchmark corpus, provider/model, persistence, telemetry, package, release, or ruleset path may change.
-
-The closeout statement becomes canonical only after this exact candidate proves `behind_by=0`, exact six-path containment, exact head/tree/six blobs, required Governance and docs-only K2 PR gates, two distinct independent substantive exact-head semantic reviews, zero actionable findings/threads, active no-bypass ruleset, guarded merge with exact expected head, and mandatory post-merge main/parents/tree/six-blobs/signature/check/ruleset proof.
+No sixth path belongs to this current-view reconciliation. No runtime source/test, historical authorization/evidence, workflow, dependency, lockfile, benchmark corpus, provider/model, persistence, telemetry, package, release, or ruleset path may change.
 
 ## Next P3 planning boundary
 
-No P3-R6 requirement is inferred merely from completion of R1-R5. After successful canonical bounded closeout, later P3 work remains definition/planning/authorization-candidate preparation only until a separate exact canonical authorization becomes effective.
+Only after the R6 current-view reconciliation itself becomes canonical and post-merge proven may another bounded P3 definition/planning/authorization candidate be considered. No `P3-R7` requirement is inferred from sequence alone.
 
 The durable P3 goal remains:
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 ```
-
-A future bounded slice may define the next missing measured-context, benchmark-execution, decision, or promotion boundary only if justified by canonical sequencing and separately authorized.
 
 Explicitly postponed unless separately authorized:
 
@@ -177,6 +170,7 @@ Explicitly postponed unless separately authorized:
 - repository acquisition or new indexing;
 - persistence/telemetry/learning;
 - product/CLI/API/agent-loop integration;
+- K2/K5/Done Gate expansion;
 - public release, package publication, brand launch, or superiority claims.
 
 ## Preserved authority boundaries
@@ -187,7 +181,7 @@ K5 / DONE GATE / PROVEN_READY AUTHORITY = UNCHANGED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P3 OVERALL = OPEN
-P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R7+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 PROVIDER / MODEL / REVIEWER / EVALUATOR EXECUTION = NOT_AUTHORIZED
@@ -198,6 +192,4 @@ RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-Repository visibility is currently public. Public repository visibility does not itself establish a public product release, package publication, benchmark completion, quality claim, production readiness, support commitment, or brand launch.
-
-Every later unit remains fail-closed until its own exact authorization, qualification, guarded merge, and required post-merge proof succeed.
+Repository visibility is currently public. Public repository visibility does not establish a public product release, package publication, benchmark completion, quality claim, production readiness, support commitment, compatibility promise, or brand launch.
