@@ -343,7 +343,24 @@ chronologyCriterionState
 contaminationCriterionState
 ```
 
-All observed values must be literal projections from reconstructed P3-R4 evidence. No derived terms such as `sufficient-holdout`, `unbiased`, `uncontaminated`, `statistically-valid`, or equivalent are permitted.
+All three provenance criterion-state fields use exactly this closed neutral domain:
+
+```text
+SATISFIED
+NOT_SATISFIED
+```
+
+No other provenance criterion-state value is permitted.
+
+The three states are derived exactly as follows:
+
+- `corpusRoleCriterionState = SATISFIED` if and only if every role in `requiredCorpusRoles` occurs at least once among the literal reconstructed P3-R4 case roles; otherwise it is `NOT_SATISFIED`.
+- `chronologyCriterionState = SATISFIED` if and only if every reconstructed P3-R4 case has a literal `chronologyStatus` contained in `allowedChronologyStatuses`; otherwise it is `NOT_SATISFIED`.
+- `contaminationCriterionState = SATISFIED` if and only if every reconstructed P3-R4 case has a literal `contaminationStatus` contained in `allowedContaminationStatuses`; otherwise it is `NOT_SATISFIED`.
+
+`observedCorpusRoles`, `observedChronologyStatuses`, and `observedContaminationStatuses` must be duplicate-free lexical-order projections of the unique literal values observed in reconstructed P3-R4 evidence.
+
+All observed values must be literal projections from reconstructed P3-R4 evidence. No derived terms such as `sufficient-holdout`, `unbiased`, `uncontaminated`, `statistically-valid`, or equivalent are permitted. `SATISFIED` and `NOT_SATISFIED` mean only whether the caller-declared literal provenance criterion matched; they are not recommendation, acceptance, promotion, repository policy, release, or Done Gate states.
 
 ### 10.3 Aggregate qualification evidence state
 
@@ -493,8 +510,16 @@ A future implementation test suite must prove at minimum:
 56. invalid/non-JSON declaration inputs fail closed;
 57. returned output is detached and deeply frozen;
 58. no repository/filesystem/network/provider/model/subprocess/persistence/telemetry side effect occurs;
-59. no P2/P3 predecessor byte is modified; and
-60. canonical runtime typecheck/test participation remains green on every applicable K2 matrix platform.
+59. no P2/P3 predecessor byte is modified;
+60. canonical runtime typecheck/test participation remains green on every applicable K2 matrix platform;
+61. all three provenance criterion-state fields accept exactly `SATISFIED` or `NOT_SATISFIED` and no other label;
+62. unsupported or authority-bearing provenance state labels cannot be emitted or accepted by the closed contract;
+63. `corpusRoleCriterionState` is `SATISFIED` if and only if every required corpus role occurs at least once in literal reconstructed P3-R4 case provenance;
+64. missing any required corpus role produces `corpusRoleCriterionState = NOT_SATISFIED`;
+65. `chronologyCriterionState` is `SATISFIED` if and only if every literal reconstructed case chronology status is in the caller-declared allowed set, otherwise `NOT_SATISFIED`;
+66. `contaminationCriterionState` is `SATISFIED` if and only if every literal reconstructed case contamination status is in the caller-declared allowed set, otherwise `NOT_SATISFIED`;
+67. observed corpus-role, chronology-status, and contamination-status sets are duplicate-free and in deterministic lexical order; and
+68. provenance `SATISFIED` / `NOT_SATISFIED` states are proven to remain criterion-match evidence only and never promotion, recommendation, repository acceptance, release, or Done Gate authority.
 
 Tests may use in-memory synthetic canonical objects and read-only already-committed fixtures. This authorization does not permit creating or mutating real benchmark/corpus/manifest data for P3-R5.
 
