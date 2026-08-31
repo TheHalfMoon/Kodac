@@ -200,11 +200,15 @@ goldCandidateIdentities
 utilizedCandidateIdentities
 ```
 
-Required task family:
+The exact required declaration literals are:
 
 ```text
-context-selection
+version = p3-r6-context-measurement-observation-declaration-v1
+kind = build_context_policy_measurement_observations
+taskFamily = context-selection
 ```
+
+All other declaration `version`, `kind`, or `taskFamily` values fail closed. The literals follow the canonical P3-R3/P3-R5 pattern of versioned closed declarations with a builder-operation kind.
 
 `measurementId` must be an explicit caller-owned canonical identifier. The declaration must bind exactly one validated P2-R1 manifest case and its exact `r1ResultIdentity`.
 
@@ -349,6 +353,8 @@ value = boolean | finite number | null according to the exact metric semantics a
 The future result must bind:
 
 ```text
+version
+kind
 measurementEvidenceIdentity
 measurementDeclaration
 measurementId
@@ -368,9 +374,18 @@ observationSetDigest
 observations
 ```
 
+The exact required result literals are:
+
+```text
+version = p3-r6-context-measurement-observation-evidence-v1
+kind = context_policy_measurement_observation_evidence
+```
+
+All other result `version` or `kind` values fail closed. These fields are part of the normalized result projection and therefore part of the `measurementEvidenceIdentity` preimage.
+
 `measurementDeclaration` must be the complete normalized closed declaration from Section 7 exactly as validated, including `dimensionMetricBindings`, `goldCandidateIdentities`, and `utilizedCandidateIdentities`. The returned result therefore preserves the exact caller evaluation facts that determined the observations.
 
-`measurementEvidenceIdentity` must be derived from the complete normalized result projection including `measurementDeclaration` and `observations`, excluding only the `measurementEvidenceIdentity` field itself. No identity preimage, projection, digest shortcut, or downstream P2-R2 report identity may omit the normalized declaration or substitute the observation set for those declaration facts. Distinct valid normalized declarations must remain identity-distinct even when they happen to produce identical observation values.
+`measurementEvidenceIdentity` must be derived from the complete normalized result projection including `version`, `kind`, `measurementDeclaration`, and `observations`, excluding only the `measurementEvidenceIdentity` field itself. No identity preimage, projection, digest shortcut, or downstream P2-R2 report identity may omit the normalized declaration or substitute the observation set for those declaration facts. Distinct valid normalized declarations must remain identity-distinct even when they happen to produce identical observation values.
 
 No report aggregation is performed by P3-R6. Canonical P2-R2 remains the report boundary if a caller later passes these observations to `runP2R2Report(...)`.
 
@@ -382,6 +397,7 @@ A future implementation must:
 
 - reject non-plain, accessor-bearing, symbol-keyed, sparse, extended-prototype, cyclic, or otherwise non-canonical public structures before semantic reuse;
 - snapshot/harden all inputs before repeated reads;
+- reject declaration or result schema-version/kind values other than the exact literals defined in Sections 7 and 10;
 - reject duplicate set members rather than silently deduplicate them;
 - preserve canonical P3 dimension order in the emitted observation array;
 - use repository canonical string ordering for set-like normalized inputs;
