@@ -313,9 +313,11 @@ function p3Declaration(left: P2R3Summary, shared: P2R4SharedEvaluationContext, c
 
 function makeFixture(reportMutation?: (left: P2R2Report, right: P2R2Report) => void) {
   const r1 = makeR1()
-  const left = runP2R2Report(r1.manifestRaw, r1.developmentRaw, r1.holdoutRaw, observations(r1.manifestRaw, 100))
-  const right = runP2R2Report(r1.manifestRaw, r1.developmentRaw, r1.holdoutRaw, observations(r1.manifestRaw, 90))
+  let left = runP2R2Report(r1.manifestRaw, r1.developmentRaw, r1.holdoutRaw, observations(r1.manifestRaw, 100))
+  let right = runP2R2Report(r1.manifestRaw, r1.developmentRaw, r1.holdoutRaw, observations(r1.manifestRaw, 90))
   if (reportMutation) {
+    left = clone(left)
+    right = clone(right)
     reportMutation(left, right)
     rebindReport(left)
     rebindReport(right)
@@ -415,8 +417,9 @@ test("P3-R4 identity is self-reference-free, deterministic, detached, and deeply
   assert.equal(build().provenanceEvidenceIdentity, provenanceEvidenceIdentity)
   const firstCase = result.caseProvenance[0]!.caseId
   input.manifestRaw[0]!.case_id = "mutated-after-return"
-  input.left.task_family_sections[0]!.cases[0]!.metrics[0]!.value = -999
+  input.provenanceDeclaration.qualificationId = "qualification:mutated-after-return"
   assert.equal(result.caseProvenance[0]!.caseId, firstCase)
+  assert.equal(result.qualificationId, "qualification:p3-r4-fixture")
   assertDeepFrozen(result)
 })
 
