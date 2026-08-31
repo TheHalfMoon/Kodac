@@ -572,7 +572,10 @@ test("P3-R4 fails closed for left and right extra/missing/unit/duplicate metric 
   for (const side of ["left", "right"] as const) {
     for (const mutate of mutations) {
       assert.throws(
-        () => makeFixture((left, right) => mutate(side === "left" ? left : right)),
+        () => {
+          const input = makeFixture((left, right) => mutate(side === "left" ? left : right))
+          build(input)
+        },
         /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/,
       )
     }
@@ -580,12 +583,21 @@ test("P3-R4 fails closed for left and right extra/missing/unit/duplicate metric 
 })
 
 test("P3-R4 fails closed on benchmark, protocol, and task-family predecessor drift", () => {
-  assert.throws(() => makeFixture((left) => { left.benchmark_id = "different-benchmark" }), /P2-R3 contract violation|P2-R4 contract violation/)
-  assert.throws(() => makeFixture((left) => { left.benchmark_protocol_version = "different-protocol" }), /P2-R3 contract violation|P2-R4 contract violation/)
-  assert.throws(() => makeFixture((left, right) => {
-    left.task_family_sections[0]!.task_family = "wrong-family"
-    right.task_family_sections[0]!.task_family = "wrong-family"
-  }), /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/)
+  assert.throws(() => {
+    const input = makeFixture((left) => { left.benchmark_id = "different-benchmark" })
+    build(input)
+  }, /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/)
+  assert.throws(() => {
+    const input = makeFixture((left) => { left.benchmark_protocol_version = "different-protocol" })
+    build(input)
+  }, /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/)
+  assert.throws(() => {
+    const input = makeFixture((left, right) => {
+      left.task_family_sections[0]!.task_family = "wrong-family"
+      right.task_family_sections[0]!.task_family = "wrong-family"
+    })
+    build(input)
+  }, /P2-R3 contract violation|P2-R4 contract violation|P3-R4 contract violation/)
 })
 
 test("P3-R4 declaration rejects symbol, non-enumerable, custom-prototype, sparse, extended, and non-JSON structures", () => {
