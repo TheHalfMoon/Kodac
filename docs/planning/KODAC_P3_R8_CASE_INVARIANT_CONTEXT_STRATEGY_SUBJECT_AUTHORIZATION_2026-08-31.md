@@ -6,7 +6,7 @@
 CLASS = AUTHORIZATION CANDIDATE / DOCUMENTATION ONLY
 ACTIVE P3-R8 IMPLEMENTATION AUTHORITY = NONE UNTIL THIS EXACT RECORD BECOMES CANONICAL
 REAL BENCHMARK TASK EXECUTION = NONE
-MULTI-CASE REPORT AGGREGATION = NONE
+MULTI-CASE REPORT / OBSERVATION AGGREGATION = NONE
 BENCHMARK CORPUS / MANIFEST / FIXTURE MUTATION = NONE
 PROVIDER / MODEL / REVIEWER / EVALUATOR EXECUTION = NONE
 DEPENDENCY ADMISSION = NONE
@@ -20,7 +20,7 @@ WAIVER = NO
 
 This record proposes one bounded future P3 mechanism. It is not effective implementation authority while it exists only on a branch or pull request. It becomes effective only after its own exact-head qualification, guarded normal merge, and complete post-merge adoption proof.
 
-The designation `P3-R8` is not inferred from numbering. It is justified by one concrete composition gap left explicit by canonical P3-R7: a future broader multi-case report boundary must first have a valid case-invariant subject/strategy identity, while canonical P3-R2 `policyIdentity` is deliberately case-bound through plan/repository/snapshot/content/task identities.
+The designation `P3-R8` is not inferred from numbering. It is justified by one concrete composition gap left explicit by canonical P3-R7: a future broader multi-case report boundary must first have a valid case-invariant subject/strategy identity, while canonical P3-R2 `policyIdentity` is intentionally bound to one exact plan/repository/snapshot/content/task preimage.
 
 This candidate addresses only that identity gap and one single-case proof binding from the new subject identity to one canonically reconstructed P3-R2 application. It does **not** authorize multi-case aggregation, benchmark execution, comparison, ranking, promotion, or any repository-owned strategy decision.
 
@@ -52,13 +52,11 @@ RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical `docs/roadmap/NEXT.md` permits another bounded P3 definition/planning/authorization candidate only after the R7 current-view reconciliation becomes canonical and post-merge proven. PR #276 now satisfies that condition through the exact merge and proof above.
+Canonical `docs/roadmap/NEXT.md` permits another bounded P3 definition/planning/authorization candidate only after the R7 current-view reconciliation becomes canonical and post-merge proven. PR #276 satisfies that condition through the exact merge and proof above.
 
-Canonical P3-R7 also states that a future broader multi-case or mixed-family report boundary requires a separate explicit authorization and must first define a valid case-invariant subject/strategy identity and complete P2 report-coverage semantics. This candidate addresses only the first prerequisite. Complete multi-case report coverage remains a separate future problem with no authority here.
+Canonical P3-R7 states that a future broader multi-case or mixed-family report boundary requires a separate explicit authorization and must first define a valid case-invariant subject/strategy identity and complete P2 report-coverage semantics. This candidate addresses only the first prerequisite. Complete multi-case report coverage remains a separate future problem with no authority here.
 
-Governing benchmark discipline remains `docs/adr/ADR-0010-benchmark-first-donor-selection.md`: configuration identities must be explicit and broad superiority/promotion claims require reproducible evidence. This candidate creates no such evidence and grants no promotion authority.
-
-Live GitHub truth, root `AGENTS.md`, canonical `docs/roadmap/NEXT.md`, governing ADRs, canonical predecessor records, and this record after canonical adoption remain controlling.
+Governing benchmark discipline remains `docs/adr/ADR-0010-benchmark-first-donor-selection.md`. This candidate creates no benchmark result and grants no promotion authority.
 
 ---
 
@@ -76,7 +74,7 @@ No second path is authorized for adoption of this record.
 
 ## 4. Concrete remaining gap
 
-Canonical P3-R2 currently defines a caller-declared policy whose identity includes:
+Canonical P3-R2 policy identity includes the normalized policy fields:
 
 ```text
 policyId
@@ -91,11 +89,9 @@ maxSelectedUtf8Bytes
 maxPerGroupingKey
 ```
 
-That identity is correct for one exact application case, but it cannot serve as the stable subject identity required to say that multiple independently bound cases used the same strategy semantics. In particular, `planIdentity`, `repositoryIdentity`, `snapshotIdentity`, `contentIdentity`, and `taskIdentity` vary with the case/revision/context preimage.
+That identity is correct for one exact application case. It cannot serve as the stable subject identity required to prove that independently bound cases used identical strategy semantics because the plan/repository/snapshot/content/task bindings vary by case.
 
-Canonical P3-R7 therefore intentionally stops at a single case and explicitly refuses to invent a cross-case strategy identity.
-
-The smallest next mechanism is:
+The minimum missing mechanism is therefore:
 
 ```text
 ONE CLOSED CASE-INVARIANT STRATEGY DECLARATION
@@ -113,7 +109,7 @@ No collection of case bindings is produced or accepted by this slice.
 
 ## 5. Exact future implementation allowlist
 
-If and only if this authorization becomes canonical and post-merge proven, one future P3-R8 implementation candidate may modify exactly these four paths:
+If and only if this authorization becomes canonical and post-merge proven, one future P3-R8 implementation candidate may modify exactly:
 
 ```text
 packages/kodac-runtime/bench/p3-r8/contracts.ts
@@ -124,13 +120,13 @@ docs/planning/KODAC_P3_R8_CASE_INVARIANT_CONTEXT_STRATEGY_SUBJECT_EVIDENCE_2026-
 
 No fifth path is authorized.
 
-The future implementation may import canonical P3-R1/P3-R2 contracts and functions, but it may not modify predecessor source/tests, P2/P3 manifests or corpora, fixtures, result files, workflows, dependencies, lockfiles, provider/model/evaluator configuration, persistence, telemetry, product surfaces, release surfaces, or rulesets.
+The implementation may import canonical P3-R1/P3-R2 constants, types, and pure functions read-only. It may not modify predecessor source/tests, P2/P3 manifests/corpora/fixtures/results, workflows, dependencies, lockfiles, provider/model/evaluator configuration, persistence, telemetry, product/release surfaces, or rulesets.
 
 ---
 
-## 6. Closed strategy subject declaration
+## 6. Closed strategy declaration
 
-The future strategy declaration may contain exactly these semantic fields:
+The future untrusted declaration may contain exactly:
 
 ```text
 version
@@ -157,27 +153,71 @@ policyContractVersion = p3-r2-declared-context-selection-policy-v1
 applicationContractVersion = p3-r2-context-selection-policy-application-v1
 ```
 
-`strategyId` is a caller-owned stable identifier that must be reused unchanged for every case claimed to use the same subject. It is not a repository-selected default or winner.
+`strategyId` is a caller-owned stable identifier reused unchanged for every case claimed to use the same subject. It is not a repository-selected default, winner, or promotion identifier.
 
-`lanePriority` must be an exact duplicate-free permutation of canonical `P3_R1_EVIDENCE_LANES`.
+`lanePriority` must be a dense exact duplicate-free permutation of canonical `P3_R1_EVIDENCE_LANES`.
 
-The three numeric policy caps must be positive safe integers and must remain within canonical P3-R1 absolute limits:
+The numeric policy caps must be positive safe integers within canonical P3-R1 absolute limits:
 
 ```text
-maxSelectedItems <= P3_R1_LIMITS.maxItems
-maxSelectedUtf8Bytes <= P3_R1_LIMITS.maxUtf8Bytes
-maxPerGroupingKey <= maxSelectedItems
+1 <= maxSelectedItems <= P3_R1_LIMITS.maxItems
+1 <= maxSelectedUtf8Bytes <= P3_R1_LIMITS.maxUtf8Bytes
+1 <= maxPerGroupingKey <= maxSelectedItems
 ```
 
-Unknown fields, missing fields, unsupported literals, duplicate lanes, non-canonical identifiers, invalid integers, proxies, accessors, symbol-bearing values, cyclic values, or other non-canonical inputs fail closed.
+A later single-case binding can succeed only when canonical P3-R2 itself accepts those exact caps against that case's rebuilt P3-R1 plan budget. P3-R8 may not widen P3-R2 budget authority.
+
+Unknown/missing fields, unsupported literals, invalid identifiers, invalid lanes/caps, Proxy/accessor/symbol-bearing/cyclic/non-canonical inputs fail closed.
 
 ---
 
-## 7. Case-invariance boundary
+## 7. Closed strategy subject projection
 
-The strategy subject identity must be derived only from the complete normalized declaration in Section 6.
+A future pure function may be semantically equivalent to:
 
-The strategy declaration and `strategySubjectIdentity` must contain **none** of these case-bound fields:
+```text
+buildContextStrategySubject(
+  strategyDeclarationValue,
+) -> ContextStrategySubject
+```
+
+The canonical subject result may contain exactly:
+
+```text
+version
+kind
+strategySubjectIdentity
+strategyDeclaration
+```
+
+Required result literals:
+
+```text
+version = p3-r8-context-strategy-subject-v1
+kind = context_strategy_subject
+```
+
+The normalized `strategyDeclaration` is the complete declaration from Section 6. No duplicated top-level semantic copies are permitted.
+
+`strategySubjectIdentity` must be SHA-256 over the complete canonical projection:
+
+```text
+{
+  version,
+  kind,
+  strategyDeclaration
+}
+```
+
+and therefore excludes only `strategySubjectIdentity` itself.
+
+The result and nested declaration/arrays must be detached from caller-owned objects and deeply frozen.
+
+---
+
+## 8. Case-invariance boundary
+
+Neither the normalized strategy declaration nor the subject identity preimage may contain:
 
 ```text
 planIdentity
@@ -189,59 +229,24 @@ contentIdentity
 taskIdentity
 caseId
 r1ResultIdentity
-manifest identity / manifest digest
+manifest identity / digest
 measurement identity / report identity
-selected candidate identities
-omitted candidate identities
+selected / omitted candidate identities
 runtime result
-provider/model/evaluator identity
+provider / model / evaluator identity
 ```
 
-This exclusion is semantic, not cosmetic. Two valid cases that share the exact Section 6 declaration must produce the same `strategySubjectIdentity` even when all of the excluded case-bound identities differ.
+Two valid strategy declarations with identical Section 6 semantics must produce the same `strategySubjectIdentity` even when later valid case bindings have different values for every excluded case-bound field.
 
-Conversely, any change to `strategyId`, contract versions, task family, lane order, or any of the three caps must change `strategySubjectIdentity`.
+Any change to `strategyId`, task family, any contract version, lane order, or any of the three caps must change `strategySubjectIdentity`.
 
-This record does not claim that a subject is good, optimal, supported by a benchmark, or eligible for promotion. It proves only semantic configuration identity.
-
----
-
-## 8. Future strategy subject result
-
-A future pure function may be semantically equivalent to:
-
-```text
-buildContextStrategySubject(
-  strategyDeclarationValue,
-) -> ContextStrategySubject
-```
-
-The normalized result may contain only fields equivalent to:
-
-```text
-version
-kind
-strategySubjectIdentity
-strategyDeclaration
-strategyId
-taskFamily
-planContractVersion
-policyContractVersion
-applicationContractVersion
-lanePriority
-maxSelectedItems
-maxSelectedUtf8Bytes
-maxPerGroupingKey
-```
-
-Required result literals must be closed and versioned.
-
-`strategySubjectIdentity` must be SHA-256 over the complete normalized result projection excluding only `strategySubjectIdentity` itself. The returned declaration and arrays must be detached from caller-owned objects and deeply frozen.
+This is semantic configuration identity only. It proves no quality, superiority, benchmark success, eligibility, or promotion.
 
 ---
 
 ## 9. Closed single-case binding declaration
 
-The future single-case binding declaration may contain exactly:
+The future untrusted binding declaration may contain exactly:
 
 ```text
 version
@@ -257,9 +262,9 @@ version = p3-r8-context-strategy-case-binding-declaration-v1
 kind = bind_context_strategy_subject_to_declared_policy
 ```
 
-`bindingId` is a caller-owned stable identifier for this one binding evidence record. It is not a benchmark case ID, result ID, promotion ID, or repository decision.
+`bindingId` is a caller-owned stable identifier for one binding evidence record. It is not a benchmark case ID, result ID, comparison ID, or promotion ID.
 
-The declaration must bind the exact canonical strategy subject identity supplied to the function. Unknown fields or mismatches fail closed.
+Unknown fields, unsupported literals, invalid identifiers, or subject-identity mismatch fail closed.
 
 ---
 
@@ -276,49 +281,39 @@ bindContextStrategySubjectToDeclaredPolicy(
 ) -> ContextStrategyCaseBindingEvidence
 ```
 
-The function must perform no ambient side effect.
+The function must perform no ambient side effect and must not accept caller-serialized P3-R1 plans or P3-R2 applications as derivation truth.
 
-It must reconstruct canonical P3-R1/P3-R2 state from original preimages rather than trusting caller-serialized plan or application results.
-
-Caller-supplied serialized P3-R1 plans or P3-R2 applications must never substitute for canonical reconstruction.
-
----
-
-## 11. Mandatory deterministic binding procedure
-
-The future binding implementation must:
+Mandatory order:
 
 1. harden/snapshot every public input before semantic reuse;
-2. normalize/reconstruct the strategy subject through canonical P3-R8 subject semantics;
-3. normalize the closed binding declaration and require its `strategySubjectIdentity` to equal the reconstructed subject identity;
-4. reconstruct the canonical P3-R1 plan from the complete request preimage using `buildContextSelectionPlan(...)`;
-5. reconstruct the canonical P3-R2 application by invoking `applyDeclaredContextSelectionPolicy(planRequestValue, policyValue)`;
-6. require P3-R2 policy/application contract versions to equal the versions bound by the strategy subject;
-7. require the reconstructed P3-R2 `policyId` to equal the subject `strategyId`;
-8. require the reconstructed policy/application `lanePriority` to exactly equal the subject lane permutation;
-9. require `maxSelectedItems`, `maxSelectedUtf8Bytes`, and `maxPerGroupingKey` to exactly equal the subject values;
-10. retain the exact reconstructed P3-R2 `policyIdentity`, `applicationIdentity`, and all case-bound plan/request/repository/snapshot/content/task identities as evidence fields only;
-11. never incorporate those case-bound fields into `strategySubjectIdentity`;
-12. derive one deterministic binding evidence identity from the complete normalized binding result projection excluding only its own identity; and
+2. reconstruct/normalize the strategy subject through canonical P3-R8 subject semantics;
+3. normalize the closed binding declaration and require its subject identity to equal the reconstructed subject;
+4. reconstruct canonical P3-R1 by invoking `buildContextSelectionPlan(planRequestValue)`;
+5. require rebuilt P3-R1 `version == strategyDeclaration.planContractVersion`;
+6. reconstruct canonical P3-R2 by invoking `applyDeclaredContextSelectionPolicy(planRequestValue, policyValue)`;
+7. require normalized P3-R2 policy `version == strategyDeclaration.policyContractVersion` and reconstructed application `version == strategyDeclaration.applicationContractVersion`;
+8. require P3-R2 `policyId == strategyDeclaration.strategyId`;
+9. require application `lanePriority`, `maxSelectedItems`, `maxSelectedUtf8Bytes`, and `maxPerGroupingKey` to exactly equal the strategy declaration;
+10. retain the exact reconstructed `policyIdentity`, `applicationIdentity`, and case-bound plan/request/candidate-set/repository/snapshot/content/task identities as binding evidence only;
+11. never incorporate those case-bound identities into `strategySubjectIdentity`;
+12. derive one deterministic `bindingEvidenceIdentity` from the complete normalized binding result projection excluding only that identity; and
 13. return detached deeply frozen output.
 
-The function must not compare one case to another, accept an array of cases, produce an aggregate report, execute a benchmark participant, or infer promotion/quality.
+Any canonical P3-R1/P3-R2 validation failure remains a P3-R8 binding failure. P3-R8 may not reinterpret or relax predecessor validation.
 
 ---
 
-## 12. Future binding result semantics
+## 11. Future binding result
 
-A future `ContextStrategyCaseBindingEvidence` may contain only deterministic fields equivalent to:
+A future binding result may contain exactly deterministic fields equivalent to:
 
 ```text
 version
 kind
 bindingEvidenceIdentity
 bindingDeclaration
-bindingId
 strategySubject
 strategySubjectIdentity
-strategyId
 policyIdentity
 applicationIdentity
 planIdentity
@@ -330,23 +325,28 @@ contentIdentity
 taskIdentity
 ```
 
-The nested `strategySubject` is the complete canonical P3-R8 subject record.
+Required result literals:
 
-The case-bound identities prove which exact P3-R1/P3-R2 application was bound. They do not mutate or specialize the case-invariant subject identity.
+```text
+version = p3-r8-context-strategy-case-binding-evidence-v1
+kind = context_strategy_case_binding_evidence
+```
 
-`bindingEvidenceIdentity` must bind the complete normalized subject plus the exact case-bound evidence projection and exclude only `bindingEvidenceIdentity` itself.
+`strategySubject` must be the complete canonical P3-R8 subject record. The case-bound identities prove which exact P3-R1/P3-R2 application was bound; they do not specialize or mutate the subject identity.
+
+`bindingEvidenceIdentity` must bind the complete normalized result projection, including `bindingDeclaration` and `strategySubject`, excluding only `bindingEvidenceIdentity` itself.
 
 ---
 
-## 13. Required invariants
+## 12. Required invariants and tests
 
-The future implementation must establish at least:
+The future implementation must prove at least:
 
 ```text
-SAME NORMALIZED STRATEGY DECLARATION ACROSS DISTINCT VALID CASES
+SAME NORMALIZED STRATEGY SEMANTICS ACROSS DISTINCT VALID CASES
 -> SAME strategySubjectIdentity
 
-ANY STRATEGY SEMANTICS CHANGE
+ANY strategyId / contract-version / lane-order / cap CHANGE
 -> DIFFERENT strategySubjectIdentity
 
 CASE-BOUND IDENTITY CHANGE ONLY
@@ -356,48 +356,23 @@ CASE-BOUND IDENTITY CHANGE ONLY
 P3-R2 policyId != strategyId
 -> FAIL CLOSED
 
-P3-R2 lanePriority OR ANY CAP != subject declaration
+P3-R2 lanePriority OR ANY CAP != strategy declaration
 -> FAIL CLOSED
 ```
 
-The tests must demonstrate two independently reconstructed cases with different plan/request/repository/snapshot/content/task identities that bind to one identical strategy subject without combining their observations or reports.
+Tests must include two independently reconstructed valid P3-R1/P3-R2 cases with different plan/request/repository/snapshot/content/task identities that bind to one identical strategy subject. The test must not combine their observations, reports, or scores.
 
-That test is an identity/binding proof only. It is not multi-case benchmark execution or aggregation.
-
----
-
-## 14. Edge-case discipline
-
-The future implementation must fail closed for at least:
-
-- Proxy/accessor/symbol-bearing/cyclic/non-canonical public inputs;
-- unknown or extra declaration fields;
-- unsupported version/kind/task-family/contract-version literals;
-- invalid or duplicate lane permutations;
-- invalid, zero, negative, unsafe, or out-of-bound numeric caps;
-- `maxPerGroupingKey > maxSelectedItems`;
-- non-canonical `strategyId`, `bindingId`, or identity fields;
-- binding declaration subject mismatch;
-- any canonical P3-R1 reconstruction failure;
-- any canonical P3-R2 reconstruction failure;
-- P3-R2 `policyId` mismatch from subject `strategyId`;
-- P3-R2 lane-order or cap mismatch;
-- caller-forged serialized plan/application attempts;
-- input mutation after call entry affecting semantics;
-- mutation attempts against returned subject/binding evidence; and
-- any ambient filesystem/network/process/persistence side effect.
-
-Positive tests must include deterministic repeatability, benign caller object-key-order invariance, deep-freeze/detachment, subject identity stability across distinct valid case-bound preimages, and binding identity sensitivity to case-bound identity changes.
+Tests must also cover deterministic repeatability, benign object-key-order invariance, Proxy/accessor/symbol/cycle rejection, unknown fields, invalid literals/identifiers/lanes/caps, subject mismatch, forged serialized intermediate attempts, deep-freeze/detachment, input mutation after call entry, and absence of ambient filesystem/network/process/persistence side effects.
 
 ---
 
-## 15. Explicit non-grants
+## 13. Explicit non-grants
 
 This authorization does not grant:
 
 ```text
 REAL BENCHMARK TASK / PARTICIPANT EXECUTION
-MULTI-CASE REPORT OR OBSERVATION AGGREGATION
+MULTI-CASE REPORT / OBSERVATION / SCORE AGGREGATION
 MIXED-FAMILY AGGREGATION
 N-WAY STRATEGY COMPARISON
 LEADERBOARD / GLOBAL RANKING
@@ -429,7 +404,7 @@ The fact that one subject identity can be reused across independently supplied c
 
 ---
 
-## 16. Future implementation evidence requirements
+## 14. Future implementation evidence requirements
 
 A future implementation evidence record must bind at least:
 
@@ -438,8 +413,8 @@ CANONICAL BASE MAIN / TREE
 AUTHORIZATION PR / MERGE / BLOB / POST-MERGE PROOF
 EXACT IMPLEMENTATION HEAD / TREE
 EXACT FOUR ALLOWED PATHS / BLOBS
-P3-R1 CONTRACT BLOB
-P3-R2 CONTRACT + IMPLEMENTATION BLOBS
+CANONICAL P3-R1 CONTRACT / IMPLEMENTATION BLOBS
+CANONICAL P3-R2 CONTRACT / IMPLEMENTATION BLOBS
 FOCUSED TEST COMMAND / RESULT
 FULL RUNTIME TEST COMMAND / RESULT
 TYPECHECK RESULT
@@ -452,33 +427,33 @@ RULESET STATE
 WAIVER = NO
 ```
 
-No evidence record may claim real benchmark quality, comparison, promotion, or P3 closure from synthetic/local contract tests.
+Synthetic/local contract tests cannot establish benchmark quality, comparison, promotion, or P3 closure.
 
 ---
 
-## 17. Authorization adoption gate
+## 15. Authorization adoption gate
 
-This documentation-only authorization candidate must not merge until one frozen exact head proves:
+This documentation-only candidate must not merge until one frozen exact head proves:
 
-1. current canonical `main` remains the exact baseline above or the candidate is forward-reconciled and fully requalified;
+1. current canonical `main` remains the exact baseline above or the branch is forward-reconciled and fully requalified;
 2. `behind_by=0`;
 3. exactly one changed path: this authorization record;
-4. exact candidate head/tree/document blob captured;
+4. exact candidate head/tree/document blob captured in current PR metadata;
 5. Governance `provenance` and `legacy-tests` terminal success;
-6. K2 `runtime-change-classifier` and `k2-runtime-gate` terminal success, with runtime matrix honestly represented as skipped/non-applicable for the docs-only PR if that is the observed state;
-7. at least two distinct independent external substantive semantic review channels terminal-clean on the exact head and current PR metadata;
+6. K2 `runtime-change-classifier` and `k2-runtime-gate` terminal success, with runtime honestly represented as skipped/non-applicable for docs-only scope when observed;
+7. at least two distinct independent external substantive semantic review channels terminal-clean on exact head/current metadata;
 8. zero unresolved actionable material findings and review threads;
-9. ruleset `20707483` remains active with no bypass actors and `current_user_can_bypass=never`;
-10. guarded normal merge with the exact expected head; and
-11. mandatory post-merge canonical `main`, ordered parents, tree, authorization blob, signature, applicable checks, PR state, and ruleset proof before this record grants any implementation authority.
+9. ruleset `20707483` active/no-bypass;
+10. guarded normal merge with exact expected head; and
+11. mandatory post-merge canonical main/ordered parents/tree/authorization blob/signature/applicable checks/PR state/ruleset proof before this record grants implementation authority.
 
-Any repository-byte change invalidates prior exact-head CI/review evidence. Any material metadata change requires semantic requalification against the current metadata before merge.
+Any repository-byte change invalidates prior exact-head CI/review evidence. Any material metadata change requires semantic requalification against current metadata before merge.
 
 No force-push, rebase, stale evidence reuse, review waiver, bypass, or silent waiver. `WAIVER=NO`.
 
 ---
 
-## 18. Adoption result if fully proven
+## 16. Adoption result if fully proven
 
 Only after this exact record is merged and completely post-merge proven may the following become true:
 
