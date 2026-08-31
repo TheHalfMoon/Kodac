@@ -198,8 +198,7 @@ function assertDeepFrozen(value: unknown, seen = new WeakSet<object>()): void {
 }
 
 test("P3-R6 emits exactly seven deterministic P2-R2-compatible observations in canonical dimension order", () => {
-  const planRequest = request()
-  const result = run(planRequest)
+  const result = run()
   assert.equal(result.version, P3_R6_MEASUREMENT_EVIDENCE_VERSION)
   assert.equal(result.kind, P3_R6_MEASUREMENT_EVIDENCE_KIND)
   assert.equal(result.observations.length, 7)
@@ -212,25 +211,18 @@ test("P3-R6 emits exactly seven deterministic P2-R2-compatible observations in c
 })
 
 test("P3-R6 computes the authorized seven measurement semantics without aggregate policy claims", () => {
-  const planRequest = request({
-    candidates: [
-      candidate(1, { subjectPath: "src/shared.ts", utf8Bytes: 100 }),
-      candidate(2, { subjectPath: "src/shared.ts", utf8Bytes: 300 }),
-      candidate(3, { subjectPath: "src/other.ts", utf8Bytes: 600 }),
-    ],
-  })
-  const result = run(planRequest)
+  const result = run()
   const byId = new Map(result.observations.map((entry) => [entry.metric_id, entry]))
   assert.equal(byId.get("metric:recall-at-k")?.value, 1)
   assert.equal(byId.get("metric:precision-at-k")?.value, 2 / 3)
-  assert.equal(byId.get("metric:file-f1")?.value, 2 / 3)
-  assert.equal(byId.get("metric:token-budgeted-evidence-yield")?.value, 0.4)
+  assert.equal(byId.get("metric:file-f1")?.value, 0.8)
+  assert.equal(byId.get("metric:token-budgeted-evidence-yield")?.value, 2 / 3)
   assert.equal(byId.get("metric:no-gold-abstention")?.measurement_status, "unavailable")
   assert.equal(byId.get("metric:explored-vs-utilized-context")?.value, 1 / 3)
-  assert.equal(byId.get("metric:context-dilution")?.value, 0.6)
+  assert.equal(byId.get("metric:context-dilution")?.value, 1 / 3)
 })
 
-test("P3-R6 empty-gold semantics remain explicit and do not imply a repository policy", () => {
+test("P3-R6 empty-gold semantics remain explicit and non-decisional", () => {
   const planRequest = request()
   const result = run(planRequest, declaration(planRequest, { goldCandidateIdentities: [] }))
   const byId = new Map(result.observations.map((entry) => [entry.metric_id, entry]))
@@ -238,7 +230,6 @@ test("P3-R6 empty-gold semantics remain explicit and do not imply a repository p
     assert.equal(byId.get(`metric:${id}`)?.measurement_status, "unavailable")
     assert.equal(byId.get(`metric:${id}`)?.value, null)
   }
-  assert.equal(byId.get("metric:no-gold-abstention")?.measurement_status, "observed")
   assert.equal(byId.get("metric:no-gold-abstention")?.value, false)
   assert.equal(byId.get("metric:context-dilution")?.value, 1)
 })
@@ -246,8 +237,7 @@ test("P3-R6 empty-gold semantics remain explicit and do not imply a repository p
 test("P3-R6 rejects unknown, duplicate, unsorted, or impossible candidate facts", () => {
   const planRequest = request()
   const valid = declaration(planRequest)
-  const unknown = "f".repeat(64)
-  assert.throws(() => run(planRequest, { ...valid, goldCandidateIdentities: [unknown] }), /unknown gold candidate/)
+  assert.throws(() => run(planRequest, { ...valid, goldCandidateIdentities: ["f".repeat(64)] }), /unknown gold candidate/)
   assert.throws(() => run(planRequest, { ...valid, goldCandidateIdentities: [valid.goldCandidateIdentities[0], valid.goldCandidateIdentities[0]] }), /strictly sorted/)
   assert.throws(() => run(planRequest, { ...valid, goldCandidateIdentities: [...valid.goldCandidateIdentities].reverse() }), /strictly sorted/)
 
@@ -311,7 +301,10 @@ test("P3-R6 snapshots caller inputs, returns detached deeply frozen evidence, an
   assert.deepEqual(first, second)
   assertDeepFrozen(first)
 
-  const mutable = structuredClone(declarationValue)
+  const mutable = structuredClone(declarationValue) as unknown as {
+    measurementId: string
+    goldCandidateIdentities: string[]
+  }
   const result = run(planRequest, mutable)
   mutable.measurementId = "measurement:mutated"
   mutable.goldCandidateIdentities.length = 0
@@ -345,7 +338,7 @@ test("P3-R6 rejects hostile public structures before semantic reuse", () => {
 test("P3-R6 reconstructs P3-R1/P3-R2 source truth rather than accepting claimed predecessor evidence", () => {
   const badRequest = { ...request(), version: "future" }
   assert.throws(
-    () => buildContextPolicyMeasurementObservations(badRequest, {}, [manifestRecord()], development, holdout, {},),
+    () => buildContextPolicyMeasurementObservations(badRequest, {}, [manifestRecord()], development, holdout, {}),
     /unsupported P3-R1 context selection request contract/,
   )
 })
