@@ -209,7 +209,8 @@ MERGE_PARENT_1 = 70553fef18c992b1ec819720e051258372af75d8
 MERGE_PARENT_2 = 2071014a9e8761a84167e2fa7a44ba40b4df36da
 MERGE_TREE = 46c2c5ff7af396ffa1377d0c597b398547c5087c
 MERGE_VERIFICATION = verified / valid
-PRE_MERGE_GOVERNANCE = 33263309267 / provenance + legacy-tests SUCCESS
+PRE_MERGE_GOVERNANCE = 33263309267 / event=pull_request / provenance + legacy-tests SUCCESS
+PUSH_PRE_MERGE_GOVERNANCE = 33263307351 / event=push / attempt 2 / provenance + legacy-tests SUCCESS AFTER SAME-HEAD RERUN
 PRE_MERGE_K2 = 33263309246 / classifier + Ubuntu/macOS/Windows Typecheck/Test/Patch + stable gate SUCCESS
 POST_MERGE_GOVERNANCE = 33302704761 / SUCCESS
 POST_MERGE_K2 = 33302704758 / SUCCESS
@@ -234,6 +235,7 @@ Material history preserved:
 - a material Codex finding identified missing direct focused-test proof for authorization obligations; the finding was accepted and repaired forward within the existing allowlist, invalidating earlier exact-head evidence;
 - pre-public hosted-runner attempts failed before repository execution; those service failures are not repository correctness evidence;
 - after public visibility restored hosted execution, required gates became executable;
+- push-triggered Governance run `33263307351` was bound to exact head `2071014a9e8761a84167e2fa7a44ba40b4df36da` and completed `provenance` + `legacy-tests` successfully on attempt 2 after a same-head rerun; no repository byte moved between attempts;
 - two pre-merge Ubuntu K2 attempts hit the unchanged pre-existing H4-R3G-B timing assertion before an identical-head retry passed, with no P3-R3/H4 mutation or waiver;
 - post-merge Governance and full runtime-sensitive K2 passed on the exact merge SHA.
 
