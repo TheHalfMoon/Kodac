@@ -23,69 +23,72 @@ P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
-P3-R1 THROUGH P3-R5 = CLOSED_CANONICAL
-P3 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
-P3-R6 CONTEXT MEASUREMENT OBSERVATION = CLOSED_CANONICAL
+P3-R1 THROUGH P3-R7 = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R7+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R8+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-The R6 closure is an engineering evidence milestone only. It creates no public version, release, package, support, compatibility, benchmark-superiority, production-readiness, or brand authority.
+The R7 closure is an engineering evidence milestone only. It creates no public version, release, package, support, compatibility, benchmark-superiority, production-readiness, or brand authority.
 
-## Canonical P3-R6 anchors
+## Canonical P3-R7 anchors
 
 ```text
-P3_R1_R5_CLOSEOUT = PR #270 / 9d75115f66f34ef8ee1e1a093705a5cba21f8f49
-P3_R6_AUTHORIZATION = PR #271 / 2441cf9b6006859a4bc05cfe196a033fe31b56c9
-P3_R6_IMPLEMENTATION = PR #272 / c045ae50f42fcfeede37bbd3290b1d3a7cb5bb91
-P3_R6_QUALIFIED_HEAD = 202cbf2b8082ddde52738e07373ba24322a5265c
-P3_R6_QUALIFIED_TREE = 85d3cb932fc477525a05eed6a5ee1e4ffe43e4a1
-MERGE_PARENT_1 = 2441cf9b6006859a4bc05cfe196a033fe31b56c9
-MERGE_PARENT_2 = 202cbf2b8082ddde52738e07373ba24322a5265c
-MERGE_TREE = 85d3cb932fc477525a05eed6a5ee1e4ffe43e4a1
+P3_R6_RECONCILIATION = PR #273 / ac002f5ef6bf9f338e1106b7b200dd5eb062e776
+P3_R7_AUTHORIZATION = PR #274 / bbe7825579e388a3a9be7dd64b56f2406425d930
+P3_R7_IMPLEMENTATION = PR #275 / e3933fdc9932b43b4864a0d608845acbc4ad7f08
+P3_R7_QUALIFIED_HEAD = 6d5ddae20f71767523c52378c468757749aa1520
+P3_R7_QUALIFIED_TREE = 9481bab0ece031fa8fe7f77a2395247a10e5a463
+MERGE_PARENT_1 = bbe7825579e388a3a9be7dd64b56f2406425d930
+MERGE_PARENT_2 = 6d5ddae20f71767523c52378c468757749aa1520
+MERGE_TREE = 9481bab0ece031fa8fe7f77a2395247a10e5a463
 MERGE_VERIFICATION = verified / valid
-PRE_MERGE_GOVERNANCE = 33418354648 / SUCCESS
-PRE_MERGE_K2 = 33418354658 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
-POST_MERGE_GOVERNANCE = 33419477062 / SUCCESS
-POST_MERGE_K2 = 33419477059 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
-SEMANTIC_REVIEW_QUORUM = Cubic + CodeRabbit / exact-head and current-metadata terminal clean
+PRE_MERGE_GOVERNANCE = 33428839717 / SUCCESS
+PRE_MERGE_K2 = 33428839711 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
+POST_MERGE_GOVERNANCE = 33430224046 / SUCCESS
+POST_MERGE_K2 = 33430224234 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
+SEMANTIC_REVIEW_QUORUM = CodeRabbit + Cubic / exact-head and current-metadata terminal clean
+POST_MERGE_PROOF_COMMENT = #275 / 5483365785
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical R6 blobs:
+Canonical R7 blobs:
 
 ```text
-packages/kodac-runtime/bench/p3-r6/contracts.ts = 6b12541182cc0c28072efcb3966e570d3cdeefbe
-packages/kodac-runtime/bench/p3-r6/context-measurement-observation.ts = f31bb7f1cc89ddc6a6eacf1be546c54f135cffca
-packages/kodac-runtime/test/p3-r6-context-measurement-observation.test.ts = 0ef67ed8249a03f79bac6ccf132a8dade56a79d4
-docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_EVIDENCE_2026-08-31.md = c8c156947f17aef62625acb5ea93c6bc9c0018a8
+packages/kodac-runtime/bench/p3-r7/contracts.ts = 18357e81a3e135b7f407dd0dcc06646c4d079b19
+packages/kodac-runtime/bench/p3-r7/context-measurement-report-binding.ts = d4cc9ed3998a08315ed7adaa93f318a77d9076ec
+packages/kodac-runtime/test/p3-r7-context-measurement-report-binding.test.ts = 3d156331133ba4bb67fd55b2ce28481b0cdff792
+docs/planning/KODAC_P3_R7_CONTEXT_MEASUREMENT_REPORT_BINDING_EVIDENCE_2026-08-31.md = ee6ce38b82a517de4b5d0c71ea46eeb8507736ea
 ```
 
-## P3-R6 is not a release milestone
+## P3-R7 is not a release milestone
 
-P3-R6 provides only a pure deterministic local bridge:
+P3-R7 provides only a pure deterministic local bridge:
 
 ```text
 EXACT P3-R1 REQUEST PREIMAGE
 + EXACT CALLER-DECLARED P3-R2 POLICY
-+ VALIDATED P2-R1 CASE / METRIC BINDINGS
-+ EXPLICIT CALLER GOLD / UTILIZATION FACTS
--> CANONICAL P3-R2 APPLICATION RECONSTRUCTION
--> SEVEN DETERMINISTIC CONTEXT MEASUREMENTS
--> SEVEN P2-R2-COMPATIBLE OBSERVATIONS
--> DECLARATION-BOUND MEASUREMENT EVIDENCE IDENTITY
++ ONE VALIDATED CONTEXT-SELECTION P2-R1 MANIFEST RECORD / SEVEN METRICS
++ EXACT P3-R6 MEASUREMENT DECLARATION
++ EXACT P3-R7 REPORT DECLARATION
+-> CANONICAL P3-R6 MEASUREMENT RECONSTRUCTION
+-> EXACTLY SEVEN R6 OBSERVATIONS
+-> ONE CANONICAL P2-R2 SINGLE-CASE REPORT
+-> FULL SEVEN-SLOT R6-TO-P2 REPORT COVERAGE
+-> DISTINCT R6 / P2-R2 OBSERVATION DIGESTS
+-> DECLARATION-BOUND REPORT EVIDENCE IDENTITY
 ```
 
 Therefore:
 
 ```text
-P3-R6 CLOSED_CANONICAL
+P3-R7 CLOSED_CANONICAL
 != P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
-!= REAL BENCHMARK TASK EXECUTION
+!= REAL BENCHMARK TASK / PARTICIPANT EXECUTION
+!= MULTI-CASE / CASE-INVARIANT STRATEGY IDENTITY
 != REPOSITORY-OWNED GOLD TRUTH
 != REPOSITORY-OWNED DEFAULT CONTEXT POLICY
 != WINNING / SUPERIOR CONTEXT STRATEGY PROVEN
@@ -99,13 +102,11 @@ P3-R6 CLOSED_CANONICAL
 != SUPPORT SLA ESTABLISHED
 != COMPATIBILITY PROMISE ESTABLISHED
 != BRAND LAUNCH AUTHORIZED
-!= P3-R7+ AUTHORIZED
+!= P3-R8+ AUTHORIZED
 != P4 AUTHORIZED
 ```
 
 ## Repository visibility versus release authority
-
-The GitHub repository is currently public. Repository visibility is an access setting, not a product/version authorization.
 
 ```text
 PUBLIC GITHUB REPOSITORY = YES
@@ -124,7 +125,7 @@ Version numbering, release channels, package publication, installation/upgrade p
 
 ## Current roadmap/status reconciliation
 
-The R6 authorization requires a separate current-view reconciliation before any later P3 slice may be considered. This documentation-only unit is limited to:
+Root `AGENTS.md` requires roadmap reconciliation after post-merge proof. The R7 documentation-only current-view reconciliation is limited to:
 
 ```text
 docs/roadmap/NEXT.md
@@ -145,7 +146,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ = NOT_AUTHORIZED
-P3-R7+ = NOT_AUTHORIZED
+P3-R8+ = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 NEW KODAC DEPENDENCIES = NOT_AUTHORIZED BY THIS FILE
@@ -168,15 +169,15 @@ DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 
 ## Next engineering boundary
 
-Only after the R6 current-view reconciliation itself becomes canonical and post-merge proven may later bounded P3 definition/planning/authorization-candidate preparation be considered, if justified by a concrete canonical gap.
+Only after the R7 current-view reconciliation itself becomes canonical and post-merge proven may later bounded P3 definition/planning/authorization-candidate preparation be considered, if justified by a concrete canonical gap.
 
-No `P3-R7` requirement is inferred from sequence alone.
+No `P3-R8` requirement is inferred from sequence alone.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 ```
 
-Any future slice involving real benchmark execution/corpus mutation, holdout-sufficiency decisions, statistical acceptance, repository-owned promotion, embeddings, learned reranking, provider/model execution, persistence, product integration, K2/K5/Done Gate changes, or release/public claims must define its exact evidence, trust, authority, allowlist, and non-grant boundary before implementation.
+Any future slice involving real benchmark execution/corpus mutation, multi-case strategy identity, holdout-sufficiency decisions, statistical acceptance, repository-owned promotion, embeddings, learned reranking, provider/model execution, persistence, product integration, K2/K5/Done Gate changes, or release/public claims must define its exact evidence, trust, authority, allowlist, and non-grant boundary before implementation.
 
 ## Future release-gate direction
 
@@ -198,8 +199,8 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R6 authorization: `docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_AUTHORIZATION_2026-08-31.md`
-- P3-R6 evidence: `docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_EVIDENCE_2026-08-31.md`
-- P3 bounded R1-R5 closeout evidence: `docs/planning/KODAC_P3_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-31.md`
+- P3-R7 authorization: `docs/planning/KODAC_P3_R7_CONTEXT_MEASUREMENT_REPORT_BINDING_AUTHORIZATION_2026-08-31.md`
+- P3-R7 evidence: `docs/planning/KODAC_P3_R7_CONTEXT_MEASUREMENT_REPORT_BINDING_EVIDENCE_2026-08-31.md`
+- P3-R7 closeout proof: PR #275 / comment `5483365785`
 - Durable improvement sequence: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Benchmark governance: `docs/adr/ADR-0010-benchmark-first-donor-selection.md`
