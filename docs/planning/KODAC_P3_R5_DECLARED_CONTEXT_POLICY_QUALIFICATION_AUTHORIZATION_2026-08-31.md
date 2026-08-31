@@ -372,6 +372,12 @@ ONE_OR_MORE_DECLARED_CRITERIA_NOT_SATISFIED
 INSUFFICIENT_COMPARABLE_EVIDENCE
 ```
 
+Aggregate-state precedence is exact and total:
+
+1. If any metric criterion has `criterionState = INSUFFICIENT_EVIDENCE`, `qualificationEvidenceState` must be `INSUFFICIENT_COMPARABLE_EVIDENCE`, regardless of any other unsatisfied metric or provenance criterion.
+2. Otherwise, if any comparable metric criterion or provenance criterion is `NOT_SATISFIED`, `qualificationEvidenceState` must be `ONE_OR_MORE_DECLARED_CRITERIA_NOT_SATISFIED`.
+3. Otherwise, and only when every metric and provenance criterion is `SATISFIED`, `qualificationEvidenceState` must be `ALL_DECLARED_CRITERIA_SATISFIED`.
+
 This state means only whether the caller-declared criteria matched canonical evidence. It is not a winner, recommendation, promotion, repository acceptance, release gate, Done Gate state, or public quality claim.
 
 ---
@@ -500,7 +506,7 @@ A future implementation test suite must prove at minimum:
 46. provenance result keys are closed;
 47. aggregate `ALL_DECLARED_CRITERIA_SATISFIED` occurs only when every metric and provenance criterion is satisfied;
 48. aggregate `INSUFFICIENT_COMPARABLE_EVIDENCE` dominates when canonical metric evidence is insufficient;
-49. aggregate not-satisfied state occurs for any comparable unsatisfied metric or provenance criterion;
+49. when no metric criterion is `INSUFFICIENT_EVIDENCE`, aggregate not-satisfied state occurs for any comparable unsatisfied metric or provenance criterion;
 50. output identity changes when any declaration criterion changes;
 51. output identity changes when canonical P3-R3 identity changes;
 52. output identity changes when canonical P3-R4 identity changes;
