@@ -449,8 +449,11 @@ test("P3-R4 rejects a self-consistent report pair that omits a relevant manifest
 
 test("P3-R4 independently binds complete report metric topology to manifest definitions", () => {
   const input = makeFixture((left, right) => {
-    left.task_family_sections[0]!.cases[0]!.metrics[0]!.metric_id = "a_recall_at_k_changed"
-    right.task_family_sections[0]!.cases[0]!.metrics[0]!.metric_id = "a_recall_at_k_changed"
+    for (const report of [left, right]) {
+      for (const reportCase of report.task_family_sections[0]!.cases) {
+        reportCase.metrics[0]!.metric_id = "a_recall_at_k_changed"
+      }
+    }
   })
   assert.throws(() => build(input), /metric topology does not match P2-R1 manifest/)
 })
