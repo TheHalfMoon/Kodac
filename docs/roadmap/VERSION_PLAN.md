@@ -17,7 +17,7 @@ K3 = CLOSED FOR CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
 KRI-R1 THROUGH KRI-R4 = CANONICAL / COMPLETE FOR THEIR AUTHORIZED SCOPES
 K4 = CLOSED FOR CANONICAL K4-R1 THROUGH K4-R5 BOUNDED DATA-ONLY SCOPE
 K5 = CLOSED FOR CANONICAL K5-R1 THROUGH K5-R5 BOUNDED PROOF-REVIEW SCOPE
-K6 = CLOSED FOR THE CANONICAL K6-R1 THROUGH K6-R5 BOUNDED SCOPE
+K6 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 P2-R1 THROUGH P2-R5 = CLOSED_CANONICAL
 P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 P2 OVERALL = OPEN
@@ -28,34 +28,58 @@ P3-R2 = CLOSED_CANONICAL
 P3-R3 = CLOSED_CANONICAL
 P3-R4 = CLOSED_CANONICAL
 P3-R5 = CLOSED_CANONICAL
+P3 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL IFF THIS EXACT SIX-PATH CLOSEOUT CANDIDATE QUALIFIES, MERGES, AND PASSES POST-MERGE PROOF
 P3 OVERALL = OPEN
 P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R5 closed canonically through PR #267 / `ae8a8d46f529a6782e39e3ae1787220cef603b8f` after exact-head Governance/K2 qualification, two distinct independent substantive semantic reviewer channels, guarded normal merge, and mandatory post-merge Governance/K2 proof.
+The bounded P3 closeout statement remains candidate-time conditional until this exact six-path branch qualifies, merges normally into protected `main`, and completes mandatory post-merge proof.
+
+## Bounded closeout authority
 
 ```text
-P3_R5_AUTHORIZATION_PR = #266
-P3_R5_AUTHORIZATION_MERGE = 41599d88d2b18f2714848452d20fc8ff00232f31
-P3_R5_QUALIFIED_HEAD = 33847308b30327a5a290eee7f4c0382b3205a576
-P3_R5_QUALIFIED_TREE = 37482be701004cc1e258a475c9c0c9f441657c78
-P3_R5_POST_MERGE_GOVERNANCE = 33359263671 / SUCCESS
-P3_R5_POST_MERGE_K2_RUNTIME = 33359263703 / SUCCESS AFTER IDENTICAL-MERGE-SHA RETRY
-RULESET = 20707483 / active / no bypass
+CLOSEOUT_AUTHORIZATION_PR = #269
+CLOSEOUT_AUTHORIZATION_QUALIFIED_HEAD = 6e0d5c94aca116a6904bef458209fed931d870c3
+CLOSEOUT_AUTHORIZATION_QUALIFIED_TREE = 4b4fc143cecf5d754494aa1748135b7f4a2693c7
+CLOSEOUT_AUTHORIZATION_BLOB = f5894f1a8ec3af39e54f2997865f534e196e30e8
+CLOSEOUT_AUTHORIZATION_MERGE = cce6b1aab6d5c2909728ad80133718cfd97b4897
+CLOSEOUT_AUTHORIZATION_VERIFICATION = verified / valid
+PRE_MERGE_GOVERNANCE = 33360478597 / SUCCESS
+PRE_MERGE_K2 = 33360478582 / classifier + stable gate SUCCESS / runtime SKIPPED AS DOCS-ONLY
+POST_MERGE_GOVERNANCE = 33360736529 / SUCCESS
+POST_MERGE_K2_PUSH = NOT_APPLICABLE_BY_DOCS_ONLY_PUSH_PATH_FILTER
+SEMANTIC_REVIEW_QUORUM = CodeRabbit + Codex / exact-head clean
+RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
+WAIVER = NO
 ```
 
-## P3-R5 is not a release milestone
+The authorization permits exactly one six-path documentation/evidence closeout and no runtime or release mutation.
+
+## P3 bounded R1-R5 is not a release milestone
+
+The canonical R1-R5 slices are limited to:
 
 ```text
-P3-R5 CLOSED_CANONICAL
+R1 = deterministic context-selection-plan foundation
+R2 = deterministic caller-declared policy application
+R3 = pairwise seven-metric evidence binding / comparability-only state
+R4 = literal benchmark-provenance evidence binding
+R5 = caller-declared criterion-match evidence
+```
+
+Even after successful bounded closeout:
+
+```text
+P3 BOUNDED R1-R5 CLOSED_CANONICAL
 != P3 OVERALL CLOSED
 != GENERAL / PUBLIC KODACBENCH COMPLETE
 != A REPOSITORY-OWNED DEFAULT CONTEXT POLICY
 != A WINNING / SUPERIOR CONTEXT STRATEGY PROVEN
 != HOLDOUT SUFFICIENCY / CONTAMINATION-FREE / SIGNIFICANCE QUALIFICATION
 != REAL PROVIDER / MODEL BENCHMARK EXECUTION
+!= PRODUCT INTEGRATION COMPLETE
 != PUBLIC RELEASE READY
 != PACKAGE PUBLISHABLE
 != PUBLIC VERSION DECLARED
@@ -63,21 +87,20 @@ P3-R5 CLOSED_CANONICAL
 != SUPPORT SLA ESTABLISHED
 != COMPATIBILITY PROMISE ESTABLISHED
 != BRAND LAUNCH AUTHORIZED
+!= P3-R6+ AUTHORIZED
+!= P4 AUTHORIZED
 ```
 
-P3-R5 is only a pure deterministic caller-declared qualification-evidence mechanism. It introduces no repository-owned policy choice, benchmark execution, significance threshold, provider/model invocation, network access, new dependency, persistence, telemetry, training, strategy promotion, product integration, or public quality claim.
-
-Criterion matching is not a release or quality decision:
+Composition remains non-decisional:
 
 ```text
-caller-declared match != repository winner
-caller-declared match != repository default
-caller-declared match != promotion
+caller-declared policy != repository policy
+caller-declared criterion match != repository winner/default/promotion
 later-in-time != sufficient holdout
 none-known != proven uncontaminated
-holdout != unbiased
+holdout role != unbiased
 comparable != statistically significant
-favored relation != global superiority
+favored metric relation != global superiority
 ```
 
 ## Repository visibility versus release authority
@@ -99,6 +122,25 @@ KODAC NAME / TRADEMARK CLEARANCE = NOT_ESTABLISHED
 
 Version numbering, release channels, package publication, installation/upgrade promises, compatibility guarantees, support expectations, benchmark claims, security claims, quality claims, and brand decisions require separate evidence and explicit authority.
 
+## Current closeout candidate
+
+Exact authorized path set:
+
+```text
+docs/planning/KODAC_P3_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-31.md
+docs/product/STATUS.md
+docs/roadmap/MILESTONES.md
+docs/roadmap/ROADMAP.md
+docs/roadmap/VERSION_PLAN.md
+docs/roadmap/NEXT.md
+```
+
+No seventh path is authorized. No source/test/workflow/dependency/lockfile/benchmark-corpus/provider/model/persistence/telemetry/package/release/ruleset or historical R1-R5 authorization/evidence path may change.
+
+The closeout evidence record preserves exact canonical R1-R5 ancestry, qualified heads/trees/blobs/checks, bounded meanings, and material repair/failure/service history rather than rewriting the program as clean first-attempt execution.
+
+Before merge, one frozen exact closeout head must prove exact six-path containment, `behind_by=0`, exact head/tree/six blobs, Governance, docs-only K2 classifier/stable gate, two distinct independent substantive exact-head semantic reviewer channels, zero actionable findings/threads, active no-bypass ruleset, and guarded exact-head merge. Post-merge main/parents/tree/six-blobs/signature/check/ruleset proof is mandatory before the bounded closeout becomes canonical.
+
 ## Current implementation boundaries relevant to versioning
 
 ```text
@@ -117,6 +159,7 @@ CONCRETE EXTERNAL REVIEWER / MODEL / PROVIDER ADAPTER = NOT_AUTHORIZED BY THIS F
 PROVIDER NETWORK / SECRET HANDLING = NOT_AUTHORIZED BY THIS FILE
 PROVIDER / MODEL / REVIEWER / EVALUATOR INVOCATION = NOT_AUTHORIZED BY THIS FILE
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED BY THIS FILE
+BENCHMARK CORPUS / MANIFEST MUTATION = NOT_AUTHORIZED BY THIS FILE
 ROUTE / FALLBACK / RETRY / STRATEGY EXECUTION = NOT_AUTHORIZED BY THIS FILE
 PERSISTENT REVIEW / PROOF / ROUTE / BENCHMARK / OUTCOME STORAGE = NOT_AUTHORIZED BY THIS FILE
 TELEMETRY / UPLOAD = NOT_AUTHORIZED BY THIS FILE
@@ -129,29 +172,17 @@ K2 EXECUTION-AUTHORITY EXPANSION = NOT_AUTHORIZED BY THIS FILE
 DONE GATE / PROVEN_READY MODIFICATION = NOT_AUTHORIZED BY THIS FILE
 ```
 
-## Current reconciliation and next engineering action
+## Next engineering action after successful bounded closeout
 
-The current docs-only candidate reconciles current status/navigation/version views with the already-proven P3-R5 closure. It creates no implementation or release authority.
+No P3-R6 requirement is inferred solely from completion of R1-R5.
 
-Exact path set:
-
-```text
-docs/roadmap/NEXT.md
-docs/roadmap/ROADMAP.md
-docs/roadmap/MILESTONES.md
-docs/roadmap/VERSION_PLAN.md
-docs/product/STATUS.md
-```
-
-After and only after this reconciliation becomes canonical and post-merge proven, later P3 work is limited to bounded definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
+After and only after this closeout becomes canonical and post-merge proven, later P3 work remains bounded definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
 
 ```text
-P3-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
-REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
+MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 ```
 
-Any future slice involving holdout-sufficiency decisions, statistical acceptance, promotion, embeddings, learned reranking, provider/model execution, persistence, product integration, or release/public claims must define its exact evidence, trust, authority, and non-grant boundary before implementation.
+Any future slice involving measured-context execution, benchmark execution/corpus mutation, holdout-sufficiency decisions, statistical acceptance, repository-owned promotion, embeddings, learned reranking, provider/model execution, persistence, product integration, or release/public claims must define its exact evidence, trust, authority, allowlist, and non-grant boundary before implementation.
 
 ## Future release-gate direction
 
@@ -173,8 +204,8 @@ This is planning direction only, not an authorized release checklist or release 
 ## Navigation
 
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R5 authorization: `docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_AUTHORIZATION_2026-08-31.md`
-- P3-R5 evidence: `docs/planning/KODAC_P3_R5_DECLARED_CONTEXT_POLICY_QUALIFICATION_EVIDENCE_2026-08-31.md`
+- P3 bounded closeout authorization: `docs/planning/KODAC_P3_BOUNDED_R1_R5_CLOSEOUT_AUTHORIZATION_2026-08-31.md`
+- P3 bounded closeout evidence: `docs/planning/KODAC_P3_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-31.md`
 - Engineering roadmap: `docs/roadmap/ROADMAP.md`
 - Milestone ledger: `docs/roadmap/MILESTONES.md`
 - Product authority status: `docs/product/STATUS.md`
