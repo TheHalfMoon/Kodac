@@ -270,7 +270,7 @@ test("P3-R8 rejects subject mismatch and forged serialized intermediates", () =>
       strategy,
       bindingDeclaration(strategy.strategySubjectIdentity),
     ),
-    /contract violation/,
+    /contextSelectionRequest contains unknown field/,
   )
   assert.throws(
     () => bindContextStrategySubjectToDeclaredPolicy(
@@ -279,7 +279,7 @@ test("P3-R8 rejects subject mismatch and forged serialized intermediates", () =>
       strategy,
       bindingDeclaration(strategy.strategySubjectIdentity),
     ),
-    /contract violation/,
+    /declaredPolicy contains unknown field/,
   )
 })
 
