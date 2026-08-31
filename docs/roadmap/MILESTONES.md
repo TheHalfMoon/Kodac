@@ -22,79 +22,72 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P3-R1 | **CLOSED_CANONICAL** | Deterministic context-selection-plan foundation only |
 | P3-R2 | **CLOSED_CANONICAL** | Deterministic caller-declared policy-application mechanism only |
 | P3-R3 | **CLOSED_CANONICAL** | Pairwise seven-metric evidence binding and comparability state only |
-| P3 overall | **OPEN** | No repository-owned default/promotion or benchmark-backed quality improvement established |
-| P3-R4+ | **NOT_AUTHORIZED** | Separate exact canonical authorization required |
+| P3-R4 | **CLOSED_CANONICAL** | Deterministic literal benchmark-provenance evidence binding only |
+| P3 overall | **OPEN** | No repository-owned default/promotion, benchmark execution, or quality-improvement claim established |
+| P3-R5+ | **NOT_AUTHORIZED** | Separate exact canonical authorization required |
 | P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
 
-## P3-R3 canonical anchors
+## P3-R4 canonical anchors
 
 ```text
-P3_R3_AUTHORIZATION_PR = #258
-P3_R3_AUTHORIZATION_QUALIFIED_HEAD = 9afe9a879319e22f6db53585115c6d47883ff066
-P3_R3_AUTHORIZATION_QUALIFIED_TREE = 22c42cc939564a3569e7032a4fead57c60a7308f
-P3_R3_AUTHORIZATION_BLOB = 34b86510c5b37998fd3bb94fdb507cf599d34288
-P3_R3_AUTHORIZATION_MERGE = 70553fef18c992b1ec819720e051258372af75d8
-P3_R3_IMPLEMENTATION_PR = #260
-P3_R3_QUALIFIED_HEAD = 2071014a9e8761a84167e2fa7a44ba40b4df36da
-P3_R3_QUALIFIED_TREE = 46c2c5ff7af396ffa1377d0c597b398547c5087c
-P3_R3_MERGE = cd7c28b4f823e9570daf73448c5f3b9b9b540d2e
-P3_R3_POST_MERGE_GOVERNANCE = 33302704761 / SUCCESS
-P3_R3_POST_MERGE_K2_RUNTIME = 33302704758 / SUCCESS
+P3_R4_AUTHORIZATION_PR = #262
+P3_R4_AUTHORIZATION_QUALIFIED_HEAD = d68d7b0e13c7099db4a3c9bb8c6b4283a916550a
+P3_R4_AUTHORIZATION_QUALIFIED_TREE = fdfa7498641496ae82cf77d5ce3560b0327a129b
+P3_R4_AUTHORIZATION_BLOB = d7827c154182b037f91f1addb8ca44f1798e02aa
+P3_R4_AUTHORIZATION_MERGE = 954455a3dce6e1d0663501504265abd4194addce
+P3_R4_IMPLEMENTATION_PR = #264
+P3_R4_QUALIFIED_HEAD = 8faa95a3157ccfaf1cc8723e10f95b10880f35e5
+P3_R4_QUALIFIED_TREE = 6bf4dc29f6061713a35a03a2b8d7b11c30fa5072
+P3_R4_MERGE = ad63bab64512f8ac24c0f849b58b64ecf41a8709
+P3_R4_POST_MERGE_GOVERNANCE = 33355453287 / SUCCESS
+P3_R4_POST_MERGE_K2_RUNTIME = 33355453262 / SUCCESS
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical P3-R3 path blobs:
+Canonical P3-R4 path blobs:
 
 ```text
-contracts.ts = 7383bca3962b054f8b3798f0e8c1a26ccd675c6a
-context-policy-evidence.ts = 8c01bf5e4c41103ae491cea701f0b9b3fe9dffb1
-p3-r3-context-policy-evidence.test.ts = 03f05fb4d0f7e6ca9c5f012a5b9874ff08b39cb9
-P3-R3 evidence = accfab24f463a5559b43e0921a4ff70042e59d7d
+contracts.ts = 90965256d7f8aeeef5f88698c6fe2d2c53433b85
+context-policy-provenance.ts = 2ab4d6ac0c538da4678e1119f599b8dbfde07d8d
+p3-r4-context-policy-provenance.test.ts = 52621ace5e3c880d443ec9169035f70ac29c2ba1
+P3-R4 evidence = 3cea25de280aed867a65aafe7b72c6e619fba864
 ```
 
-The implementation merge is signed and valid, its ordered parents are the canonical P3-R3 authorization merge followed by the exact qualified P3-R3 implementation head, its merge tree equals the qualified tree, and all four P3-R3 blobs match the qualified candidate.
+The implementation merge is signed and valid, its ordered parents are the canonical P3-R4 authorization merge followed by the exact qualified P3-R4 implementation head, its merge tree equals the qualified tree, and all four P3-R4 blobs match the qualified candidate.
 
-Qualification history is part of the evidence, not hidden noise:
+Post-merge proof is complete on the exact merge SHA: Governance `provenance` + `legacy-tests` passed; K2 classifier, Ubuntu/macOS/Windows Typecheck + Test + Patch benchmark hook, and the stable `k2-runtime-gate` all passed; ruleset `20707483` remained active/no-bypass.
 
-- private-repository hosted-runner attempts failed before any repository step executed;
-- after repository visibility changed to public, required Governance and K2 execution became available and ruleset `20707483` became readable;
-- two pre-merge Ubuntu K2 attempts hit the unchanged pre-existing H4-R3G-B timing assertion; the identical P3-R3 head later passed Ubuntu and the stable gate without byte movement or waiver;
-- post-merge Governance and K2 passed on the exact merge SHA on their first post-merge runs.
+## P3-R4 exit meaning
 
-## P3-R3 exit meaning
-
-P3-R3 closes only the deterministic pairwise metric-evidence binding mechanism:
+P3-R4 closes only the deterministic benchmark-provenance evidence binding mechanism:
 
 ```text
-COMPLETE UNTRUSTED P3-R1 REQUEST
-+ EXPLICIT LEFT P3-R2 POLICY
-+ EXPLICIT RIGHT P3-R2 POLICY
-+ COMPLETE UNTRUSTED P2-R4 COMPARISON
-+ EXACT-KEY P3-R3 DECLARATION
--> TRUSTED P3-R2 APPLICATIONS
--> TRUSTED P2-R5 RELATIONS
--> EXACT SUBJECT / IDENTITY / SEVEN-METRIC CROSS-BINDING
--> COMPARABILITY-ONLY STATE
--> CLOSED IMMUTABLE EVIDENCE RECORD
+TRUSTED P3-R3 EVIDENCE RECONSTRUCTION
++ TRUSTED P2-R4 COMPARISON RECONSTRUCTION
++ VALIDATED P2-R1 MANIFEST / DEVELOPMENT / HOLDOUT PROVENANCE
++ EXACT P2-R2 MANIFEST DIGEST REPRODUCTION
++ EXACT REPORT / CASE / METRIC TOPOLOGY CROSS-BINDING
+-> LITERAL CHRONOLOGY / CONTAMINATION / CORPUS-ROLE EVIDENCE
+-> CLOSED IMMUTABLE PROVENANCE EVIDENCE RECORD
 ```
 
-It does not select or promote a repository-owned context strategy and it does not establish that any strategy is better.
+It does not execute a benchmark, establish holdout sufficiency, prove contamination freedom, select or promote a repository-owned context strategy, or establish that any strategy is better.
 
 ```text
-P3-R3 CLOSED != P3 OVERALL CLOSED
-P3-R3 CLOSED != REPOSITORY DEFAULT / WINNER
-P3-R3 CLOSED != BENCHMARK-BACKED IMPROVEMENT
-P3-R3 CLOSED != CHRONOLOGY / CONTAMINATION / SIGNIFICANCE PROOF
-P3-R3 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-P3-R3 CLOSED != PROVIDER / MODEL EXECUTION
-P3-R3 CLOSED != PRODUCT INTEGRATION
-P3-R3 CLOSED != P3-R4+ AUTHORITY
+P3-R4 CLOSED != P3 OVERALL CLOSED
+P3-R4 CLOSED != REPOSITORY DEFAULT / WINNER
+P3-R4 CLOSED != BENCHMARK EXECUTION
+P3-R4 CLOSED != HOLDOUT ACCEPTANCE / SIGNIFICANCE PROOF
+P3-R4 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
+P3-R4 CLOSED != PROVIDER / MODEL EXECUTION
+P3-R4 CLOSED != PRODUCT INTEGRATION
+P3-R4 CLOSED != P3-R5+ AUTHORITY
 ```
 
 ## Current reconciliation milestone
 
-The current docs-only candidate reconciles current roadmap/status/version views with the already-proven P3-R3 closure. It creates no runtime authority and must itself qualify, merge normally, and complete post-merge proof before these current-view bytes become canonical.
+The current docs-only candidate reconciles current roadmap/status/version views with the already-proven P3-R4 closure. It creates no runtime authority and must itself qualify, merge normally, and complete post-merge proof before these current-view bytes become canonical.
 
 Exact current-view path set:
 
@@ -111,12 +104,12 @@ docs/product/STATUS.md
 After and only after this reconciliation becomes canonical and post-merge proven, later P3 work is limited to definition/planning/authorization-candidate preparation until a separate exact canonical authorization becomes effective.
 
 ```text
-P3-R4+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / PROMOTION = NOT_AUTHORIZED
 ```
 
-Any future slice that binds chronology, contamination, holdout sufficiency, significance/acceptance, promotion, embeddings, learned reranking, provider/model execution, persistence, or product integration requires its own exact authority boundary.
+Any future slice that introduces holdout-sufficiency decisions, significance/acceptance semantics, promotion, embeddings, learned reranking, provider/model execution, persistence, product integration, public claims, or release/package publication requires its own exact authority boundary.
 
 ## Preserved non-grants
 
@@ -127,7 +120,7 @@ GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
 N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / STRATEGY PROMOTION = NOT_AUTHORIZED
 THRESHOLD / SIGNIFICANCE / UNIVERSAL QUALITY SCORE = NOT_AUTHORIZED
-CHRONOLOGY / CONTAMINATION / HOLDOUT CLAIM = NOT_AUTHORIZED BY R3 EVIDENCE
+HOLDOUT SUFFICIENCY / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED BY R4 EVIDENCE
 EMBEDDINGS / VECTOR DB / LEARNED RERANKER = NOT_AUTHORIZED
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -135,7 +128,7 @@ NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 CLI / API / PRODUCT / AGENT-LOOP INTEGRATION = NOT_AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R4+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R5+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
