@@ -190,6 +190,37 @@ function assertMemberContinuity(
   if (measurement.r1ResultIdentity !== member.r1ResultIdentity) {
     fail(`${label} reconstructed R6 r1ResultIdentity does not match R9 member`)
   }
+
+  const reportEvidence = member.reportEvidence
+  if (reportEvidence.reportEvidenceIdentity !== member.reportEvidenceIdentity) {
+    fail(`${label} reconstructed R7 reportEvidenceIdentity does not match R9 member`)
+  }
+  if (reportEvidence.measurementEvidenceIdentity !== measurement.measurementEvidenceIdentity) {
+    fail(`${label} reconstructed R7 measurementEvidenceIdentity does not match reconstructed R6`)
+  }
+  if (reportEvidence.policyIdentity !== measurement.policyIdentity) {
+    fail(`${label} reconstructed R7 policyIdentity does not match reconstructed R6`)
+  }
+  if (reportEvidence.applicationIdentity !== measurement.applicationIdentity) {
+    fail(`${label} reconstructed R7 applicationIdentity does not match reconstructed R6`)
+  }
+  if (reportEvidence.caseId !== measurement.caseId) {
+    fail(`${label} reconstructed R7 caseId does not match reconstructed R6`)
+  }
+  if (reportEvidence.r1ResultIdentity !== measurement.r1ResultIdentity) {
+    fail(`${label} reconstructed R7 r1ResultIdentity does not match reconstructed R6`)
+  }
+
+  const bindingEvidence = member.caseBindingEvidence
+  if (bindingEvidence.bindingEvidenceIdentity !== member.bindingEvidenceIdentity) {
+    fail(`${label} reconstructed R8 bindingEvidenceIdentity does not match R9 member`)
+  }
+  if (bindingEvidence.policyIdentity !== measurement.policyIdentity) {
+    fail(`${label} reconstructed R8 policyIdentity does not match reconstructed R6`)
+  }
+  if (bindingEvidence.applicationIdentity !== measurement.applicationIdentity) {
+    fail(`${label} reconstructed R8 applicationIdentity does not match reconstructed R6`)
+  }
   if (measurement.measurementDeclaration.taskFamily !== P3_R6_TASK_FAMILY) {
     fail(`${label} reconstructed R6 taskFamily is not context-selection`)
   }

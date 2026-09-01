@@ -13,6 +13,7 @@ import {
   type ContextPolicyMeasurementDeclaration,
   type P3R6Dimension,
 } from "../bench/p3-r6/contracts.ts"
+import { buildContextPolicyMeasurementObservations } from "../bench/p3-r6/context-measurement-observation.ts"
 import {
   P3_R7_REPORT_DECLARATION_KIND,
   P3_R7_REPORT_DECLARATION_VERSION,
@@ -590,6 +591,40 @@ test("P3-R10 rejects forged serialized predecessor evidence and unknown fields",
   )
 })
 
+test("P3-R10 fails closed on report and binding preimage drift after composition identity binding", () => {
+  const reportDrift = scenario()
+  const forgedReportDeclaration = reportDrift.caseA.reportDeclaration as unknown as {
+    reportBindingId: string
+  }
+  forgedReportDeclaration.reportBindingId = "report-binding:forged"
+  assert.throws(
+    () => buildSingleStrategyTwoCaseMetricAlignment(
+      reportDrift.strategy,
+      reportDrift.compositionDeclaration,
+      reportDrift.alignmentDeclaration,
+      reportDrift.caseA,
+      reportDrift.caseB,
+    ),
+    /compositionEvidenceIdentity does not match canonical R9 composition/,
+  )
+
+  const bindingDrift = scenario()
+  const forgedBindingDeclaration = bindingDrift.caseA.bindingDeclaration as unknown as {
+    bindingId: string
+  }
+  forgedBindingDeclaration.bindingId = "binding:forged"
+  assert.throws(
+    () => buildSingleStrategyTwoCaseMetricAlignment(
+      bindingDrift.strategy,
+      bindingDrift.compositionDeclaration,
+      bindingDrift.alignmentDeclaration,
+      bindingDrift.caseA,
+      bindingDrift.caseB,
+    ),
+    /compositionEvidenceIdentity does not match canonical R9 composition/,
+  )
+})
+
 test("P3-R10 is deterministic and canonical-key-order invariant", () => {
   const value = scenario()
   const first = buildSingleStrategyTwoCaseMetricAlignment(
@@ -763,6 +798,17 @@ test("P3-R10 rejects symbol-bearing, malformed, missing, and unsupported declara
 
 test("P3-R10 returns detached deeply frozen evidence and isolates caller mutation", () => {
   const value = scenario()
+  const reconstructedMeasurement = buildContextPolicyMeasurementObservations(
+    value.caseA.planRequest,
+    value.caseA.policy,
+    value.caseA.manifest,
+    value.caseA.development,
+    value.caseA.holdout,
+    value.caseA.measurementDeclaration,
+  )
+  const reconstructedRecall = reconstructedMeasurement.observations.find(
+    (entry) => entry.metric_id === "metric:recall-at-k",
+  )!
   const result = buildSingleStrategyTwoCaseMetricAlignment(
     value.strategy,
     value.compositionDeclaration,
@@ -772,7 +818,8 @@ test("P3-R10 returns detached deeply frozen evidence and isolates caller mutatio
   )
   assertDeepFrozen(result)
   assert.notEqual(result.alignmentDeclaration, value.alignmentDeclaration)
-  assert.notEqual(result.dimensionAlignments[0]?.memberAObservation, value.caseA.measurementDeclaration)
+  assert.deepEqual(result.dimensionAlignments[0]?.memberAObservation, reconstructedRecall)
+  assert.notEqual(result.dimensionAlignments[0]?.memberAObservation, reconstructedRecall)
 
   const mutableAlignment = value.alignmentDeclaration as unknown as { alignmentId: string }
   mutableAlignment.alignmentId = "alignment:mutated"
@@ -782,9 +829,14 @@ test("P3-R10 returns detached deeply frozen evidence and isolates caller mutatio
   }
   mutableMeasurement.measurementId = "measurement:mutated"
   mutableMeasurement.dimensionMetricBindings[0]!.metricId = "metric:mutated"
+  const mutableManifest = value.caseA.manifest[0] as unknown as {
+    metric_definitions: Array<{ metric_id: string }>
+  }
+  mutableManifest.metric_definitions[0]!.metric_id = "metric:mutated-manifest"
 
   assert.equal(result.alignmentId, "alignment:p3-r10-fixture")
   assert.equal(result.dimensionAlignments[0]?.metricId, "metric:recall-at-k")
+  assert.equal(result.dimensionAlignments[0]?.memberAObservation.metric_id, "metric:recall-at-k")
 })
 
 test("P3-R10 does not require ambient network, clock, randomness, or environment state", () => {
