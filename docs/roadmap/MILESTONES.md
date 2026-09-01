@@ -19,58 +19,63 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P2 bounded R1-R5 engineering closeout | **CLOSED_CANONICAL** | PR #250 / `0e48553f00618706955b11db795643ee710fe04a` |
 | P2 overall | **OPEN** | General/public KodacBench is not closed |
 | P2-R6+ | **NOT_AUTHORIZED** | Separate authority required if broader semantics are justified |
-| P3-R1 through P3-R10 | **CLOSED_CANONICAL** | Bounded deterministic context/evidence mechanisms only |
-| P3-R10 | **CLOSED_CANONICAL** | Two-case seven-dimension metric/unit alignment evidence without reduction |
-| P3-R10 current-view reconciliation | **CURRENT DOCS-ONLY UNIT / CANDIDATE** | Five current roadmap/status/version views only |
-| P3 overall | **OPEN** | No repository policy/default/promotion, real benchmark execution, aggregate scoring, or public quality claim established |
-| P3-R11+ | **NOT_AUTHORIZED** | No later implementation authority is inferred from R10 closure |
+| P3-R1 through P3-R11 | **CLOSED_CANONICAL** | Bounded deterministic context/evidence mechanisms only |
+| P3-R11 | **CLOSED_CANONICAL** | Exact two-case reduction-policy binding evidence without reducer execution |
+| P3-R11 current-view reconciliation | **CURRENT DOCS-ONLY UNIT / CANDIDATE** | Five current roadmap/status/version views only |
+| P3 overall | **OPEN** | No repository policy/default/promotion, real benchmark execution, reduction result, aggregate scoring, or public quality claim established |
+| P3-R12+ | **NOT_AUTHORIZED** | No later implementation authority is inferred from R11 closure |
 | P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
 
 Engineering milestone state is separate from public release status.
 
-## Canonical P3-R10 proof
+## Canonical P3-R11 proof
 
 ```text
-P3_R9_CURRENT_VIEW_RECONCILIATION_PR = #284
-P3_R9_CURRENT_VIEW_RECONCILIATION_MERGE = 748d562d2bcf74b49fda17e3888b70d462e875e6
-P3_R9_CURRENT_VIEW_RECONCILIATION_POST_MERGE_PROOF = #284 / 5493067005
+P3_R10_CURRENT_VIEW_RECONCILIATION_PR = #287
+P3_R10_CURRENT_VIEW_RECONCILIATION_MERGE = f9636474877c142dc8849094c1856f5b1a92cf6f
+P3_R10_CURRENT_VIEW_RECONCILIATION_POST_MERGE_PROOF = #287 / 5494419703
 
-P3_R10_AUTHORIZATION_PR = #285
-P3_R10_AUTHORIZATION_QUALIFIED_HEAD = 1933f6f1b0e8eff674ad33505f7a7974f2e69c1f
-P3_R10_AUTHORIZATION_BLOB = 639fe0915dbbd3266702008e6b7c83752146de01
-P3_R10_AUTHORIZATION_MERGE = 3b4d75133ca350ca147802fb53cc4716ab6ee2e0
-P3_R10_AUTHORIZATION_POST_MERGE_PROOF = #285 / 5493260544
+P3_R11_AUTHORIZATION_PR = #288
+P3_R11_AUTHORIZATION_QUALIFIED_HEAD = 75780d9af8df236a319f4624f5dc74c8b5ea353c
+P3_R11_AUTHORIZATION_BLOB = 5bddd4deb1bcda9a5fe60a5b5df9c3ccbd4d019a
+P3_R11_AUTHORIZATION_MERGE = cb2362c4e0cdf651b949fe851575a123d77a9d32
+P3_R11_AUTHORIZATION_POST_MERGE_PROOF = #288 / 5494754462
 
-P3_R10_IMPLEMENTATION_PR = #286
-P3_R10_QUALIFIED_HEAD = 1cfc0bd74d40278ad26184ad5d48675a788d97fb
-P3_R10_MERGE = e22019883dca10ac1ed66edff2d56d0fc2570961
-P3_R10_MERGE_TREE = 2d300653b6afacf21e10c755aaeb0fe4070a8925
-P3_R10_MERGE_VERIFICATION = verified / valid
-P3_R10_SEMANTIC_REVIEW = CodeRabbit 5493664866 + Cubic 5493888569
-P3_R10_POST_MERGE_GOVERNANCE = 33507788965 / SUCCESS
-P3_R10_POST_MERGE_K2 = 33507788845 / SUCCESS
-P3_R10_POST_MERGE_UBUNTU = 99855928420 / SUCCESS
-P3_R10_POST_MERGE_WINDOWS = 99855928443 / SUCCESS
-P3_R10_POST_MERGE_MACOS = 99855928534 / SUCCESS
-P3_R10_POST_MERGE_K2_GATE = 99856236455 / SUCCESS
-P3_R10_UNRESOLVED_REVIEW_THREADS = 0
-P3_R10_POST_MERGE_PROOF_COMMENT = #286 / 5494012666
-P3_R10_RECONCILIATION_BOUNDARY_COMMENT = #286 / 5494032631
+P3_R11_IMPLEMENTATION_PR = #289
+P3_R11_QUALIFIED_HEAD = c9db09e80c27610b5f34afbcaee462bd2d9fb613
+P3_R11_QUALIFIED_TREE = 57725483a8517fc61710016849a524c0ac79fdba
+P3_R11_QUALIFICATION_PROOF = #289 / 5495132359
+P3_R11_SEMANTIC_REVIEW = Cubic 5495078519 + CodeRabbit 5495098393
+P3_R11_MERGE = 0842ed7dac95bad879cc55d720ba5646ae021f24
+P3_R11_MERGE_TREE = 57725483a8517fc61710016849a524c0ac79fdba
+P3_R11_MERGE_VERIFICATION = verified / valid
+P3_R11_POST_MERGE_GOVERNANCE = 33516950190 / SUCCESS
+P3_R11_POST_MERGE_PROVENANCE = 99886253718 / SUCCESS
+P3_R11_POST_MERGE_LEGACY_TESTS = 99886254131 / SUCCESS
+P3_R11_POST_MERGE_K2 = 33516950175 / SUCCESS
+P3_R11_POST_MERGE_CLASSIFIER = 99886253163 / SUCCESS
+P3_R11_POST_MERGE_UBUNTU = 99886306919 / SUCCESS
+P3_R11_POST_MERGE_WINDOWS = 99886306894 / SUCCESS
+P3_R11_POST_MERGE_MACOS = 99886306868 / SUCCESS
+P3_R11_POST_MERGE_K2_GATE = 99890072448 / SUCCESS
+P3_R11_UNRESOLVED_REVIEW_THREADS = 0
+P3_R11_POST_MERGE_PROOF_COMMENT = #289 / 5495387091
+P3_R11_RECONCILIATION_BOUNDARY_COMMENT = #289 / 5495390306
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical P3-R10 implementation/evidence blobs:
+Canonical P3-R11 implementation/evidence blobs:
 
 ```text
-packages/kodac-runtime/bench/p3-r10/contracts.ts
-  0ec5df5255604aea2b3f11a22ff4313b0b87d0ea
-packages/kodac-runtime/bench/p3-r10/single-strategy-two-case-metric-alignment.ts
-  74085c6094ef7de5b34f351ba79b92ae0a758756
-packages/kodac-runtime/test/p3-r10-single-strategy-two-case-metric-alignment.test.ts
-  e701e76a2c5f6594389fd438b1e7ab8040347cf2
-docs/planning/KODAC_P3_R10_SINGLE_STRATEGY_TWO_CASE_METRIC_ALIGNMENT_EVIDENCE_2026-09-01.md
-  e3d5a1e66593b1162c48dbae40ace7ccb2131fc3
+packages/kodac-runtime/bench/p3-r11/contracts.ts
+  7e12f871095eaec6855f606aa1e360adcc48f8c7
+packages/kodac-runtime/bench/p3-r11/single-strategy-two-case-reduction-policy-binding.ts
+  f2ecbefb9638aa6867a388b827d75dbdba6b1cc6
+packages/kodac-runtime/test/p3-r11-single-strategy-two-case-reduction-policy-binding.test.ts
+  91c0c459e8acab4a64f213e474394a27bdb0c676
+docs/planning/KODAC_P3_R11_TWO_CASE_REDUCTION_POLICY_BINDING_EVIDENCE_2026-09-01.md
+  a47b31c44a1504dba0cac42f73d6dab5136ddfcb
 ```
 
 Historical P3-R8 K2 run `33439529693` remains failed evidence and is not relabeled by later H4 recovery.
@@ -88,10 +93,11 @@ R6: #271 authorization -> #272 implementation -> #273 reconciliation
 R7: #274 authorization -> #275 implementation -> #276 reconciliation
 R8: #277 authorization -> #278 implementation -> #279/#280 H4 recovery -> #281 reconciliation
 R9: #282 authorization -> #283 implementation -> #284 reconciliation
-R10: #285 authorization -> #286 implementation -> current-view reconciliation pending
+R10: #285 authorization -> #286 implementation -> #287 reconciliation
+R11: #288 authorization -> #289 implementation -> current-view reconciliation pending
 ```
 
-## Bounded P3 R1-R10 meaning
+## Bounded P3 R1-R11 meaning
 
 ```text
 R1 = deterministic context-selection-plan foundation
@@ -104,29 +110,27 @@ R7 = deterministic single-case binding of reconstructed R6 measurement evidence 
 R8 = deterministic case-invariant strategy-subject identity plus exact single-case binding to canonical P3-R1/P3-R2 identities
 R9 = deterministic ordered composition of exactly two independently reconstructed R7 reports under one exact R8 strategy subject
 R10 = deterministic seven-dimension metric/unit alignment evidence for the two R9 members, preserving both observations without arithmetic or directional semantics
+R11 = deterministic binding of exactly seven explicit P2-R3-compatible reduction policies to the aligned pair, validating benchmark/protocol/value-kind continuity without executing reduction
 ```
 
 These remain evidence-only boundaries:
 
 ```text
-P3 R1-R10 CLOSED != P3 OVERALL CLOSED
-P3 R1-R10 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-P3 R1-R10 CLOSED != REAL BENCHMARK TASK / PARTICIPANT EXECUTION
-P3 R1-R10 CLOSED != THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION
-P3 R1-R10 CLOSED != MULTI-CASE OBSERVATION / METRIC / SCORE AGGREGATION
-P3 R1-R10 CLOSED != MULTI-STRATEGY COMPARISON / RANKING / PROMOTION
-P3 R1-R10 CLOSED != REPOSITORY DEFAULT / WINNER
-P3 R1-R10 CLOSED != HOLDOUT SUFFICIENCY / CONTAMINATION FREEDOM
-P3 R1-R10 CLOSED != STATISTICAL SIGNIFICANCE / ACCEPTANCE
-P3 R1-R10 CLOSED != PROVIDER / MODEL EXECUTION
-P3 R1-R10 CLOSED != PRODUCT / RELEASE / PACKAGE READY
-P3 R1-R10 CLOSED != P3-R11+ AUTHORITY
-P3 R1-R10 CLOSED != P4 AUTHORITY
+P3 R1-R11 CLOSED != P3 OVERALL CLOSED
+P3 R1-R11 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
+P3 R1-R11 CLOSED != REAL BENCHMARK TASK / PARTICIPANT EXECUTION
+P3 R1-R11 CLOSED != REDUCER EXECUTION
+P3 R1-R11 CLOSED != REDUCED / INSUFFICIENT_EVIDENCE SUMMARY RESULT
+P3 R1-R11 CLOSED != DIRECTION / DELTA / BETTER-WORSE SEMANTICS
+P3 R1-R11 CLOSED != MULTI-STRATEGY COMPARISON / RANKING / PROMOTION
+P3 R1-R11 CLOSED != REPOSITORY DEFAULT / WINNER
+P3 R1-R11 CLOSED != P3-R12+ AUTHORITY
+P3 R1-R11 CLOSED != P4 AUTHORITY
 ```
 
 ## Current reconciliation qualification
 
-Root `AGENTS.md` requires roadmap reconciliation after post-merge proof. Canonical P3-R10 post-merge proof `#286 / 5494012666` and continuation boundary `#286 / 5494032631` permit this docs-only current-view reconciliation to change exactly:
+Root `AGENTS.md` requires roadmap reconciliation after post-merge proof. Canonical P3-R11 post-merge proof `#289 / 5495387091` and continuation boundary `#289 / 5495390306` permit this docs-only current-view reconciliation to change exactly:
 
 ```text
 docs/roadmap/NEXT.md
@@ -140,7 +144,9 @@ No sixth path belongs to this unit. It becomes canonical only after one frozen e
 
 ## Next boundary after reconciliation
 
-Only after the R10 current-view reconciliation itself becomes canonical and post-merge proven may later P3 definition/planning/authorization-candidate work be considered, if justified by a concrete canonical gap. No `P3-R11` requirement is inferred by sequence alone.
+Only after the R11 current-view reconciliation becomes canonical and post-merge proven may later P3 definition/planning/authorization-candidate work be considered, if justified by a concrete canonical gap. No `P3-R12` requirement is inferred by sequence alone.
+
+Current internal evidence may justify investigating one bounded two-case reduction-evidence mechanism that reuses canonical P2-R3 semantics, but this is analysis only. Direction, delta, comparison, ranking, winner, default, and promotion remain separate later semantics requiring separate evidence and authority.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
@@ -154,12 +160,11 @@ REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 BENCHMARK CORPUS / MANIFEST / FIXTURE MUTATION = NOT_AUTHORIZED
 GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
 THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION = NOT_AUTHORIZED
-MULTI-CASE REPORT / OBSERVATION / METRIC / SCORE AGGREGATION = NOT_AUTHORIZED
+REDUCER EXECUTION / MEAN / TRUE-RATE = NOT_AUTHORIZED
+DIRECTION / DELTA / BETTER-WORSE = NOT_AUTHORIZED
 MULTI-STRATEGY COMPARISON / RANKING / LEADERBOARD / PROMOTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / STRATEGY PROMOTION = NOT_AUTHORIZED
-HIDDEN SCORE / WEIGHT / THRESHOLD / TOLERANCE = NOT_AUTHORIZED
 STATISTICS / SIGNIFICANCE / CONFIDENCE / P-VALUE / EFFECT-SIZE POLICY = NOT_AUTHORIZED
-HOLDOUT SUFFICIENCY / UNBIASEDNESS / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED
 EMBEDDINGS / VECTOR DB / LEARNED RERANKER = NOT_AUTHORIZED
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -167,7 +172,7 @@ NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 CLI / API / PRODUCT / AGENT-LOOP INTEGRATION = NOT_AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R11+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R12+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
