@@ -20,7 +20,7 @@ Live GitHub and exact canonical authorization/evidence records override this pag
 # Current canonical truth
 
 ```text
-CANONICAL_BASE_AT_THIS_RECONCILIATION = 89d294035923c3c8682e5a94360cb4e01d271a9c
+CANONICAL_BASE_AT_THIS_RECONCILIATION = 8d89875cf71715945f81b05853adeddebcb60284
 K6 BOUNDED R1-R5 = CLOSED_CANONICAL
 P2-R1 THROUGH P2-R5 = CLOSED_CANONICAL
 P2 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
@@ -28,72 +28,70 @@ P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
 
-P3-R1 THROUGH P3-R8 = CLOSED_CANONICAL
+P3-R1 THROUGH P3-R9 = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R9+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R10+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R8 is one pure deterministic case-invariant context-strategy subject plus one single-case binding boundary. It proves that identical normalized strategy semantics can retain one stable strategy-subject identity across distinct cases while each case keeps its own canonical P3-R1/P3-R2 identities and binding-evidence identity.
+P3-R9 is one pure deterministic identity-preserving composition boundary for **exactly two** independently reconstructed P3-R7 single-case report records under one exact P3-R8 case-invariant strategy subject. It preserves member order and predecessor identities while producing one deterministic composition-evidence identity.
 
-It does **not** execute a benchmark participant, aggregate cases, rank strategies, select a repository winner/default, authorize promotion, establish statistical/holdout/contamination claims, invoke a provider/model/evaluator, persist results, integrate product surfaces, publish a package/release, or close P3 overall.
+It does **not** execute a benchmark participant, combine or reduce observations/metrics/scores, compare or rank cases/strategies, promote a strategy, select a repository default/winner, authorize three-or-more-case or unbounded composition, establish statistical/holdout/contamination claims, invoke a provider/model/reviewer/evaluator, persist state, integrate product surfaces, publish a package/release, or close P3 overall.
 
 ---
 
-# Canonical P3-R8 and H4 recovery proof
+# Canonical P3-R9 proof chain
 
 ```text
-P3_R8_AUTHORIZATION_PR = #277
-P3_R8_AUTHORIZATION_MERGE = e6890265c11fa3adbd14671d09b2c04b76f78954
-P3_R8_IMPLEMENTATION_PR = #278
-P3_R8_QUALIFIED_HEAD = 55bee850de7e38cba2c54c13000dd6f8447f7f4c
-P3_R8_MERGE = 576ac5d2b317fb90d1f0c6079d78cd3d899ca62d
-P3_R8_MERGE_VERIFICATION = verified / valid
-P3_R8_POST_MERGE_GOVERNANCE = 33439529685 / SUCCESS
-P3_R8_POST_MERGE_K2_ORIGINAL = 33439529693 / FAILURE / PERMANENTLY PRESERVED
+P3_R8_CURRENT_VIEW_RECONCILIATION_PR = #281
+P3_R8_CURRENT_VIEW_RECONCILIATION_MERGE = ff7a474f73b9efacab4eceafd210c67488987b64
 
-H4_R3G_B_REPAIR_AUTHORIZATION_PR = #279
-H4_R3G_B_REPAIR_AUTHORIZATION_MERGE = eabdef572a2c4823f4f7cd0fc4442d1c818fbff1
-H4_R3G_B_REPAIR_PR = #280
-H4_R3G_B_REPAIR_QUALIFIED_HEAD = e1c83b420700f4cbd5661886f900ad7ce16d3538
-H4_R3G_B_REPAIR_QUALIFIED_TREE = 431f2dbb8d19c66bf6c0fafec6c18f31dde0e5bc
-H4_R3G_B_REPAIR_MERGE = 89d294035923c3c8682e5a94360cb4e01d271a9c
-H4_R3G_B_REPAIR_MERGE_VERIFICATION = verified / valid
-H4_R3G_B_REPAIR_POST_MERGE_GOVERNANCE = 33484688495 / SUCCESS
-H4_R3G_B_REPAIR_POST_MERGE_K2 = 33484688399 / SUCCESS
-H4_R3G_B_REPAIR_POST_MERGE_UBUNTU = 99781946176 / SUCCESS
-H4_R3G_B_REPAIR_POST_MERGE_MACOS = 99781946109 / SUCCESS
-H4_R3G_B_REPAIR_POST_MERGE_WINDOWS = 99781946132 / SUCCESS
-H4_R3G_B_REPAIR_POST_MERGE_K2_GATE = 99782185211 / SUCCESS
-P3_R8_POST_MERGE_K2_RECOVERY_PROOF = SUCCESS_ON_CANONICAL_REPAIR_MERGE
-POST_MERGE_RECOVERY_PROOF_COMMENT = #280 / 5490844809
+P3_R9_AUTHORIZATION_PR = #282
+P3_R9_AUTHORIZATION_QUALIFIED_HEAD = 9013fcf596453bb49afb7727af138de4fd70381d
+P3_R9_AUTHORIZATION_BLOB = e3b3912b17fb9585b7fc075f11afd6055c4b7224
+P3_R9_AUTHORIZATION_MERGE = ba9553de3384e683a54469ac7aa05545d20c0c1b
+P3_R9_AUTHORIZATION_POST_MERGE_PROOF = #282 / 5491794590
+
+P3_R9_IMPLEMENTATION_PR = #283
+P3_R9_QUALIFIED_HEAD = 457d12f27ededa4b60cd39b2aa946e2692b3d2f7
+P3_R9_MERGE = 8d89875cf71715945f81b05853adeddebcb60284
+P3_R9_MERGE_TREE = adb808338c6ea1e802811728fdf2c6d3c6de373a
+P3_R9_MERGE_VERIFICATION = verified / valid
+P3_R9_SEMANTIC_REVIEW = Cubic 5492179655 + CodeRabbit 5492246477
+P3_R9_POST_MERGE_GOVERNANCE = 33495225110 / SUCCESS
+P3_R9_POST_MERGE_K2 = 33495225098 / SUCCESS
+P3_R9_POST_MERGE_UBUNTU = 99815772777 / SUCCESS
+P3_R9_POST_MERGE_MACOS = 99815772815 / SUCCESS
+P3_R9_POST_MERGE_WINDOWS = 99815772844 / SUCCESS
+P3_R9_POST_MERGE_K2_GATE = 99816093316 / SUCCESS
+P3_R9_POST_MERGE_PROOF_COMMENT = #283 / 5492583969
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-The two failed Ubuntu attempts in run `33439529693` remain historical failed evidence. They are not erased, relabeled, or called harmless flakes. Canonical PR #279 proved two test-fixture races and authorized only the bounded H4-R3G-B test-harness repair; PR #280 repaired those fixture observations without changing production gateway/source-lineage semantics, timeout/deadline values, workflow, dependencies, ruleset, or P3-R8 implementation bytes.
-
-Canonical P3-R8 implementation/evidence blobs preserved through the repair merge:
+Canonical P3-R9 implementation/evidence blobs:
 
 ```text
-docs/planning/KODAC_P3_R8_CASE_INVARIANT_CONTEXT_STRATEGY_SUBJECT_EVIDENCE_2026-08-31.md
-  65ea4dbeb8f976b6639e4cb61699741e226093b4
-packages/kodac-runtime/bench/p3-r8/context-strategy-subject.ts
-  f066b65fd44c7e6aac76b041a5336247c9f7dc2d
-packages/kodac-runtime/bench/p3-r8/contracts.ts
-  d5f8d18b9e1b61378283c489c355fdd293880349
-packages/kodac-runtime/test/p3-r8-context-strategy-subject.test.ts
-  35fd7e59f7916fa1ba4ca6dd3077489dfa95c2e4
+packages/kodac-runtime/bench/p3-r9/contracts.ts
+  b7064806e681983b386ed59123578da1bea384e3
+packages/kodac-runtime/bench/p3-r9/single-strategy-two-case-report-composition.ts
+  fa4fd9af2938221ab8b463efa7de0e81cd81054a
+packages/kodac-runtime/test/p3-r9-single-strategy-two-case-report-composition.test.ts
+  cab8c74c82bf09b6f5c911e05c4a53756529e2bb
+docs/planning/KODAC_P3_R9_SINGLE_STRATEGY_TWO_CASE_REPORT_COMPOSITION_EVIDENCE_2026-09-01.md
+  08b828fa11455929596cb0e5247f32e885e73168
 ```
+
+The historical P3-R8 post-merge K2 failure `33439529693` remains preserved as failed evidence. The later H4 repair/recovery did not erase or relabel it.
 
 ---
 
-# NOW — P3-R8 current-view reconciliation
+# NOW — P3-R9 current-view reconciliation
 
 Root `AGENTS.md` requires `POST-MERGE PROOF -> ROADMAP RECONCILIATION -> NEXT AUTHORIZED UNIT`.
 
-The canonical recovery proof explicitly permits the five-path current-view reconciliation to begin. This documentation/navigation unit is limited to exactly:
+Canonical P3-R9 post-merge proof comment `#283 / 5492583969` permits this five-path documentation/navigation reconciliation to begin. It is limited to exactly:
 
 ```text
 docs/roadmap/NEXT.md
@@ -105,15 +103,29 @@ docs/product/STATUS.md
 
 No sixth path belongs to this reconciliation. Historical authorization/evidence records, runtime source/tests, workflows, dependencies, benchmark corpora, donor code, provider/model configuration, persistence, release configuration, and rulesets remain unchanged.
 
-This reconciliation is a **candidate** until one frozen exact head proves `behind_by=0`, exact five-path containment, applicable Governance/K2 checks, at least two distinct independent substantive terminal-clean semantic review channels, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact expected head, and mandatory post-merge main/parents/tree/five-blobs/signature/check/ruleset proof.
+This reconciliation is a **candidate** until one frozen exact head proves:
+
+```text
+BEHIND_BY = 0
+CHANGED_PATHS = EXACTLY 5
+APPLICABLE GOVERNANCE / K2 CHECKS = TERMINAL SUCCESS
+INDEPENDENT SUBSTANTIVE SEMANTIC REVIEW CHANNELS = 2 / 2 TERMINAL CLEAN
+UNRESOLVED ACTIONABLE THREADS = 0
+RULESET 20707483 = active / no bypass
+MERGE = guarded normal merge / exact expected head
+POST_MERGE PROOF = main + ordered parents + tree + five blobs + signature + applicable checks + ruleset
+WAIVER = NO
+```
+
+Only after that proof may this reconciliation itself be called `CLOSED_CANONICAL`.
 
 ---
 
 # THEN — evidence-driven next bounded unit only
 
-Only after this P3-R8 current-view reconciliation itself becomes canonical and post-merge proven may the next bounded definition/planning/authorization candidate be considered.
+Only after this P3-R9 current-view reconciliation itself becomes canonical and post-merge proven may another bounded P3 definition/planning/authorization candidate be considered.
 
-Do **not** infer that the next unit is P3-R9 from numbering. Re-read live `main`, `AGENTS.md`, this file, the durable master plan, current P3 evidence, historical failures/reviews, and relevant donor research. Prove a concrete canonical gap first.
+Do **not** infer that the next unit is P3-R10 from numbering. Re-read live `main`, `AGENTS.md`, this file, the durable master plan, current P3 evidence, internal review/CI history, ADR-0010, and relevant external precedent. Prove a concrete canonical gap first.
 
 Use the decision discipline:
 
@@ -130,10 +142,11 @@ If no new evidence changes the next decision, do not invent a new specification.
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 P3 OVERALL = OPEN
-P3-R9+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R10+ IMPLEMENTATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
-MULTI-CASE REPORT / SCORE AGGREGATION = NOT_AUTHORIZED
-N-WAY STRATEGY COMPARISON / RANKING / PROMOTION = NOT_AUTHORIZED
+THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION = NOT_AUTHORIZED
+MULTI-CASE OBSERVATION / METRIC / SCORE AGGREGATION = NOT_AUTHORIZED
+MULTI-STRATEGY COMPARISON / RANKING / PROMOTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
@@ -145,10 +158,8 @@ WAIVER = NO
 
 - Working rules: `AGENTS.md`
 - Current action: `docs/roadmap/NEXT.md`
-- P3-R8 authorization: `docs/planning/KODAC_P3_R8_CASE_INVARIANT_CONTEXT_STRATEGY_SUBJECT_AUTHORIZATION_2026-08-31.md`
-- P3-R8 implementation evidence: `docs/planning/KODAC_P3_R8_CASE_INVARIANT_CONTEXT_STRATEGY_SUBJECT_EVIDENCE_2026-08-31.md`
-- H4-R3G-B repair authorization: `docs/planning/KODAC_KDO_H4_R3G_B_GLOBAL_DEADLINE_LIFECYCLE_TEST_HARNESS_REPAIR_AUTHORIZATION_2026-09-01.md`
-- H4-R3G-B repair evidence: `docs/planning/KODAC_KDO_H4_R3G_B_GLOBAL_DEADLINE_LIFECYCLE_TEST_HARNESS_REPAIR_EVIDENCE_2026-09-01.md`
-- Canonical P3-R8 recovery proof: PR #280 / comment `5490844809`
+- P3-R9 authorization: `docs/planning/KODAC_P3_R9_SINGLE_STRATEGY_TWO_CASE_REPORT_COMPOSITION_AUTHORIZATION_2026-09-01.md`
+- P3-R9 implementation evidence: `docs/planning/KODAC_P3_R9_SINGLE_STRATEGY_TWO_CASE_REPORT_COMPOSITION_EVIDENCE_2026-09-01.md`
+- Canonical P3-R9 post-merge proof: PR #283 / comment `5492583969`
 - Durable plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Benchmark governance: `docs/adr/ADR-0010-benchmark-first-donor-selection.md`
