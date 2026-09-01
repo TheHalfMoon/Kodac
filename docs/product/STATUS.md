@@ -16,61 +16,59 @@ P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
 
-P3-R1 THROUGH P3-R7 = CLOSED_CANONICAL
+P3-R1 THROUGH P3-R8 = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-P3-R8+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R9+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R7 closure is limited to its exact pure deterministic single-case report-binding boundary. It does not establish a repository default/winner/promotion, multi-case strategy identity, real benchmark task execution, public benchmark completion, statistical acceptance, provider/model execution, persistence, product integration, or release authority.
+P3-R8 closure is limited to its exact pure deterministic case-invariant strategy-subject identity and single-case binding boundary. It does not establish a repository default/winner/promotion, multi-case report/score aggregation, real benchmark task execution, public benchmark completion, statistical acceptance, provider/model execution, persistence, product integration, or release authority.
 
-## Canonical P3-R7 authority and implementation
+## Canonical P3-R8 authority, implementation, and recovery
 
 ```text
-P3_R6_RECONCILIATION_PR = #273
-P3_R6_RECONCILIATION_MERGE = ac002f5ef6bf9f338e1106b7b200dd5eb062e776
+P3_R7_RECONCILIATION_PR = #276
+P3_R7_RECONCILIATION_MERGE = e1bbbf31cac4bdbb8c31dc7c3c3ff1fff3b760cb
 
-P3_R7_AUTHORIZATION_PR = #274
-P3_R7_AUTHORIZATION_QUALIFIED_HEAD = ac8c6e7d76299faf04467b708dd9d4660723b194
-P3_R7_AUTHORIZATION_QUALIFIED_TREE = 88f196c3721df32f184639adf785d82809c220c0
-P3_R7_AUTHORIZATION_BLOB = d9ee5d793cca3465b03f909133eeebaf0b0fe197
-P3_R7_AUTHORIZATION_MERGE = bbe7825579e388a3a9be7dd64b56f2406425d930
-P3_R7_AUTHORIZATION_POST_MERGE_GOVERNANCE = 33427579642 / SUCCESS
+P3_R8_AUTHORIZATION_PR = #277
+P3_R8_AUTHORIZATION_MERGE = e6890265c11fa3adbd14671d09b2c04b76f78954
+P3_R8_IMPLEMENTATION_PR = #278
+P3_R8_QUALIFIED_HEAD = 55bee850de7e38cba2c54c13000dd6f8447f7f4c
+P3_R8_IMPLEMENTATION_MERGE = 576ac5d2b317fb90d1f0c6079d78cd3d899ca62d
+P3_R8_MERGE_VERIFICATION = verified / valid
+P3_R8_POST_MERGE_GOVERNANCE = 33439529685 / SUCCESS
+P3_R8_POST_MERGE_K2_ORIGINAL = 33439529693 / FAILURE / PERMANENTLY PRESERVED
 
-P3_R7_IMPLEMENTATION_PR = #275
-P3_R7_QUALIFIED_HEAD = 6d5ddae20f71767523c52378c468757749aa1520
-P3_R7_QUALIFIED_TREE = 9481bab0ece031fa8fe7f77a2395247a10e5a463
-P3_R7_IMPLEMENTATION_MERGE = e3933fdc9932b43b4864a0d608845acbc4ad7f08
-MERGE_PARENT_1 = bbe7825579e388a3a9be7dd64b56f2406425d930
-MERGE_PARENT_2 = 6d5ddae20f71767523c52378c468757749aa1520
-MERGE_TREE = 9481bab0ece031fa8fe7f77a2395247a10e5a463
-MERGE_VERIFICATION = verified / valid
-PRE_MERGE_GOVERNANCE = 33428839717 / SUCCESS
-PRE_MERGE_K2 = 33428839711 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
-POST_MERGE_GOVERNANCE = 33430224046 / SUCCESS
-POST_MERGE_K2 = 33430224234 / classifier + Ubuntu/macOS/Windows + stable gate SUCCESS
-SEMANTIC_REVIEW_QUORUM = CodeRabbit + Cubic / exact-head and current-metadata terminal clean
-UNRESOLVED_ACTIONABLE_THREADS = 0
-POST_MERGE_PROOF_COMMENT = #275 / 5483365785
+H4_R3G_B_REPAIR_AUTHORIZATION_PR = #279
+H4_R3G_B_REPAIR_AUTHORIZATION_MERGE = eabdef572a2c4823f4f7cd0fc4442d1c818fbff1
+H4_R3G_B_REPAIR_PR = #280
+H4_R3G_B_REPAIR_QUALIFIED_HEAD = e1c83b420700f4cbd5661886f900ad7ce16d3538
+H4_R3G_B_REPAIR_QUALIFIED_TREE = 431f2dbb8d19c66bf6c0fafec6c18f31dde0e5bc
+H4_R3G_B_REPAIR_MERGE = 89d294035923c3c8682e5a94360cb4e01d271a9c
+H4_R3G_B_REPAIR_MERGE_VERIFICATION = verified / valid
+H4_R3G_B_REPAIR_POST_MERGE_GOVERNANCE = 33484688495 / SUCCESS
+H4_R3G_B_REPAIR_POST_MERGE_K2 = 33484688399 / SUCCESS
+P3_R8_POST_MERGE_K2_RECOVERY_PROOF = SUCCESS_ON_CANONICAL_REPAIR_MERGE
+POST_MERGE_RECOVERY_PROOF_COMMENT = #280 / 5490844809
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical implementation blobs:
+The immutable failed run `33439529693` remains part of the historical record. The canonical repair did not change P3-R8 implementation bytes or production gateway/source-lineage semantics.
+
+Canonical P3-R8 implementation/evidence blobs at canonical repair merge `89d294035923c3c8682e5a94360cb4e01d271a9c`:
 
 ```text
-packages/kodac-runtime/bench/p3-r7/contracts.ts
-  18357e81a3e135b7f407dd0dcc06646c4d079b19
-packages/kodac-runtime/bench/p3-r7/context-measurement-report-binding.ts
-  d4cc9ed3998a08315ed7adaa93f318a77d9076ec
-packages/kodac-runtime/test/p3-r7-context-measurement-report-binding.test.ts
-  3d156331133ba4bb67fd55b2ce28481b0cdff792
-docs/planning/KODAC_P3_R7_CONTEXT_MEASUREMENT_REPORT_BINDING_EVIDENCE_2026-08-31.md
-  ee6ce38b82a517de4b5d0c71ea46eeb8507736ea
+packages/kodac-runtime/bench/p3-r8/contracts.ts
+  d5f8d18b9e1b61378283c489c355fdd293880349
+packages/kodac-runtime/bench/p3-r8/context-strategy-subject.ts
+  f066b65fd44c7e6aac76b041a5336247c9f7dc2d
+packages/kodac-runtime/test/p3-r8-context-strategy-subject.test.ts
+  35fd7e59f7916fa1ba4ca6dd3077489dfa95c2e4
+docs/planning/KODAC_P3_R8_CASE_INVARIANT_CONTEXT_STRATEGY_SUBJECT_EVIDENCE_2026-08-31.md
+  65ea4dbeb8f976b6639e4cb61699741e226093b4
 ```
-
-The immutable historical authorization/evidence records remain the detailed source for exact contracts, repairs, qualification history, non-grants, and post-merge proof.
 
 ## Canonical P3 bounded meaning
 
@@ -82,6 +80,7 @@ R4 = literal benchmark-provenance evidence binding
 R5 = caller-declared criterion-match evidence
 R6 = deterministic seven-dimension measurement materialization from one reconstructed policy application plus explicit caller gold/utilization facts
 R7 = deterministic binding of one reconstructed R6 measurement to one fully covered single-case P2-R2 report
+R8 = deterministic case-invariant strategy-subject identity plus exact single-case binding to canonical P3-R1/P3-R2 identities
 ```
 
 These compose only as evidence mechanisms:
@@ -95,17 +94,18 @@ CALLER-DECLARED CRITERIA MATCH != REPOSITORY WINNER / DEFAULT / PROMOTION
 CALLER GOLD / UTILIZATION FACTS != REPOSITORY TRUTH
 MEASUREMENT MATERIALIZATION != BENCHMARK PARTICIPANT EXECUTION
 SINGLE-CASE REPORT BINDING != MULTI-CASE STRATEGY IDENTITY
-ONE FULLY COVERED P2-R2 REPORT != GENERAL / PUBLIC KODACBENCH COMPLETE
-P3 R1-R7 CLOSED != P3 OVERALL CLOSED
-P3 R1-R7 CLOSED != P3-R8+ AUTHORITY
-P3 R1-R7 CLOSED != P4 AUTHORITY
+CASE-INVARIANT STRATEGY SUBJECT != MULTI-CASE SCORE AGGREGATION
+CASE-INVARIANT STRATEGY SUBJECT != REPOSITORY WINNER / DEFAULT / PROMOTION
+P3 R1-R8 CLOSED != P3 OVERALL CLOSED
+P3 R1-R8 CLOSED != P3-R9+ AUTHORITY
+P3 R1-R8 CLOSED != P4 AUTHORITY
 ```
 
 ## Current roadmap/status reconciliation
 
 Root `AGENTS.md` requires a roadmap reconciliation after post-merge proof before the next authorized unit.
 
-This R7 docs-only unit is limited to exactly:
+This R8 docs-only unit is limited to exactly:
 
 ```text
 docs/roadmap/NEXT.md
@@ -115,21 +115,21 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No sixth path belongs to this unit. It does not modify runtime source/tests, historical authorization/evidence, workflows, dependencies, benchmark corpora, provider/model configuration, persistence, release configuration, or rulesets.
+No sixth path belongs to this unit. It does not modify runtime source/tests, historical authorization/evidence, workflows, dependencies, benchmark corpora, donor code, provider/model configuration, persistence, release configuration, or rulesets.
 
 The current-view reconciliation itself becomes canonical only after exact-head qualification, independent substantive semantic review quorum, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact expected head, and complete post-merge proof.
 
 ## Next engineering boundary after reconciliation
 
-Only after the R7 current-view reconciliation itself becomes canonical and post-merge proven may later bounded P3 definition/planning/authorization-candidate preparation be considered, if a concrete remaining gap is justified by canonical sequencing.
+Only after the R8 current-view reconciliation itself becomes canonical and post-merge proven may later bounded P3 definition/planning/authorization-candidate preparation be considered, if a concrete remaining gap is justified by canonical evidence.
 
-No `P3-R8` requirement is inferred merely because R7 is closed.
+No `P3-R9` requirement is inferred merely because R8 is closed. External systems, reviewer history, CI history, and donor mechanisms may support a hypothesis; they cannot create implementation authority.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 ```
 
-Any future real benchmark execution, corpus/manifest mutation, multi-case strategy identity, statistical/holdout acceptance, repository policy promotion, embeddings/learned reranking, provider/model execution, persistence, product integration, public claim, K2/K5/Done Gate expansion, or release requires its own exact canonical authority.
+Any future real benchmark execution, corpus/manifest mutation, multi-case score aggregation, strategy comparison/ranking/promotion, statistical/holdout acceptance, repository policy promotion, embeddings/learned reranking, provider/model execution, persistence, product integration, public claim, K2/K5/Done Gate expansion, or release requires its own exact canonical authority.
 
 ## Repository visibility and product authority
 
@@ -152,16 +152,16 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R8+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R9+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 BENCHMARK CORPUS / MANIFEST / FIXTURE MUTATION = NOT_AUTHORIZED
 GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
-MULTI-CASE / CASE-INVARIANT STRATEGY IDENTITY = NOT_AUTHORIZED
-N-WAY RANKING / LEADERBOARD / GLOBAL WINNER = NOT_AUTHORIZED
-REPOSITORY-OWNED DEFAULT / STRATEGY PROMOTION = NOT_AUTHORIZED
+MULTI-CASE REPORT / OBSERVATION / SCORE AGGREGATION = NOT_AUTHORIZED
+N-WAY STRATEGY COMPARISON / RANKING / LEADERBOARD = NOT_AUTHORIZED
+REPOSITORY-OWNED DEFAULT / WINNER / STRATEGY PROMOTION = NOT_AUTHORIZED
 HIDDEN SCORE / WEIGHT / THRESHOLD / TOLERANCE = NOT_AUTHORIZED
 STATISTICS / SIGNIFICANCE / CONFIDENCE / P-VALUE / EFFECT-SIZE POLICY = NOT_AUTHORIZED
 HOLDOUT SUFFICIENCY / UNBIASEDNESS / CONTAMINATION-FREE CLAIM = NOT_AUTHORIZED
