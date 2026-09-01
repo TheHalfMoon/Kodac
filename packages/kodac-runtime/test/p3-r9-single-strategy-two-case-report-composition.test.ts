@@ -611,3 +611,147 @@ test("P3-R9 does not require ambient fetch, clock, randomness, or environment st
     process.env = originalEnv
   }
 })
+
+test("P3-R9 rejects symbol-bearing, missing-field, invalid-id, and duplicate-member declarations", () => {
+  const value = scenario()
+
+  const symbolBearing = { ...value.compositionDeclaration } as Record<PropertyKey, unknown>
+  symbolBearing[Symbol("hidden")] = true
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(value.strategy, symbolBearing, value.caseA, value.caseB),
+    /not canonical JSON/,
+  )
+
+  const {
+    compositionId: _compositionId,
+    ...missingCompositionId
+  } = value.compositionDeclaration
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      missingCompositionId,
+      value.caseA,
+      value.caseB,
+    ),
+    /compositionDeclaration keys are not canonical/,
+  )
+
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      { ...value.compositionDeclaration, compositionId: "bad id" },
+      value.caseA,
+      value.caseB,
+    ),
+    /compositionDeclaration.compositionId must be a bounded canonical stable identifier/,
+  )
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      {
+        ...value.compositionDeclaration,
+        memberA: { ...value.compositionDeclaration.memberA, memberId: "bad id" },
+      },
+      value.caseA,
+      value.caseB,
+    ),
+    /compositionDeclaration.memberA.memberId must be a bounded canonical stable identifier/,
+  )
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      {
+        ...value.compositionDeclaration,
+        memberB: {
+          ...value.compositionDeclaration.memberB,
+          memberId: value.compositionDeclaration.memberA.memberId,
+        },
+      },
+      value.caseA,
+      value.caseB,
+    ),
+    /distinct memberId/,
+  )
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      {
+        ...value.compositionDeclaration,
+        memberA: { ...value.compositionDeclaration.memberA, r1ResultIdentity: "bad" },
+      },
+      value.caseA,
+      value.caseB,
+    ),
+    /must be a lowercase sha256 identity/,
+  )
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      { ...value.compositionDeclaration, strategySubjectIdentity: `sha256:${"0".repeat(64)}` },
+      value.caseA,
+      value.caseB,
+    ),
+    /must be a lowercase SHA-256 strategy-subject identity/,
+  )
+})
+
+test("P3-R9 fails closed when member policy/application semantics cannot bind to the R8 strategy", () => {
+  const value = scenario()
+
+  const policyIdentityDivergence = {
+    ...value.caseA,
+    policy: {
+      ...value.caseA.policy,
+      policyId: "strategy:p3-r9-other",
+    },
+  }
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      value.compositionDeclaration,
+      policyIdentityDivergence,
+      value.caseB,
+    ),
+    /policyId does not match strategy declaration.strategyId/,
+  )
+
+  const applicationIdentityDivergence = {
+    ...value.caseA,
+    policy: {
+      ...value.caseA.policy,
+      maxSelectedUtf8Bytes: 512,
+    },
+  }
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      value.compositionDeclaration,
+      applicationIdentityDivergence,
+      value.caseB,
+    ),
+    /policy caps do not match strategy declaration/,
+  )
+})
+
+test("P3-R9 does not require ambient filesystem or subprocess side effects", async () => {
+  const fs = (await import("node:fs")).default
+  const childProcess = (await import("node:child_process")).default
+  const originalReadFileSync = fs.readFileSync
+  const originalWriteFileSync = fs.writeFileSync
+  const originalExecSync = childProcess.execSync
+  const originalSpawnSync = childProcess.spawnSync
+  const deny = () => { throw new Error("ambient side effect forbidden") }
+
+  try {
+    fs.readFileSync = deny as typeof fs.readFileSync
+    fs.writeFileSync = deny as typeof fs.writeFileSync
+    childProcess.execSync = deny as typeof childProcess.execSync
+    childProcess.spawnSync = deny as typeof childProcess.spawnSync
+    assert.doesNotThrow(() => run())
+  } finally {
+    fs.readFileSync = originalReadFileSync
+    fs.writeFileSync = originalWriteFileSync
+    childProcess.execSync = originalExecSync
+    childProcess.spawnSync = originalSpawnSync
+  }
+})
