@@ -9,37 +9,27 @@ Waiver: NO
 
 ## 1. Purpose
 
-This record proposes one bounded documentation/governance authorization for a future pure deterministic **caller-declared per-dimension direction binding** over one canonical P3-R12 exactly-two-case reduction-evidence record.
+This record proposes one bounded documentation/governance authorization for a future pure deterministic **caller-declared per-dimension direction binding** over one reconstructed canonical P3-R12 exactly-two-case reduction-evidence record.
 
-This candidate exists because fresh canonical reread after P3-R12 current-view reconciliation identified one concrete gap:
-
-```text
-P3-R12 CANONICAL REDUCTION EVIDENCE
--> exactly seven independent REDUCED | INSUFFICIENT_EVIDENCE dimension results
--> explicit reducer / missingness / value-kind semantics
--> NO direction semantics
-```
-
-Canonical P2-R4 and current external evaluation practice both show that reduction/aggregation and direction are separable semantics. The minimum next P3 layer is therefore **not** pairwise strategy comparison, ranking, promotion, winner selection, or cross-dimension aggregation.
-
-It is narrower:
+This is the minimum post-R12 semantic layer supported by current canonical evidence:
 
 ```text
-ONE TRUSTED CANONICAL P3-R12 REDUCTION EVIDENCE
-+ ONE EXPLICIT EXACT-SEVEN-DIMENSION CALLER-DECLARED DIRECTION DOCUMENT
--> VALIDATE / CROSS-BIND EACH DIRECTION TO THE EXACT R12 DIMENSION SEMANTICS
+CANONICAL P3-R12 REDUCTION EVIDENCE
++ ONE EXPLICIT EXACT-SEVEN-DIMENSION DIRECTION DECLARATION
+-> RECONSTRUCT TRUSTED R12 FROM ORIGINAL PREIMAGES
+-> CROSS-BIND EACH DECLARED DIRECTION TO THE EXACT TRUSTED R12 DIMENSION SEMANTICS
 -> PRESERVE THE COMPLETE TRUSTED R12 EVIDENCE
--> EMIT ONE DETERMINISTIC DIRECTION-BINDING EVIDENCE IDENTITY
--> PERFORM NO DELTA / RELATION / COMPARISON / RANKING / PROMOTION
+-> EMIT ONE DETERMINISTIC IMMUTABLE DIRECTION-BINDING EVIDENCE IDENTITY
+-> NO DELTA / RELATION / PAIRWISE COMPARISON / RANKING / PROMOTION
 ```
 
-This PR does not implement that mechanism. Effective implementation authority remains `NONE` unless and until this exact authorization record qualifies, merges normally into protected `main`, and completes mandatory post-merge proof.
+This document does **not** implement P3-R13. Effective implementation authority remains `NONE` unless and until this exact authorization record qualifies, merges normally into protected `main`, and completes mandatory post-merge proof.
 
 ---
 
 ## 2. Canonical baseline
 
-This candidate is prepared only after P3-R12 implementation and its mandatory current-view reconciliation became canonically proven.
+Prepared only after canonical P3-R12 implementation and mandatory current-view reconciliation:
 
 ```text
 CANONICAL_MAIN_AT_PREPARATION = ad0c3e1236c546c005c7f688f991ecbc9ed64fa5
@@ -66,7 +56,7 @@ RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical state at this baseline remains:
+Canonical state remains:
 
 ```text
 P3-R1 THROUGH P3-R12 = CLOSED_CANONICAL
@@ -76,17 +66,13 @@ P3-R13+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 ```
 
-This authorization candidate may change only this document. It does not change any current-view page while non-canonical.
+This authorization candidate may change only this document. It does not change current-view pages while non-canonical.
 
 ---
 
 ## 3. Observed canonical gap
 
-### 3.1 What P3-R12 already proves
-
-Canonical P3-R12 reconstructs trusted P3-R11 evidence from original preimages, then materializes exactly seven independent two-slot reduction results under the already-bound P2-R3-compatible policy.
-
-Each `P3R12DimensionReduction` already preserves:
+Canonical `P3R12DimensionReduction` already preserves, for each of exactly seven dimensions:
 
 ```text
 dimension
@@ -108,11 +94,9 @@ memberAObservation
 memberBObservation
 ```
 
-The P3-R12 evidence also preserves exact strategy, benchmark, protocol, R11 policy-binding, member-reference, and deterministic reduction-evidence identities.
+Canonical P3-R12 also preserves exact strategy, benchmark, protocol, R11 policy-binding, member references, and deterministic reduction-evidence identity.
 
-### 3.2 What P3-R12 deliberately does not prove
-
-P3-R12 contains no field or contract for:
+P3-R12 deliberately contains no contract for:
 
 ```text
 HIGHER_IS_BETTER
@@ -127,18 +111,14 @@ promotion
 winner/default
 ```
 
-This absence is deliberate and canonical. P3-R12 authorization explicitly records that aggregation/reduction and direction are separate semantic layers.
+Canonical P3-R12 authorization explicitly records that reduction/aggregation and direction are separable semantic layers.
 
-### 3.3 Why a direction-binding layer is now the minimum missing semantic layer
+A later pairwise comparison would combine two independent steps:
 
-A later pairwise comparison cannot be interpreted correctly without an explicit direction policy for each reduced metric. However, adding pairwise comparison now would combine two semantic steps:
-
-1. bind direction meaning to each reduced dimension; and
+1. bind explicit direction semantics to each reduced dimension;
 2. compare two distinct strategy reduction records.
 
-Kodac's durable P3 goal is `MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME`. The smaller falsifiable next layer is step 1 only.
-
-Therefore this candidate does not authorize pairwise comparison.
+Kodac's durable P3 goal is `MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME`. Therefore this authorization covers step 1 only.
 
 ---
 
@@ -146,20 +126,20 @@ Therefore this candidate does not authorize pairwise comparison.
 
 ### 4.1 P2-R4 direction vocabulary
 
-Canonical `packages/kodac-runtime/bench/p2-r4/comparison.ts` defines the closed direction vocabulary:
+Canonical `packages/kodac-runtime/bench/p2-r4/comparison.ts` defines the closed vocabulary:
 
 ```text
 HIGHER_IS_BETTER
 LOWER_IS_BETTER
 ```
 
-P2-R4 also makes direction an explicit policy field rather than inferring it from metric names, values, units, or reducer choices.
+P2-R4 makes direction an explicit policy field rather than inferring it from metric names, units, values, reducers, or observed outcomes.
 
-P3-R13 may reuse this **direction vocabulary and explicit-policy precedent**. It may not reuse P2-R4 comparison identity or claim P2-R4 comparison semantics, because P2-R4 is bound to two P2-R3 summaries, two subjects, and one controlled shared evaluation context.
+P3-R13 may reuse this **vocabulary and explicit-policy precedent only**. It may not reuse or claim P2-R4 pairwise-comparison identity or semantics.
 
-### 4.2 P2-R5 is intentionally too far downstream
+### 4.2 P2-R5 is downstream and not imported
 
-Canonical P2-R5 derives only pairwise metric-local relations from a validated P2-R4 comparison:
+Canonical P2-R5 derives pairwise relations only after a validated P2-R4 comparison:
 
 ```text
 LEFT_FAVORED_BY_DIRECTION
@@ -168,104 +148,89 @@ EQUAL_RAW_VALUE
 INSUFFICIENT_EVIDENCE
 ```
 
-Those relations require two sides and a comparison. P3-R13 must not import or emit them.
+Those states require two sides. P3-R13 must not import or emit them.
 
-### 4.3 P3-R12 reconstruction boundary remains authoritative
+### 4.3 P3-R12 reconstruction remains authoritative
 
-P3-R13 must not trust a caller-claimed serialized `TwoCaseReductionEvidence` as derivation truth.
+A caller-claimed serialized `TwoCaseReductionEvidence` is untrusted and may not be accepted as derivation truth.
 
-The future implementation must cross the canonical JSON boundary for every public input and reconstruct canonical P3-R12 by calling the canonical public P3-R12 builder from the original predecessor preimages.
-
-P3-R12 source, tests, authorization, and evidence remain read-only.
+The future P3-R13 builder must reconstruct canonical P3-R12 from original predecessor preimages by calling the canonical public P3-R12 builder. P3-R12 source/tests/authorization/evidence remain read-only.
 
 ---
 
-## 5. Fresh external precedent rechecked on 2026-09-01
+## 5. Supporting external precedent rechecked on 2026-09-01
 
-External precedent is supporting evidence only. It does not create Kodac authority and cannot override canonical repository contracts.
+External precedent is supporting evidence only and creates no Kodac authority.
 
-### 5.1 EleutherAI lm-evaluation-harness
+### EleutherAI lm-evaluation-harness
 
-Current public documentation and source:
+Current public sources:
 
 - https://github.com/EleutherAI/lm-evaluation-harness/blob/main/docs/new_task_guide.md
 - https://github.com/EleutherAI/lm-evaluation-harness/blob/main/lm_eval/api/metrics.py
 
-Observed precedent:
+Observed precedent: metric configuration separates `aggregation` from `higher_is_better`; aggregation such as `mean` is independent from directional metadata.
 
-- metric configuration exposes `aggregation` and `higher_is_better` as separate fields;
-- supported metrics register aggregation such as `mean` independently from the directional `higher_is_better` value;
-- direction therefore does not need to be inferred from the reducer.
+### UK AISI Inspect
 
-This supports a dedicated explicit direction-binding boundary after reduction.
-
-### 5.2 UK AISI Inspect
-
-Current public documentation:
+Current public sources:
 
 - https://inspect.aisi.org.uk/scoring.html
 - https://inspect.aisi.org.uk/metrics.html
 - https://inspect.aisi.org.uk/reference/inspect_ai.scorer.html
 
-Observed precedent:
+Observed precedent: reduction is explicit and auditable; reducers such as `mean`, `median`, `mode`, and `collect` do not themselves create a later comparison verdict.
 
-- scoring/reduction is explicit;
-- reducers such as `mean`, `median`, `mode`, and `collect` are independent evaluation operations;
-- `collect` exists specifically to preserve individual score values rather than silently collapsing them.
+### Hugging Face Evaluate
 
-This continues to support auditable separation between reduction and later interpretation.
-
-### 5.3 Hugging Face Evaluate
-
-Current public documentation:
+Current public sources:
 
 - https://huggingface.co/docs/evaluate/a_quick_tour
 - https://huggingface.co/docs/evaluate/en/base_evaluator
 
-Observed precedent:
+Observed precedent: multiple metrics remain independently named outputs rather than requiring one global scalar.
 
-- multiple metrics can be computed together while remaining independently named results;
-- evaluating several metrics does not require collapsing them into one scalar quality score.
-
-This supports keeping all seven P3 dimensions independent and forbids inventing a cross-dimension aggregate in P3-R13.
+These sources support separating reduction, direction metadata, comparison, and global aggregation into distinct layers.
 
 ---
 
-## 6. Proposed future P3-R13 contract
+## 6. Proposed future public API
 
-Only after this exact authorization becomes canonical and post-merge proven may one future implementation candidate build one pure deterministic local direction-binding evidence record.
-
-### 6.1 Required future public inputs
-
-The future builder must accept only the original canonical predecessor preimages needed to reconstruct P3-R12 plus one P3-R13 direction declaration:
+Only after this exact authorization becomes canonical and post-merge proven may one later implementation expose exactly one public builder with this semantic argument order:
 
 ```text
-strategyDeclarationValue
-compositionDeclarationValue
-alignmentDeclarationValue
-policyDeclarationValue
-reductionDeclarationValue
-directionDeclarationValue
-caseAInputsValue
-caseBInputsValue
+buildReductionDirectionBindingEvidence(
+  strategyDeclarationValue,
+  compositionDeclarationValue,
+  alignmentDeclarationValue,
+  policyDeclarationValue,
+  reductionDeclarationValue,
+  directionDeclarationValue,
+  caseAInputsValue,
+  caseBInputsValue,
+)
 ```
 
-The exact argument order may be fixed by the implementation, but the semantic rule is mandatory:
+Every public input is `unknown` at the trust boundary.
+
+The exact flow is:
 
 ```text
-UNTRUSTED INPUTS
+UNTRUSTED PUBLIC INPUTS
 -> CANONICAL-JSON SNAPSHOT / HOSTILE-STRUCTURE REJECTION
--> CANONICAL P3-R12 RECONSTRUCTION FROM ORIGINAL PREIMAGES
--> P3-R13 DECLARATION VALIDATION
--> EXACT CROSS-BINDING
--> DETERMINISTIC IMMUTABLE DIRECTION-BINDING EVIDENCE
+-> NORMALIZE THE P3-R13 DIRECTION DECLARATION
+-> RECONSTRUCT CANONICAL P3-R12 FROM ORIGINAL PREIMAGES
+-> EXACT DECLARATION / R12 CROSS-BINDING
+-> DETERMINISTIC IMMUTABLE P3-R13 EVIDENCE
 ```
 
-No caller-claimed serialized P3-R12 evidence may substitute for reconstruction.
+No caller-claimed serialized P3-R12 result is an input to this builder.
 
-### 6.2 Closed direction declaration schema
+---
 
-The future declaration must be an exact-key document containing exactly:
+## 7. Exact direction declaration contract
+
+The future declaration is an exact-key object containing **only**:
 
 ```text
 version
@@ -278,29 +243,28 @@ benchmarkProtocolVersion
 dimensionDirections
 ```
 
-Required exact literals:
+Exact literals:
 
 ```text
 version = p3-r13-reduction-direction-binding-declaration-v1
 kind = bind_reduction_directions
 ```
 
-`directionBindingId` must be a bounded canonical stable identifier under the existing P3 stable-ID discipline.
+Validation rules:
 
-Identity fields must exactly match the reconstructed canonical P3-R12 evidence:
+- `directionBindingId` uses the existing bounded canonical P3 stable-ID discipline;
+- `reductionEvidenceIdentity` must be `sha256:<64 lowercase hex>` and exactly match reconstructed P3-R12;
+- `strategySubjectIdentity` must be bare `<64 lowercase hex>` and exactly match reconstructed P3-R12;
+- `benchmarkId` and `benchmarkProtocolVersion` must be non-empty canonical strings and exactly match reconstructed P3-R12;
+- unknown or missing top-level keys fail closed.
 
-```text
-reductionEvidenceIdentity
-strategySubjectIdentity
-benchmarkId
-benchmarkProtocolVersion
-```
+---
 
-### 6.3 Exact seven-dimension closure
+## 8. Exact seven-dimension direction entry contract
 
-`dimensionDirections` must contain exactly seven entries in canonical `P3_R6_DIMENSIONS` order.
+`dimensionDirections` contains exactly seven entries in canonical `P3_R6_DIMENSIONS` order.
 
-Each entry must contain exactly:
+Every entry is an exact-key object containing **only**:
 
 ```text
 dimension
@@ -314,24 +278,32 @@ minimumObservedCount
 direction
 ```
 
-For each index, every semantic field except `direction` must exactly equal the corresponding trusted P3-R12 `dimensionReductions[index]` field.
-
-No missing dimension, extra dimension, duplicate dimension, reordered dimension, metric substitution, unit drift, reducer drift, value-kind drift, missingness drift, or minimum-coverage drift is permitted.
-
-### 6.4 Closed direction vocabulary
-
-The only accepted values are:
+For entry index `i`, these fields must exactly equal trusted reconstructed P3-R12 `dimensionReductions[i]`:
 
 ```text
-HIGHER_IS_BETTER
-LOWER_IS_BETTER
+dimension
+metricId
+inputUnit
+outputUnit
+valueKind
+reducer
+missingnessPolicy
+minimumObservedCount
 ```
 
-Direction must be explicit caller-declared policy. It must never be inferred from:
+The only caller-selected field is:
+
+```text
+direction = HIGHER_IS_BETTER | LOWER_IS_BETTER
+```
+
+No missing dimension, extra dimension, duplicate dimension, reordered dimension, metric substitution, unit drift, value-kind drift, reducer drift, missingness drift, or minimum-coverage drift is permitted.
+
+Direction must never be inferred from:
 
 ```text
 metricId
-dimension name
+dimension
 inputUnit
 outputUnit
 valueKind
@@ -339,34 +311,33 @@ reducer
 observed values
 reduced value
 historical values
-external conventions
+external convention
 ```
 
-A declaration that chooses a direction is evidence of the declared policy binding only. P3-R13 does not establish that the direction is universally correct, repository-owned, benchmark-optimal, or suitable for public claims.
+A declared direction is evidence of the **declared policy binding only**. It does not prove universal correctness, repository-owned policy, benchmark optimality, or public-quality semantics.
 
-### 6.5 Insufficient-evidence behavior
+---
 
-A direction may be bound to a dimension whose canonical R12 status is `INSUFFICIENT_EVIDENCE`, because direction is policy metadata independent from whether this particular two-case record contains enough evidence to reduce.
+## 9. Insufficient-evidence behavior
 
-P3-R13 must preserve the R12 status and nullability exactly. It must not:
+Direction metadata is independent from whether this particular R12 two-case record has enough observed evidence to reduce.
 
-- convert insufficient evidence to `REDUCED`;
-- invent a value;
-- infer a side as favored;
-- assign pass/fail;
-- assign better/worse;
-- suppress the unavailable/coverage evidence.
+A direction may therefore be bound to a dimension whose trusted R12 status is `INSUFFICIENT_EVIDENCE`.
 
-### 6.6 Proposed output schema
+P3-R13 must preserve the complete trusted R12 status, value/nullability, observation, and coverage evidence exactly. It must not:
 
-The future evidence record must use exact literals:
+- convert `INSUFFICIENT_EVIDENCE` to `REDUCED`;
+- invent a numeric or boolean value;
+- infer a favored side;
+- emit pass/fail;
+- emit better/worse;
+- suppress unavailable or coverage evidence.
 
-```text
-version = p3-r13-reduction-direction-binding-evidence-v1
-kind = reduction_direction_binding_evidence
-```
+---
 
-The output must preserve at minimum:
+## 10. Exact output contract
+
+The future evidence record is an exact-key object containing **only**:
 
 ```text
 version
@@ -382,38 +353,79 @@ reductionEvidence
 dimensionDirectionBindings
 ```
 
-`reductionEvidence` must be the complete trusted reconstructed canonical P3-R12 result, not a caller-provided serialized claim.
+Exact literals:
 
-`dimensionDirectionBindings` must contain exactly seven canonical-order entries. Each entry must preserve the complete trusted corresponding P3-R12 dimension reduction plus the explicit bound direction. The implementation may represent this as a closed object containing the semantic fields and/or a nested immutable trusted reduction, but it may not omit evidence needed to prove the binding.
+```text
+version = p3-r13-reduction-direction-binding-evidence-v1
+kind = reduction_direction_binding_evidence
+```
 
-The exact representation must be frozen in implementation contracts and tests before merge.
+Exact field rules:
 
-### 6.7 Identity rule
+- `directionDeclaration` is the complete normalized exact-key declaration from Section 7;
+- `directionBindingId` exactly equals `directionDeclaration.directionBindingId`;
+- `reductionEvidenceIdentity` exactly equals trusted reconstructed P3-R12 `reductionEvidenceIdentity`;
+- `strategySubjectIdentity`, `benchmarkId`, and `benchmarkProtocolVersion` exactly equal trusted reconstructed P3-R12;
+- `reductionEvidence` is the complete trusted reconstructed canonical P3-R12 result, never a caller-provided serialized claim;
+- `dimensionDirectionBindings` contains exactly seven entries in canonical `P3_R6_DIMENSIONS` order;
+- unknown or missing output keys are forbidden by the implementation contract.
 
-`directionBindingEvidenceIdentity` must be derived by canonical SHA-256 over every normalized output field except the identity field itself.
+Every `dimensionDirectionBindings[i]` is an exact-key object containing **only**:
 
-The identity preimage must include the full normalized declaration, complete trusted R12 evidence identity/bindings, and all seven explicit directions.
+```text
+dimension
+metricId
+inputUnit
+outputUnit
+valueKind
+reducer
+missingnessPolicy
+minimumObservedCount
+direction
+```
 
-Consequences that must be tested:
+It is byte-for-field equivalent to normalized `directionDeclaration.dimensionDirections[i]` and is independently cross-checked against trusted `reductionEvidence.dimensionReductions[i]` for every non-direction field.
 
-- semantically identical canonical inputs produce identical bytes/identity;
-- changing any one direction changes the evidence identity;
-- changing any trusted R12 semantic binding changes/rejects the record;
-- object-property insertion order does not change identity;
-- array order remains semantic and canonical;
-- timestamps, host paths, process IDs, ambient environment, and other non-contract noise do not enter identity.
-
-### 6.8 Immutability and detachment
-
-The future output must be detached from caller mutation and deeply frozen.
-
-No mutable alias to caller input may survive in the returned record.
+The complete trusted P3-R12 reduction payload remains available only through the root `reductionEvidence` field; no second mutable or partially copied reduction representation is authorized.
 
 ---
 
-## 7. Explicit semantic non-grants
+## 11. Identity rule
 
-Even after this authorization becomes canonical, the future P3-R13 implementation remains forbidden from adding any of the following:
+`directionBindingEvidenceIdentity` is `sha256Canonical(...)` over the complete normalized output projection containing every Section 10 field **except** `directionBindingEvidenceIdentity` itself.
+
+Therefore the identity preimage includes:
+
+- the complete normalized direction declaration;
+- direction binding ID;
+- trusted R12 identity and complete trusted R12 evidence;
+- strategy/benchmark/protocol bindings;
+- all seven exact dimension direction bindings.
+
+Required consequences:
+
+- semantically identical canonical inputs produce identical bytes and identity;
+- changing any one direction changes the evidence identity;
+- changing any trusted R12 semantic binding changes or rejects the record;
+- object-property insertion order does not change identity;
+- array order remains semantic and canonical;
+- time, host paths, process IDs, environment variables, ambient state, and similar noise do not enter identity.
+
+The final identity is self-reference-free.
+
+---
+
+## 12. Immutability and detachment
+
+The output must be detached from caller mutation and deeply frozen.
+
+No mutable alias to any caller input may survive in the returned evidence.
+
+---
+
+## 13. Explicit semantic non-grants
+
+Even after this authorization becomes canonical, the future implementation remains forbidden from adding:
 
 ```text
 RAW DELTA = NOT_AUTHORIZED
@@ -444,15 +456,15 @@ RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-Direction binding is not comparison. Direction binding is not a quality verdict. Direction binding is not repository-owned promotion policy.
+Direction binding is not comparison, not a quality verdict, and not repository-owned promotion policy.
 
 ---
 
-## 8. Canonical predecessor bytes remain read-only
+## 14. Canonical predecessor bytes remain read-only
 
 A future P3-R13 implementation may import canonical predecessor types/functions but may not modify any P2-R1 through P2-R5 or P3-R1 through P3-R12 source, tests, authorization records, or evidence records.
 
-In particular, these canonical files remain read-only:
+In particular, these remain read-only:
 
 ```text
 packages/kodac-runtime/bench/p2-r4/comparison.ts
@@ -464,13 +476,13 @@ docs/planning/KODAC_P3_R12_TWO_CASE_REDUCTION_EVIDENCE_AUTHORIZATION_2026-09-01.
 docs/planning/KODAC_P3_R12_TWO_CASE_REDUCTION_EVIDENCE_2026-09-01.md
 ```
 
-No compatibility fix may be smuggled into a predecessor file under this authority.
+No compatibility fix may be smuggled into predecessor paths under this authority.
 
 ---
 
-## 9. Conditional future implementation allowlist
+## 15. Conditional future implementation allowlist
 
-Only after this exact authorization record becomes canonical and completes mandatory post-merge proof may one later P3-R13 implementation candidate modify exactly these four paths:
+Only after this exact authorization record becomes canonical and completes mandatory post-merge proof may one later P3-R13 implementation candidate modify exactly:
 
 ```text
 packages/kodac-runtime/bench/p3-r13/contracts.ts
@@ -481,52 +493,57 @@ docs/planning/KODAC_P3_R13_REDUCTION_DIRECTION_BINDING_EVIDENCE_2026-09-01.md
 
 No fifth path is implied.
 
-If implementation discovers that a fifth path or predecessor mutation is genuinely required, stop. This authorization is insufficient and must not be stretched by interpretation.
+If implementation discovers that any predecessor mutation, fifth path, new dependency, external provider/model, or additional side-effect authority is required, stop. This authorization is insufficient and may not be widened by interpretation.
 
 ---
 
-## 10. Required focused future tests
+## 16. Required focused future tests
 
-A future implementation is not qualified without focused tests that directly prove at least:
+A future implementation is not qualified without direct tests proving at least:
 
-1. one valid exact-seven-dimension direction declaration reconstructs canonical R12 and produces deterministic evidence;
-2. both `HIGHER_IS_BETTER` and `LOWER_IS_BETTER` are accepted only as explicit literals;
-3. unknown direction values fail closed;
-4. missing, extra, duplicate, or reordered dimensions fail closed;
-5. metric ID drift fails closed;
-6. input/output unit drift fails closed;
-7. value-kind drift fails closed;
-8. reducer drift fails closed;
-9. missingness-policy drift fails closed;
-10. minimum-observed-count drift fails closed;
-11. reduction-evidence identity mismatch fails closed;
-12. strategy-subject identity mismatch fails closed;
-13. benchmark ID mismatch fails closed;
-14. benchmark protocol mismatch fails closed;
-15. caller-claimed serialized R12 evidence is not accepted as derivation truth;
-16. canonical R12 is reconstructed from original preimages;
-17. `INSUFFICIENT_EVIDENCE` remains insufficient and preserves nullability/coverage;
-18. direction binding never emits delta, relation, better/worse, rank, promotion, or winner state;
-19. changing exactly one direction changes the evidence identity;
-20. semantically equal objects with different property insertion order produce identical evidence bytes/identity;
-21. array order remains semantic and wrong canonical dimension order is rejected;
-22. hostile Proxy/accessor/symbol/sparse/non-plain/non-canonical structures fail closed at the boundary;
-23. caller mutation after return cannot alter trusted output;
-24. output is deeply frozen;
-25. the final identity is self-reference-free and deterministic;
-26. no ambient time/path/process/environment data enters the identity;
-27. no real benchmark/provider/model/evaluator execution occurs;
-28. the implementation/test/evidence diff remains exactly the four authorized paths.
+1. a valid exact-seven-dimension declaration reconstructs canonical R12 and produces deterministic evidence;
+2. the public builder uses the exact argument order in Section 6;
+3. both allowed direction literals are accepted only when explicitly declared;
+4. unknown direction values fail closed;
+5. missing, extra, duplicate, or reordered dimensions fail closed;
+6. metric ID drift fails closed;
+7. input/output unit drift fails closed;
+8. value-kind drift fails closed;
+9. reducer drift fails closed;
+10. missingness-policy drift fails closed;
+11. minimum-observed-count drift fails closed;
+12. reduction-evidence identity mismatch fails closed;
+13. strategy-subject identity mismatch fails closed;
+14. benchmark ID mismatch fails closed;
+15. benchmark protocol mismatch fails closed;
+16. unknown or missing declaration keys fail closed;
+17. caller-claimed serialized R12 evidence cannot substitute for reconstruction;
+18. canonical R12 is reconstructed from original preimages;
+19. `INSUFFICIENT_EVIDENCE` remains insufficient with exact value/nullability/coverage preservation;
+20. output uses exactly the root keys in Section 10;
+21. every output direction binding uses exactly the entry keys in Section 10;
+22. output binding fields exactly equal declaration fields and trusted R12 semantics;
+23. no delta, relation, better/worse, rank, promotion, winner, or global score field/state is emitted;
+24. changing exactly one direction changes the evidence identity;
+25. semantically equal objects with different property insertion order produce identical bytes/identity;
+26. array order remains semantic and wrong canonical dimension order is rejected;
+27. hostile Proxy/accessor/symbol/sparse/non-plain/non-canonical structures fail closed at the boundary;
+28. caller mutation after return cannot alter trusted output;
+29. output is deeply frozen;
+30. final identity is self-reference-free and deterministic;
+31. ambient time/path/process/environment data does not enter identity;
+32. no real benchmark/provider/model/evaluator execution occurs;
+33. implementation/test/evidence diff remains exactly the four authorized paths.
 
 Review may require additional negative cases without widening semantics.
 
 ---
 
-## 11. Authorization-candidate qualification gate
+## 17. Authorization-candidate qualification gate
 
 This document is not canonical authority merely because it exists in a branch or PR.
 
-Before this authorization candidate may merge, one frozen exact head must prove all of the following:
+Before this authorization candidate may merge, one frozen exact head must prove:
 
 ```text
 CANONICAL_MAIN = expected preparation base OR non-destructively reconciled and fully requalified
@@ -553,13 +570,13 @@ Any head movement invalidates prior exact-head CI/review evidence.
 
 ---
 
-## 12. Merge discipline
+## 18. Merge discipline
 
-If and only if the authorization candidate reaches the complete exact-head gate above:
+If and only if the authorization candidate reaches the complete exact-head gate:
 
 1. capture exact base/head/tree/document blob;
 2. publish immutable exact-head qualification proof;
-3. perform one fresh live race check;
+3. perform a fresh live race check;
 4. merge normally with `merge_method=merge` and exact `expected_head_sha`;
 5. use no squash, rebase, force-push, destructive history rewrite, bypass, or waiver;
 6. prove canonical post-merge `main`, ordered parents, tree/blob identity, verified GitHub signature, applicable push checks, and active no-bypass ruleset;
@@ -571,13 +588,11 @@ Only after step 7 may state become:
 P3_R13_REDUCTION_DIRECTION_BINDING_IMPLEMENTATION = AUTHORIZED
 ```
 
-That state would authorize only the exact four-path implementation allowlist in Section 9.
-
-It would not mean P3-R13 is implemented or closed.
+That state authorizes only the exact four-path implementation allowlist in Section 15. It does not mean P3-R13 is implemented or closed.
 
 ---
 
-## 13. Future implementation qualification discipline
+## 19. Future implementation qualification discipline
 
 If this authorization becomes effective, the later implementation candidate must itself prove on one frozen exact head:
 
@@ -598,46 +613,44 @@ POST_MERGE PROOF = REQUIRED
 WAIVER = NO
 ```
 
-No predecessor-head qualification evidence may be reused after implementation head movement.
+Any implementation head movement invalidates prior exact-head qualification evidence.
 
-After implementation canonical closeout, current-view reconciliation remains a separate mandatory unit before any later bounded P3 definition/authorization candidate.
+After implementation canonical closeout, current-view reconciliation is a separate mandatory unit before any later P3 definition/authorization candidate.
 
 ---
 
-## 14. Falsifiability / rejection criteria
+## 20. Falsifiability / rejection criteria
 
-This candidate should be rejected or repaired before canonical adoption if review shows any of the following:
+Reject or repair this candidate before canonical adoption if review shows that:
 
 - direction can be inferred rather than explicitly declared;
-- a direction entry can drift from the corresponding trusted R12 metric semantics;
-- caller-claimed serialized R12 output can bypass reconstruction;
-- a dimension can be omitted, duplicated, added, or reordered;
-- the proposed identity omits direction-bearing fields;
-- insufficient evidence can be converted into a favorable or numeric claim;
-- the design requires pairwise comparison to be useful at this layer;
-- the design implicitly introduces a global score, ranking, winner, or promotion;
-- a predecessor file must be modified;
-- more than four implementation paths are required;
+- direction entries can drift from trusted R12 metric semantics;
+- caller-claimed serialized R12 can bypass reconstruction;
+- dimensions can be omitted, duplicated, added, or reordered;
+- declaration or output schemas are not exact-key closed;
+- identity omits direction-bearing or trusted R12 fields;
+- insufficient evidence can become favorable/numeric comparison evidence;
+- the layer requires pairwise comparison to be useful;
+- it implicitly introduces a global score, rank, winner, or promotion;
+- predecessor mutation or more than four implementation paths are required;
 - a new dependency/provider/model/external execution path is required.
 
-If any such condition is necessary, this authorization is not sufficient. Stop and prepare a new bounded authority rather than widening this one silently.
+If any such condition is necessary, stop and prepare a new bounded authority rather than widening this one silently.
 
 ---
 
-## 15. Candidate conclusion
+## 21. Candidate conclusion
 
-The post-R12 evidence gap is concrete and smaller than pairwise comparison:
+The concrete post-R12 gap is smaller than pairwise comparison:
 
 ```text
 P3-R12 REDUCTION = CANONICAL
 EXPLICIT PER-DIMENSION DIRECTION BINDING = MISSING
-PAIRWISE STRATEGY COMPARISON = STILL LATER / NOT_AUTHORIZED
+PAIRWISE STRATEGY COMPARISON = LATER / NOT_AUTHORIZED
 GLOBAL AGGREGATION / RANKING / PROMOTION = NOT_AUTHORIZED
 ```
 
-The proposed P3-R13 boundary is therefore one pure deterministic explicit direction-policy binding over one reconstructed canonical P3-R12 evidence record.
-
-This document grants no effective implementation authority while it is a candidate.
+The proposed P3-R13 boundary is one pure deterministic explicit direction-policy binding over one reconstructed canonical P3-R12 evidence record.
 
 ```text
 P3_R13_AUTHORIZATION_CANDIDATE = PRESENT
