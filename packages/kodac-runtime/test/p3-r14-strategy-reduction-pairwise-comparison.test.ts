@@ -688,14 +688,14 @@ test("P3-R14 public builder requires exactly three roots in left-right-declarati
 
 test("P3-R14 accepts exactly eight reconstruction keys and never accepts caller R12/R13 records as truth", () => {
   const pair = controlledPair()
-  const extra = clone(pair.left.bundle) as Record<string, unknown>
+  const extra = clone(pair.left.bundle) as unknown as Record<string, unknown>
   extra.r13Evidence = pair.leftR13
   assert.throws(
     () => buildStrategyReductionPairwiseComparisonEvidence(extra, pair.right.bundle, pair.declaration),
     /leftReconstruction keys are not canonical/,
   )
 
-  const missing = clone(pair.left.bundle) as Record<string, unknown>
+  const missing = clone(pair.left.bundle) as unknown as Record<string, unknown>
   delete missing.reductionDeclaration
   assert.throws(
     () => buildStrategyReductionPairwiseComparisonEvidence(missing, pair.right.bundle, pair.declaration),
@@ -919,7 +919,7 @@ test("P3-R14 propagates one-side and two-side insufficiency with null comparison
 
 test("P3-R14 rejects swapped case correspondence and non-finite/non-JSON hostile roots", () => {
   const swapped = controlledPair()
-  const bundle = clone(swapped.right.bundle) as Record<string, unknown>
+  const bundle = clone(swapped.right.bundle) as unknown as Record<string, unknown>
   ;[bundle.caseAInputs, bundle.caseBInputs] = [bundle.caseBInputs, bundle.caseAInputs]
   assert.throws(
     () => buildStrategyReductionPairwiseComparisonEvidence(swapped.left.bundle, bundle, swapped.declaration),
@@ -969,7 +969,6 @@ test("P3-R14 rejects swapped case correspondence and non-finite/non-JSON hostile
     const pair = controlledPair()
     assert.throws(
       () => buildStrategyReductionPairwiseComparisonEvidence(makeHostile(), pair.right.bundle, pair.declaration),
-      undefined,
       label,
     )
   }
@@ -1004,8 +1003,8 @@ test("P3-R14 outputs contain no favored, verdict, aggregate, ranking, promotion,
 test("P3-R14 canonicalization makes property insertion order irrelevant while array order remains semantic", () => {
   const pair = controlledPair()
   const normal = execute(pair)
-  const reorderedLeft = reordered(clone(pair.left.bundle) as Record<string, unknown>)
-  const reorderedRight = reordered(clone(pair.right.bundle) as Record<string, unknown>)
+  const reorderedLeft = reordered(clone(pair.left.bundle) as unknown as Record<string, unknown>)
+  const reorderedRight = reordered(clone(pair.right.bundle) as unknown as Record<string, unknown>)
   const reorderedDeclaration = reordered(clone(pair.declaration) as Record<string, unknown>)
   const same = buildStrategyReductionPairwiseComparisonEvidence(
     reorderedLeft,
