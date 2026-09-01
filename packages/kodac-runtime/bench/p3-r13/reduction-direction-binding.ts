@@ -290,12 +290,11 @@ export function buildReductionDirectionBindingEvidence(
   const alignmentDeclaration = snapshot<unknown>(alignmentDeclarationValue, "alignmentDeclaration")
   const policyDeclaration = snapshot<unknown>(policyDeclarationValue, "policyDeclaration")
   const reductionDeclaration = snapshot<unknown>(reductionDeclarationValue, "reductionDeclaration")
-  const directionDeclarationSyntax = normalizeDirectionDeclarationSyntax(
-    snapshot<unknown>(directionDeclarationValue, "directionDeclaration"),
-  )
+  const directionDeclaration = snapshot<unknown>(directionDeclarationValue, "directionDeclaration")
   const caseAInputs = snapshot<unknown>(caseAInputsValue, "caseAInputs")
   const caseBInputs = snapshot<unknown>(caseBInputsValue, "caseBInputs")
 
+  const directionDeclarationSyntax = normalizeDirectionDeclarationSyntax(directionDeclaration)
   const reductionEvidence = buildSingleStrategyTwoCaseReductionEvidence(
     strategyDeclaration,
     compositionDeclaration,
@@ -305,16 +304,16 @@ export function buildReductionDirectionBindingEvidence(
     caseAInputs,
     caseBInputs,
   )
-  const directionDeclaration = bindDirectionDeclaration(directionDeclarationSyntax, reductionEvidence)
+  const boundDirectionDeclaration = bindDirectionDeclaration(directionDeclarationSyntax, reductionEvidence)
   const dimensionDirectionBindings = deepFreeze(
-    directionDeclaration.dimensionDirections.map((entry) => deepFreeze({ ...entry })),
+    boundDirectionDeclaration.dimensionDirections.map((entry) => deepFreeze({ ...entry })),
   )
 
   const projection = {
     version: P3_R13_DIRECTION_BINDING_EVIDENCE_VERSION,
     kind: P3_R13_DIRECTION_BINDING_EVIDENCE_KIND,
-    directionDeclaration,
-    directionBindingId: directionDeclaration.directionBindingId,
+    directionDeclaration: boundDirectionDeclaration,
+    directionBindingId: boundDirectionDeclaration.directionBindingId,
     reductionEvidenceIdentity: reductionEvidence.reductionEvidenceIdentity,
     strategySubjectIdentity: reductionEvidence.strategySubjectIdentity,
     benchmarkId: reductionEvidence.benchmarkId,
