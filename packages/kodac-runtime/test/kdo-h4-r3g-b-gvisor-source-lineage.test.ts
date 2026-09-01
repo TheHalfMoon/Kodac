@@ -1009,8 +1009,14 @@ test("H4-R3G-B trusted store exact same-record put is idempotent and conflicting
 
 type R3GBCtrLifecycleMode = "term-exit" | "term-ignore" | "late-output"
 
-async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, cancelAfterStart = false, afterCtrStart?: () => Promise<void> | void) {
-  const { spawn, spawnSync } = await import("node:child_process")
+function parseR3GBPublishedFixturePid(value: string): number | undefined {
+  if (!/^[1-9][0-9]*\n$/.test(value)) return undefined
+  const pid = Number(value.slice(0, -1))
+  return Number.isSafeInteger(pid) && pid > 0 ? pid : undefined
+}
+
+async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, cancelAfterStart = false, afterCtrStart?: () => Promise<void> | void, recordCtrTerminationRequests = false) {
+  const { ChildProcess, spawn, spawnSync } = await import("node:child_process")
   const { createHash } = await import("node:crypto")
   const fs = await import("node:fs")
   const { fileURLToPath } = await import("node:url")
@@ -1069,12 +1075,17 @@ async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, ca
     run("cc", ["-std=c11", "-O2", "-Wall", "-Wextra", "-Werror", sourcePath, "-o", binaryPath])
     return binaryPath
   }
-  const waitForFile = async (path: string) => {
+  const waitForPublishedPid = async (path: string): Promise<number> => {
     for (let index = 0; index < 400; index += 1) {
-      if (fs.existsSync(path)) return
+      try {
+        const pid = parseR3GBPublishedFixturePid(fs.readFileSync(path, "utf8"))
+        if (pid !== undefined) return pid
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error
+      }
       await new Promise<void>((resolve) => setTimeout(resolve, 10))
     }
-    throw new Error(`fixture file did not appear: ${path}`)
+    throw new Error(`fixture did not publish one complete canonical positive PID: ${path}`)
   }
   const closeServer = async (server: Server | undefined) => {
     if (server === undefined) return
@@ -1094,6 +1105,21 @@ async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, ca
       throw error
     }
   }
+  const ctrTerminationRequests: Array<{ readonly pid: number | undefined; readonly signal: number | NodeJS.Signals | undefined }> = []
+  const childKillDescriptor = recordCtrTerminationRequests
+    ? Object.getOwnPropertyDescriptor(ChildProcess.prototype, "kill")
+    : undefined
+  if (recordCtrTerminationRequests) {
+    if (childKillDescriptor === undefined || typeof childKillDescriptor.value !== "function") assert.fail("ChildProcess.kill descriptor is unavailable")
+    const originalChildKill = childKillDescriptor.value as (this: import("node:child_process").ChildProcess, signal?: number | NodeJS.Signals) => boolean
+    Object.defineProperty(ChildProcess.prototype, "kill", {
+      ...childKillDescriptor,
+      value: function (this: import("node:child_process").ChildProcess, signal?: number | NodeJS.Signals): boolean {
+        ctrTerminationRequests.push(Object.freeze({ pid: this.pid, signal }))
+        return originalChildKill.call(this, signal)
+      },
+    })
+  }
 
   try {
     fs.mkdirSync(runtimeRoot)
@@ -1103,9 +1129,7 @@ async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, ca
     const helperPath = join(scratch, "kodac-gvisor-proc-observe")
     run("cc", ["-std=c11", "-O2", "-Wall", "-Wextra", "-Werror", nativeHelper, "-o", helperPath])
     sandbox = spawn(fakeRunsc, ["sandbox"], { stdio: "ignore", shell: false })
-    await waitForFile(sandboxPidFile)
-    const sandboxPid = Number(fs.readFileSync(sandboxPidFile, "utf8").trim())
-    assert.equal(Number.isSafeInteger(sandboxPid) && sandboxPid > 0, true)
+    const sandboxPid = await waitForPublishedPid(sandboxPidFile)
 
     sudo("mkdir", "-p", rootfsMountPath, ctrParent, secureRunRoot)
     sudo("chown", `${uid}:${gid}`, secureRunRoot)
@@ -1189,22 +1213,22 @@ async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, ca
     const gateway = new ExecutionGateway(new NodeWorkspaceFileSystem(workspace), fixedPolicy("allow"), undefined, undefined, r3eRuntime, undefined, sourceRuntime)
     const controller = new AbortController()
     const operation = gateway.observeGvisorSourceLineage(requirement, undefined, { signal: controller.signal })
-    await waitForFile(ctrPidFile)
+    const ctrPid = await waitForPublishedPid(ctrPidFile)
     await afterCtrStart?.()
     if (cancelAfterStart) controller.abort()
     let failure: unknown
     try { await operation; assert.fail("hostile ctr lifecycle observation unexpectedly succeeded") }
     catch (error) { failure = error }
-    const ctrPid = Number(fs.readFileSync(ctrPidFile, "utf8").trim())
-    assert.equal(Number.isSafeInteger(ctrPid) && ctrPid > 0, true)
     assert.equal(processAlive(ctrPid), false, "ctr child must be gone before the gateway failure returns")
     return {
       failureMessage: failure instanceof Error ? failure.message : String(failure),
       termObserved: fs.existsSync(termMarker),
       lateObserved: fs.existsSync(lateMarker),
       commitCount,
+      ctrTerminationSignals: Object.freeze(ctrTerminationRequests.filter((request) => request.pid === ctrPid).map((request) => request.signal)),
     }
   } finally {
+    if (childKillDescriptor !== undefined) Object.defineProperty(ChildProcess.prototype, "kill", childKillDescriptor)
     await closeServer(dockerServer).catch(() => {})
     await closeServer(containerdServer).catch(() => {})
     await reapSandbox().catch(() => {})
@@ -1212,6 +1236,14 @@ async function runR3GBCtrLifecycleFailure(t: any, mode: R3GBCtrLifecycleMode, ca
     rmSync(scratch, { recursive: true, force: true })
   }
 }
+
+test("H4-R3G-B lifecycle PID readiness accepts only complete canonical positive safe integers", () => {
+  for (const value of ["", "\n", "1", "12", "0\n", "-1\n", "+1\n", "01\n", "1 \n", "1\ntrailing", "9007199254740992\n"]) {
+    assert.equal(parseR3GBPublishedFixturePid(value), undefined)
+  }
+  assert.equal(parseR3GBPublishedFixturePid("1\n"), 1)
+  assert.equal(parseR3GBPublishedFixturePid("12345\n"), 12345)
+})
 
 test("H4-R3G-B ctr timeout sends TERM and returns only after the child is reaped", { skip: process.platform !== "linux" }, async (t) => {
   const result = await runR3GBCtrLifecycleFailure(t, "term-exit")
@@ -1247,9 +1279,11 @@ test("H4-R3G-B late partial ctr stdout after timeout is discarded and cannot bec
 })
 
 test("H4-R3G-B global deadline expiry during ctr reaps the child before returning failure", { skip: process.platform !== "linux" }, async (t) => {
+  const { ChildProcess } = await import("node:child_process")
   const setTimeoutDescriptor = Object.getOwnPropertyDescriptor(globalThis, "setTimeout")
   const hrtimeBigintDescriptor = Object.getOwnPropertyDescriptor(process.hrtime, "bigint")
-  if (setTimeoutDescriptor === undefined || hrtimeBigintDescriptor === undefined) assert.fail("required timer descriptors are unavailable")
+  const childKillDescriptor = Object.getOwnPropertyDescriptor(ChildProcess.prototype, "kill")
+  if (setTimeoutDescriptor === undefined || hrtimeBigintDescriptor === undefined || childKillDescriptor === undefined) assert.fail("required lifecycle descriptors are unavailable")
   const originalSetTimeout = globalThis.setTimeout
   const originalHrtimeBigint = process.hrtime.bigint
   let expireDeadline: (() => void) | undefined
@@ -1276,14 +1310,17 @@ test("H4-R3G-B global deadline expiry during ctr reaps the child before returnin
   })
 
   try {
-    const result = await runR3GBCtrLifecycleFailure(t, "term-exit", false, () => {
+    const result = await runR3GBCtrLifecycleFailure(t, "late-output", false, () => {
       assert.notEqual(expireDeadline, undefined)
       expireDeadline!()
-    })
+    }, true)
     if (result === null) return
     assert.match(result.failureMessage, /total monotonic observation deadline expired/)
-    assert.equal(result.termObserved, true)
+    assert.equal(result.ctrTerminationSignals[0], "SIGTERM")
+    const sigkillIndex = result.ctrTerminationSignals.indexOf("SIGKILL")
+    if (sigkillIndex !== -1) assert.equal(sigkillIndex > 0, true)
     assert.equal(result.commitCount, 0)
+    assert.deepEqual(Object.getOwnPropertyDescriptor(ChildProcess.prototype, "kill"), childKillDescriptor)
   } finally {
     Object.defineProperty(globalThis, "setTimeout", setTimeoutDescriptor)
     Object.defineProperty(process.hrtime, "bigint", hrtimeBigintDescriptor)
