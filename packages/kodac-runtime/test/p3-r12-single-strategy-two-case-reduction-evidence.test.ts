@@ -552,6 +552,62 @@ test("P3-R12 arithmetic mean matches the exact two trusted numeric observations"
   assert.equal(recall.denominatorCount, null)
 })
 
+test("P3-R12 observed-only coverage reduces one observed plus one unavailable numeric slot", () => {
+  const result = run({
+    caseA: { measurement: { noGold: true } },
+  })
+  const recall = result.dimensionReductions.find((entry) => entry.dimension === "recall-at-k")!
+  assert.equal(recall.observedCount, 1)
+  assert.equal(recall.unavailableCount, 1)
+  assert.equal(recall.status, "REDUCED")
+  const observed = recall.memberAObservation.measurement_status === "observed"
+    ? recall.memberAObservation.value
+    : recall.memberBObservation.value
+  assert.equal(typeof observed, "number")
+  assert.equal(recall.reducedValue, observed)
+  assert.equal(recall.outputUnit, recall.inputUnit)
+  assert.equal(recall.trueCount, null)
+  assert.equal(recall.denominatorCount, null)
+})
+
+test("P3-R12 observed-only minimum two makes partial numeric evidence insufficient", () => {
+  const value = scenario({ caseA: { measurement: { noGold: true } } })
+  const recallIndex = P3_R6_DIMENSIONS.indexOf("recall-at-k")
+  value.policyDeclaration.dimensionPolicies[recallIndex] = {
+    ...value.policyDeclaration.dimensionPolicies[recallIndex]!,
+    missingnessPolicy: "OBSERVED_ONLY_WITH_COVERAGE",
+    minimumObservedCount: 2,
+  }
+  refreshReductionDeclaration(value)
+  const recall = execute(value).dimensionReductions[recallIndex]!
+  assert.equal(recall.observedCount, 1)
+  assert.equal(recall.unavailableCount, 1)
+  assert.equal(recall.status, "INSUFFICIENT_EVIDENCE")
+  assert.equal(recall.reducedValue, null)
+  assert.equal(recall.outputUnit, recall.inputUnit)
+  assert.equal(recall.trueCount, null)
+  assert.equal(recall.denominatorCount, null)
+})
+
+test("P3-R12 REQUIRE_COMPLETE makes partial numeric evidence insufficient", () => {
+  const value = scenario({ caseA: { measurement: { noGold: true } } })
+  const recallIndex = P3_R6_DIMENSIONS.indexOf("recall-at-k")
+  value.policyDeclaration.dimensionPolicies[recallIndex] = {
+    ...value.policyDeclaration.dimensionPolicies[recallIndex]!,
+    missingnessPolicy: "REQUIRE_COMPLETE",
+    minimumObservedCount: 2,
+  }
+  refreshReductionDeclaration(value)
+  const recall = execute(value).dimensionReductions[recallIndex]!
+  assert.equal(recall.observedCount, 1)
+  assert.equal(recall.unavailableCount, 1)
+  assert.equal(recall.status, "INSUFFICIENT_EVIDENCE")
+  assert.equal(recall.reducedValue, null)
+  assert.equal(recall.outputUnit, recall.inputUnit)
+  assert.equal(recall.trueCount, null)
+  assert.equal(recall.denominatorCount, null)
+})
+
 test("P3-R12 preserves both-unavailable boolean coverage as insufficient evidence", () => {
   const result = run()
   const noGold = result.dimensionReductions.find((entry) => entry.dimension === "no-gold-abstention")!
@@ -580,6 +636,28 @@ test("P3-R12 observed-only coverage reduces one observed plus one unavailable bo
   assert.equal(typeof observed, "boolean")
   assert.equal(noGold.trueCount, observed ? 1 : 0)
   assert.equal(noGold.reducedValue, observed ? 1 : 0)
+})
+
+test("P3-R12 observed-only minimum two makes partial boolean evidence insufficient", () => {
+  const value = scenario({ caseA: { measurement: { noGold: true } } })
+  const noGoldIndex = P3_R6_DIMENSIONS.indexOf("no-gold-abstention")
+  value.policyDeclaration.dimensionPolicies[noGoldIndex] = {
+    ...value.policyDeclaration.dimensionPolicies[noGoldIndex]!,
+    missingnessPolicy: "OBSERVED_ONLY_WITH_COVERAGE",
+    minimumObservedCount: 2,
+  }
+  refreshReductionDeclaration(value)
+  const noGold = execute(value).dimensionReductions[noGoldIndex]!
+  assert.equal(noGold.observedCount, 1)
+  assert.equal(noGold.unavailableCount, 1)
+  assert.equal(noGold.status, "INSUFFICIENT_EVIDENCE")
+  assert.equal(noGold.reducedValue, null)
+  assert.equal(noGold.denominatorCount, 1)
+  const observed = noGold.memberAObservation.measurement_status === "observed"
+    ? noGold.memberAObservation.value
+    : noGold.memberBObservation.value
+  assert.equal(typeof observed, "boolean")
+  assert.equal(noGold.trueCount, observed ? 1 : 0)
 })
 
 test("P3-R12 REQUIRE_COMPLETE refuses the same partial boolean evidence", () => {
@@ -630,6 +708,13 @@ test("P3-R12 binds the declaration to freshly reconstructed R11 identity and sub
   const wrongBenchmark = scenario()
   wrongBenchmark.reductionDeclaration.benchmarkId = "other-benchmark"
   assert.throws(() => execute(wrongBenchmark), /benchmarkId does not match canonical P3-R11 evidence/)
+
+  const wrongProtocol = scenario()
+  wrongProtocol.reductionDeclaration.benchmarkProtocolVersion = "v2"
+  assert.throws(
+    () => execute(wrongProtocol),
+    /benchmarkProtocolVersion does not match canonical P3-R11 evidence/,
+  )
 })
 
 test("P3-R12 rejects unknown declaration fields and forged predecessor-shaped fields", () => {
@@ -706,6 +791,12 @@ test("P3-R12 evidence identity changes when legitimate reduction policy semantic
   }
   refreshReductionDeclaration(secondValue)
   const second = execute(secondValue)
+  assert.notEqual(first.reductionEvidenceIdentity, second.reductionEvidenceIdentity)
+})
+
+test("P3-R12 evidence identity changes when trusted source observations change", () => {
+  const first = execute(scenario())
+  const second = execute(scenario({ caseA: { measurement: { utilizedCount: 0 } } }))
   assert.notEqual(first.reductionEvidenceIdentity, second.reductionEvidenceIdentity)
 })
 
@@ -787,6 +878,41 @@ test("P3-R12 rejects hostile canonical-JSON structures before semantic reuse", (
     ),
     /not canonical JSON/,
   )
+
+  const sparseMeasurement = {
+    ...value.caseA.measurementDeclaration,
+    dimensionMetricBindings: new Array(P3_R6_DIMENSIONS.length),
+  }
+  assert.throws(
+    () => buildSingleStrategyTwoCaseReductionEvidence(
+      value.strategy,
+      value.compositionDeclaration,
+      value.alignmentDeclaration,
+      value.policyDeclaration,
+      value.reductionDeclaration,
+      { ...value.caseA, measurementDeclaration: sparseMeasurement },
+      value.caseB,
+    ),
+    /not canonical JSON/,
+  )
+
+  const nonFinitePolicy = clone(value.policyDeclaration)
+  nonFinitePolicy.dimensionPolicies[0] = {
+    ...nonFinitePolicy.dimensionPolicies[0]!,
+    minimumObservedCount: Number.POSITIVE_INFINITY,
+  }
+  assert.throws(
+    () => buildSingleStrategyTwoCaseReductionEvidence(
+      value.strategy,
+      value.compositionDeclaration,
+      value.alignmentDeclaration,
+      nonFinitePolicy,
+      value.reductionDeclaration,
+      value.caseA,
+      value.caseB,
+    ),
+    /not canonical JSON/,
+  )
 })
 
 test("P3-R12 rejects malformed, missing, and unsupported reduction declarations", () => {
@@ -815,6 +941,30 @@ test("P3-R12 rejects malformed, missing, and unsupported reduction declarations"
       value.caseB,
     ),
     /reductionDeclaration.reductionId must be a bounded canonical stable identifier/,
+  )
+  assert.throws(
+    () => buildSingleStrategyTwoCaseReductionEvidence(
+      value.strategy,
+      value.compositionDeclaration,
+      value.alignmentDeclaration,
+      value.policyDeclaration,
+      { ...value.reductionDeclaration, policyBindingEvidenceIdentity: "sha256:1234" },
+      value.caseA,
+      value.caseB,
+    ),
+    /reductionDeclaration.policyBindingEvidenceIdentity must be a lowercase sha256 identity/,
+  )
+  assert.throws(
+    () => buildSingleStrategyTwoCaseReductionEvidence(
+      value.strategy,
+      value.compositionDeclaration,
+      value.alignmentDeclaration,
+      value.policyDeclaration,
+      { ...value.reductionDeclaration, strategySubjectIdentity: "1234" },
+      value.caseA,
+      value.caseB,
+    ),
+    /reductionDeclaration.strategySubjectIdentity must be a lowercase SHA-256 identity/,
   )
   assert.throws(
     () => buildSingleStrategyTwoCaseReductionEvidence(
