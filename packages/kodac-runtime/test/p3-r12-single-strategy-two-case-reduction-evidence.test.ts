@@ -657,7 +657,7 @@ test("P3-R12 rejects unknown declaration fields and forged predecessor-shaped fi
       { ...value.caseA, policyBindingEvidence: { forged: true } },
       value.caseB,
     ),
-    /P3-R11 contract violation: caseAInputs keys are not canonical/,
+    /P3-R9 contract violation: caseAInputs keys are not canonical/,
   )
 })
 
