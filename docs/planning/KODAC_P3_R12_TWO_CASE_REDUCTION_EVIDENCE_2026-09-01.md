@@ -95,7 +95,7 @@ observedCount + unavailableCount = 2
 
 R12 does not invent a `missingCount` field.
 
-Sufficiency is exactly:
+Coverage sufficiency is evaluated only after the missingness policy has been validated as one of the two canonical supported values:
 
 ```text
 REQUIRE_COMPLETE:
@@ -104,9 +104,14 @@ REQUIRE_COMPLETE:
 OBSERVED_ONLY_WITH_COVERAGE:
   REDUCED iff observedCount >= minimumObservedCount
 
-otherwise:
+for either supported policy, when its coverage predicate is not met:
   INSUFFICIENT_EVIDENCE
+
+any other missingness policy:
+  CONTRACT_VIOLATION / FAIL_CLOSED
 ```
+
+`INSUFFICIENT_EVIDENCE` is therefore a coverage result under an already-valid canonical policy. It is not a fallback for an unsupported or drifted missingness policy.
 
 Unavailable evidence is never imputed, coerced, converted to zero, or included in a reducer denominator.
 
@@ -165,6 +170,17 @@ reducedValue = null
 ```
 
 `trueCount` and `denominatorCount` still preserve the observed boolean evidence when insufficient, matching canonical P2-R3 semantics. Zero observed booleans therefore produce count evidence `0 / 0` with `reducedValue = null`; no division is attempted.
+
+Reducer admission is strict and local to R12:
+
+```text
+NUMBER + ARITHMETIC_MEAN = supported
+BOOLEAN + BOOLEAN_TRUE_RATE = supported
+any other reducer = CONTRACT_VIOLATION / FAIL_CLOSED
+any reducer / valueKind mismatch = CONTRACT_VIOLATION / FAIL_CLOSED
+```
+
+Unsupported or drifted reducer vocabulary is never translated into `INSUFFICIENT_EVIDENCE` and never falls through to another reducer branch.
 
 ---
 
@@ -242,7 +258,8 @@ The candidate:
 - rejects R11 identity, strategy, benchmark, or protocol mismatch;
 - verifies canonical seven-dimension order;
 - rejects source states outside `observed | unavailable`;
-- rejects type/reducer drift inherited from malformed predecessor evidence;
+- rejects any missingness policy outside `REQUIRE_COMPLETE | OBSERVED_ONLY_WITH_COVERAGE`;
+- rejects any reducer outside `ARITHMETIC_MEAN | BOOLEAN_TRUE_RATE` and any reducer / value-kind mismatch;
 - derives identity over the complete semantic projection;
 - returns detached deeply frozen evidence;
 - requires no network, clock, randomness, environment, filesystem, or subprocess state.
