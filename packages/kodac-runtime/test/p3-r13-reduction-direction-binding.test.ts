@@ -977,3 +977,71 @@ test("P3-R13 identity excludes instrumented process, working-path, time, and env
     else process.env.KODAC_P3_R13_AMBIENT_NOISE = previous
   }
 })
+
+test("P3-R13 directly traps forbidden network and subprocess execution channels", async () => {
+  const value = scenario()
+  const { createRequire, syncBuiltinESMExports } = await import("node:module")
+  const require = createRequire(import.meta.url)
+  const http = require("node:http") as Record<string, unknown>
+  const https = require("node:https") as Record<string, unknown>
+  const net = require("node:net") as Record<string, unknown>
+  const childProcess = require("node:child_process") as Record<string, unknown>
+
+  const targets: Array<{ module: Record<string, unknown>; key: string; label: string }> = [
+    { module: http, key: "request", label: "http.request" },
+    { module: http, key: "get", label: "http.get" },
+    { module: https, key: "request", label: "https.request" },
+    { module: https, key: "get", label: "https.get" },
+    { module: net, key: "connect", label: "net.connect" },
+    { module: net, key: "createConnection", label: "net.createConnection" },
+    { module: childProcess, key: "spawn", label: "child_process.spawn" },
+    { module: childProcess, key: "spawnSync", label: "child_process.spawnSync" },
+    { module: childProcess, key: "exec", label: "child_process.exec" },
+    { module: childProcess, key: "execSync", label: "child_process.execSync" },
+    { module: childProcess, key: "execFile", label: "child_process.execFile" },
+    { module: childProcess, key: "execFileSync", label: "child_process.execFileSync" },
+    { module: childProcess, key: "fork", label: "child_process.fork" },
+  ]
+  const originals = targets.map((target) => ({
+    ...target,
+    descriptor: Object.getOwnPropertyDescriptor(target.module, target.key),
+  }))
+  for (const original of originals) assert.notEqual(original.descriptor, undefined, original.label)
+
+  const counts = new Map(targets.map((target) => [target.label, 0]))
+  const fetchDescriptor = Object.getOwnPropertyDescriptor(globalThis, "fetch")
+  assert.notEqual(fetchDescriptor, undefined)
+  let fetchCalls = 0
+  const trap = (label: string) => (..._args: unknown[]) => {
+    counts.set(label, (counts.get(label) ?? 0) + 1)
+    throw new Error(`P3-R13 attempted forbidden execution through ${label}`)
+  }
+
+  try {
+    for (const original of originals) {
+      Object.defineProperty(original.module, original.key, {
+        ...original.descriptor!,
+        value: trap(original.label),
+      })
+    }
+    syncBuiltinESMExports()
+    Object.defineProperty(globalThis, "fetch", {
+      ...fetchDescriptor!,
+      value: async () => {
+        fetchCalls += 1
+        throw new Error("P3-R13 attempted forbidden execution through fetch")
+      },
+    })
+
+    const result = execute(value)
+    assert.equal(result.kind, P3_R13_DIRECTION_BINDING_EVIDENCE_KIND)
+    assert.equal(fetchCalls, 0)
+    for (const [label, count] of counts) assert.equal(count, 0, label)
+  } finally {
+    Object.defineProperty(globalThis, "fetch", fetchDescriptor!)
+    for (const original of [...originals].reverse()) {
+      Object.defineProperty(original.module, original.key, original.descriptor!)
+    }
+    syncBuiltinESMExports()
+  }
+})
