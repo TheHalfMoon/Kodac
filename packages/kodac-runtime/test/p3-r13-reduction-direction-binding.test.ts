@@ -905,3 +905,75 @@ test("P3-R13 performs no real benchmark, provider, model, evaluator, or network 
     Object.defineProperty(globalThis, "fetch", fetchDescriptor!)
   }
 })
+
+test("P3-R13 snapshots both case inputs before semantic direction normalization", () => {
+  const value = scenario()
+  const malformedDirection = clone(makeDirectionDeclaration(value)) as unknown as {
+    dimensionDirections: Array<Record<string, unknown>>
+  }
+  malformedDirection.dimensionDirections[0]!.direction = "AUTO_INFER"
+
+  const hostileCaseA = new Proxy(clone(value.caseA), {})
+  assert.throws(
+    () => buildReductionDirectionBindingEvidence(
+      value.strategy,
+      value.compositionDeclaration,
+      value.alignmentDeclaration,
+      value.policyDeclaration,
+      value.reductionDeclaration,
+      malformedDirection,
+      hostileCaseA,
+      value.caseB,
+    ),
+    /caseAInputs is not canonical JSON:.*must not be a Proxy/,
+  )
+
+  const hostileCaseB = new Proxy(clone(value.caseB), {})
+  assert.throws(
+    () => buildReductionDirectionBindingEvidence(
+      value.strategy,
+      value.compositionDeclaration,
+      value.alignmentDeclaration,
+      value.policyDeclaration,
+      value.reductionDeclaration,
+      malformedDirection,
+      value.caseA,
+      hostileCaseB,
+    ),
+    /caseBInputs is not canonical JSON:.*must not be a Proxy/,
+  )
+})
+
+test("P3-R13 identity excludes instrumented process, working-path, time, and environment values", () => {
+  const value = scenario()
+  const declaration = makeDirectionDeclaration(value)
+  const pidDescriptor = Object.getOwnPropertyDescriptor(process, "pid")
+  const cwdDescriptor = Object.getOwnPropertyDescriptor(process, "cwd")
+  const nowDescriptor = Object.getOwnPropertyDescriptor(Date, "now")
+  assert.notEqual(pidDescriptor, undefined)
+  assert.notEqual(cwdDescriptor, undefined)
+  assert.notEqual(nowDescriptor, undefined)
+  const previous = process.env.KODAC_P3_R13_AMBIENT_NOISE
+
+  try {
+    Object.defineProperty(process, "pid", { ...pidDescriptor!, value: 101_001 })
+    Object.defineProperty(process, "cwd", { ...cwdDescriptor!, value: () => "/synthetic/p3-r13/a" })
+    Object.defineProperty(Date, "now", { ...nowDescriptor!, value: () => 1_700_000_000_001 })
+    process.env.KODAC_P3_R13_AMBIENT_NOISE = "ambient-a"
+    const first = execute(value, declaration)
+
+    Object.defineProperty(process, "pid", { ...pidDescriptor!, value: 202_002 })
+    Object.defineProperty(process, "cwd", { ...cwdDescriptor!, value: () => "/synthetic/p3-r13/b" })
+    Object.defineProperty(Date, "now", { ...nowDescriptor!, value: () => 1_800_000_000_002 })
+    process.env.KODAC_P3_R13_AMBIENT_NOISE = "ambient-b"
+    const second = execute(value, declaration)
+
+    assert.equal(first.directionBindingEvidenceIdentity, second.directionBindingEvidenceIdentity)
+  } finally {
+    Object.defineProperty(process, "pid", pidDescriptor!)
+    Object.defineProperty(process, "cwd", cwdDescriptor!)
+    Object.defineProperty(Date, "now", nowDescriptor!)
+    if (previous === undefined) delete process.env.KODAC_P3_R13_AMBIENT_NOISE
+    else process.env.KODAC_P3_R13_AMBIENT_NOISE = previous
+  }
+})
