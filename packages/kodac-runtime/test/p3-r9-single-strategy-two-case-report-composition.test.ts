@@ -755,3 +755,41 @@ test("P3-R9 does not require ambient filesystem or subprocess side effects", asy
     childProcess.spawnSync = originalSpawnSync
   }
 })
+
+test("P3-R9 closes remaining top-level and case-bundle schema proof gaps", () => {
+  const value = scenario()
+
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      { ...value.compositionDeclaration, unexpected: true },
+      value.caseA,
+      value.caseB,
+    ),
+    /compositionDeclaration keys are not canonical/,
+  )
+
+  const { policy: _policy, ...caseAWithoutPolicy } = value.caseA
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      value.compositionDeclaration,
+      caseAWithoutPolicy,
+      value.caseB,
+    ),
+    /caseAInputs keys are not canonical/,
+  )
+
+  assert.throws(
+    () => composeSingleStrategyTwoCaseReports(
+      value.strategy,
+      {
+        ...value.compositionDeclaration,
+        memberA: { ...value.compositionDeclaration.memberA, caseId: " " },
+      },
+      value.caseA,
+      value.caseB,
+    ),
+    /compositionDeclaration.memberA.caseId must be a non-empty canonical string/,
+  )
+})
