@@ -728,7 +728,8 @@ test("P3-R11 binds the exact reconstructed R10 alignment and strategy identities
 
 test("P3-R11 fails closed when predecessor preimages drift after identity binding", () => {
   const value = scenario()
-  value.caseA.reportDeclaration.reportBindingId = "report-binding:forged"
+  const mutableReportDeclaration = value.caseA.reportDeclaration as unknown as { reportBindingId: string }
+  mutableReportDeclaration.reportBindingId = "report-binding:forged"
   assert.throws(() => execute(value), /compositionEvidenceIdentity does not match canonical R9 composition/)
 })
 
@@ -792,7 +793,8 @@ test("P3-R11 returns detached deeply frozen evidence and isolates caller mutatio
     ...value.policyDeclaration.dimensionPolicies[0]!,
     metricId: "metric:mutated",
   }
-  value.caseA.measurementDeclaration.measurementId = "measurement:mutated"
+  const mutableMeasurementDeclaration = value.caseA.measurementDeclaration as unknown as { measurementId: string }
+  mutableMeasurementDeclaration.measurementId = "measurement:mutated"
 
   assert.equal(result.policyBindingId, "policy-binding:p3-r11-fixture")
   assert.equal(result.dimensionPolicyBindings[0]?.metricId, "metric:recall-at-k")
@@ -860,7 +862,8 @@ test("P3-R11 rejects hostile canonical-JSON structures before semantic reuse", (
   )
 
   const nonFinite = clone(value.policyDeclaration)
-  nonFinite.dimensionPolicies[0]!.minimumObservedCount = Number.POSITIVE_INFINITY
+  const mutableNonFinitePolicy = nonFinite.dimensionPolicies[0] as unknown as { minimumObservedCount: number }
+  mutableNonFinitePolicy.minimumObservedCount = Number.POSITIVE_INFINITY
   assert.throws(
     () => buildSingleStrategyTwoCaseReductionPolicyBinding(
       value.strategy,
