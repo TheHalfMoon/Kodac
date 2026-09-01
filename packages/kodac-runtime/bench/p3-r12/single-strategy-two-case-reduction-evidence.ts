@@ -168,10 +168,14 @@ function reduceDimension(binding: P3R11DimensionPolicyBinding): P3R12DimensionRe
   const unavailableCount = 2 - observedCount
   if (observedCount + unavailableCount !== 2) fail(`${binding.dimension} coverage counts do not reconcile`)
 
-  const sufficient =
-    binding.missingnessPolicy === "REQUIRE_COMPLETE"
-      ? observedCount === 2
-      : observedCount >= binding.minimumObservedCount
+  let sufficient: boolean
+  if (binding.missingnessPolicy === "REQUIRE_COMPLETE") {
+    sufficient = observedCount === 2
+  } else if (binding.missingnessPolicy === "OBSERVED_ONLY_WITH_COVERAGE") {
+    sufficient = observedCount >= binding.minimumObservedCount
+  } else {
+    fail(`${binding.dimension} has an unsupported missingness policy`)
+  }
   const status: P2R3MetricSummaryStatus = sufficient ? "REDUCED" : "INSUFFICIENT_EVIDENCE"
 
   if (binding.reducer === "ARITHMETIC_MEAN") {
@@ -204,6 +208,9 @@ function reduceDimension(binding: P3R11DimensionPolicyBinding): P3R12DimensionRe
     })
   }
 
+  if (binding.reducer !== "BOOLEAN_TRUE_RATE") {
+    fail(`${binding.dimension} has an unsupported reducer`)
+  }
   if (binding.valueKind !== "BOOLEAN") fail(`${binding.dimension} reducer/valueKind combination drifted`)
   const booleanValues = observedValues.map((value) => {
     if (typeof value !== "boolean") fail(`${binding.dimension} observed value is not boolean under BOOLEAN`)
