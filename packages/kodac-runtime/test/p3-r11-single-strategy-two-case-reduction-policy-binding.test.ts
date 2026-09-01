@@ -533,16 +533,18 @@ test("P3-R11 binds exactly seven explicit pair policies without reduction", () =
 })
 
 test("P3-R11 accepts explicit numeric and boolean policies but calculates neither mean nor rate", () => {
-  const value = scenario({
-    caseA: { measurement: { noGold: true } },
-    caseB: { measurement: { noGold: true } },
-  })
-  const result = execute(value)
-  const recall = result.dimensionPolicyBindings.find((entry) => entry.dimension === "recall-at-k")!
-  const noGold = result.dimensionPolicyBindings.find((entry) => entry.dimension === "no-gold-abstention")!
+  const numericResult = run()
+  const recall = numericResult.dimensionPolicyBindings.find((entry) => entry.dimension === "recall-at-k")!
   assert.equal(recall.valueKind, "NUMBER")
   assert.equal(recall.reducer, "ARITHMETIC_MEAN")
   assert.equal(typeof recall.memberAObservation.value, "number")
+
+  const booleanValue = scenario({
+    caseA: { measurement: { noGold: true } },
+    caseB: { measurement: { noGold: true } },
+  })
+  const booleanResult = execute(booleanValue)
+  const noGold = booleanResult.dimensionPolicyBindings.find((entry) => entry.dimension === "no-gold-abstention")!
   assert.equal(noGold.valueKind, "BOOLEAN")
   assert.equal(noGold.reducer, "BOOLEAN_TRUE_RATE")
   assert.equal(typeof noGold.memberAObservation.value, "boolean")
