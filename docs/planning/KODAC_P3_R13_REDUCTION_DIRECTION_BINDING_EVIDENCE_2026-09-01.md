@@ -301,7 +301,7 @@ The implementation materializes fresh direction-binding objects from trusted rec
 
 ## 12. Focused proof matrix
 
-The focused P3-R13 test file directly covers the authorization obligations, including:
+The focused P3-R13 test file directly covers semantic, trust-boundary, determinism, immutability, and no-execution obligations, including:
 
 1. valid exact-seven-dimension reconstruction and deterministic evidence;
 2. exact public builder argument order;
@@ -335,7 +335,9 @@ The focused P3-R13 test file directly covers the authorization obligations, incl
 30. deep-freeze proof;
 31. self-reference-free canonical identity recomputation;
 32. ambient environment/time/process noise exclusion;
-33. exact four-path diff qualification as a repository-level gate.
+33. direct fail-closed no-execution trapping across the authorized in-process proof surface, with provider/model/evaluator/execution-environment metadata remaining `not-applicable`.
+
+Exact four-path diff containment is **not** a focused-test claim. It is proven separately by repository-level exact-head qualification through base-to-head changed-path inspection and the canonical merge gate.
 
 Repository CI and exact-head review evidence remain separate qualification evidence and must not be inferred from this document.
 
