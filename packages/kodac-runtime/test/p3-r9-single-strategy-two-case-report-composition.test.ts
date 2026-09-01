@@ -340,7 +340,7 @@ test("P3-R9 composes exactly two independent R7 reports under one R8 strategy su
   assert.equal(result.version, P3_R9_COMPOSITION_EVIDENCE_VERSION)
   assert.equal(result.kind, P3_R9_COMPOSITION_EVIDENCE_KIND)
   assert.match(result.compositionEvidenceIdentity, /^sha256:[0-9a-f]{64}$/)
-  assert.equal(result.memberA.strategySubjectIdentity, undefined)
+  assert.ok(!("strategySubjectIdentity" in result.memberA))
   assert.equal(result.memberA.caseBindingEvidence.strategySubjectIdentity, result.strategySubjectIdentity)
   assert.equal(result.memberB.caseBindingEvidence.strategySubjectIdentity, result.strategySubjectIdentity)
   assert.notEqual(result.memberA.caseId, result.memberB.caseId)
