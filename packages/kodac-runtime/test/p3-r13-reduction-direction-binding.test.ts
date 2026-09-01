@@ -870,3 +870,38 @@ test("P3-R13 deterministic identity ignores ambient environment and time noise",
     else process.env.KODAC_P3_R13_AMBIENT_NOISE = previous
   }
 })
+
+test("P3-R13 performs no real benchmark, provider, model, evaluator, or network execution", async () => {
+  const value = scenario()
+  const manifests = [value.caseA.manifest[0], value.caseB.manifest[0]]
+  for (const manifest of manifests) {
+    assert.equal(manifest.provider_id, "not-applicable")
+    assert.equal(manifest.provider_version, "not-applicable")
+    assert.equal(manifest.model_id, "not-applicable")
+    assert.equal(manifest.model_version, "not-applicable")
+    assert.equal(manifest.evaluator_id, "not-applicable")
+    assert.equal(manifest.evaluator_version, "not-applicable")
+    assert.equal(manifest.execution_environment_id, "not-applicable")
+  }
+  assert.equal(buildReductionDirectionBindingEvidence.length, 8)
+
+  const fetchDescriptor = Object.getOwnPropertyDescriptor(globalThis, "fetch")
+  assert.notEqual(fetchDescriptor, undefined)
+  let fetchCalls = 0
+  Object.defineProperty(globalThis, "fetch", {
+    configurable: true,
+    writable: true,
+    value: async () => {
+      fetchCalls += 1
+      throw new Error("P3-R13 attempted unexpected network execution")
+    },
+  })
+
+  try {
+    const result = execute(value)
+    assert.equal(result.kind, P3_R13_DIRECTION_BINDING_EVIDENCE_KIND)
+    assert.equal(fetchCalls, 0)
+  } finally {
+    Object.defineProperty(globalThis, "fetch", fetchDescriptor!)
+  }
+})
