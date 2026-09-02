@@ -516,6 +516,10 @@ export function buildStrategyReductionPairwiseComparisonEvidence(
   rightReconstructionValue: unknown,
   comparisonDeclarationValue: unknown,
 ): StrategyReductionPairwiseComparisonEvidence {
+  if (arguments.length !== 3) {
+    fail("buildStrategyReductionPairwiseComparisonEvidence requires exactly three arguments")
+  }
+
   const leftRoot = snapshot<unknown>(leftReconstructionValue, "leftReconstruction")
   const rightRoot = snapshot<unknown>(rightReconstructionValue, "rightReconstruction")
   const declarationRoot = snapshot<unknown>(comparisonDeclarationValue, "comparisonDeclaration")
