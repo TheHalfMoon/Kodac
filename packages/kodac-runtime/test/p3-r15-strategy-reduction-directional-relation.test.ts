@@ -708,14 +708,29 @@ test("P3-R15 derives directional favored relations from trusted values and direc
   const lowerMatch = lower.dimensionRelations.find(
     (entry) => entry.dimension === comparableNonzero.dimension,
   )!
-  assert.equal(lowerMatch.leftReducedValue, comparableNonzero.leftReducedValue)
-  assert.equal(lowerMatch.rightReducedValue, comparableNonzero.rightReducedValue)
-  assert.equal(
-    lowerMatch.relation,
-    comparableNonzero.relation === "LEFT_FAVORED_BY_DIRECTION"
-      ? "RIGHT_FAVORED_BY_DIRECTION"
-      : "LEFT_FAVORED_BY_DIRECTION",
+  assert.equal(lowerMatch.direction, "LOWER_IS_BETTER")
+  assert.ok(lowerMatch.leftReducedValue! < lowerMatch.rightReducedValue!)
+  assert.equal(lowerMatch.relation, "LEFT_FAVORED_BY_DIRECTION")
+
+  const lowerReverseDeclaration = {
+    ...lowerPair.declaration,
+    comparisonId: "comparison:p3-r15-lower-reversed",
+    leftDirectionBindingEvidenceIdentity: lowerPair.rightR13.directionBindingEvidenceIdentity,
+    rightDirectionBindingEvidenceIdentity: lowerPair.leftR13.directionBindingEvidenceIdentity,
+    leftStrategySubjectIdentity: lowerPair.rightR13.strategySubjectIdentity,
+    rightStrategySubjectIdentity: lowerPair.leftR13.strategySubjectIdentity,
+  }
+  const lowerReversed = buildStrategyReductionDirectionalRelationEvidence(
+    lowerPair.right.bundle,
+    lowerPair.left.bundle,
+    lowerReverseDeclaration,
   )
+  const lowerReversedMatch = lowerReversed.dimensionRelations.find(
+    (entry) => entry.dimension === lowerMatch.dimension,
+  )!
+  assert.equal(lowerReversedMatch.direction, "LOWER_IS_BETTER")
+  assert.ok(lowerReversedMatch.rightReducedValue! < lowerReversedMatch.leftReducedValue!)
+  assert.equal(lowerReversedMatch.relation, "RIGHT_FAVORED_BY_DIRECTION")
 })
 
 test("P3-R15 uses exact numeric equality only for EQUAL_RAW_VALUE", () => {
