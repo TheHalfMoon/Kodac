@@ -51,6 +51,7 @@ EXACT FOUR-ARGUMENT ARITY GATE
 -> DIRECT DELEGATION OF FIRST THREE ROOTS TO CANONICAL P3-R15
 -> TRUST ONLY THE DETACHED DEEPLY FROZEN P3-R15 RESULT
 -> FAIL-CLOSED R15 ROOT / R14-BINDING / SEVEN-RELATION TOPOLOGY VALIDATION
+-> REFLECT-BASED EXACT OWN-KEY + ENUMERABLE DATA-PROPERTY VALIDATION
 -> EXACT RELATION-ENTRY KEY + CANONICAL DIMENSION-ORDER VALIDATION
 -> EXACT COPY-PARITY AGAINST EACH NESTED TRUSTED R14 DIMENSION COMPARISON
 -> CLOSED FOUR-LITERAL R15 RELATION-VOCABULARY VALIDATION
@@ -67,7 +68,7 @@ EXACT FOUR-ARGUMENT ARITY GATE
 -> DETACHED DEEPLY FROZEN OUTPUT
 ```
 
-`INSUFFICIENT_EVIDENCE` is never accepted as an allowed satisfied relation. The canonical R15 result remains the sole observed directional-relation evidence used by criterion matching. R16 validates the predecessor record structurally and fail-closed: exact root bindings, exact seven-entry topology, canonical dimension order, exact copied-field parity to nested R14 comparison evidence, and the closed four-literal R15 relation vocabulary. R16 does **not** independently reinterpret raw values, raw deltas, direction, reduction status, or comparison status and does not re-derive an alternate relation.
+`INSUFFICIENT_EVIDENCE` is never accepted as an allowed satisfied relation. The canonical R15 result remains the sole observed directional-relation evidence used by criterion matching. R16 validates the predecessor record structurally and fail-closed: exact own-key/data-property shape, root bindings, exact seven-entry topology, canonical dimension order, exact copied-field parity to nested R14 comparison evidence, and the closed four-literal R15 relation vocabulary. R16 does **not** independently reinterpret raw values, raw deltas, direction, reduction status, or comparison status and does not re-derive an alternate relation.
 
 ## Closed root logical state
 
@@ -84,25 +85,30 @@ ELSE
 
 This is caller-declared criterion-match evidence only. It is not a global better/worse verdict, score, majority, weighted result, Pareto/dominance decision, promotion, recommendation, winner, default, or repository policy.
 
-## Independent-review repair incorporated
+## Independent-review repairs incorporated
 
 A fresh independent semantic review of an earlier exact-head candidate identified one actionable fail-closed defect: the earlier R16 root validator verified the R15 root identity/count/freeze state but did not independently validate each `dimensionRelations` entry or restrict `relation` to the closed canonical R15 vocabulary before criterion-state derivation.
 
-The finding requested canonical dimension validation, required relation-entry structure, stable metric binding, and closed relation-literal validation. The implementation was repaired forward-only within the authorized implementation path. A subsequent self-audit detected that one intermediate repair had gone beyond this finding by re-deriving expected relations from R14 raw comparison semantics, conflicting with the authorization's prohibition on independent R16 reinterpretation. That overreach was removed before qualification.
+That finding requested canonical dimension validation, required relation-entry structure, stable metric binding, and closed relation-literal validation. The implementation was repaired forward-only within the authorized implementation path. A subsequent self-audit detected that one intermediate repair had gone beyond this finding by re-deriving expected relations from R14 raw comparison semantics, conflicting with the authorization's prohibition on independent R16 reinterpretation. That overreach was removed before qualification.
 
-The final repair now:
+A later fresh Cubic exact-head semantic adjudication on head `670bc6008778423996d59d3c2f4e36766122c39c`, comment `5517020767`, identified a second actionable fail-closed defect: `exactKeys()` used `Object.keys()`, so symbol-keyed and non-enumerable own properties on a forged deeply frozen R15 root or relation entry could evade the claimed exact-key boundary. The review also noted that accessor properties on expected keys should be rejected as non-data contract members. Because such properties could be preserved outside the canonical JSON identity projection, this was a real deterministic-completeness and trust-boundary defect. The prior head is therefore not qualified and all CI/review evidence on it is stale after this repair.
 
-- requires the exact canonical R15 relation-entry key set;
-- requires all seven entries and the nested R14 comparisons in canonical P3-R6 dimension order;
+The current forward repair now:
+
+- requires the exact canonical R15 root and relation-entry own-key sets using `Reflect.ownKeys()`;
+- rejects any symbol-keyed own property before semantic reads;
+- rejects non-enumerable expected properties and accessor properties by requiring every expected key to be an enumerable own data property;
+- rejects non-enumerable extra string keys because they are included in the complete own-key set;
+- requires all seven entries and nested R14 comparisons in canonical P3-R6 dimension order;
 - cross-binds R15 root identities/subjects/benchmark fields to nested R14 evidence;
 - requires every copied relation-entry field except `relation` to be canonically identical to its nested R14 dimension comparison;
 - restricts `relation` to exactly `LEFT_FAVORED_BY_DIRECTION | RIGHT_FAVORED_BY_DIRECTION | EQUAL_RAW_VALUE | INSUFFICIENT_EVIDENCE`;
 - does not derive or replace the trusted R15 relation from raw values, deltas, directions, or comparison status;
 - still treats the returned canonical R15 record as the predecessor evidence and introduces no alternate comparison authority.
 
-A focused regression test constructs an isolated R16 module instance whose canonical R15 dependency returns a deeply frozen, identity-rebound R15-shaped record and verifies fail-closed rejection for: an unsupported relation literal, canonical dimension-topology drift, and metric/copy-binding drift. The regression deliberately does not require rejection of a different canonical relation literal by semantic re-derivation. The test does not export a test-only production hook, modify the test runner, or add a fifth repository path.
+The focused isolated-module regression now verifies fail-closed rejection for unsupported relation vocabulary, canonical dimension-topology drift, metric/copy-binding drift, symbol-keyed extras on both the R15 root and relation entry, non-enumerable extras on both the R15 root and relation entry, and accessor substitution on expected root/relation keys. Its test-only deep-freeze helper walks own data-property descriptors without invoking accessors. The regression does not export a production test hook, modify the test runner, or add a fifth repository path.
 
-This section records repair materialization only. The finding is not considered terminally reconciled until fresh independent exact-head review on the final unchanged candidate confirms it.
+These sections record repair materialization only. Neither independent-review finding is considered terminally reconciled until fresh independent exact-head review on one final unchanged candidate confirms the complete repaired boundary.
 
 ## Focused proof matrix materialization
 
@@ -129,7 +135,7 @@ The focused test source covers at minimum:
 - exact four-argument arity rejection before predecessor invocation or caller-root semantic reads;
 - direct delegation of the first three roots to canonical R15 and complete trusted R15 preservation;
 - canonical predecessor failure propagation and rejection of caller shortcut/R15 substitution;
-- explicit fail-closed rejection of deeply frozen identity-rebound malformed R15 evidence for unsupported relation vocabulary, dimension topology drift, and metric/copy-binding drift;
+- explicit fail-closed rejection of deeply frozen identity-rebound malformed R15 evidence for unsupported relation vocabulary, dimension topology drift, metric/copy-binding drift, symbol/non-enumerable own-key drift, and expected-key accessor substitution at root/relation boundaries;
 - exact fourth-root canonical JSON hardening against accessors, symbols, sparse arrays, cycles, and non-canonical structures;
 - exact declaration root/nested key sets;
 - exact `criterionSetId` stable-ID grammar and 512 UTF-8-byte bound;
