@@ -53,7 +53,7 @@ EXACT FOUR-ARGUMENT ARITY GATE
 -> FAIL-CLOSED R15 ROOT / R14-BINDING / SEVEN-RELATION TOPOLOGY VALIDATION
 -> EXACT RELATION-ENTRY KEY + CANONICAL DIMENSION-ORDER VALIDATION
 -> EXACT COPY-PARITY AGAINST EACH NESTED TRUSTED R14 DIMENSION COMPARISON
--> RE-DERIVE ONLY THE EXPECTED R15 RELATION AS A DEFENSIVE CONSISTENCY CHECK
+-> CLOSED FOUR-LITERAL R15 RELATION-VOCABULARY VALIDATION
 -> CANONICAL-JSON SNAPSHOT OF THE FOURTH CALLER-OWNED DECLARATION
 -> EXACT ROOT / NESTED KEY VALIDATION
 -> EXACT criterionSetId STABLE-ID / 512 UTF-8 BYTE VALIDATION
@@ -67,7 +67,7 @@ EXACT FOUR-ARGUMENT ARITY GATE
 -> DETACHED DEEPLY FROZEN OUTPUT
 ```
 
-`INSUFFICIENT_EVIDENCE` is never accepted as an allowed satisfied relation. The canonical R15 result remains the only observed directional-relation evidence used by criterion matching. R16 does not replace or upgrade that evidence: before applying caller criteria, it independently verifies that every R15 relation entry exactly preserves its nested R14 comparison and that its relation literal is the only relation semantically permitted by that trusted comparison. This is fail-closed predecessor validation, not a new comparison, score, policy, or evidence source.
+`INSUFFICIENT_EVIDENCE` is never accepted as an allowed satisfied relation. The canonical R15 result remains the sole observed directional-relation evidence used by criterion matching. R16 validates the predecessor record structurally and fail-closed: exact root bindings, exact seven-entry topology, canonical dimension order, exact copied-field parity to nested R14 comparison evidence, and the closed four-literal R15 relation vocabulary. R16 does **not** independently reinterpret raw values, raw deltas, direction, reduction status, or comparison status and does not re-derive an alternate relation.
 
 ## Closed root logical state
 
@@ -86,18 +86,21 @@ This is caller-declared criterion-match evidence only. It is not a global better
 
 ## Independent-review repair incorporated
 
-A fresh independent semantic review of the earlier exact-head candidate identified one actionable fail-closed defect: the earlier R16 root validator verified the R15 root identity/count/freeze state but did not independently reject an unsupported or semantically inconsistent `dimensionRelations[].relation` before criterion-state derivation.
+A fresh independent semantic review of an earlier exact-head candidate identified one actionable fail-closed defect: the earlier R16 root validator verified the R15 root identity/count/freeze state but did not independently validate each `dimensionRelations` entry or restrict `relation` to the closed canonical R15 vocabulary before criterion-state derivation.
 
-The implementation was repaired forward-only within the authorized implementation path. The repaired validator now:
+The finding requested canonical dimension validation, required relation-entry structure, stable metric binding, and closed relation-literal validation. The implementation was repaired forward-only within the authorized implementation path. A subsequent self-audit detected that one intermediate repair had gone beyond this finding by re-deriving expected relations from R14 raw comparison semantics, conflicting with the authorization's prohibition on independent R16 reinterpretation. That overreach was removed before qualification.
+
+The final repair now:
 
 - requires the exact canonical R15 relation-entry key set;
 - requires all seven entries and the nested R14 comparisons in canonical P3-R6 dimension order;
 - cross-binds R15 root identities/subjects/benchmark fields to nested R14 evidence;
-- requires every copied relation-entry field except `relation` to be byte-semantically identical to its nested R14 dimension comparison under canonical hashing;
-- re-derives only the expected R15 relation from the trusted R14 comparison and rejects both unsupported relation literals and supported-but-inconsistent relation substitution;
+- requires every copied relation-entry field except `relation` to be canonically identical to its nested R14 dimension comparison;
+- restricts `relation` to exactly `LEFT_FAVORED_BY_DIRECTION | RIGHT_FAVORED_BY_DIRECTION | EQUAL_RAW_VALUE | INSUFFICIENT_EVIDENCE`;
+- does not derive or replace the trusted R15 relation from raw values, deltas, directions, or comparison status;
 - still treats the returned canonical R15 record as the predecessor evidence and introduces no alternate comparison authority.
 
-A focused regression test now constructs an isolated R16 module instance whose canonical R15 dependency returns a deeply frozen, identity-rebound R15-shaped record with either an unsupported relation literal or a canonical-but-wrong relation literal. Both must fail before criterion-state derivation. The test does not export a test-only production hook, modify the test runner, or add a fifth repository path.
+A focused regression test constructs an isolated R16 module instance whose canonical R15 dependency returns a deeply frozen, identity-rebound R15-shaped record and verifies fail-closed rejection for: an unsupported relation literal, canonical dimension-topology drift, and metric/copy-binding drift. The regression deliberately does not require rejection of a different canonical relation literal by semantic re-derivation. The test does not export a test-only production hook, modify the test runner, or add a fifth repository path.
 
 This section records repair materialization only. The finding is not considered terminally reconciled until fresh independent exact-head review on the final unchanged candidate confirms it.
 
@@ -126,7 +129,7 @@ The focused test source covers at minimum:
 - exact four-argument arity rejection before predecessor invocation or caller-root semantic reads;
 - direct delegation of the first three roots to canonical R15 and complete trusted R15 preservation;
 - canonical predecessor failure propagation and rejection of caller shortcut/R15 substitution;
-- explicit fail-closed rejection of deeply frozen identity-rebound malformed R15 relation evidence, including unsupported and canonical-but-semantically-wrong relation literals;
+- explicit fail-closed rejection of deeply frozen identity-rebound malformed R15 evidence for unsupported relation vocabulary, dimension topology drift, and metric/copy-binding drift;
 - exact fourth-root canonical JSON hardening against accessors, symbols, sparse arrays, cycles, and non-canonical structures;
 - exact declaration root/nested key sets;
 - exact `criterionSetId` stable-ID grammar and 512 UTF-8-byte bound;
