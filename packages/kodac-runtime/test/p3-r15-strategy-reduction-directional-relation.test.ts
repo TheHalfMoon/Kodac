@@ -643,14 +643,36 @@ test("P3-R15 public builder requires exactly three roots before predecessor reco
   const pair = controlledPair()
   const builder = buildStrategyReductionDirectionalRelationEvidence as (...args: unknown[]) => unknown
   assert.equal(buildStrategyReductionDirectionalRelationEvidence.length, 3)
+
+  const missingHostile = { ...pair.left.bundle } as Record<string, unknown>
+  let missingGetterCalls = 0
+  Object.defineProperty(missingHostile, "strategyDeclaration", {
+    enumerable: true,
+    get: () => {
+      missingGetterCalls += 1
+      return pair.left.strategy
+    },
+  })
   assert.throws(
-    () => builder(pair.left.bundle, pair.right.bundle),
+    () => builder(missingHostile, pair.right.bundle),
     /requires exactly three arguments/,
   )
+  assert.equal(missingGetterCalls, 0)
+
+  const extraHostile = { ...pair.left.bundle } as Record<string, unknown>
+  let extraGetterCalls = 0
+  Object.defineProperty(extraHostile, "strategyDeclaration", {
+    enumerable: true,
+    get: () => {
+      extraGetterCalls += 1
+      return pair.left.strategy
+    },
+  })
   assert.throws(
-    () => builder(pair.left.bundle, pair.right.bundle, pair.declaration, null),
+    () => builder(extraHostile, pair.right.bundle, pair.declaration, null),
     /requires exactly three arguments/,
   )
+  assert.equal(extraGetterCalls, 0)
 })
 
 test("P3-R15 derives directional favored relations from trusted values and direction without aggregation", () => {
@@ -789,6 +811,48 @@ test("P3-R15 delegates hostile and cross-control failures to canonical R14 and r
   )
   assert.equal(getterCalls, 0)
 
+  const rightAccessorPair = controlledPair()
+  const hostileRight = { ...rightAccessorPair.right.bundle } as Record<string, unknown>
+  let rightGetterCalls = 0
+  Object.defineProperty(hostileRight, "strategyDeclaration", {
+    enumerable: true,
+    get: () => {
+      rightGetterCalls += 1
+      return rightAccessorPair.right.strategy
+    },
+  })
+  assert.throws(
+    () => buildStrategyReductionDirectionalRelationEvidence(
+      rightAccessorPair.left.bundle,
+      hostileRight,
+      rightAccessorPair.declaration,
+    ),
+    /P3-R14 contract violation/,
+  )
+  assert.equal(rightGetterCalls, 0)
+
+  const declarationAccessorPair = controlledPair()
+  const hostileDeclaration = {
+    ...declarationAccessorPair.declaration,
+  } as Record<string, unknown>
+  let declarationGetterCalls = 0
+  Object.defineProperty(hostileDeclaration, "comparisonId", {
+    enumerable: true,
+    get: () => {
+      declarationGetterCalls += 1
+      return declarationAccessorPair.declaration.comparisonId
+    },
+  })
+  assert.throws(
+    () => buildStrategyReductionDirectionalRelationEvidence(
+      declarationAccessorPair.left.bundle,
+      declarationAccessorPair.right.bundle,
+      hostileDeclaration,
+    ),
+    /P3-R14 contract violation/,
+  )
+  assert.equal(declarationGetterCalls, 0)
+
   const injectedPair = controlledPair()
   const injected = clone(injectedPair.left.bundle) as unknown as Record<string, unknown>
   injected.pairwiseComparisonEvidence = { relation: "LEFT_FAVORED_BY_DIRECTION" }
@@ -888,14 +952,15 @@ test("P3-R15 exposes no global aggregate, ranking, promotion, winner, statistica
 })
 
 test("P3-R15 identity excludes ambient time, randomness, environment, network, filesystem writes, and subprocess execution", () => {
-  const baseline = execute()
   const originalNow = Date.now
   const originalRandom = Math.random
-  const originalFetch = globalThis.fetch
-  const originalNoise = process.env.KODAC_P3_R15_AMBIENT_NOISE
+  const originalEnv = process.env
   const require = createRequire(import.meta.url)
   const childProcess = require("node:child_process") as Record<string, unknown>
   const fs = require("node:fs") as Record<string, unknown>
+  const http = require("node:http") as Record<string, unknown>
+  const https = require("node:https") as Record<string, unknown>
+  const net = require("node:net") as Record<string, unknown>
   const targets: Array<{ module: Record<string, unknown>; key: string; label: string }> = [
     { module: childProcess, key: "exec", label: "child_process.exec" },
     { module: childProcess, key: "execFile", label: "child_process.execFile" },
@@ -909,20 +974,46 @@ test("P3-R15 identity excludes ambient time, randomness, environment, network, f
     { module: fs, key: "appendFile", label: "fs.appendFile" },
     { module: fs, key: "appendFileSync", label: "fs.appendFileSync" },
     { module: fs, key: "createWriteStream", label: "fs.createWriteStream" },
+    { module: http, key: "request", label: "http.request" },
+    { module: http, key: "get", label: "http.get" },
+    { module: https, key: "request", label: "https.request" },
+    { module: https, key: "get", label: "https.get" },
+    { module: net, key: "connect", label: "net.connect" },
+    { module: net, key: "createConnection", label: "net.createConnection" },
   ]
   const originals = targets.map((target) => ({
     ...target,
     descriptor: Object.getOwnPropertyDescriptor(target.module, target.key),
   }))
   for (const original of originals) assert.notEqual(original.descriptor, undefined, original.label)
+
   const counts = new Map(targets.map((target) => [target.label, 0]))
   let fetchCalls = 0
+  let nowCalls = 0
+  let randomCalls = 0
+  let envReads = 0
+  let clockValue = 1
+  let randomValue = 0.111111
+  let ambientNoise = "first"
   const fetchDescriptor = Object.getOwnPropertyDescriptor(globalThis, "fetch")
+  const trappedEnv = new Proxy(originalEnv, {
+    get: (_target, _property) => {
+      envReads += 1
+      return ambientNoise
+    },
+  })
 
   try {
-    Date.now = () => 1
-    Math.random = () => 0.999999
-    process.env.KODAC_P3_R15_AMBIENT_NOISE = "changed"
+    Date.now = () => {
+      nowCalls += 1
+      return clockValue
+    }
+    Math.random = () => {
+      randomCalls += 1
+      return randomValue
+    }
+    process.env = trappedEnv
+
     for (const original of originals) {
       Object.defineProperty(original.module, original.key, {
         ...original.descriptor!,
@@ -943,15 +1034,22 @@ test("P3-R15 identity excludes ambient time, randomness, environment, network, f
       })
     }
 
-    const repeated = execute()
-    assert.equal(repeated.directionalRelationEvidenceIdentity, baseline.directionalRelationEvidenceIdentity)
+    const first = execute()
+    clockValue = 2
+    randomValue = 0.999999
+    ambientNoise = "second"
+    const second = execute()
+
+    assert.equal(second.directionalRelationEvidenceIdentity, first.directionalRelationEvidenceIdentity)
+    assert.equal(nowCalls, 0)
+    assert.equal(randomCalls, 0)
+    assert.equal(envReads, 0)
     assert.equal(fetchCalls, 0)
     for (const [label, count] of counts) assert.equal(count, 0, label)
   } finally {
     Date.now = originalNow
     Math.random = originalRandom
-    if (originalNoise === undefined) delete process.env.KODAC_P3_R15_AMBIENT_NOISE
-    else process.env.KODAC_P3_R15_AMBIENT_NOISE = originalNoise
+    process.env = originalEnv
     if (fetchDescriptor !== undefined) Object.defineProperty(globalThis, "fetch", fetchDescriptor)
     for (const original of [...originals].reverse()) {
       Object.defineProperty(original.module, original.key, original.descriptor!)
