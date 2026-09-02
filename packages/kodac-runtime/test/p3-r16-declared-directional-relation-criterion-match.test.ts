@@ -876,3 +876,73 @@ test("P3-R16 adds no aggregate, weighting, majority, Pareto, statistics, promoti
     assert.equal(compact.some((key) => key.includes(forbidden)), false, forbidden)
   }
 })
+
+test("P3-R16 rejects frozen identity-rebound R15 relation substitution before criterion state derivation", async () => {
+  const pair = controlledPair()
+  const canonical = trustedR15(pair)
+  const globalKey = "__kodacP3R16MalformedTrustedR15"
+  const marker = "p3-r16-malformed-r15"
+
+  function deepFreezeForTest(value: unknown, seen = new WeakSet<object>()): void {
+    if (value === null || typeof value !== "object" || seen.has(value)) return
+    seen.add(value)
+    for (const nested of Object.values(value as Record<string, unknown>)) deepFreezeForTest(nested, seen)
+    Object.freeze(value)
+  }
+
+  function forged(relation: string): unknown {
+    const value = clone(canonical) as unknown as Record<string, unknown>
+    const dimensionRelations = value.dimensionRelations as Record<string, unknown>[]
+    dimensionRelations[0]!.relation = relation
+    const projection = { ...value }
+    delete projection.directionalRelationEvidenceIdentity
+    value.directionalRelationEvidenceIdentity = sha256Canonical(projection)
+    deepFreezeForTest(value)
+    return value
+  }
+
+  const globalRecord = globalThis as unknown as Record<string, unknown>
+  const moduleApi = await import("node:module")
+  const hook = moduleApi.registerHooks({
+    resolve(specifier, context, nextResolve) {
+      if (
+        specifier === "../p3-r15/strategy-reduction-directional-relation.ts" &&
+        context.parentURL?.includes(`${marker}=`)
+      ) {
+        const source = `export function buildStrategyReductionDirectionalRelationEvidence() { return globalThis.${globalKey} }`
+        return {
+          url: `data:text/javascript,${encodeURIComponent(source)}`,
+          shortCircuit: true,
+        }
+      }
+      return nextResolve(specifier, context)
+    },
+  })
+
+  try {
+    const moduleUrl = new URL("../bench/p3-r16/declared-directional-relation-criterion-match.ts", import.meta.url)
+    moduleUrl.searchParams.set(marker, "1")
+    const isolated = await import(moduleUrl.href)
+    const build = isolated.buildDeclaredStrategyDirectionalRelationCriterionMatchEvidence
+    const actual = canonical.dimensionRelations[0]!.relation
+    const wrongCanonical = actual === "LEFT_FAVORED_BY_DIRECTION"
+      ? "RIGHT_FAVORED_BY_DIRECTION"
+      : "LEFT_FAVORED_BY_DIRECTION"
+
+    for (const relation of ["UNSUPPORTED_RELATION", wrongCanonical]) {
+      globalRecord[globalKey] = forged(relation)
+      assert.throws(
+        () => build(
+          pair.left.bundle,
+          pair.right.bundle,
+          pair.declaration,
+          relationCriteria(pair),
+        ),
+        /relation is unsupported or inconsistent with trusted P3-R14 evidence/,
+      )
+    }
+  } finally {
+    hook.deregister()
+    delete globalRecord[globalKey]
+  }
+})
