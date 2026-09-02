@@ -171,24 +171,6 @@ WAIVER = NO
 
 Any head movement invalidates prior exact-head qualification evidence.
 
-## Frozen exact candidate identity
-
-The final candidate identity for qualification is:
-
-```text
-HEAD = 030c7a63170be02db4eb4da94d605e9d6415c34b
-TREE = a2f9ba070289ea39053988fde5c9af8f9bfac708
-BASE = da59d2a46d4eff5c12a60f2057a57d3572ba0e5d
-BEHIND_BY = 0
-CHANGED_PATHS = EXACTLY 4
-CONTRACTS_BLOB = ab5918caec73d2e6688d982c2774479b916e50b9
-IMPLEMENTATION_BLOB = 6045a0f4fe6362bca3e600c8d78602083a10eb5c
-TEST_BLOB = b23368559a395813702ebf0cc971aa2bf02a77ec
-EVIDENCE_PRE_PIN_BLOB = 35cd060f35df22f643c8b4f08ca41cdaaa113384
-```
-
-The evidence blob above is the immediate pre-pin blob because this section necessarily changes the evidence file itself. The commit produced by this pinning edit becomes the only new exact head and must be re-captured before CI/review qualification; no pre-pin head is eligible for merge.
-
 No CI PASS, external semantic-review quorum, zero-thread proof, merge eligibility, canonical closure, P3 overall closure, or project completion is claimed by this candidate before GitHub proves it on one unchanged exact final head.
 
 ## Preserved non-grants
