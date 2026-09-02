@@ -50,6 +50,10 @@ and follows this bounded sequence:
 EXACT FOUR-ARGUMENT ARITY GATE
 -> DIRECT DELEGATION OF FIRST THREE ROOTS TO CANONICAL P3-R15
 -> TRUST ONLY THE DETACHED DEEPLY FROZEN P3-R15 RESULT
+-> FAIL-CLOSED R15 ROOT / R14-BINDING / SEVEN-RELATION TOPOLOGY VALIDATION
+-> EXACT RELATION-ENTRY KEY + CANONICAL DIMENSION-ORDER VALIDATION
+-> EXACT COPY-PARITY AGAINST EACH NESTED TRUSTED R14 DIMENSION COMPARISON
+-> RE-DERIVE ONLY THE EXPECTED R15 RELATION AS A DEFENSIVE CONSISTENCY CHECK
 -> CANONICAL-JSON SNAPSHOT OF THE FOURTH CALLER-OWNED DECLARATION
 -> EXACT ROOT / NESTED KEY VALIDATION
 -> EXACT criterionSetId STABLE-ID / 512 UTF-8 BYTE VALIDATION
@@ -63,7 +67,7 @@ EXACT FOUR-ARGUMENT ARITY GATE
 -> DETACHED DEEPLY FROZEN OUTPUT
 ```
 
-`INSUFFICIENT_EVIDENCE` is never accepted as an allowed satisfied relation. Trusted R15 relation evidence is the only observed relation input. No raw-value, raw-delta, direction, reduction-status, or comparison-status reinterpretation is performed by R16.
+`INSUFFICIENT_EVIDENCE` is never accepted as an allowed satisfied relation. The canonical R15 result remains the only observed directional-relation evidence used by criterion matching. R16 does not replace or upgrade that evidence: before applying caller criteria, it independently verifies that every R15 relation entry exactly preserves its nested R14 comparison and that its relation literal is the only relation semantically permitted by that trusted comparison. This is fail-closed predecessor validation, not a new comparison, score, policy, or evidence source.
 
 ## Closed root logical state
 
@@ -80,9 +84,26 @@ ELSE
 
 This is caller-declared criterion-match evidence only. It is not a global better/worse verdict, score, majority, weighted result, Pareto/dominance decision, promotion, recommendation, winner, default, or repository policy.
 
+## Independent-review repair incorporated
+
+A fresh independent semantic review of the earlier exact-head candidate identified one actionable fail-closed defect: the earlier R16 root validator verified the R15 root identity/count/freeze state but did not independently reject an unsupported or semantically inconsistent `dimensionRelations[].relation` before criterion-state derivation.
+
+The implementation was repaired forward-only within the authorized implementation path. The repaired validator now:
+
+- requires the exact canonical R15 relation-entry key set;
+- requires all seven entries and the nested R14 comparisons in canonical P3-R6 dimension order;
+- cross-binds R15 root identities/subjects/benchmark fields to nested R14 evidence;
+- requires every copied relation-entry field except `relation` to be byte-semantically identical to its nested R14 dimension comparison under canonical hashing;
+- re-derives only the expected R15 relation from the trusted R14 comparison and rejects both unsupported relation literals and supported-but-inconsistent relation substitution;
+- still treats the returned canonical R15 record as the predecessor evidence and introduces no alternate comparison authority.
+
+A focused regression test now constructs an isolated R16 module instance whose canonical R15 dependency returns a deeply frozen, identity-rebound R15-shaped record with either an unsupported relation literal or a canonical-but-wrong relation literal. Both must fail before criterion-state derivation. The test does not export a test-only production hook, modify the test runner, or add a fifth repository path.
+
+This section records repair materialization only. The finding is not considered terminally reconciled until fresh independent exact-head review on the final unchanged candidate confirms it.
+
 ## Focused proof matrix materialization
 
-The authorized focused test path now materializes the complete source-level proof matrix required by the canonical authorization, using local deterministic synthetic fixtures and the real canonical late-chain reconstruction rather than mocks or caller-serialized R15 evidence:
+The authorized focused test path materializes the source-level proof matrix required by the canonical authorization, using local deterministic synthetic fixtures and the real canonical late-chain reconstruction rather than caller-serialized R15 evidence:
 
 ```text
 P3-R1
@@ -105,6 +126,7 @@ The focused test source covers at minimum:
 - exact four-argument arity rejection before predecessor invocation or caller-root semantic reads;
 - direct delegation of the first three roots to canonical R15 and complete trusted R15 preservation;
 - canonical predecessor failure propagation and rejection of caller shortcut/R15 substitution;
+- explicit fail-closed rejection of deeply frozen identity-rebound malformed R15 relation evidence, including unsupported and canonical-but-semantically-wrong relation literals;
 - exact fourth-root canonical JSON hardening against accessors, symbols, sparse arrays, cycles, and non-canonical structures;
 - exact declaration root/nested key sets;
 - exact `criterionSetId` stable-ID grammar and 512 UTF-8-byte bound;
