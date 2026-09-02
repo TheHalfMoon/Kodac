@@ -80,11 +80,45 @@ ELSE
 
 This is caller-declared criterion-match evidence only. It is not a global better/worse verdict, score, majority, weighted result, Pareto/dominance decision, promotion, recommendation, winner, default, or repository policy.
 
-## Current focused-test state
+## Focused proof matrix materialization
 
-The first implementation head includes direct proof that wrong runtime arity rejects before any semantic read of hostile caller roots and locks the closed declaration/evidence literals. The broader authorization-mandated focused proof matrix remains required before qualification and must be expanded on the same four-path surface before this candidate can be classified merge-eligible.
+The authorized focused test path now materializes the complete source-level proof matrix required by the canonical authorization, using local deterministic synthetic fixtures and the real canonical late-chain reconstruction rather than mocks or caller-serialized R15 evidence:
 
-No CI PASS, external semantic-review quorum, zero-thread proof, merge eligibility, or canonical closure is claimed by this document before GitHub proves it on an exact frozen implementation head.
+```text
+P3-R1
+-> P3-R2
+-> P3-R6
+-> P3-R7
+-> P3-R8
+-> P3-R9
+-> P3-R10
+-> P3-R11
+-> P3-R12
+-> P3-R13
+-> P3-R14
+-> P3-R15
+-> P3-R16
+```
+
+The focused test source covers at minimum:
+
+- exact four-argument arity rejection before predecessor invocation or caller-root semantic reads;
+- direct delegation of the first three roots to canonical R15 and complete trusted R15 preservation;
+- canonical predecessor failure propagation and rejection of caller shortcut/R15 substitution;
+- exact fourth-root canonical JSON hardening against accessors, symbols, sparse arrays, cycles, and non-canonical structures;
+- exact declaration root/nested key sets;
+- exact `criterionSetId` stable-ID grammar and 512 UTF-8-byte bound;
+- exact lowercase SHA-256 `criterionPolicyIdentity` grammar;
+- exact seven canonical dimensions, order, cardinality, and trusted `metricId` binding;
+- accepted non-empty closed `allowedRelations` subsets;
+- rejection of empty, duplicate, unsupported, `INSUFFICIENT_EVIDENCE`, and unsorted relation sets without repair;
+- per-dimension `SATISFIED`, `NOT_SATISFIED`, and `INSUFFICIENT_EVIDENCE` semantics;
+- insufficiency root precedence, then not-satisfied precedence, then all-satisfied only when all seven criteria satisfy;
+- deterministic self-reference-free identity, insertion-order neutrality, and sensitivity to declaration and trusted R15 changes;
+- detached deeply frozen output including declaration, trusted R15, results, arrays, and nested children;
+- absence of aggregate score, weighting, majority, Pareto/dominance, statistics, ranking, promotion, execution, persistence, product, release, R17+, P4+, or project-completion surfaces.
+
+This section records proof-matrix **materialization**, not runtime success. Exact-head TypeScript typecheck, focused/full tests, required GitHub CI, independent semantic review quorum, and all remaining merge gates must still succeed on one unchanged final head before qualification.
 
 ## Qualification requirements still mandatory
 
@@ -100,7 +134,7 @@ K2 UBUNTU TYPECHECK / TEST / PATCH-HOOK = SUCCESS
 K2 MACOS TYPECHECK / TEST / PATCH-HOOK = SUCCESS
 K2 WINDOWS TYPECHECK / TEST / PATCH-HOOK = SUCCESS
 K2 STABLE GATE = SUCCESS
-AUTHORIZATION-MANDATED FOCUSED PROOF MATRIX = COMPLETE
+AUTHORIZATION-MANDATED FOCUSED PROOF MATRIX = COMPLETE AND PASSING
 INDEPENDENT SUBSTANTIVE EXTERNAL SEMANTIC REVIEW = 2 / 2 TERMINAL CLEAN
 UNRESOLVED ACTIONABLE FINDINGS = 0
 UNRESOLVED ACTIONABLE REVIEW THREADS = 0
@@ -111,6 +145,8 @@ WAIVER = NO
 ```
 
 Any head movement invalidates prior exact-head qualification evidence.
+
+No CI PASS, external semantic-review quorum, zero-thread proof, merge eligibility, canonical closure, P3 overall closure, or project completion is claimed by this candidate before GitHub proves it on one unchanged exact final head.
 
 ## Preserved non-grants
 
