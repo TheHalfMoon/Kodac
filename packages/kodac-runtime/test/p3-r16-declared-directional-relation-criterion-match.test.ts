@@ -511,8 +511,8 @@ function reconstructR13(value: Scenario) {
 }
 
 function controlledPair(
-  leftOptions: ScenarioOptions = { measurementA: { utilizedCount: 1 }, measurementB: { utilizedCount: 1 } },
-  rightOptions: ScenarioOptions = { measurementA: { utilizedCount: 2 }, measurementB: { utilizedCount: 2 } },
+  leftOptions: ScenarioOptions = { measurementA: { utilizedCount: 1 }, measurementB: { utilizedCount: 1, noGold: true } },
+  rightOptions: ScenarioOptions = { measurementA: { utilizedCount: 2 }, measurementB: { utilizedCount: 2, noGold: true } },
 ) {
   const left = makeScenario("strategy:p3-r16-left", leftOptions)
   const right = makeScenario("strategy:p3-r16-right", rightOptions)
