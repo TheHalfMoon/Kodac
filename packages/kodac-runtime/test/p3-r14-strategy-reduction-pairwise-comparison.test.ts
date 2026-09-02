@@ -973,6 +973,25 @@ test("P3-R14 rejects swapped case correspondence and non-finite/non-JSON hostile
   }
 })
 
+test("P3-R14 rejects accessors before semantic reads at the hardened snapshot boundary", () => {
+  const pair = controlledPair()
+  const hostile = { ...pair.left.bundle } as unknown as Record<string, unknown>
+  let getterCalls = 0
+  Object.defineProperty(hostile, "strategyDeclaration", {
+    enumerable: true,
+    get: () => {
+      getterCalls += 1
+      return pair.left.strategy
+    },
+  })
+
+  assert.throws(
+    () => buildStrategyReductionPairwiseComparisonEvidence(hostile, pair.right.bundle, pair.declaration),
+    /enumerable data property/,
+  )
+  assert.equal(getterCalls, 0)
+})
+
 test("P3-R14 rejects unpaired UTF-16 surrogates inside schema-valid nested strings at the snapshot boundary", () => {
   for (const [label, value, expected] of [
     ["high", "\ud800", /unpaired UTF-16 high surrogate/],
