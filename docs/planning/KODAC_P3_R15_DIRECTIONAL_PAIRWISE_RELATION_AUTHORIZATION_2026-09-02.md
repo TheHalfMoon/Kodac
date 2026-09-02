@@ -28,8 +28,6 @@ Effective P3-R15 implementation authority may exist only after this exact author
 
 ## 2. Canonical baseline
 
-This candidate starts only after canonical P3-R14 implementation and mandatory current-view reconciliation:
-
 ```text
 CANONICAL_MAIN_AT_CANDIDATE_START = 1e244c64926e4035134d9b4e995acb2d6b82e722
 CANONICAL_MAIN_TREE_AT_CANDIDATE_START = af08542589f8476a47cf6a83a65a6b6d70eba963
@@ -92,7 +90,7 @@ ONE TRUSTED P3-R14 PAIRWISE EVIDENCE RECORD
 -> ONE DETERMINISTIC PER-DIMENSION DIRECTIONAL RELATION
 ```
 
-This gap is evidence-derived. It is not inferred from sequence or numbering.
+This gap is evidence-derived and is not inferred from sequence or numbering.
 
 ---
 
@@ -135,7 +133,7 @@ External research is planning evidence only and creates no authority or dependen
 Relevant current evidence includes:
 
 - **ContextBench** — arXiv:2602.05892 — evaluates context recall, precision, and efficiency separately and reports important differences between explored and actually utilized context.
-- **SWE-PRBench** — arXiv:2603.26130 — evaluates frozen context configurations and reports that adding richer context can reduce review quality through attention dilution rather than being monotonically better.
+- **SWE-PRBench** — arXiv:2603.26130 — evaluates frozen context configurations and reports that richer context can reduce review quality through attention dilution rather than being monotonically better.
 - **Agent Retrieval Bench** — arXiv:2607.24882 — isolates retrieval/context acquisition and includes natural no-gold cases rather than assuming every query requires a positive retrieval result.
 
 These references support retaining visible per-dimension evidence and abstention. They do not justify a blended score, global winner, leaderboard, promotion, or superiority claim.
@@ -154,21 +152,27 @@ buildStrategyReductionDirectionalRelationEvidence(
 ) -> StrategyReductionDirectionalRelationEvidence
 ```
 
-The three public roots are the exact established P3-R14 inputs and are untrusted.
+The public runtime contract is **exactly three arguments**. The future implementation must reject `arguments.length !== 3` before invoking any predecessor or reading any caller root.
 
-The mandatory procedure is:
+The three public roots are exactly the established P3-R14 inputs and remain untrusted. P3-R15 must not implement a second competing normalization/reconstruction pipeline for them.
+
+Mandatory procedure:
 
 ```text
-1. canonical-JSON snapshot all three public roots before semantic reads
-2. call canonical P3-R14 buildStrategyReductionPairwiseComparisonEvidence(...) using only detached snapshots
-3. treat the reconstructed P3-R14 output as the only trusted pairwise source
-4. require exactly seven canonical dimensionComparisons in canonical order
-5. preserve the complete trusted R14 evidence as one nested immutable predecessor record
-6. derive exactly one closed-vocabulary relation per dimension from trusted R14 comparisonStatus, left/right statuses, values, raw delta, and direction
-7. preserve every trusted R14 dimension-comparison field unchanged and append only `relation`
-8. derive deterministic R15 evidence identity
-9. return detached deeply frozen evidence
+1. reject runtime argument count != 3 before any predecessor call or semantic read
+2. pass the three caller roots directly to canonical buildStrategyReductionPairwiseComparisonEvidence(...)
+3. perform no semantic read from any caller root before or after that call
+4. rely on canonical R14 as the sole hostile-JSON snapshot, accessor-safe canonicalization, Unicode-scalar validation, exact-key normalization, and R13 reconstruction boundary
+5. treat only the detached deeply frozen returned R14 evidence as trusted pairwise truth
+6. require exactly seven trusted R14 dimensionComparisons in canonical P3_R6_DIMENSIONS order
+7. preserve the complete trusted R14 evidence as one nested immutable predecessor record
+8. derive exactly one closed-vocabulary relation per dimension from trusted R14 comparisonStatus, left/right statuses, values, raw delta, and direction
+9. copy every trusted R14 dimension-comparison field unchanged and append only relation
+10. derive deterministic R15 evidence identity
+11. return detached deeply frozen R15 evidence
 ```
+
+This delegation rule is intentional: R14 already owns the exact three-root hostile-input boundary, including its canonicalize-before-semantic-read discipline, accessor rejection without getter execution, lone-surrogate rejection on detached data, exact bundle/declaration schemas, controlled-input equality, and trusted R13 reconstruction. R15 must compose that boundary, not fork it.
 
 P3-R15 must not accept serialized caller-supplied R14 evidence as truth or accept caller-supplied favored relations.
 
@@ -176,7 +180,7 @@ P3-R15 must not accept serialized caller-supplied R14 evidence as truth or accep
 
 ## 8. Exact output contract
 
-Canonical P3 predecessor layers preserve the trusted predecessor evidence rather than silently projecting away semantic fields. R15 must follow that discipline.
+Canonical P3 predecessor layers preserve trusted predecessor evidence rather than silently projecting away semantic fields. R15 must follow that discipline.
 
 The future R15 root contains exactly:
 
@@ -220,7 +224,7 @@ benchmarkProtocolVersion
 
 `pairwiseComparisonEvidence` is the complete detached trusted output returned by canonical P3-R14. It must not be a caller-supplied serialized R14 object.
 
-The root preserves the exact trusted R14 left/right orientation. No automatic side sorting, swapping, canonical winner ordering, or orientation normalization is authorized.
+The root preserves exact trusted R14 left/right orientation. No automatic side sorting, swapping, canonical winner ordering, or orientation normalization is authorized.
 
 `dimensionRelations` contains exactly seven entries in canonical `P3_R6_DIMENSIONS` order and is one-to-one with trusted `pairwiseComparisonEvidence.dimensionComparisons`.
 
@@ -246,7 +250,7 @@ rawDeltaLeftMinusRight
 relation
 ```
 
-For every index, the first sixteen fields must equal the corresponding trusted R14 `dimensionComparisons[index]` values exactly. R15 may not rename `comparisonStatus` to a weaker `status`, drop `leftStatus` or `rightStatus`, or otherwise narrow predecessor evidence.
+For every index, the first sixteen fields must equal the corresponding trusted R14 `dimensionComparisons[index]` values exactly. R15 may not rename `comparisonStatus`, drop `leftStatus` or `rightStatus`, normalize direction, or otherwise narrow predecessor evidence.
 
 No aggregate, weight, rank, score, confidence, p-value, effect size, promotion, or winner field is authorized.
 
@@ -265,7 +269,7 @@ INSUFFICIENT_EVIDENCE
 
 No aliases are authorized.
 
-The relation is evidence about one metric dimension under one declared direction. The word `FAVORED` does not mean globally better, superior, winning, promotable, or default.
+The relation is evidence about one metric dimension under one already-bound direction. `FAVORED_BY_DIRECTION` does not mean globally better, superior, winning, promotable, or default.
 
 ---
 
@@ -275,39 +279,41 @@ For every trusted R14 dimension comparison:
 
 ### Insufficient evidence
 
-If trusted R14 `comparisonStatus` is `INSUFFICIENT_EVIDENCE`, R15 must preserve the trusted R14 state and derive:
+If `comparisonStatus == INSUFFICIENT_EVIDENCE`, canonical R14 already guarantees:
 
 ```text
 leftReducedValue = null
 rightReducedValue = null
 rawDeltaLeftMinusRight = null
+```
+
+R15 derives only:
+
+```text
 relation = INSUFFICIENT_EVIDENCE
 ```
 
-At least one of `leftStatus | rightStatus` is therefore `INSUFFICIENT_EVIDENCE` under the canonical R14 contract. R15 does not reinterpret which side caused insufficiency.
-
-No direction-based preference may be inferred from missing evidence.
+At least one of trusted `leftStatus | rightStatus` is insufficient under canonical R14. R15 preserves both statuses and does not reinterpret which side caused insufficiency.
 
 ### Equal raw value
 
-If trusted R14 `comparisonStatus` is `COMPARABLE` and:
+If `comparisonStatus == COMPARABLE` and:
 
 ```text
-leftReducedValue == rightReducedValue
+leftReducedValue === rightReducedValue
 ```
 
-then canonical R14 also requires finite values and:
+canonical R14 guarantees finite values and a zero raw delta. R15 derives:
 
 ```text
-rawDeltaLeftMinusRight == 0
 relation = EQUAL_RAW_VALUE
 ```
 
-`EQUAL_RAW_VALUE` is literal equality of the trusted reduced numbers only. It is not statistical equivalence, practical equivalence, confidence, or a tie under any tolerance.
+`EQUAL_RAW_VALUE` is exact JavaScript numeric equality of the two already-trusted finite reduced numbers. It is not epsilon equality, statistical equivalence, practical equivalence, confidence, or a tie under any tolerance.
 
 ### Higher is better
 
-If trusted R14 `comparisonStatus` is `COMPARABLE`, values differ, and direction is `HIGHER_IS_BETTER`:
+If `comparisonStatus == COMPARABLE`, values differ, and direction is `HIGHER_IS_BETTER`:
 
 ```text
 leftReducedValue > rightReducedValue -> LEFT_FAVORED_BY_DIRECTION
@@ -316,14 +322,14 @@ leftReducedValue < rightReducedValue -> RIGHT_FAVORED_BY_DIRECTION
 
 ### Lower is better
 
-If trusted R14 `comparisonStatus` is `COMPARABLE`, values differ, and direction is `LOWER_IS_BETTER`:
+If `comparisonStatus == COMPARABLE`, values differ, and direction is `LOWER_IS_BETTER`:
 
 ```text
 leftReducedValue < rightReducedValue -> LEFT_FAVORED_BY_DIRECTION
 leftReducedValue > rightReducedValue -> RIGHT_FAVORED_BY_DIRECTION
 ```
 
-The relation may also be cross-checked against the sign of the trusted raw delta, but the trusted reduced values and trusted direction remain the semantic source.
+The relation may be defense-in-depth cross-checked against trusted raw-delta sign, but the trusted reduced values and trusted direction are the semantic source.
 
 No epsilon/tolerance rule is authorized.
 
@@ -333,9 +339,11 @@ No epsilon/tolerance rule is authorized.
 
 P3-R15 must preserve the complete trusted R14 evidence object and every R14 dimension-comparison field. It may not weaken, reconstruct differently, or silently project away R14 controls.
 
-In particular, R15 inherits without modification:
+R15 inherits without modification:
 
 ```text
+EXACT THREE-ROOT R14 PUBLIC CONTRACT
+HOSTILE-JSON / ACCESSOR / UNICODE FAIL-CLOSED R14 BOUNDARY
 EXACTLY TWO DISTINCT STRATEGY SUBJECTS
 EXACT SHARED CORRESPONDING P3-R1 PLAN REQUESTS
 EXACT SHARED CORRESPONDING MEASUREMENT GROUND-TRUTH PROJECTIONS
@@ -346,28 +354,30 @@ LEFT / RIGHT REDUCTION STATUS EVIDENCE
 COMPARABLE ONLY WHEN BOTH TRUSTED R12 REDUCTIONS ARE FINITE REDUCED VALUES
 RAW DELTA = LEFT REDUCED VALUE - RIGHT REDUCED VALUE
 FULL LEFT / RIGHT TRUSTED R13 DIRECTION-BINDING EVIDENCE NESTED INSIDE R14
+R14 ORIENTATION-SENSITIVE SELF-REFERENCE-FREE IDENTITY
+R14 DETACHMENT / DEEP FREEZE
 ```
 
-Any failure in canonical R14 reconstruction fails R15 closed before relation derivation.
+Any failure in canonical R14 fails R15 closed before relation derivation.
 
-R15 must not reach around the trusted R14 object to derive pairwise truth independently from caller roots or from an older P2/P3 predecessor.
+R15 must not reach around the returned trusted R14 object to derive pairwise truth independently from caller roots or an older P2/P3 predecessor.
 
 ---
 
 ## 12. Deterministic identity and immutability
 
-The future `directionalRelationEvidenceIdentity` must be one lowercase `sha256:<64 hex>` over a canonical projection containing every R15 root field except `directionalRelationEvidenceIdentity` itself.
+The future `directionalRelationEvidenceIdentity` must be one lowercase `sha256:<64 hex>` over a canonical self-reference-free projection containing every R15 root field except `directionalRelationEvidenceIdentity` itself.
 
-That identity projection therefore includes the complete trusted nested `pairwiseComparisonEvidence` and all seven derived `dimensionRelations`.
+That projection includes the complete trusted nested `pairwiseComparisonEvidence` and all seven derived `dimensionRelations`.
 
 Requirements:
 
-- deterministic canonical JSON identity;
+- deterministic canonical JSON identity using the repository-local canonical hashing discipline;
 - orientation-sensitive identity;
 - exact dimension order preserved;
 - relation values included in identity;
 - complete trusted R14 evidence included in identity;
-- no timestamp, filesystem path, runtime environment, object identity, or mutable process state in identity;
+- no timestamp, filesystem path, runtime environment, random value, process state, object identity, or mutable ambient state in identity;
 - returned root, nested R14 evidence, relation array, and all nested objects deeply frozen/detached.
 
 Mutating caller inputs after invocation must not change returned evidence.
@@ -376,25 +386,26 @@ Mutating caller inputs after invocation must not change returned evidence.
 
 ## 13. Fail-closed requirements
 
-A future implementation must reject at minimum:
+A future implementation must reject or fail closed at minimum when:
 
-- any failure of canonical P3-R14 reconstruction;
-- unknown/missing keys in any public input root as enforced by canonical R14;
-- non-canonical or non-finite numeric evidence as enforced by canonical predecessors;
-- trusted R14 `dimensionComparisons.length` other than seven;
-- trusted R14 dimension order drift;
-- direction outside `HIGHER_IS_BETTER | LOWER_IS_BETTER`;
-- `comparisonStatus` outside `COMPARABLE | INSUFFICIENT_EVIDENCE`;
-- any trusted R14 null/value/delta inconsistency;
-- any mismatch between a copied R15 dimension field and its trusted R14 dimension comparison;
-- a nonzero trusted raw delta with equal trusted values;
-- zero trusted raw delta with unequal trusted values;
-- any caller-supplied relation field used as truth;
-- any serialized caller-supplied R14 evidence shortcut;
-- any attempt to compare three or more strategies;
-- any attempt to aggregate across dimensions.
+- runtime argument count is not exactly three;
+- canonical P3-R14 rejects any caller root;
+- trusted R14 `dimensionComparisons.length` is not seven;
+- trusted R14 dimension order differs from canonical `P3_R6_DIMENSIONS`;
+- a trusted R14 direction is outside `HIGHER_IS_BETTER | LOWER_IS_BETTER`;
+- a trusted R14 `comparisonStatus` is outside `COMPARABLE | INSUFFICIENT_EVIDENCE`;
+- trusted R14 null/value/delta semantics are internally inconsistent;
+- a copied R15 dimension field differs from its trusted R14 dimension comparison;
+- equal trusted values have a nonzero trusted raw delta;
+- unequal trusted values have zero trusted raw delta;
+- caller supplies or attempts to inject a relation as truth;
+- caller supplies serialized R14 evidence as a shortcut;
+- an implementation path attempts to compare three or more strategies;
+- an implementation path attempts to aggregate across dimensions.
 
-No best-effort repair, coercion, sorting, tolerance, default direction, silent field dropping, or predecessor-field renaming is authorized.
+R15 must not repair or coerce a trusted R14 record. If an impossible R14 invariant is observed, R15 fails closed rather than normalizing it.
+
+No sorting, tolerance, default direction, silent field dropping, predecessor-field renaming, best-effort repair, or alternate reconstruction path is authorized.
 
 ---
 
@@ -411,15 +422,23 @@ docs/planning/KODAC_P3_R15_DIRECTIONAL_PAIRWISE_RELATION_EVIDENCE_2026-09-02.md
 
 No fifth path is authorized.
 
-The implementation may import existing repository-local canonical P3/P2 contracts but may add no dependency, package, workflow, script, benchmark corpus/manifest/fixture, provider/model, persistence, product, release, or ruleset change.
+The implementation may import existing repository-local canonical P3/P2 contracts and helpers but may add no dependency, package, workflow, script, benchmark corpus/manifest/fixture, provider/model, persistence, product, release, or ruleset change.
 
 ---
 
 ## 15. Required future tests
 
-The authorized future implementation test path must prove at minimum:
+The authorized future test path must prove at minimum:
 
-### Valid semantics
+### Public-boundary and predecessor delegation
+
+- missing and extra runtime arguments are rejected before R14 invocation;
+- all three caller roots are delegated to canonical R14 without R15 semantic reads or alternate normalization;
+- relevant hostile-root/accessor/Unicode/cross-control failures already proven by R14 remain observable through R15 delegation;
+- no serialized-R14 shortcut exists;
+- no caller-supplied relation is accepted.
+
+### Valid relation semantics
 
 - higher-is-better left favored;
 - higher-is-better right favored;
@@ -435,19 +454,13 @@ The authorized future implementation test path must prove at minimum:
 - left/right orientation sensitivity;
 - detached/deeply frozen nested R14 evidence and final result.
 
-### Fail-closed behavior
+### Purity / ambient authority
 
-- every relevant canonical R14 malformed-input and cross-control rejection remains enforced through reconstruction;
-- no direct serialized-R14 shortcut;
-- no caller-supplied relation acceptance;
-- no predecessor-field narrowing or renaming;
-- no third strategy input;
-- no aggregate field or output;
-- mutation after call does not affect output.
+Focused tests must demonstrate no R15 source path invokes or depends on network, subprocess, filesystem write, clock, randomness, environment secrets, persistence, telemetry, or other ambient side effects. Where runtime traps are used for Node built-ins, tests must preserve the repository's existing synchronization discipline for CommonJS and named ESM built-in exports.
 
 ### Non-grant assertions
 
-Tests and evidence must demonstrate the implementation contains no API or field for:
+Tests/evidence must demonstrate no API or field for:
 
 ```text
 global winner
@@ -498,9 +511,9 @@ Canonicalization requires:
 5. after merge, prove canonical `main`, ordered parents, tree, authorization-document blob, valid merge signature, applicable push checks, and active no-bypass ruleset;
 6. publish immutable post-merge proof on the authorization PR.
 
-For the docs-only authorization merge, if the path-filtered K2 workflow does not emit on the post-merge push, that state must be recorded as `NOT_EMITTED / NON_APPLICABLE_BY_PUSH_PATH_FILTER`, never relabeled as PASS. The exact qualified PR head must still prove the K2 pull-request classifier/stable gate before merge.
+For the docs-only authorization merge, if path-filtered K2 does not emit on post-merge push, record `NOT_EMITTED / NON_APPLICABLE_BY_PUSH_PATH_FILTER`; never relabel it PASS. The exact qualified PR head must still prove the K2 pull-request classifier/stable gate before merge.
 
-Only the complete post-merge proof activates the exact four-path P3-R15 implementation authority in Section 14.
+Only complete post-merge proof activates the exact four-path P3-R15 implementation authority in Section 14.
 
 ---
 
@@ -540,7 +553,7 @@ WAIVER
 PROJECT COMPLETION
 ```
 
-A per-dimension `LEFT_FAVORED_BY_DIRECTION | RIGHT_FAVORED_BY_DIRECTION` relation is only literal directional metric evidence. It is not a global quality verdict.
+A per-dimension `LEFT_FAVORED_BY_DIRECTION | RIGHT_FAVORED_BY_DIRECTION` relation is literal directional metric evidence only. It is not a global quality verdict.
 
 `EQUAL_RAW_VALUE` is exact numeric equality only. It is not a statistical tie, equivalence margin, confidence statement, or practical-significance conclusion.
 
