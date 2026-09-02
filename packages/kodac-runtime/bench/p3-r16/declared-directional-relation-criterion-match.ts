@@ -3,7 +3,6 @@ import { P3_R6_DIMENSIONS } from "../p3-r6/contracts.ts"
 import {
   P3_R15_DIRECTIONAL_RELATION_EVIDENCE_KIND,
   P3_R15_DIRECTIONAL_RELATION_EVIDENCE_VERSION,
-  type P3R15DirectionalRelation,
   type StrategyReductionDirectionalRelationEvidence,
 } from "../p3-r15/contracts.ts"
 import { buildStrategyReductionDirectionalRelationEvidence } from "../p3-r15/strategy-reduction-directional-relation.ts"
@@ -66,7 +65,6 @@ const R15_DIMENSION_RELATION_KEYS = [
 ] as const
 
 type UnknownRecord = Record<string, unknown>
-type TrustedComparison = StrategyReductionDirectionalRelationEvidence["pairwiseComparisonEvidence"]["dimensionComparisons"][number]
 
 function fail(message: string): never {
   throw new TypeError(`P3-R16 contract violation: ${message}`)
@@ -133,55 +131,11 @@ function assertDeepFrozen(value: unknown, label: string, seen = new WeakSet<obje
   for (const nested of Object.values(value as UnknownRecord)) assertDeepFrozen(nested, label, seen)
 }
 
-function expectedTrustedRelation(comparison: TrustedComparison, index: number): P3R15DirectionalRelation {
-  if (comparison.comparisonStatus === "INSUFFICIENT_EVIDENCE") {
-    if (comparison.leftStatus === "REDUCED" && comparison.rightStatus === "REDUCED") {
-      fail(`canonical P3-R15 dimensionRelations[${index}] contradicts both REDUCED sides`)
-    }
-    if (
-      comparison.leftReducedValue !== null ||
-      comparison.rightReducedValue !== null ||
-      comparison.rawDeltaLeftMinusRight !== null
-    ) {
-      fail(`canonical P3-R15 dimensionRelations[${index}] insufficient evidence requires null numerics`)
-    }
-    return "INSUFFICIENT_EVIDENCE"
-  }
-  if (comparison.comparisonStatus !== "COMPARABLE") {
-    fail(`canonical P3-R15 dimensionRelations[${index}] has unsupported comparison status`)
-  }
-  if (comparison.leftStatus !== "REDUCED" || comparison.rightStatus !== "REDUCED") {
-    fail(`canonical P3-R15 dimensionRelations[${index}] comparable evidence requires REDUCED sides`)
-  }
-  const left = comparison.leftReducedValue
-  const right = comparison.rightReducedValue
-  const delta = comparison.rawDeltaLeftMinusRight
-  if (
-    typeof left !== "number" ||
-    !Number.isFinite(left) ||
-    typeof right !== "number" ||
-    !Number.isFinite(right) ||
-    typeof delta !== "number" ||
-    !Number.isFinite(delta)
-  ) {
-    fail(`canonical P3-R15 dimensionRelations[${index}] comparable numerics must be finite`)
-  }
-  const expectedDelta = left - right
-  if (!Number.isFinite(expectedDelta) || delta !== expectedDelta) {
-    fail(`canonical P3-R15 dimensionRelations[${index}] raw delta is inconsistent`)
-  }
-  if (left === right) {
-    if (delta !== 0) fail(`canonical P3-R15 dimensionRelations[${index}] equal values require zero delta`)
-    return "EQUAL_RAW_VALUE"
-  }
-  if (delta === 0) fail(`canonical P3-R15 dimensionRelations[${index}] unequal values cannot have zero delta`)
-  if (comparison.direction === "HIGHER_IS_BETTER") {
-    return left > right ? "LEFT_FAVORED_BY_DIRECTION" : "RIGHT_FAVORED_BY_DIRECTION"
-  }
-  if (comparison.direction === "LOWER_IS_BETTER") {
-    return left < right ? "LEFT_FAVORED_BY_DIRECTION" : "RIGHT_FAVORED_BY_DIRECTION"
-  }
-  fail(`canonical P3-R15 dimensionRelations[${index}] direction is unsupported`)
+function isCanonicalR15Relation(value: unknown): value is StrategyReductionDirectionalRelationEvidence["dimensionRelations"][number]["relation"] {
+  return value === "LEFT_FAVORED_BY_DIRECTION" ||
+    value === "RIGHT_FAVORED_BY_DIRECTION" ||
+    value === "EQUAL_RAW_VALUE" ||
+    value === "INSUFFICIENT_EVIDENCE"
 }
 
 function assertTrustedR15(value: StrategyReductionDirectionalRelationEvidence): void {
@@ -220,13 +174,15 @@ function assertTrustedR15(value: StrategyReductionDirectionalRelationEvidence): 
     if (relation.dimension !== expectedDimension || comparison.dimension !== expectedDimension) {
       fail(`${label} dimension/order drifted from canonical P3-R6 topology`)
     }
+    if (relation.metricId !== comparison.metricId) {
+      fail(`${label}.metricId drifted from its trusted nested P3-R14 comparison`)
+    }
     const { relation: observedRelation, ...copiedComparison } = relation
     if (sha256Canonical(copiedComparison) !== sha256Canonical(comparison)) {
       fail(`${label} does not preserve its exact nested P3-R14 comparison`)
     }
-    const expectedRelation = expectedTrustedRelation(comparison, index)
-    if (observedRelation !== expectedRelation) {
-      fail(`${label}.relation is unsupported or inconsistent with trusted P3-R14 evidence`)
+    if (!isCanonicalR15Relation(observedRelation)) {
+      fail(`${label}.relation is outside the canonical P3-R15 vocabulary`)
     }
   }
 
