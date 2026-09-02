@@ -112,8 +112,9 @@ function assertUnicodeScalarStrings(value: unknown, label: string): void {
 
 function snapshot<T>(value: unknown, label: string): T {
   try {
-    assertUnicodeScalarStrings(value, label)
-    return JSON.parse(canonicalize(value)) as T
+    const detached = JSON.parse(canonicalize(value)) as T
+    assertUnicodeScalarStrings(detached, label)
+    return detached
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
     fail(`${label} is not canonical JSON: ${detail}`)
