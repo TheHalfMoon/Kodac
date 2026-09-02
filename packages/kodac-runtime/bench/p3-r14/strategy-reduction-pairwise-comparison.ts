@@ -78,8 +78,41 @@ function compareStrings(left: string, right: string): number {
   return left < right ? -1 : left > right ? 1 : 0
 }
 
+function assertUnicodeScalarStrings(value: unknown, label: string): void {
+  if (typeof value === "string") {
+    for (let index = 0; index < value.length; index += 1) {
+      const codeUnit = value.charCodeAt(index)
+      if (codeUnit >= 0xd800 && codeUnit <= 0xdbff) {
+        const next = value.charCodeAt(index + 1)
+        if (!(next >= 0xdc00 && next <= 0xdfff)) {
+          fail(`${label} contains an unpaired UTF-16 high surrogate`)
+        }
+        index += 1
+        continue
+      }
+      if (codeUnit >= 0xdc00 && codeUnit <= 0xdfff) {
+        fail(`${label} contains an unpaired UTF-16 low surrogate`)
+      }
+    }
+    return
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => assertUnicodeScalarStrings(entry, `${label}[${index}]`))
+    return
+  }
+
+  if (value !== null && typeof value === "object") {
+    for (const [key, nested] of Object.entries(value as UnknownRecord)) {
+      assertUnicodeScalarStrings(key, `${label} key`)
+      assertUnicodeScalarStrings(nested, `${label}.${key}`)
+    }
+  }
+}
+
 function snapshot<T>(value: unknown, label: string): T {
   try {
+    assertUnicodeScalarStrings(value, label)
     return JSON.parse(canonicalize(value)) as T
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
