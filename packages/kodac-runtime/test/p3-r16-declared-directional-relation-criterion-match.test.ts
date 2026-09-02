@@ -927,15 +927,15 @@ test("P3-R16 rejects frozen identity-rebound malformed R15 vocabulary and topolo
     const cases: Array<{ readonly value: unknown; readonly error: RegExp }> = [
       {
         value: forged((entry) => { entry.relation = "UNSUPPORTED_RELATION" }),
-        error: /relation is unsupported/,
+        error: /canonical P3-R15 vocabulary/,
       },
       {
         value: forged((entry) => { entry.dimension = "wrong-dimension" }),
-        error: /dimension does not match canonical order/,
+        error: /canonical P3-R6 topology/,
       },
       {
         value: forged((entry) => { entry.metricId = "metric:wrong" }),
-        error: /does not match trusted P3-R14 comparison/,
+        error: /trusted nested P3-R14 comparison/,
       },
     ]
 
