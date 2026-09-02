@@ -15,65 +15,63 @@ P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R6+ = NOT_AUTHORIZED
 
-P3-R1 THROUGH P3-R13 = CLOSED_CANONICAL
-P3-R13 = CLOSED_CANONICAL
+P3-R1 THROUGH P3-R14 = CLOSED_CANONICAL
+P3-R14 = CLOSED_CANONICAL
 P3 OVERALL = OPEN
-PAIRWISE STRATEGY COMPARISON = NOT_AUTHORIZED
-P3-R14+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R15+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 WAIVER = NO
 ```
 
-P3-R13 closure is limited to its exact pure deterministic explicit per-dimension direction-binding boundary. It reconstructs canonical P3-R12 from original predecessor preimages, requires exactly seven caller-declared `HIGHER_IS_BETTER | LOWER_IS_BETTER` directions cross-bound to trusted R12 semantics, preserves the complete R12 evidence record, and emits deterministic deeply frozen direction-binding evidence.
+P3-R14 closure is limited to its exact pure deterministic controlled pairwise-comparison evidence boundary over exactly two distinct independently reconstructed canonical P3-R13 records. It requires corresponding controlled plan/task/case/measurement-ground-truth semantics to match, preserves the exact seven canonical reduction and direction semantics, and emits only `COMPARABLE | INSUFFICIENT_EVIDENCE` plus the raw finite `leftReducedValue - rightReducedValue` delta when both sides are finite `REDUCED` values.
 
-It does not establish a raw delta, favored side, better/worse relation, pairwise strategy comparison, cross-dimension aggregate, ranking/promotion/winner, real benchmark execution, public benchmark completion, provider/model/reviewer/evaluator invocation, persistence, product integration, or release authority.
+Direction metadata is preserved but does not normalize or interpret that raw delta. R14 does not establish a favored side, better/worse relation, tie, aggregate score, ranking/promotion/winner/default, statistical significance, real benchmark execution, public benchmark completion, provider/model/reviewer/evaluator invocation, persistence, product integration, or release authority.
 
-## Canonical P3-R13 authority and implementation
+## Canonical P3-R14 authority and implementation
 
 ```text
-P3_R12_CURRENT_VIEW_RECONCILIATION_PR = #294
-P3_R12_CURRENT_VIEW_RECONCILIATION_MERGE = ad0c3e1236c546c005c7f688f991ecbc9ed64fa5
-P3_R12_CURRENT_VIEW_RECONCILIATION_POST_MERGE_PROOF = #294 / 5498358794
+P3_R13_CURRENT_VIEW_RECONCILIATION_PR = #297
+P3_R13_CURRENT_VIEW_RECONCILIATION_MERGE = 42da1bcef8bdcb8cfe025355dba8df9021263672
 
-P3_R13_AUTHORIZATION_PR = #295
-P3_R13_AUTHORIZATION_BLOB = bc6b039cab6dbc3a570cedafe2b8f226634aa767
-P3_R13_AUTHORIZATION_MERGE = 2a67a91c6d5eef829872823f5fa6441f7a644d67
-P3_R13_AUTHORIZATION_POST_MERGE_PROOF = #295 / 5498626758
+P3_R14_AUTHORIZATION_PR = #298
+P3_R14_AUTHORIZATION_BLOB = 5a5f6cd9e2f52bcadc1ee0af0882f3a744487290
+P3_R14_AUTHORIZATION_MERGE = fbbbcf13bdb281f0fe4296045ec2e2fa7311acdb
+P3_R14_AUTHORIZATION_POST_MERGE_PROOF = #298 / 5500736118
 
-P3_R13_IMPLEMENTATION_PR = #296
-P3_R13_QUALIFIED_HEAD = 74d07c3ad64fb5b9d7a2dd17e357260a7120489b
-P3_R13_QUALIFIED_TREE = db206d23e70cb1dda9daeda37922264ce2dfd5bf
-P3_R13_QUALIFICATION_PROOF = #296 / 5499762716
-P3_R13_SEMANTIC_REVIEW = CodeRabbit 5499263271 + Cubic 5499299358
-P3_R13_IMPLEMENTATION_MERGE = 931c750681494895da046f4ba9c8406d77fcfddf
-P3_R13_MERGE_TREE = db206d23e70cb1dda9daeda37922264ce2dfd5bf
-P3_R13_MERGE_VERIFICATION = verified / valid
-P3_R13_POST_MERGE_GOVERNANCE = 33553663264 / SUCCESS
-P3_R13_POST_MERGE_PROVENANCE = 100009119493 / SUCCESS
-P3_R13_POST_MERGE_LEGACY_TESTS = 100009119739 / SUCCESS
-P3_R13_POST_MERGE_K2 = 33553663263 / SUCCESS
-P3_R13_POST_MERGE_CLASSIFIER = 100009119554 / SUCCESS
-P3_R13_POST_MERGE_WINDOWS = 100009155408 / SUCCESS
-P3_R13_POST_MERGE_UBUNTU = 100009155427 / SUCCESS
-P3_R13_POST_MERGE_MACOS = 100009155455 / SUCCESS
-P3_R13_POST_MERGE_K2_GATE = 100009519605 / SUCCESS
-P3_R13_POST_MERGE_PROOF_COMMENT = #296 / 5499792485
-P3_R13_RECONCILIATION_BOUNDARY_COMMENT = #296 / 5499834265
+P3_R14_IMPLEMENTATION_PR = #299
+P3_R14_QUALIFIED_HEAD = cbb5e1d8b11d15c35479856d8e79fd5dafb4ac9d
+P3_R14_QUALIFIED_TREE = 59dc74a3700129a9f34b0453fd8bc6c75362f6ad
+P3_R14_QUALIFICATION_PROOF = #299 / 5509427079
+P3_R14_SEMANTIC_REVIEW = Cubic 5509354561 + CodeRabbit 3913967177
+P3_R14_IMPLEMENTATION_MERGE = 6aa3e35418f95a2e198e3b8431297ab277eec6d3
+P3_R14_MERGE_TREE = 59dc74a3700129a9f34b0453fd8bc6c75362f6ad
+P3_R14_MERGE_VERIFICATION = verified / valid
+P3_R14_POST_MERGE_GOVERNANCE = 33629399450 / SUCCESS
+P3_R14_POST_MERGE_PROVENANCE = 100244817246 / SUCCESS
+P3_R14_POST_MERGE_LEGACY_TESTS = 100244817077 / SUCCESS
+P3_R14_POST_MERGE_K2 = 33629399756 / SUCCESS
+P3_R14_POST_MERGE_CLASSIFIER = 100244818046 / SUCCESS
+P3_R14_POST_MERGE_WINDOWS = 100244850923 / SUCCESS
+P3_R14_POST_MERGE_UBUNTU = 100244850933 / SUCCESS
+P3_R14_POST_MERGE_MACOS = 100244851149 / SUCCESS
+P3_R14_POST_MERGE_K2_GATE = 100245267248 / SUCCESS
+P3_R14_POST_MERGE_PROOF_COMMENT = #299 / 5509458721
+P3_R14_RECONCILIATION_BOUNDARY_COMMENT = #299 / 5509463764
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Canonical P3-R13 implementation/evidence blobs:
+Canonical P3-R14 implementation/evidence blobs:
 
 ```text
-packages/kodac-runtime/bench/p3-r13/contracts.ts
-  d712d90c734ce946c7e91f15da074adfa63e338a
-packages/kodac-runtime/bench/p3-r13/reduction-direction-binding.ts
-  0b752c5e8d47056004a0ca0aaad15c871dd089c9
-packages/kodac-runtime/test/p3-r13-reduction-direction-binding.test.ts
-  2b49db209341e8fb3923fdb8319da7174bbb543a
-docs/planning/KODAC_P3_R13_REDUCTION_DIRECTION_BINDING_EVIDENCE_2026-09-01.md
-  5cd4b59b9c2cabe00806388358acb6be286c9883
+packages/kodac-runtime/bench/p3-r14/contracts.ts
+  ef521e99559966cdd66f6c6c5215255aefc4b27b
+packages/kodac-runtime/bench/p3-r14/strategy-reduction-pairwise-comparison.ts
+  784cb3ccc884fca67411d87be19f30d3cca2cf9a
+packages/kodac-runtime/test/p3-r14-strategy-reduction-pairwise-comparison.test.ts
+  310ca4ebf1e245fbcfddfd664f66241a4e2f54ac
+docs/planning/KODAC_P3_R14_STRATEGY_REDUCTION_PAIRWISE_COMPARISON_EVIDENCE_2026-09-02.md
+  e2c366e75c9d248f5a68135210ae475f7b4033f7
 ```
 
 Historical failures remain part of the historical record and are never erased or relabeled by later canonical recovery.
@@ -94,6 +92,7 @@ R10 = deterministic proof that those two R9 members use identical metricId/unit 
 R11 = deterministic binding of exactly seven explicit P2-R3-compatible reduction policies to that exact aligned pair, with no reducer execution
 R12 = deterministic application of the exact bound policies to the exact two trusted observations, emitting only per-dimension REDUCED or INSUFFICIENT_EVIDENCE reduction evidence
 R13 = deterministic binding of exactly seven explicit HIGHER_IS_BETTER | LOWER_IS_BETTER direction values to the exact reconstructed R12 semantics while preserving the complete trusted R12 evidence
+R14 = deterministic controlled per-dimension comparison of exactly two distinct trusted reconstructed R13 records, emitting only COMPARABLE or INSUFFICIENT_EVIDENCE and raw finite left-minus-right deltas when both reductions are finite REDUCED values
 ```
 
 These compose only as evidence mechanisms:
@@ -113,16 +112,18 @@ METRIC ALIGNMENT EVIDENCE != REDUCTION
 REDUCTION-POLICY BINDING != REDUCER EXECUTION
 PER-DIMENSION REDUCTION EVIDENCE != CROSS-DIMENSION AGGREGATE SCORE
 DIRECTION BINDING != RAW DELTA
-DIRECTION BINDING != PAIRWISE STRATEGY COMPARISON
-DIRECTION BINDING != FAVORED / BETTER / WORSE VERDICT
-P3 R1-R13 CLOSED != P3 OVERALL CLOSED
-P3 R1-R13 CLOSED != P3-R14+ AUTHORITY
-P3 R1-R13 CLOSED != P4 AUTHORITY
+DIRECTION BINDING != FAVORED / BETTER / WORSE
+RAW LEFT-MINUS-RIGHT DELTA != FAVORED / BETTER / WORSE / TIE
+PAIRWISE COMPARISON EVIDENCE != CROSS-DIMENSION AGGREGATE SCORE
+PAIRWISE COMPARISON EVIDENCE != MULTI-STRATEGY RANKING / PROMOTION
+P3 R1-R14 CLOSED != P3 OVERALL CLOSED
+P3 R1-R14 CLOSED != P3-R15+ AUTHORITY
+P3 R1-R14 CLOSED != P4 AUTHORITY
 ```
 
 ## Current roadmap/status reconciliation
 
-Root `AGENTS.md` requires roadmap reconciliation after post-merge proof before the next authorized unit. Canonical P3-R13 post-merge proof `#296 / 5499792485` and continuation boundary `#296 / 5499834265` identify this R13 docs-only current-view reconciliation limited to exactly:
+Root `AGENTS.md` requires roadmap reconciliation after post-merge proof before the next authorized unit. Canonical P3-R14 post-merge proof `#299 / 5509458721` and continuation boundary `#299 / 5509463764` identify this R14 docs-only current-view reconciliation limited to exactly:
 
 ```text
 docs/roadmap/NEXT.md
@@ -138,9 +139,11 @@ The current-view reconciliation itself becomes canonical only after one frozen e
 
 ## Next engineering boundary after reconciliation
 
-Only after the R13 current-view reconciliation becomes canonical and post-merge proven may later bounded P3 definition/planning/authorization-candidate preparation be considered, if a concrete remaining gap is justified by canonical evidence.
+Only after the R14 current-view reconciliation becomes canonical and post-merge proven may later bounded P3 definition/planning/authorization-candidate preparation be considered, and only if one concrete remaining gap is justified by fresh canonical evidence.
 
-No `P3-R14` or pairwise strategy comparison requirement is inferred merely because R13 is closed. P3-R13 deliberately stops at explicit direction metadata for one reconstructed reduction record. A bounded pairwise-comparison-evidence hypothesis may be investigated later against canonical P2-R4/P2-R5 semantics, but it grants nothing.
+No `P3-R15`, favored/better-worse/tie relation, cross-dimension aggregation, ranking/promotion/winner/default, benchmark execution, P4-P8, release, or project-completion requirement is inferred merely because R14 is closed.
+
+Fresh successor analysis must re-read live `main`, the complete canonical P3-R1 through P3-R14 chain, governing ADRs, review/CI history, the durable improvement plan, and relevant precedent before proposing a falsifiable bounded candidate. If no uniquely supported gap exists, no successor should be invented.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
@@ -167,7 +170,7 @@ K4-R6+ = NOT_AUTHORIZED
 K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
-P3-R14+ IMPLEMENTATION = NOT_AUTHORIZED
+P3-R15+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
@@ -175,8 +178,8 @@ REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
 BENCHMARK CORPUS / MANIFEST / FIXTURE MUTATION = NOT_AUTHORIZED
 GENERAL / PUBLIC KODACBENCH COMPLETION = NOT ESTABLISHED
 THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION OR REDUCTION = NOT_AUTHORIZED
-RAW DELTA / FAVORED / BETTER-WORSE = NOT_AUTHORIZED
-PAIRWISE STRATEGY COMPARISON = NOT_AUTHORIZED
+THREE-OR-MORE-STRATEGY / UNBOUNDED COMPARISON = NOT_AUTHORIZED
+FAVORED / BETTER-WORSE / TIE = NOT_AUTHORIZED
 CROSS-DIMENSION AGGREGATE SCORE = NOT_AUTHORIZED
 MULTI-STRATEGY COMPARISON / RANKING / LEADERBOARD / PROMOTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER / STRATEGY PROMOTION = NOT_AUTHORIZED
