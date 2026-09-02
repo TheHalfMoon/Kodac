@@ -12,8 +12,8 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | K2 | **CLOSED** | Trusted Runtime Spine remains the side-effect execution boundary |
 | K3 | **CLOSED for K3-R1 through K3-R6 bounded scope** | K3-R7+ not authorized |
 | KRI-R1 through KRI-R4 | **CANONICAL / COMPLETE** | KRI-R5+ not authorized |
-| K4 | **CLOSED for K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
-| K5 | **CLOSED for K5-R1 through K5-R5 bounded proof-review scope** | Done Gate unchanged |
+| K4 | **CLOSED for canonical K4-R1 through K4-R5 bounded data-only scope** | K4-R6+ not authorized |
+| K5 | **CLOSED for canonical K5-R1 through K5-R5 bounded proof-review scope** | Done Gate unchanged |
 | K6 bounded closeout | **CLOSED_CANONICAL** | PR #236 / `ed4fb16e8bbaf960812285671062c9b2abf597a8` |
 | P2-R1 through P2-R5 | **CLOSED_CANONICAL** | Deterministic bounded measurement/evidence spine |
 | P2 bounded R1-R5 engineering closeout | **CLOSED_CANONICAL** | PR #250 / `0e48553f00618706955b11db795643ee710fe04a` |
@@ -25,6 +25,7 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P3 overall | **OPEN** | No repository-owned aggregate, ranking/promotion/default, statistics, real benchmark execution, or public quality claim established |
 | P3-R17+ | **NOT_AUTHORIZED** | No later implementation authority is inferred from R16 closure |
 | P4-P8 | **NOT_AUTHORIZED** | Later stages require ordered dependencies and separate authority |
+| Project completion | **NOT_ESTABLISHED** | No configured project-completion proof exists |
 
 Engineering milestone state is separate from public release status.
 
