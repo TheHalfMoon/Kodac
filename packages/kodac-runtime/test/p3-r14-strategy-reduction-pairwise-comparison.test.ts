@@ -931,7 +931,6 @@ test("P3-R14 rejects swapped case correspondence and non-finite/non-JSON hostile
     ["undefined", () => ({ ...controlledPair().left.bundle, strategyDeclaration: undefined })],
     ["function", () => ({ ...controlledPair().left.bundle, strategyDeclaration: () => undefined })],
     ["non-finite", () => ({ ...controlledPair().left.bundle, strategyDeclaration: { value: Infinity } })],
-    ["unpaired-surrogate", () => ({ ...controlledPair().left.bundle, strategyDeclaration: { value: "\ud800" } })],
     ["sparse-array", () => {
       const pair = controlledPair()
       const sparse = new Array(2)
@@ -969,6 +968,25 @@ test("P3-R14 rejects swapped case correspondence and non-finite/non-JSON hostile
     const pair = controlledPair()
     assert.throws(
       () => buildStrategyReductionPairwiseComparisonEvidence(makeHostile(), pair.right.bundle, pair.declaration),
+      label,
+    )
+  }
+})
+
+test("P3-R14 rejects unpaired UTF-16 surrogates inside schema-valid nested strings at the snapshot boundary", () => {
+  for (const [label, value, expected] of [
+    ["high", "\ud800", /unpaired UTF-16 high surrogate/],
+    ["low", "\udc00", /unpaired UTF-16 low surrogate/],
+  ] as const) {
+    const pair = controlledPair()
+    const left = clone(pair.left.bundle) as unknown as Record<string, unknown>
+    const caseAInputs = left.caseAInputs as Record<string, unknown>
+    const planRequest = caseAInputs.planRequest as Record<string, unknown>
+    planRequest.taskIdentity = value
+
+    assert.throws(
+      () => buildStrategyReductionPairwiseComparisonEvidence(left, pair.right.bundle, pair.declaration),
+      expected,
       label,
     )
   }
