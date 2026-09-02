@@ -46,7 +46,7 @@ rawDeltaLeftMinusRight = leftReducedValue - rightReducedValue
 
 The raw delta is emitted only when both trusted reductions are finite `REDUCED` values. Direction is preserved but is not used to normalize or interpret the delta.
 
-P3-R14 does **not** infer a favored side, better/worse/superior/inferior meaning, tie verdict, cross-dimension score, majority, ranking, promotion, winner/default, significance, benchmark participant execution, provider/model/reviewer/evaluator invocation, persistence, product integration, release readiness, or public superiority.
+P3-R14 does **not** infer a favored side, better/worse/superior/inferior meaning, tie verdict, cross-dimension score, majority, ranking, promotion, winner/default, statistics, statistical significance, confidence, p-value, effect-size policy, benchmark participant execution, provider/model/reviewer/evaluator invocation, persistence, product integration, release readiness, or public superiority.
 
 ---
 
@@ -143,7 +143,7 @@ Only after that proof may this reconciliation itself be called `CLOSED_CANONICAL
 
 Only after the P3-R14 current-view reconciliation becomes canonical and post-merge proven may another bounded P3 definition/planning/authorization candidate be considered.
 
-Do **not** infer `P3-R15`, favored relations, better/worse, ranking, aggregation, promotion, default selection, benchmark execution, P4-P8, public release, or project completion from numbering or R14 closure.
+Do **not** infer `P3-R15`, favored relations, better/worse, ranking, aggregation, promotion, default selection, statistics, statistical significance, confidence, p-value, effect-size policy, benchmark execution, P4-P8, public release, or project completion from numbering or R14 closure.
 
 Fresh analysis must re-read live `main`, canonical P2-R4/P2-R5 semantics, the complete P3-R1 through P3-R14 chain, review/CI history, ADR-0010, the durable improvement plan, and relevant external precedent. It must prove one concrete canonical gap before any successor authorization candidate is created.
 
@@ -166,6 +166,7 @@ THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION OR REDUCTION = NOT_AUTHORIZED
 THREE-OR-MORE-STRATEGY / UNBOUNDED COMPARISON = NOT_AUTHORIZED
 FAVORED / BETTER-WORSE / TIE = NOT_AUTHORIZED
 CROSS-DIMENSION AGGREGATE SCORE = NOT_AUTHORIZED
+STATISTICS / SIGNIFICANCE / CONFIDENCE / P-VALUE / EFFECT-SIZE POLICY = NOT_AUTHORIZED
 MULTI-STRATEGY RANKING / LEADERBOARD / PROMOTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER = NOT_AUTHORIZED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
