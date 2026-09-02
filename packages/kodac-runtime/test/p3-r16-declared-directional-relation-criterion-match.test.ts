@@ -877,7 +877,7 @@ test("P3-R16 adds no aggregate, weighting, majority, Pareto, statistics, promoti
   }
 })
 
-test("P3-R16 rejects frozen identity-rebound R15 relation substitution before criterion state derivation", async () => {
+test("P3-R16 rejects frozen identity-rebound malformed R15 vocabulary and topology before criterion state derivation", async () => {
   const pair = controlledPair()
   const canonical = trustedR15(pair)
   const globalKey = "__kodacP3R16MalformedTrustedR15"
@@ -890,10 +890,10 @@ test("P3-R16 rejects frozen identity-rebound R15 relation substitution before cr
     Object.freeze(value)
   }
 
-  function forged(relation: string): unknown {
+  function forged(mutate: (entry: Record<string, unknown>) => void): unknown {
     const value = clone(canonical) as unknown as Record<string, unknown>
     const dimensionRelations = value.dimensionRelations as Record<string, unknown>[]
-    dimensionRelations[0]!.relation = relation
+    mutate(dimensionRelations[0]!)
     const projection = { ...value }
     delete projection.directionalRelationEvidenceIdentity
     value.directionalRelationEvidenceIdentity = sha256Canonical(projection)
@@ -924,13 +924,23 @@ test("P3-R16 rejects frozen identity-rebound R15 relation substitution before cr
     moduleUrl.searchParams.set(marker, "1")
     const isolated = await import(moduleUrl.href)
     const build = isolated.buildDeclaredStrategyDirectionalRelationCriterionMatchEvidence
-    const actual = canonical.dimensionRelations[0]!.relation
-    const wrongCanonical = actual === "LEFT_FAVORED_BY_DIRECTION"
-      ? "RIGHT_FAVORED_BY_DIRECTION"
-      : "LEFT_FAVORED_BY_DIRECTION"
+    const cases: Array<{ readonly value: unknown; readonly error: RegExp }> = [
+      {
+        value: forged((entry) => { entry.relation = "UNSUPPORTED_RELATION" }),
+        error: /relation is unsupported/,
+      },
+      {
+        value: forged((entry) => { entry.dimension = "wrong-dimension" }),
+        error: /dimension does not match canonical order/,
+      },
+      {
+        value: forged((entry) => { entry.metricId = "metric:wrong" }),
+        error: /does not match trusted P3-R14 comparison/,
+      },
+    ]
 
-    for (const relation of ["UNSUPPORTED_RELATION", wrongCanonical]) {
-      globalRecord[globalKey] = forged(relation)
+    for (const malformed of cases) {
+      globalRecord[globalKey] = malformed.value
       assert.throws(
         () => build(
           pair.left.bundle,
@@ -938,7 +948,7 @@ test("P3-R16 rejects frozen identity-rebound R15 relation substitution before cr
           pair.declaration,
           relationCriteria(pair),
         ),
-        /relation is unsupported or inconsistent with trusted P3-R14 evidence/,
+        malformed.error,
       )
     }
   } finally {
