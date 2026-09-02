@@ -91,10 +91,20 @@ function record(value: unknown, label: string): UnknownRecord {
 }
 
 function exactKeys(value: object, expected: readonly string[], label: string): void {
-  const actual = Object.keys(value).sort(compareStrings)
+  const ownKeys = Reflect.ownKeys(value)
+  if (ownKeys.some((key) => typeof key !== "string")) {
+    fail(`${label} keys drifted from the canonical contract`)
+  }
+  const actual = (ownKeys as string[]).sort(compareStrings)
   const required = [...expected].sort(compareStrings)
   if (actual.length !== required.length || actual.some((key, index) => key !== required[index])) {
     fail(`${label} keys drifted from the canonical contract`)
+  }
+  for (const key of actual) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, key)
+    if (!descriptor || descriptor.enumerable !== true || !("value" in descriptor)) {
+      fail(`${label}.${key} must be an enumerable own data property`)
+    }
   }
 }
 
