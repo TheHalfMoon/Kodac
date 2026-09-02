@@ -105,6 +105,7 @@ Historical failures remain historical evidence; later recovery or closure does n
 | P3 overall | **OPEN** | No repository-owned aggregate score, ranking/promotion/default, statistical qualification, real benchmark execution, or public quality claim established |
 | P3-R17+ | **NOT_AUTHORIZED** | No later slice is implied by numbering |
 | P4-P8 | **NOT_AUTHORIZED** | Ordered dependencies and separate authority required |
+| Project completion | **NOT_ESTABLISHED** | No configured project-completion proof exists |
 
 Engineering milestone state is separate from public release status.
 
