@@ -130,6 +130,7 @@ These remain evidence mechanisms, not repository decisions:
 ```text
 RAW PAIRWISE DELTA != FAVORED SIDE
 RAW PAIRWISE DELTA != BETTER / WORSE / TIE VERDICT
+RAW PAIRWISE DELTA != STATISTICAL EVIDENCE
 PER-DIMENSION PAIRWISE EVIDENCE != CROSS-DIMENSION AGGREGATE SCORE
 EXACTLY-TWO-STRATEGY COMPARISON != MULTI-STRATEGY RANKING
 COMPARISON EVIDENCE != PROMOTION / DEFAULT / WINNER
@@ -175,7 +176,7 @@ The reconciliation remains a candidate until one frozen exact head proves exact 
 
 Only after the R14 current-view reconciliation becomes canonical and post-merge proven may another bounded P3 definition/planning/authorization candidate be considered.
 
-No `P3-R15`, favored relation, better/worse verdict, aggregate score, ranking, promotion, default, benchmark execution, P4-P8, or project-completion requirement is inferred from sequence alone. A later candidate requires a concrete canonical gap plus reproducible evidence compatible with all established invariants.
+No `P3-R15`, favored relation, better/worse verdict, aggregate score, ranking, promotion, default, statistics, statistical significance, confidence, p-value, effect-size policy, benchmark execution, P4-P8, or project-completion requirement is inferred from sequence alone. A later candidate requires a concrete canonical gap plus reproducible evidence compatible with all established invariants.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
@@ -193,6 +194,7 @@ THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION OR REDUCTION = NOT_AUTHORIZED
 THREE-OR-MORE-STRATEGY / UNBOUNDED COMPARISON = NOT_AUTHORIZED
 FAVORED / BETTER-WORSE / TIE = NOT_AUTHORIZED
 CROSS-DIMENSION AGGREGATE SCORE = NOT_AUTHORIZED
+STATISTICS / SIGNIFICANCE / CONFIDENCE / P-VALUE / EFFECT-SIZE POLICY = NOT_AUTHORIZED
 MULTI-STRATEGY RANKING / PROMOTION = NOT_AUTHORIZED
 REPOSITORY-OWNED DEFAULT / WINNER = NOT_AUTHORIZED
 P3-R15+ IMPLEMENTATION = NOT_AUTHORIZED
