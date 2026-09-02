@@ -877,7 +877,7 @@ test("P3-R16 adds no aggregate, weighting, majority, Pareto, statistics, promoti
   }
 })
 
-test("P3-R16 rejects frozen identity-rebound malformed R15 vocabulary and topology before criterion state derivation", async () => {
+test("P3-R16 rejects frozen identity-rebound malformed R15 vocabulary, topology, and own-property drift before criterion state derivation", async () => {
   const pair = controlledPair()
   const canonical = trustedR15(pair)
   const globalKey = "__kodacP3R16MalformedTrustedR15"
@@ -886,17 +886,36 @@ test("P3-R16 rejects frozen identity-rebound malformed R15 vocabulary and topolo
   function deepFreezeForTest(value: unknown, seen = new WeakSet<object>()): void {
     if (value === null || typeof value !== "object" || seen.has(value)) return
     seen.add(value)
-    for (const nested of Object.values(value as Record<string, unknown>)) deepFreezeForTest(nested, seen)
+    for (const key of Reflect.ownKeys(value)) {
+      const descriptor = Object.getOwnPropertyDescriptor(value, key)
+      if (descriptor && "value" in descriptor) deepFreezeForTest(descriptor.value, seen)
+    }
     Object.freeze(value)
   }
 
-  function forged(mutate: (entry: Record<string, unknown>) => void): unknown {
-    const value = clone(canonical) as unknown as Record<string, unknown>
-    const dimensionRelations = value.dimensionRelations as Record<string, unknown>[]
-    mutate(dimensionRelations[0]!)
+  function rebindIdentity(value: Record<string, unknown>): void {
     const projection = { ...value }
     delete projection.directionalRelationEvidenceIdentity
     value.directionalRelationEvidenceIdentity = sha256Canonical(projection)
+  }
+
+  function forged(mutate: (root: Record<string, unknown>, entry: Record<string, unknown>) => void): unknown {
+    const value = clone(canonical) as unknown as Record<string, unknown>
+    const dimensionRelations = value.dimensionRelations as Record<string, unknown>[]
+    mutate(value, dimensionRelations[0]!)
+    rebindIdentity(value)
+    deepFreezeForTest(value)
+    return value
+  }
+
+  function forgedOwnProperty(
+    target: "root" | "relation",
+    define: (value: Record<string | symbol, unknown>) => void,
+  ): unknown {
+    const value = clone(canonical) as unknown as Record<string, unknown>
+    rebindIdentity(value)
+    const dimensionRelations = value.dimensionRelations as Record<string, unknown>[]
+    define((target === "root" ? value : dimensionRelations[0]!) as Record<string | symbol, unknown>)
     deepFreezeForTest(value)
     return value
   }
@@ -926,16 +945,54 @@ test("P3-R16 rejects frozen identity-rebound malformed R15 vocabulary and topolo
     const build = isolated.buildDeclaredStrategyDirectionalRelationCriterionMatchEvidence
     const cases: Array<{ readonly value: unknown; readonly error: RegExp }> = [
       {
-        value: forged((entry) => { entry.relation = "UNSUPPORTED_RELATION" }),
+        value: forged((_root, entry) => { entry.relation = "UNSUPPORTED_RELATION" }),
         error: /canonical P3-R15 vocabulary/,
       },
       {
-        value: forged((entry) => { entry.dimension = "wrong-dimension" }),
+        value: forged((_root, entry) => { entry.dimension = "wrong-dimension" }),
         error: /canonical P3-R6 topology/,
       },
       {
-        value: forged((entry) => { entry.metricId = "metric:wrong" }),
+        value: forged((_root, entry) => { entry.metricId = "metric:wrong" }),
         error: /trusted nested P3-R14 comparison/,
+      },
+      {
+        value: forgedOwnProperty("root", (root) => {
+          Object.defineProperty(root, Symbol("extra-root"), { value: true, enumerable: true })
+        }),
+        error: /keys drifted/,
+      },
+      {
+        value: forgedOwnProperty("root", (root) => {
+          Object.defineProperty(root, "hiddenRootExtra", { value: true, enumerable: false })
+        }),
+        error: /keys drifted/,
+      },
+      {
+        value: forgedOwnProperty("relation", (entry) => {
+          Object.defineProperty(entry, Symbol("extra-relation"), { value: true, enumerable: true })
+        }),
+        error: /keys drifted/,
+      },
+      {
+        value: forgedOwnProperty("relation", (entry) => {
+          Object.defineProperty(entry, "hiddenRelationExtra", { value: true, enumerable: false })
+        }),
+        error: /keys drifted/,
+      },
+      {
+        value: forgedOwnProperty("root", (root) => {
+          const comparisonId = root.comparisonId
+          Object.defineProperty(root, "comparisonId", { enumerable: true, get: () => comparisonId })
+        }),
+        error: /enumerable own data property/,
+      },
+      {
+        value: forgedOwnProperty("relation", (entry) => {
+          const metric = entry.metricId
+          Object.defineProperty(entry, "metricId", { enumerable: true, get: () => metric })
+        }),
+        error: /enumerable own data property/,
       },
     ]
 
