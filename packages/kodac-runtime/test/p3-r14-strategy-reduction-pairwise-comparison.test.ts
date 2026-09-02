@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { createRequire } from "node:module"
+import { createRequire, syncBuiltinESMExports } from "node:module"
 import test from "node:test"
 
 import {
@@ -675,7 +675,16 @@ test("P3-R14 reconstructs both trusted R13 sides, compares seven dimensions, and
 
 test("P3-R14 public builder requires exactly three roots in left-right-declaration order", () => {
   const pair = controlledPair()
+  const builder = buildStrategyReductionPairwiseComparisonEvidence as (...args: unknown[]) => unknown
   assert.equal(buildStrategyReductionPairwiseComparisonEvidence.length, 3)
+  assert.throws(
+    () => builder(pair.left.bundle, pair.right.bundle),
+    /requires exactly three arguments/,
+  )
+  assert.throws(
+    () => builder(pair.left.bundle, pair.right.bundle, pair.declaration, null),
+    /requires exactly three arguments/,
+  )
   assert.throws(
     () => buildStrategyReductionPairwiseComparisonEvidence(
       pair.declaration,
@@ -1095,6 +1104,7 @@ test("P3-R14 identity excludes ambient time, random, environment, locale, networ
       originals.set(name, childProcess[name])
       childProcess[name] = () => { throw new Error(`subprocess forbidden: ${name}`) }
     }
+    syncBuiltinESMExports()
 
     const repeatedPair = controlledPair()
     const repeated = execute(repeatedPair)
@@ -1105,5 +1115,6 @@ test("P3-R14 identity excludes ambient time, random, environment, locale, networ
     process.env.LANG = originalLang
     globalThis.fetch = originalFetch
     for (const [name, value] of originals) childProcess[name] = value
+    syncBuiltinESMExports()
   }
 })
