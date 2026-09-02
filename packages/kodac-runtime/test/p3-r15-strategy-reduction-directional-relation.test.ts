@@ -670,7 +670,6 @@ test("P3-R15 derives directional favored relations from trusted values and direc
 
   const reverseDeclaration = {
     ...higherPair.declaration,
-    comparisonId: "comparison:p3-r15-reversed",
     leftDirectionBindingEvidenceIdentity: higherPair.rightR13.directionBindingEvidenceIdentity,
     rightDirectionBindingEvidenceIdentity: higherPair.leftR13.directionBindingEvidenceIdentity,
     leftStrategySubjectIdentity: higherPair.rightR13.strategySubjectIdentity,
@@ -714,7 +713,6 @@ test("P3-R15 derives directional favored relations from trusted values and direc
 
   const lowerReverseDeclaration = {
     ...lowerPair.declaration,
-    comparisonId: "comparison:p3-r15-lower-reversed",
     leftDirectionBindingEvidenceIdentity: lowerPair.rightR13.directionBindingEvidenceIdentity,
     rightDirectionBindingEvidenceIdentity: lowerPair.leftR13.directionBindingEvidenceIdentity,
     leftStrategySubjectIdentity: lowerPair.rightR13.strategySubjectIdentity,
@@ -770,7 +768,7 @@ test("P3-R15 propagates trusted insufficiency without reinterpretation", () => {
   }
 })
 
-test("P3-R15 delegates hostile roots to canonical R14 before semantic reads and rejects shortcut injection", () => {
+test("P3-R15 delegates hostile and cross-control failures to canonical R14 and rejects shortcut injection", () => {
   const accessorPair = controlledPair()
   const hostile = { ...accessorPair.left.bundle } as Record<string, unknown>
   let getterCalls = 0
@@ -811,6 +809,25 @@ test("P3-R15 delegates hostile roots to canonical R14 before semantic reads and 
       unicode,
       unicodePair.right.bundle,
       unicodePair.declaration,
+    ),
+    /P3-R14 contract violation/,
+  )
+
+  const crossControlPair = controlledPair(
+    {
+      measurementA: { utilizedCount: 1 },
+      measurementB: { utilizedCount: 1 },
+    },
+    {
+      measurementA: { utilizedCount: 2, noGold: true },
+      measurementB: { utilizedCount: 2 },
+    },
+  )
+  assert.throws(
+    () => buildStrategyReductionDirectionalRelationEvidence(
+      crossControlPair.left.bundle,
+      crossControlPair.right.bundle,
+      crossControlPair.declaration,
     ),
     /P3-R14 contract violation/,
   )
