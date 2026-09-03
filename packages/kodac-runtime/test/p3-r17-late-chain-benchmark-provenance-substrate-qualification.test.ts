@@ -1176,7 +1176,9 @@ test("P3-R17 identity is deterministic, self-reference-free, and sensitive to au
   const bundle = provenanceBundle(pair)
   const declaration = qualificationDeclaration(pair, criteria, bundle)
   const first = execute(pair, criteria, bundle, declaration)
-  const second = execute(pair, criteria, clone(bundle), clone(declaration))
+  const rebuiltBundle = provenanceBundle(pair)
+  const rebuiltDeclaration = qualificationDeclaration(pair, criteria, rebuiltBundle)
+  const second = execute(pair, criteria, rebuiltBundle, rebuiltDeclaration)
   assert.equal(first.substrateQualificationEvidenceIdentity, second.substrateQualificationEvidenceIdentity)
 
   const changed = clone(declaration)
