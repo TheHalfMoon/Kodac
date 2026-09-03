@@ -273,9 +273,59 @@ Small committed P2-R6 fixtures may contain exact base64 raw commit-content bytes
 
 The binding/proof establish only literal canonically authorized local object membership and one bounded ancestry relation. They do not establish remote authentication, signature validity, statistical independence, representativeness, contamination freedom, holdout sufficiency, or benchmark quality.
 
-## 7. Admission record and provenance boundary
+## 7. Closed admission-record and provenance boundary
 
-The implementation must establish a versioned admission record binding at minimum:
+P2-R6 must derive admission records from the already validated proof plus a closed caller declaration. Source, corpus, case-evidence, and admission identities are never independently trusted caller fields.
+
+### 7.1 Exact admission declaration
+
+The caller declaration root has exactly these keys and no others:
+
+```text
+schema_version
+benchmark_id
+benchmark_protocol_version
+development
+reality_check
+```
+
+Required root schema version:
+
+```text
+schema_version = p2-r6-admission-declaration/v1
+```
+
+`development` and `reality_check` each have exactly these keys and no others:
+
+```text
+corpus_id
+case_id
+task_family
+contamination_status
+overlap_status
+```
+
+All identifier strings must be canonical non-empty bounded strings under the same hostile-input rules used elsewhere in P2. `development.corpus_id != reality_check.corpus_id` and `development.case_id != reality_check.case_id`. The two entries are semantic roles; callers cannot swap their underlying Git objects.
+
+The only status vocabularies are:
+
+```text
+contamination_status = none-known | known | unknown
+overlap_status = none-known | known | unknown
+```
+
+`unknown` must never normalize to `none-known`.
+
+### 7.2 Exact admission-record schema and source derivation
+
+The implementation must produce exactly two admission records in this order:
+
+```text
+records[0] = development
+records[1] = reality-check
+```
+
+Each admission record has exactly these keys and no others:
 
 ```text
 schema_version
@@ -303,17 +353,115 @@ overlap_status
 admission_identity
 ```
 
-`chronology_proof_identity` must equal the validated recomputed `proof_identity`; it may not be independently caller-selected.
-
-The implementation must keep literal provenance separate from quality claims and distinguish at minimum:
+Required fixed literals are:
 
 ```text
-contamination_status = none-known | known | unknown
-overlap_status = none-known | known | unknown
-chronology_status = later-in-time | chronology-unproven
+schema_version = p2-r6-admission-record/v1
+admission_version = p2-r6-repository-history-corpus-admission/v1
+canonical_admission_binding_identity = sha256:fdf839d5923765b0149edf33ad679e63039a55e04d5968674a3042985d4a268d
+source_repository = TheHalfMoon/Kodac
+chronology_scheme = git-commit-ancestry-object-chain/v1
+development_freeze_anchor = ad1a66483bd972b1a82a4d32dd833237c3c099e8
+reality_check_anchor = 4598031bef5bfc05219f528f81ed6c653024b476
 ```
 
-`unknown` must never normalize to `none-known`. Canonical admission or valid ancestry must never be relabeled as contamination freedom, unbiasedness, representativeness, holdout sufficiency, statistical validity, or superiority. Development and reality-check case identities must not alias.
+The development record is derived only from validated `commit_chain[0]` and immutable binding entry 0:
+
+```text
+corpus_role = development
+source_repository_commit = ad1a66483bd972b1a82a4d32dd833237c3c099e8
+source_tree_identity = baa62bdefb1ae3c84ad7d27ebeae01b90fbf7cdb
+source_raw_content_sha256 = sha256:f8420121f479d643dbd25eb3483ca2ec6c38d1de73a186e4640e7e3ebdf2d5d5
+```
+
+The reality-check record is derived only from validated `commit_chain[1]` and immutable binding entry 1:
+
+```text
+corpus_role = reality-check
+source_repository_commit = 4598031bef5bfc05219f528f81ed6c653024b476
+source_tree_identity = baa4625c20d77fae9f4dcbfb421644d856b019c3
+source_raw_content_sha256 = sha256:0b1aa165dce9304564d0aa34040362d205688ccc0034a80ad40f36c8f55a8d64
+```
+
+The implementation must re-use the already validated decoded raw commit content bytes for the selected record. In P2-R6 v1 those exact raw Git commit-content bytes are the complete admitted corpus payload for that record. Therefore:
+
+```text
+corpus_digest == source_raw_content_sha256
+```
+
+No tree contents, working-tree snapshot, PR text, commit message interpretation, external file, or hidden repository state enters `corpus_digest` in v1.
+
+`benchmark_id` and `benchmark_protocol_version` are copied from the validated root declaration. `corpus_id`, `case_id`, `task_family`, `contamination_status`, and `overlap_status` are copied only from the declaration entry matching the fixed role. No source identity, role, chronology identity, or derived digest may be supplied by those declaration entries.
+
+`chronology_proof_identity` must equal the validated recomputed `proof_identity`; it may not be independently caller-selected. `chronology_status` is derived only by Section 6.5. A valid exact proof yields `later-in-time`; an unproven chronology must remain `chronology-unproven` and cannot be upgraded by declaration text.
+
+### 7.3 Exact `case_evidence_identity` derivation
+
+`case_evidence_identity` is derived from a self-reference-free preimage containing exactly these keys and no others:
+
+```text
+schema_version
+benchmark_id
+benchmark_protocol_version
+admission_version
+canonical_admission_binding_identity
+corpus_id
+corpus_role
+corpus_digest
+source_repository
+source_repository_commit
+source_tree_identity
+source_raw_content_sha256
+case_id
+task_family
+chronology_scheme
+development_freeze_anchor
+reality_check_anchor
+chronology_status
+chronology_proof_identity
+contamination_status
+overlap_status
+```
+
+Its derivation is exactly:
+
+```text
+case_evidence_bytes = UTF8(
+  canonicalize_sorted_keys_compact_json(case_evidence_preimage)
+)
+case_evidence_identity = "sha256:" + lowercase_hex(SHA256(case_evidence_bytes))
+```
+
+The implementation constructs this preimage from the derived admission fields. A missing, malformed, caller-selected, or mismatched serialized `case_evidence_identity` fails closed. Any semantic field mutation must change the recomputed identity or fail validation.
+
+### 7.4 Exact `admission_identity` derivation
+
+`admission_identity` is the identity of the complete admission record excluding only `admission_identity` itself. Its preimage contains exactly all admission-record keys listed in Section 7.2 except `admission_identity`, including the recomputed `case_evidence_identity`.
+
+```text
+admission_bytes = UTF8(
+  canonicalize_sorted_keys_compact_json(admission_identity_preimage)
+)
+admission_identity = "sha256:" + lowercase_hex(SHA256(admission_bytes))
+```
+
+The implementation must derive it after all source/provenance/chronology fields and `case_evidence_identity` have been fixed. Any serialized record presented for revalidation must have exact keys, recompute both identities from scratch, and require exact equality. Missing, malformed, caller-invented, stale, mutually inconsistent, or self-referential identities fail closed.
+
+The following equalities are mandatory and cannot be weakened by callers:
+
+```text
+source_repository_commit == validated proof commit_sha for the fixed role
+source_tree_identity == immutable binding tree_sha for that commit
+source_raw_content_sha256 == validated raw-content SHA-256 for that commit
+corpus_digest == SHA-256 identity of the exact admitted raw commit-content bytes
+chronology_proof_identity == recomputed proof_identity
+case_evidence_identity == recomputed closed case-evidence digest
+admission_identity == recomputed closed complete-record digest
+```
+
+### 7.5 Provenance interpretation boundary
+
+Literal provenance remains separate from quality claims. Canonical admission or valid ancestry must never be relabeled as contamination freedom, unbiasedness, representativeness, holdout sufficiency, statistical validity, or superiority. Development and reality-check corpus/case identities must not alias.
 
 ## 8. Determinism and hostile-input rules
 
@@ -324,7 +472,9 @@ It must fail closed on, at minimum:
 - unknown or missing keys;
 - caller attempts to alter the canonical admission binding;
 - malformed or mismatched `proof_identity`;
-- duplicate identities;
+- caller-supplied or mismatched source/corpus/case/admission identity fields;
+- role/source swapping;
+- duplicate corpus or case identities;
 - invalid SHA-1/SHA-256;
 - malformed/non-canonical base64;
 - Git object hash mismatch;
@@ -343,7 +493,7 @@ It must fail closed on, at minimum:
 - caller mutation after derivation;
 - injected ranking/promotion/execution authority fields.
 
-For identical canonical inputs, canonical proof bytes, `proof_identity`, admission bytes, and `admission_identity` must be identical across repeated runs and supported operating systems.
+For identical canonical inputs, canonical proof bytes, `proof_identity`, admission-record bytes, `case_evidence_identity`, and `admission_identity` must be identical across repeated runs and supported operating systems.
 
 ## 9. Required implementation proof matrix
 
@@ -365,11 +515,20 @@ The later implementation must demonstrate at least:
 14. caller replacement/extension/reordering of the admission binding is rejected;
 15. reversed, extra, duplicate, cyclic, missing, or unrelated chains fail closed or remain `chronology-unproven` as specified;
 16. timestamps, PR numbers, repository labels, SHA strings, and booleans cannot create membership/chronology;
-17. `unknown` contamination/overlap remains distinct;
-18. object-key reordering is identity-neutral while array order remains semantic;
-19. caller-mutation independence and deep freeze;
-20. no participant/model/provider/reviewer/evaluator/tool/agent execution;
-21. no global score, statistics, ranking, promotion, winner/default, broad benchmark completion, release, or project-completion output.
+17. exact role-to-source mapping for development and reality-check records;
+18. swapped role/source combinations fail closed;
+19. `source_repository_commit`, `source_tree_identity`, and `source_raw_content_sha256` exactly equal validated binding/proof identities;
+20. `corpus_digest` exactly equals the digest of the admitted raw commit-content bytes and cannot be caller-selected;
+21. deterministic `case_evidence_identity` recomputation from its closed preimage;
+22. deterministic `admission_identity` recomputation from the complete closed record preimage;
+23. mismatched/missing/malformed/caller-invented case or admission identities fail closed;
+24. changing source, corpus, role, case, chronology, contamination, overlap, benchmark, or protocol semantics changes the corresponding identity or fails validation;
+25. development/reality corpus and case identities cannot alias;
+26. `unknown` contamination/overlap remains distinct;
+27. object-key reordering is identity-neutral while array order remains semantic;
+28. caller-mutation independence and deep freeze;
+29. no participant/model/provider/reviewer/evaluator/tool/agent execution;
+30. no global score, statistics, ranking, promotion, winner/default, broad benchmark completion, release, or project-completion output.
 
 These proofs establish only the bounded P2-R6 contract, not general/public KodacBench completeness.
 
@@ -433,11 +592,21 @@ AUTHORIZATION_BLOB = f98a7d0841359f3c7d24e71e15dccc984a120d7c
 
 This fixed membership using the immutable two-object binding. CodeRabbit review comment `3928074255` found a third material defect — `proof_identity` had no closed preimage/canonicalization/recomputation/equality rule. The same review confirmed the two predecessor material findings were closed.
 
+### Third repair
+
+```text
+HEAD = a4165affb94b276659502c90d92f0bc91ed69207
+TREE = 06d053db2477806bbb342a50715169415cbc48fd
+AUTHORIZATION_BLOB = f8ac6d0ca67c9f381e64152e7898f071d4f3ae7e
+```
+
+This closed the proof-identity contract. Cubic comment `5531425875` found a fourth material defect — the admission record still lacked exact equality/derivation rules tying source, corpus, case-evidence, and admission identities to the validated proof and immutable binding.
+
 ### Current repair
 
-This revision closes the third defect by defining the exact proof root/entry key sets, self-reference-free five-field identity preimage, canonical sorted-key compact UTF-8 JSON bytes, SHA-256 derivation, mandatory recomputation/equality check, and explicit mismatch/repeatability fixture obligations. It also explicitly records PR #316 as unqualified with semantic quorum reset to `0 / 2` after this byte change.
+This revision closes the fourth defect by defining the exact admission declaration and record key sets; fixed role-to-source mapping; mandatory source/tree/raw-content equality; `corpus_digest` as the exact admitted raw commit-content digest; and closed self-reference-free canonical SHA-256 derivations for both `case_evidence_identity` and `admission_identity`. Serialized records must recompute both identities and all source/provenance equalities from scratch.
 
-No predecessor-head review or CI result qualifies this current revision.
+No predecessor-head review or CI result qualifies this current revision. Semantic quorum remains reset to `0 / 2` until fresh independent substantive terminal-clean reviews are submitted on the exact current head and current metadata.
 
 ## 12. Required implementation evidence
 
@@ -447,7 +616,7 @@ The later implementation PR must create:
 docs/planning/KODAC_P2_R6_REPOSITORY_HISTORY_CORPUS_ADMISSION_EVIDENCE_2026-09-03.md
 ```
 
-It must bind the canonical authorization merge/proof; implementation base/head/tree; exact allowlist and blobs; binding/proof identities; fixture source identities; deterministic tests; Governance/K2 identities; two independent substantive exact-head/current-metadata semantic review channels; zero actionable findings/threads; active no-bypass ruleset; guarded merge; mandatory post-merge parent/tree/blob/signature/check proof; limitations and non-grants.
+It must bind the canonical authorization merge/proof; implementation base/head/tree; exact allowlist and blobs; binding/proof/admission identities; fixture source identities; deterministic tests; Governance/K2 identities; two independent substantive exact-head/current-metadata semantic review channels; zero actionable findings/threads; active no-bypass ruleset; guarded merge; mandatory post-merge parent/tree/blob/signature/check proof; limitations and non-grants.
 
 Candidate-time evidence must not claim future canonical closure.
 
