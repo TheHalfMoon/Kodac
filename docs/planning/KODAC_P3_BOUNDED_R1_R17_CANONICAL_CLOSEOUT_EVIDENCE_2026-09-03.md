@@ -6,8 +6,8 @@ Date: 2026-09-03
 DOCUMENT TYPE = DOCUMENTATION / ENGINEERING MILESTONE CLOSEOUT EVIDENCE CANDIDATE
 GOVERNING CLOSEOUT AUTHORIZATION = PR #312 / 7686adfd4cf5a21a2c658e6c211d9c0509b730c8
 GOVERNING_AUTHORIZATION_POST_MERGE_PROOF = #312 / 5528344277
-P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL
-P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL IFF THIS EXACT SIX-PATH CLOSEOUT CANDIDATE QUALIFIES, MERGES, AND PASSES POST-MERGE PROOF
+P3-R1 THROUGH P3-R17 INDIVIDUAL NUMBERED SLICES = CLOSED_CANONICAL / PRE-EXISTING CANONICAL STATE
+P3 BOUNDED R1-R17 ENGINEERING SCOPE = NOT_YET_CLOSED_CANONICAL / CLOSEOUT_CANDIDATE
 P3 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
@@ -18,7 +18,7 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-This record closes only the already-canonical bounded deterministic P3 R1-R17 engineering/evidence lineage if its own exact candidate merge gate succeeds. It does not convert those mechanisms into benchmark execution, a repository-owned context policy, a global quality verdict, statistics, promotion, product or release authority, P3-overall closure, P4 authority, or project completion.
+This candidate would close only the aggregate bounded deterministic P3 R1-R17 engineering/evidence scope over already-canonical individual R1-R17 slices if its own exact qualification, guarded merge, and post-merge proof gates succeed. It does not convert those mechanisms into benchmark execution, a repository-owned context policy, a global quality verdict, statistics, promotion, product or release authority, P3-overall closure, P4 authority, or project completion.
 
 ---
 
@@ -152,7 +152,14 @@ RECONCILIATION_PR = #273
 WAIVER = NO
 ```
 
-Canonical R6 blobs are pinned in post-merge proof `5482394464`: contracts `6b125411...`, implementation `f31bb7f1...`, focused test `0ef67ed8...`, evidence `c8c15694...`.
+Canonical R6 blobs pinned in post-merge proof `5482394464`:
+
+```text
+packages/kodac-runtime/bench/p3-r6/contracts.ts = 6b12541182cc0c28072efcb3966e570d3cdeefbe
+packages/kodac-runtime/bench/p3-r6/context-measurement-observation.ts = f31bb7f1cc89ddc6a6eacf1be546c54f135cffca
+packages/kodac-runtime/test/p3-r6-context-measurement-observation.test.ts = 0ef67ed8249a03f79bac6ccf132a8dade56a79d4
+docs/planning/KODAC_P3_R6_CONTEXT_MEASUREMENT_OBSERVATION_EVIDENCE_2026-08-31.md = c8c156947f17aef62625acb5ea93c6bc9c0018a8
+```
 
 ### R7
 
@@ -174,7 +181,14 @@ RECONCILIATION_PR = #276
 WAIVER = NO
 ```
 
-Canonical R7 blobs are pinned in `5483365785`: contracts `18357e81...`, implementation `d4cc9ed3...`, focused test `3d156331...`, evidence `ee6ce38b...`.
+Canonical R7 blobs pinned in post-merge proof `5483365785`:
+
+```text
+packages/kodac-runtime/bench/p3-r7/contracts.ts = 18357e81a3e135b7f407dd0dcc06646c4d079b19
+packages/kodac-runtime/bench/p3-r7/context-measurement-report-binding.ts = d4cc9ed3998a08315ed7adaa93f318a77d9076ec
+packages/kodac-runtime/test/p3-r7-context-measurement-report-binding.test.ts = 3d156331133ba4bb67fd55b2ce28481b0cdff792
+docs/planning/KODAC_P3_R7_CONTEXT_MEASUREMENT_REPORT_BINDING_EVIDENCE_2026-08-31.md = ee6ce38b82a517de4b5d0c71ea46eeb8507736ea
+```
 
 ### R8
 
@@ -185,7 +199,10 @@ IMPLEMENTATION_PR = #278
 QUALIFIED_HEAD = 55bee850de7e38cba2c54c13000dd6f8447f7f4c
 QUALIFIED_TREE = 9e668ba63f2ab24843aa3a12657441b164d426bd
 IMPLEMENTATION_MERGE = 576ac5d2b317fb90d1f0c6079d78cd3d899ca62d
-CANONICAL_BLOBS = d5f8d18b... / f066b65f... / 35fd7e59... / 65ea4dbe...
+CONTRACTS_BLOB = d5f8d18b9e1b61378283c489c355fdd293880349
+IMPLEMENTATION_BLOB = f066b65fd44c7e6aac76b041a5336247c9f7dc2d
+TEST_BLOB = 35fd7e59f7916fa1ba4ca6dd3077489dfa95c2e4
+EVIDENCE_BLOB = 65ea4dbeb8f976b6639e4cb61699741e226093b4
 RECOVERY_HISTORY = #279/#280 H4 recovery; R8 blobs preserved byte-identically
 RECOVERY_CANONICAL_MAIN = 89d294035923c3c8682e5a94360cb4e01d271a9c
 REPAIR_POST_MERGE_GOVERNANCE = 33484688495 / SUCCESS
@@ -194,7 +211,7 @@ RECONCILIATION_PR = #281
 WAIVER = NO
 ```
 
-The initial R8 implementation head `273a929b...` is stale. A forward-only test-assertion repair produced the final qualified head. Later H4 recovery is preserved as recovery history, not relabeled as R8 implementation work.
+The initial R8 implementation head `273a929b9e7cd390fdf001da92ac94bb99b1db38` is stale. A forward-only test-assertion repair produced the final qualified head. Later H4 recovery is preserved as recovery history, not relabeled as R8 implementation work.
 
 ### R9
 
@@ -210,7 +227,16 @@ RECONCILIATION_PR = #284
 WAIVER = NO
 ```
 
-R9 preserves its forward repair chain `31346b24... -> a8af4864... -> 99fca24b... -> 457d12f2...`; predecessor-head CI/review is stale for final qualification. Canonical blobs at the final head are `b7064806...`, `fa4fd9af...`, `cab8c74c...`, `08b828fa...`.
+R9 preserves its forward repair chain `31346b245107f345b6ce5344954d669ee47839f9 -> a8af4864a686dd186fbbb68e05d506d9565f1769 -> 99fca24b99d1ac097b59881a0cf8fe074656f06b -> 457d12f27ededa4b60cd39b2aa946e2692b3d2f7`; predecessor-head CI/review is stale for final qualification.
+
+Canonical R9 blobs at the final head:
+
+```text
+packages/kodac-runtime/bench/p3-r9/contracts.ts = b7064806e681983b386ed59123578da1bea384e3
+packages/kodac-runtime/bench/p3-r9/single-strategy-two-case-report-composition.ts = fa4fd9af2938221ab8b463efa7de0e81cd81054a
+packages/kodac-runtime/test/p3-r9-single-strategy-two-case-report-composition.test.ts = cab8c74c82bf09b6f5c911e05c4a53756529e2bb
+docs/planning/KODAC_P3_R9_SINGLE_STRATEGY_TWO_CASE_REPORT_COMPOSITION_EVIDENCE_2026-09-01.md = 08b828fa11455929596cb0e5247f32e885e73168
+```
 
 ### R10
 
@@ -225,7 +251,16 @@ RECONCILIATION_PR = #287
 WAIVER = NO
 ```
 
-R10 includes a forward-only Cubic-driven repair making R6->R7->R9 and R6->R8->R9 provenance continuity explicit and replacing a meaningless detachment assertion. Canonical blobs at the final head are `0ec5df52...`, `74085c60...`, `e701e76a...`, `e3d5a1e6...`.
+R10 includes a forward-only Cubic-driven repair making R6->R7->R9 and R6->R8->R9 provenance continuity explicit and replacing a meaningless detachment assertion.
+
+Canonical R10 blobs at the final head:
+
+```text
+packages/kodac-runtime/bench/p3-r10/contracts.ts = 0ec5df5255604aea2b3f11a22ff4313b0b87d0ea
+packages/kodac-runtime/bench/p3-r10/single-strategy-two-case-metric-alignment.ts = 74085c6094ef7de5b34f351ba79b92ae0a758756
+packages/kodac-runtime/test/p3-r10-single-strategy-two-case-metric-alignment.test.ts = e701e76a2c5f6594389fd438b1e7ab8040347cf2
+docs/planning/KODAC_P3_R10_SINGLE_STRATEGY_TWO_CASE_METRIC_ALIGNMENT_EVIDENCE_2026-09-01.md = e3d5a1e66593b1162c48dbae40ace7ccb2131fc3
+```
 
 ---
 
@@ -413,7 +448,7 @@ Any repository-byte or canonical-base movement invalidates prior exact-head qual
 Only after that full gate succeeds may the bounded closeout become canonical:
 
 ```text
-P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL
+P3-R1 THROUGH P3-R17 INDIVIDUAL NUMBERED SLICES = CLOSED_CANONICAL
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
 P3 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
