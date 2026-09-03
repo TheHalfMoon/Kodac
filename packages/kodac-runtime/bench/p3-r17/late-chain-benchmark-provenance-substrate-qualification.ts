@@ -384,6 +384,19 @@ function substrateBinding(
   const pairwise = trustedR16.directionalRelationEvidence.pairwiseComparisonEvidence
   const leftReduction = pairwise.leftDirectionBindingEvidence.reductionEvidence
   const rightReduction = pairwise.rightDirectionBindingEvidence.reductionEvidence
+  const lateTaskFamilies = uniqueSorted([
+    ...leftReduction.dimensionReductions.flatMap((entry) => [
+      entry.memberAObservation.task_family,
+      entry.memberBObservation.task_family,
+    ]),
+    ...rightReduction.dimensionReductions.flatMap((entry) => [
+      entry.memberAObservation.task_family,
+      entry.memberBObservation.task_family,
+    ]),
+  ])
+  if (lateTaskFamilies.length !== 1 || lateTaskFamilies[0] !== P3_R17_TASK_FAMILY) {
+    fail(`trusted P3-R16 late-chain task family must be ${P3_R17_TASK_FAMILY}`)
+  }
   const leftA = leftReduction.memberAReference
   const leftB = leftReduction.memberBReference
   const rightA = rightReduction.memberAReference
