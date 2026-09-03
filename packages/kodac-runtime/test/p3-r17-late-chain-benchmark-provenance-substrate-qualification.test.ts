@@ -311,7 +311,7 @@ function corpus(options: CorpusOptions = {}) {
       path: "packages/kodac-runtime/test/fixtures/p2-r1/p3-r17-holdout.json",
     },
     contamination_status: "none-known",
-    cases: options.includeB === false ? [] : [{
+    cases: [{
       case_id: caseBId,
       task_family: "context-selection",
       payload: { purpose: "p3-r17-b" },
