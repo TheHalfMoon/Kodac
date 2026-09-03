@@ -169,7 +169,11 @@ raw_commit_content_base64
 parent_commit_shas
 ```
 
-The exact chain order is development commit first, reality-check commit second. `raw_commit_content_base64` is canonical base64 of the exact Git commit content bytes only, excluding Git object framing.
+The exact chain order is development commit first, reality-check commit second. `raw_commit_content_base64` encodes the exact Git commit content bytes only, excluding Git object framing.
+
+`raw_commit_content_base64` has exactly one canonical representation: RFC 4648 standard base64 using only the `A-Z`, `a-z`, `0-9`, `+`, and `/` alphabet, with standard `=` padding present exactly as required to make the encoded length a multiple of four. Whitespace, CR/LF, URL-safe `-` or `_`, omitted padding, superfluous padding, and every non-alphabet character are forbidden.
+
+Before any proof-identity derivation, the implementation must decode `raw_commit_content_base64`, re-encode the decoded bytes using that exact standard padded RFC 4648 representation, and require byte-for-byte string equality with the supplied value. Decode failure or decode/re-encode inequality fails closed. This canonicalization check occurs before the string enters the `proof_identity` preimage.
 
 ### 6.2 Exact `proof_identity` derivation
 
@@ -209,7 +213,8 @@ Canonicalization rules:
 3. strings use JSON string escaping;
 4. no insignificant whitespace, trailing newline, timestamp, host path, locale value, process state, or unordered iteration enters the bytes;
 5. no unknown field may enter or be ignored by the preimage;
-6. the implementation may reuse canonical P2-R1 canonical-JSON/SHA-256 helpers, but P2-R1 bytes remain immutable.
+6. every `raw_commit_content_base64` string has already passed the exact RFC 4648 decode/re-encode equality rule in Section 6.1;
+7. the implementation may reuse canonical P2-R1 canonical-JSON/SHA-256 helpers, but P2-R1 bytes remain immutable.
 
 Validation order must require a syntactically valid lowercase SHA-256 `proof_identity`, construct the closed preimage from the validated exact-key proof structure, recompute the digest above, and require exact equality. Missing, malformed, mismatched, or self-referential proof identity fails closed.
 
@@ -219,7 +224,7 @@ Changing any semantic proof field—including either raw commit-content base64 s
 
 For every proof entry, the implementation must:
 
-1. reject malformed or non-canonical base64;
+1. require the exact canonical RFC 4648 base64 rule and decode/re-encode equality from Section 6.1;
 2. decode the exact raw commit content bytes;
 3. compute SHA-256 of those bytes and require exact equality with the corresponding immutable admission-binding `raw_commit_content_sha256`;
 4. reconstruct Git framing as `"commit " + decimal_byte_length(raw_content) + NUL + raw_content`;
@@ -472,11 +477,11 @@ It must fail closed on, at minimum:
 - unknown or missing keys;
 - caller attempts to alter the canonical admission binding;
 - malformed or mismatched `proof_identity`;
+- non-canonical RFC 4648 base64, including whitespace, URL-safe alphabet, omitted padding, or superfluous padding;
 - caller-supplied or mismatched source/corpus/case/admission identity fields;
 - role/source swapping;
 - duplicate corpus or case identities;
 - invalid SHA-1/SHA-256;
-- malformed/non-canonical base64;
 - Git object hash mismatch;
 - raw-content digest mismatch;
 - tree mismatch;
@@ -528,7 +533,9 @@ The later implementation must demonstrate at least:
 27. object-key reordering is identity-neutral while array order remains semantic;
 28. caller-mutation independence and deep freeze;
 29. no participant/model/provider/reviewer/evaluator/tool/agent execution;
-30. no global score, statistics, ranking, promotion, winner/default, broad benchmark completion, release, or project-completion output.
+30. no global score, statistics, ranking, promotion, winner/default, broad benchmark completion, release, or project-completion output;
+31. standard padded RFC 4648 base64 decode/re-encode equality is required before proof hashing;
+32. whitespace-bearing, URL-safe, unpadded, over-padded, or otherwise alternate encodings of the same bytes are rejected and cannot create distinct valid `proof_identity` values.
 
 These proofs establish only the bounded P2-R6 contract, not general/public KodacBench completeness.
 
@@ -602,9 +609,19 @@ AUTHORIZATION_BLOB = f8ac6d0ca67c9f381e64152e7898f071d4f3ae7e
 
 This closed the proof-identity contract. Cubic comment `5531425875` found a fourth material defect — the admission record still lacked exact equality/derivation rules tying source, corpus, case-evidence, and admission identities to the validated proof and immutable binding.
 
+### Fourth repair
+
+```text
+HEAD = 8bb0b243f6e9323abb2522eb3853b4082c41493d
+TREE = 6e2cd6d86052f8f1b0c5923ba6f30e3faa9fb98c
+AUTHORIZATION_BLOB = 8525cb5ee2935a97ab2c1494898f4408be07ca7d
+```
+
+This closed the admission-provenance identity contract. CodeRabbit `5531569887` verified the prior four repair boundaries and found one remaining minor defect: `raw_commit_content_base64` was called canonical without an exact alphabet/padding/whitespace/URL-safe/re-encoding rule even though the string itself participates in `proof_identity`.
+
 ### Current repair
 
-This revision closes the fourth defect by defining the exact admission declaration and record key sets; fixed role-to-source mapping; mandatory source/tree/raw-content equality; `corpus_digest` as the exact admitted raw commit-content digest; and closed self-reference-free canonical SHA-256 derivations for both `case_evidence_identity` and `admission_identity`. Serialized records must recompute both identities and all source/provenance equalities from scratch.
+This revision closes that minor determinism gap by fixing standard padded RFC 4648 base64 as the only accepted representation and requiring decode/re-encode exact-string equality before `raw_commit_content_base64` may enter the proof preimage. Alternate textual encodings of identical bytes therefore fail closed instead of creating distinct valid proof identities.
 
 No predecessor-head review or CI result qualifies this current revision. Semantic quorum remains reset to `0 / 2` until fresh independent substantive terminal-clean reviews are submitted on the exact current head and current metadata.
 
