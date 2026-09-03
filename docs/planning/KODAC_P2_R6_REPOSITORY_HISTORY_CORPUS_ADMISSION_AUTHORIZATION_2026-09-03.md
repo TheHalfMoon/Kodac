@@ -25,29 +25,20 @@ This record is deny-by-default. While it remains only a branch/PR candidate it c
 
 ## 1. Governing evidence
 
-This authorization candidate is justified by the fresh successor analysis after canonical P3 post-closeout reconciliation:
+This candidate is justified by the fresh successor analysis after canonical P3 post-closeout reconciliation:
 
 ```text
 P3_POST_CLOSEOUT_RECONCILIATION_PROOF = #315 / 5530804202
 SUCCESSOR_ANALYSIS = #315 / 5530859993
 ```
 
-Governing repository records include:
-
-- root `AGENTS.md`;
-- `docs/roadmap/NEXT.md`;
-- `docs/adr/ADR-0010-benchmark-first-donor-selection.md`;
-- `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`;
-- `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`;
-- `docs/planning/KODAC_P2_BOUNDED_R1_R5_CANONICAL_CLOSEOUT_EVIDENCE_2026-08-28.md`;
-- `docs/planning/KODAC_P3_BOUNDED_R1_R17_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-03.md`;
-- canonical KRI-R1/KRI-R4 corpus and qualification evidence as immutable precedent/input only.
+Governing repository records include root `AGENTS.md`, `docs/roadmap/NEXT.md`, ADR-0010, the intelligence master plan, final gap review, canonical P2 R1-R5 closeout evidence, canonical P3 R1-R17 closeout evidence, and KRI-R1/KRI-R4 evidence as precedent only.
 
 Live GitHub and any more-specific later canonical record override this candidate.
 
 ## 2. Observed gap and minimum unit
 
-Canonical P2-R1 through P2-R5 provide a deterministic measurement/evidence spine but intentionally do not admit real/repository-history benchmark evidence for execution or general claims:
+Canonical P2-R1 through P2-R5 provide a deterministic measurement/evidence spine:
 
 ```text
 P2-R1 = SYNTHETIC FROZEN FIXTURE / MANIFEST CONTRACT
@@ -57,13 +48,15 @@ P2-R4 = CONTROLLED PAIRWISE RAW COMPARISON
 P2-R5 = PER-METRIC DIRECTIONAL RELATION
 ```
 
-The accepted master plan requires a frozen reproducible corpus plus a versioned later-in-time holdout/reality-check lane, while P3 promotion requires KodacBench evidence for selective context quality/dilution. Direct benchmark participant execution is still explicitly unauthorized.
+They intentionally do not establish repository-history corpus admission or benchmark participant execution. The accepted plan requires a frozen reproducible corpus plus a versioned later-in-time reality-check lane before broad quality claims. Direct participant execution remains unauthorized.
 
-Therefore the minimum next unit is not participant execution. It is a local deterministic P2-owned admission boundary for immutable repository-history evidence.
+Therefore the minimum next unit is:
 
 ```text
-P2-R6 = REPOSITORY-HISTORY CORPUS ADMISSION + CHRONOLOGY / PROVENANCE BINDING
+P2-R6 = BOUNDED REPOSITORY-HISTORY GIT-OBJECT CORPUS ADMISSION + CHRONOLOGY / PROVENANCE BINDING
 ```
+
+It is not P3-R18, P4, participant execution, a general corpus, or public KodacBench completion.
 
 ## 3. Authorization-unit changed-file set
 
@@ -73,7 +66,7 @@ This authorization PR may change exactly one path:
 docs/planning/KODAC_P2_R6_REPOSITORY_HISTORY_CORPUS_ADMISSION_AUTHORIZATION_2026-09-03.md
 ```
 
-No second path is authorized in this authorization unit.
+No second path is authorized.
 
 ## 4. Future implementation allowlist
 
@@ -86,13 +79,13 @@ packages/kodac-runtime/test/fixtures/p2-r6/**
 docs/planning/KODAC_P2_R6_REPOSITORY_HISTORY_CORPUS_ADMISSION_EVIDENCE_2026-09-03.md
 ```
 
-No historical P2-R1 through P2-R5 source/test/evidence byte may change. No KRI-R1 corpus byte may change. No current roadmap/status view is part of the implementation allowlist. No workflow, package manifest, lockfile, dependency, schema outside the P2-R6 subtree, provider/model adapter, persistence, product, release, or ruleset path is authorized.
+No historical P2-R1 through P2-R5 source/test/evidence byte may change. No KRI-R1 corpus byte may change. No current roadmap/status view, workflow, package manifest, lockfile, dependency, external schema, provider/model adapter, persistence, product, release, or ruleset path is authorized.
 
 If implementation requires any additional path, stop and create separate canonical authority.
 
 ## 5. P2-R6 objective
 
-Implement the smallest deterministic local contract that can admit immutable repository-owned historical benchmark evidence without executing any benchmark participant.
+Implement the smallest pure deterministic local contract that can admit a fixed, canonically authorized set of Kodac Git objects as bounded development/reality-check evidence without executing any benchmark participant.
 
 The implementation must establish a versioned admission record capable of binding at minimum:
 
@@ -101,19 +94,18 @@ schema_version
 benchmark_id
 benchmark_protocol_version
 admission_version
+canonical_admission_binding_identity
 corpus_id
 corpus_role
 corpus_digest
 source_repository
 source_repository_commit
-source_artifact_kind
-source_artifact_id
-source_blob_or_record_identity
+source_tree_identity
+source_raw_content_sha256
 case_id
 task_family
 case_evidence_identity
 chronology_scheme
-chronology_anchor
 development_freeze_anchor
 reality_check_anchor
 chronology_status
@@ -123,237 +115,218 @@ overlap_status
 admission_identity
 ```
 
-Names may be refined inside the implementation only if semantics remain equivalent and within this bounded authority. No field may encode execution, ranking, promotion, release, or completion authority.
+No field may encode execution, ranking, promotion, release, or completion authority.
 
-## 6. Admissible source class
+## 6. Exact initial source class
 
-P2-R6 may admit only evidence already owned by and canonical inside `TheHalfMoon/Kodac`.
-
-Permitted initial source classes are:
+The initial P2-R6 implementation may admit exactly one source class:
 
 ```text
-CANONICAL_GIT_OBJECT
-CANONICAL_PR_REVIEW_FINDING_OR_ADJUDICATION
-CANONICAL_REPOSITORY_FIXTURE_OR_EVIDENCE_RECORD
+CANONICAL_ADMISSION_BOUND_GIT_COMMIT_OBJECT
 ```
 
-The source must be bound to immutable repository identities such as exact commit/tree/blob identities and, when applicable, PR/comment/review identifiers. P2-R6 may validate and bind caller-materialized canonical Git-object bytes as defined in Section 7; it must not silently treat a repository label, SHA string, timestamp, PR number, or caller boolean as proof of repository membership or chronology.
+No PR-review finding, KRI corpus case, arbitrary repository fixture, external dataset, donor source, or caller-selected Git object is admitted by this slice.
 
-P2-R6 may reference existing immutable KRI-R1 evidence by exact identity, including the canonical current KRI-R1 corpus:
+KRI-R1 remains immutable precedent only. Its four cases are not imported, rewritten, relabeled, or represented as sufficient/general evidence by P2-R6.
+
+## 7. Closed canonical-admission and chronology boundary
+
+P2-R6 must not trust a caller-supplied repository label or Git SHA as evidence that an object belongs to Kodac. Repository membership for this bounded initial slice comes only from the exact canonical-admission binding defined below.
+
+### 7.1 Canonical admission binding v1
+
+The following object is a governance constant of this authorization, not caller input:
+
+```json
+{
+  "schema_version": "p2-r6-canonical-admission-binding/v1",
+  "source_repository": "TheHalfMoon/Kodac",
+  "repository_object_format": "sha1",
+  "admitted_git_commits": [
+    {
+      "commit_sha": "ad1a66483bd972b1a82a4d32dd833237c3c099e8",
+      "tree_sha": "baa62bdefb1ae3c84ad7d27ebeae01b90fbf7cdb",
+      "raw_commit_content_sha256": "sha256:f8420121f479d643dbd25eb3483ca2ec6c38d1de73a186e4640e7e3ebdf2d5d5"
+    },
+    {
+      "commit_sha": "4598031bef5bfc05219f528f81ed6c653024b476",
+      "tree_sha": "baa4625c20d77fae9f4dcbfb421644d856b019c3",
+      "raw_commit_content_sha256": "sha256:0b1aa165dce9304564d0aa34040362d205688ccc0034a80ad40f36c8f55a8d64"
+    }
+  ]
+}
+```
+
+Using canonical sorted-key JSON serialization with no insignificant whitespace, the required binding identity is:
 
 ```text
-PATH = packages/kodac-runtime/test/fixtures/kri-r1/corpus.json
-BLOB = a308729f00f6c96894d66555127c3dd3ab592d32
-CORPUS_IDENTITY = e3f87d5e008918043da4f10617aa479d0d5e4b9fcde42143bc691763f503c4d4
-CASE_COUNT = 4
+CANONICAL_ADMISSION_BINDING_IDENTITY = sha256:fdf839d5923765b0149edf33ad679e63039a55e04d5968674a3042985d4a268d
 ```
 
-That input is immutable. P2-R6 must not rewrite it, expand its claimed semantics, or represent four KRI-R1 cases as sufficient reviewer qualification or general KodacBench coverage.
+The later implementation must embed this exact binding as immutable P2-R6-owned policy. It must not accept a caller replacement, extension, alternate repository label, additional commit, additional tree, or additional raw-content digest.
 
-No external benchmark/dataset download, donor intake, web retrieval, API ingestion, or third-party corpus copy is authorized.
+The two admitted commits are already present in the history of the PR #316 authorization branch. P2-R6 implementation authority becomes effective only after a normal history-preserving merge of a descendant final PR #316 head and mandatory post-merge proof. That proof must establish that the canonical merge's second parent descends from `4598031bef5bfc05219f528f81ed6c653024b476`, which itself has parent `ad1a66483bd972b1a82a4d32dd833237c3c099e8`. Only then may this canonical authorization bind those exact object identities as Kodac-owned admissible inputs.
 
-## 7. Closed chronology-proof boundary
+This is a governance-bound local membership assertion for exactly these identities. It is not a general remote-repository authentication mechanism and does not authorize arbitrary Kodac-history intake.
 
-P2-R6 must use a deterministic chronology scheme grounded in immutable repository history rather than local wall-clock time.
+### 7.2 Chronology proof scheme
 
-The initial and only chronology-proof scheme authorized by this record is:
+The initial and only chronology-proof scheme is:
 
 ```text
 git-commit-ancestry-object-chain/v1
 ```
 
-A later scheme requires separate canonical authority; it may not be invented inside the implementation PR.
+A later scheme requires separate canonical authority.
 
-### 7.1 Required proof object
-
-The pure P2-R6 function must receive chronology evidence as an explicit caller-materialized closed proof object. The proof object must have a versioned schema equivalent to:
+The pure P2-R6 function must receive chronology evidence as an explicit caller-materialized proof object with a versioned schema equivalent to:
 
 ```text
 schema_version = p2-r6-git-ancestry-proof/v1
-source_repository = TheHalfMoon/Kodac
-repository_object_format = sha1
-development_anchor_commit = <40 lowercase hex>
-reality_check_anchor_commit = <40 lowercase hex>
-commit_chain = ordered non-empty array of commit proof entries
+canonical_admission_binding_identity = sha256:fdf839d5923765b0149edf33ad679e63039a55e04d5968674a3042985d4a268d
+development_anchor_commit = ad1a66483bd972b1a82a4d32dd833237c3c099e8
+reality_check_anchor_commit = 4598031bef5bfc05219f528f81ed6c653024b476
+commit_chain = ordered array containing exactly those two commit proof entries
 proof_identity = sha256:<64 lowercase hex>
 ```
 
-Each commit proof entry must bind at minimum:
+Each commit proof entry must bind exactly:
 
 ```text
-commit_sha = <40 lowercase hex>
-raw_commit_content_base64 = <canonical base64 of the exact Git commit object CONTENT bytes>
-parent_commit_shas = ordered array of the exact parent IDs parsed from those content bytes
+commit_sha
+raw_commit_content_base64
+parent_commit_shas
 ```
 
-`raw_commit_content_base64` contains the exact Git **commit content bytes only**, excluding the Git object framing prefix. The validator must reconstruct the Git object framing itself as:
+`raw_commit_content_base64` is canonical base64 of the exact Git commit **content bytes only**, excluding Git object framing.
+
+### 7.3 Required object validation
+
+For every commit proof entry, the implementation must:
+
+1. reject malformed/non-canonical base64;
+2. decode the exact raw content bytes;
+3. compute SHA-256 of those raw content bytes and require an exact match to the corresponding `raw_commit_content_sha256` in the immutable admission binding;
+4. reconstruct Git framing as `"commit " + decimal_byte_length(raw_content) + NUL + raw_content`;
+5. recompute the SHA-1 Git object ID and require it to equal `commit_sha`;
+6. parse exactly one canonical `tree <40-lowercase-hex>` header from the raw bytes and require it to equal the corresponding `tree_sha` in the immutable admission binding;
+7. parse every `parent <40-lowercase-hex>` header in encounter order from the raw bytes;
+8. require parsed parents to equal caller `parent_commit_shas` exactly and in order;
+9. require `commit_sha`, parsed tree SHA, and raw-content SHA-256 all to match one and only one immutable admission-binding entry;
+10. reject every object not present in that binding.
+
+A caller cannot make an object admissible by setting `source_repository`, `commit_sha`, `tree_sha`, a boolean, a label, or a parent array. All three immutable identities—Git commit SHA-1, tree SHA-1, and raw-content SHA-256—must bind to the canonical admission set.
+
+### 7.4 Commit-header and chain validation
+
+The raw commit object must have an unambiguous Git header/body boundary. Continuation lines may only continue a preceding Git header field and may never become parent declarations. Malformed, truncated, duplicate, conflicting, non-canonical, or ambiguous tree/parent declarations fail closed.
+
+The exact authorized chain is:
 
 ```text
-"commit " + decimal_byte_length(raw_content) + NUL + raw_content
-```
-
-and recompute the SHA-1 object ID using the existing Node runtime crypto capability. The recomputed object ID must equal `commit_sha` for every entry. A caller-supplied SHA string without matching raw object bytes is not chronology proof.
-
-Git SHA-1 object identity here is a structural repository-history fingerprint under the repository's current object format. It is not a cryptographic signature, account authentication, provider identity, remote repository attestation, or authority grant.
-
-### 7.2 Parent extraction and chain validation
-
-The validator must parse parent identities from the raw Git commit header bytes; it may not trust `parent_commit_shas` merely because the caller supplied them.
-
-At minimum:
-
-1. the raw object must have a valid Git commit header/body boundary;
-2. the header must contain one canonical `tree <40-lowercase-hex>` line;
-3. every `parent <40-lowercase-hex>` header must be parsed in encounter order;
-4. any continuation line must be associated only with a preceding Git header field and must not be interpreted as a parent line;
-5. parsed parent IDs must equal `parent_commit_shas` exactly and in order;
-6. malformed, truncated, duplicate, conflicting, non-canonical, or ambiguous parent declarations fail closed;
-7. the validator must not derive ancestry from author/committer dates, message text, PR numbers, branch names, or caller-provided booleans.
-
-The ancestry chain must satisfy all of:
-
-```text
-commit_chain[0].commit_sha == development_anchor_commit
-commit_chain[last].commit_sha == reality_check_anchor_commit
+commit_chain.length == 2
+commit_chain[0].commit_sha == ad1a66483bd972b1a82a4d32dd833237c3c099e8
+commit_chain[1].commit_sha == 4598031bef5bfc05219f528f81ed6c653024b476
+commit_chain[0].commit_sha is present in the exact parsed parents of commit_chain[1]
 all commit_sha values are distinct
-for every i > 0:
-  commit_chain[i - 1].commit_sha is present in commit_chain[i].parent_commit_shas
 ```
 
-The chain therefore represents one explicit directed parent path from the development anchor to the reality-check anchor. Merge commits are permitted only when the previous chain element is one of the exact parents parsed from that merge commit's raw object bytes.
+No intermediate or alternate commit is authorized. An unrelated, reversed, duplicate, cyclic, missing, or extra chain element fails closed.
 
-Missing links, duplicate/cyclic identities, object-ID mismatches, wrong endpoints, a reversed edge, an unrelated commit, or a parent array that disagrees with parsed raw bytes must fail closed.
+### 7.5 Chronology result
 
-### 7.3 Chronology result
-
-A reality-check case or corpus may be called `later-in-time` only when the exact closed proof object validates under `git-commit-ancestry-object-chain/v1` and the anchors are distinct.
+Only the exact fully validated two-object chain above may produce:
 
 ```text
-VALID DISTINCT DEVELOPMENT->REALITY ANCESTRY CHAIN = later-in-time
-VALID SAME ANCHOR = not-later-in-time
-ABSENT / INVALID / INCOMPLETE / CONFLICTING PROOF = chronology-unproven
-LATER COMMIT TIMESTAMP STRING != LATER-IN-TIME PROOF
-PR NUMBER ORDER != GIT CHRONOLOGY PROOF
-SEPARATE CORPUS != LATER-IN-TIME PROOF
-SHA STRING ALONE != ANCESTRY PROOF
-CALLER BOOLEAN / LABEL != ANCESTRY PROOF
+chronology_status = later-in-time
 ```
 
-The implementation must not throw away a valid admission merely because chronology is unproven unless the caller explicitly asks to assert `later-in-time`; instead it must preserve `chronology-unproven` as evidence. Any attempt to claim `later-in-time` from an absent or invalid proof must fail closed.
-
-### 7.4 No hidden repository access
-
-P2-R6 logic must not obtain or verify chronology by invoking Git, reading `.git`, traversing the filesystem, spawning a subprocess, using GitHub/API/network access, or calling a provider/tool/agent. The only chronology evidence it may evaluate is the closed caller-materialized proof object above.
-
-Small committed P2-R6 fixtures may contain exact base64 commit-content bytes copied from already-canonical Kodac Git objects solely to prove this contract. Such fixtures are immutable local test evidence and do not create external-data or runtime repository-access authority.
-
-P2-R6 does not claim that a valid ancestry proof establishes repository-label authentication, statistical independence, representativeness, contamination freedom, sufficient holdout size, or benchmark quality.
+Any absent, invalid, incomplete, conflicting, unbound, reversed, or extended proof yields `chronology-unproven`; it must never be silently upgraded. A caller request/assertion that such evidence is `later-in-time` must fail closed.
 
 ```text
-VALID GIT OBJECT CHAIN != REMOTE REPOSITORY AUTHENTICATION
-VALID ANCESTRY != UNBIASEDNESS
-VALID ANCESTRY != CONTAMINATION FREEDOM
-VALID ANCESTRY != HOLDOUT SUFFICIENCY
+COMMIT TIMESTAMP != CHRONOLOGY PROOF
+PR NUMBER != CHRONOLOGY PROOF
+SHA STRING ALONE != CHRONOLOGY PROOF
+CALLER BOOLEAN / LABEL != CHRONOLOGY PROOF
+VALID GIT OBJECT CHAIN WITHOUT ADMISSION BINDING != KODAC MEMBERSHIP
 ```
+
+### 7.6 No hidden repository access
+
+P2-R6 logic must not invoke Git, read `.git`, traverse the filesystem, spawn a subprocess, use GitHub/API/network access, or call a provider/tool/agent to establish membership or chronology. It evaluates only the immutable embedded admission binding plus caller-materialized proof bytes.
+
+Small committed P2-R6 fixtures may contain exact base64 raw commit-content bytes for the two admitted identities solely to prove this bounded contract.
+
+The binding and proof establish only literal, canonically authorized local object membership and one bounded ancestry relation. They do not establish remote authentication, signature validity, statistical independence, representativeness, contamination freedom, holdout sufficiency, or benchmark quality.
 
 ## 8. Provenance, overlap and contamination
 
-The implementation must keep literal source provenance separate from stronger quality claims.
-
-At minimum it must distinguish:
+The implementation must keep literal provenance separate from quality claims and distinguish at minimum:
 
 ```text
 contamination_status = none-known | known | unknown
 overlap_status = none-known | known | unknown
-chronology_status = later-in-time | not-later-in-time | chronology-unproven
+chronology_status = later-in-time | chronology-unproven
 ```
 
-Equivalent closed vocabularies are permitted if they preserve these distinctions exactly.
+`unknown` must never normalize to `none-known`. Canonical admission or valid ancestry must never be relabeled as contamination freedom, unbiasedness, representativeness, holdout sufficiency, or statistical validity.
 
-`unknown` must never be normalized to `none-known`. Literal repository provenance or a valid Git-object ancestry proof must never be relabeled as contamination freedom, unbiasedness, representativeness, holdout sufficiency, or statistical validity.
-
-Development and reality-check case identities must not silently alias. Duplicate/conflicting source identities or case identities fail closed.
+Development and reality-check case identities must not alias. Duplicate/conflicting source or case identities fail closed.
 
 ## 9. Determinism and hostile-input rules
 
-The implementation must be pure/in-memory and deterministic. It may reuse canonical P2-R1 canonical JSON / SHA-256 helpers by import and Node's already-used `node:crypto` capability but must not mutate P2-R1.
+The implementation must be pure/in-memory and deterministic. It may reuse canonical P2-R1 canonical JSON/SHA-256 helpers and Node's already-used `node:crypto` capability but must not mutate P2-R1.
 
-It must fail closed on malformed or ambiguous inputs, including where applicable:
+It must fail closed on unknown/missing fields, caller attempts to alter the canonical-admission binding, duplicate identities, invalid SHA-1/SHA-256, malformed base64, Git object hash mismatch, raw-content digest mismatch, tree mismatch, parent mismatch, extra/unbound commit objects, incomplete/reversed/cyclic chains, non-canonical strings, non-JSON values, non-finite numbers, sparse arrays, accessors/getters, proxies, cycles, caller mutation after derivation, and injected ranking/promotion/execution authority fields.
 
-- unknown/missing keys;
-- duplicate case/source/commit identities;
-- contradictory role/provenance/chronology declarations;
-- invalid SHA-1/SHA-256/commit/blob identities;
-- malformed/non-canonical base64;
-- Git object byte-length/hash mismatch;
-- malformed Git commit headers or parent extraction mismatch;
-- incomplete/reversed/unrelated/cyclic ancestry chains;
-- non-canonical strings;
-- object-key reordering instability;
-- non-JSON values;
-- non-finite numbers;
-- sparse/non-canonical arrays;
-- accessors/getters;
-- proxies;
-- cycles;
-- caller mutation after derivation;
-- attempts to inject ranking/promotion/execution authority fields.
-
-For semantically identical canonical inputs, output bytes, `chronology_proof_identity`, and `admission_identity` must be identical across repeated runs and supported operating systems.
+For semantically identical canonical inputs, output bytes, binding/proof identities, and admission identity must be deterministic across repeated runs and supported operating systems.
 
 ## 10. Required initial fixture proof
 
-The implementation may create only small P2-owned local fixtures needed to prove the admission contract. Fixtures may include exact immutable references to canonical repository-history evidence and the bounded raw Git commit-content bytes required by Section 7.
+The later implementation must demonstrate at least:
 
-The initial proof must demonstrate at least:
+1. exact canonical-admission binding identity recomputation;
+2. exact admission of only the two bound commits;
+3. exact raw-content SHA-256 checks;
+4. exact Git SHA-1 object-ID recomputation;
+5. exact tree extraction and binding;
+6. exact parent extraction from raw bytes;
+7. the authorized direct development-to-reality edge producing `later-in-time`;
+8. foreign but structurally valid Git objects rejected as unbound;
+9. wrong tree/raw-content digest/object SHA rejected;
+10. caller replacement/extension of the admission binding rejected;
+11. reversed, extra, duplicate, cyclic, missing, or unrelated chain evidence rejected or preserved as `chronology-unproven` as applicable;
+12. timestamps, PR numbers, repository labels, SHA strings, and booleans do not create membership/chronology;
+13. `unknown` contamination/overlap remains distinct;
+14. deterministic repeated output and object-key-order independence;
+15. caller-mutation independence / deep freeze;
+16. no participant/model/provider/reviewer/evaluator/tool/agent execution;
+17. no global score, statistics, ranking, promotion, winner/default, broad benchmark completion, release, or completion output.
 
-1. one admitted development source;
-2. one separately admitted reality-check source;
-3. one valid distinct `development -> reality` Git commit ancestry object chain producing `later-in-time`;
-4. exact recomputation of every Git commit object ID from fixture bytes;
-5. exact parent extraction and chain-edge validation without Git/filesystem/subprocess/network access;
-6. exact source Git/blob/record identity binding;
-7. deterministic chronology-proof/corpus/admission identity;
-8. duplicate/alias/cycle rejection;
-9. object-hash mismatch and parent-array/raw-byte mismatch rejection;
-10. absent/incomplete/unrelated/reversed proof remains `chronology-unproven` and cannot support a `later-in-time` assertion;
-11. commit timestamps, PR numbers, labels, and caller booleans do not establish chronology;
-12. `unknown` contamination/overlap preservation;
-13. source mutation changes the admission identity or fails validation;
-14. existing KRI-R1 bytes remain unchanged if referenced;
-15. no participant/model/provider/evaluator/tool/agent execution occurs;
-16. no global score, ranking, promotion, winner/default, statistics, or broad benchmark completion field is emitted.
-
-These fixtures prove contract behavior and bounded repository-history admission only. They do not by themselves establish general/public KodacBench completeness.
+These fixtures prove only this bounded contract. They do not establish general/public KodacBench completeness.
 
 ## 11. Explicit non-grants
 
 This authorization does not authorize:
 
-- benchmark participant execution;
+- any benchmark participant execution;
 - provider/model/reviewer/evaluator/tool/agent invocation;
-- Git invocation or `.git` reads by P2-R6 logic;
-- network, secret, subprocess, sandbox, filesystem-output, or other side-effect execution by P2-R6 benchmark logic;
-- remote repository authentication or remote provenance lookup;
-- external benchmark/dataset ingestion;
-- donor source/code/data intake;
-- mutation of KRI-R1 or historical P2/P3 evidence;
-- new dependencies, package/lockfile changes, or workflow changes;
-- persistence, database storage, telemetry, analytics, upload, training, fine-tuning, online learning, or cross-repository learning;
+- Git invocation, `.git` reads, filesystem lookup/output, network, secrets, subprocess, sandbox, remote repository lookup, or side effects by P2-R6 logic;
+- any source outside the two-object canonical admission binding above;
+- KRI-R1 import/mutation or historical P2/P3 mutation;
+- external dataset/donor intake;
+- new dependencies, package/lockfile/workflow changes;
+- persistence, telemetry, analytics, upload, training, fine-tuning, online or cross-repository learning;
 - whole-review finding generation measurement;
-- claims that KRI-R1's four cases are sufficient/general;
 - holdout sufficiency, representativeness, unbiasedness, contamination freedom, or statistical validity;
-- threshold/tolerance/significance/confidence/effect-size policy;
+- thresholds, tolerance, significance, confidence, effect-size policy;
 - cross-task-family blended score;
-- N-way ranking, leaderboard, winner/default selection, strategy promotion, donor replacement, or public superiority claims;
-- P2 overall closure or general/public KodacBench completion;
-- P2-R7+ implementation;
-- P3 overall closure or promotion;
-- P3-R18+ implementation;
-- P4-P8 implementation;
-- K2/K5/Done Gate/`PROVEN_READY` authority expansion;
-- public release, package publication, brand launch, production-readiness claim, or project-completion claim;
-- ruleset mutation or bypass.
+- N-way comparison, ranking, leaderboard, winner/default, promotion, donor replacement, or public superiority claims;
+- P2 overall closure, general/public KodacBench completion, P2-R7+ implementation;
+- P3 overall closure/promotion, P3-R18+ implementation, P4-P8 implementation;
+- K2/K5/Done Gate/`PROVEN_READY` expansion;
+- public release, package publication, brand launch, production-readiness or project-completion claim;
+- ruleset change or bypass.
 
 ```text
 WAIVER = NO
@@ -361,7 +334,9 @@ WAIVER = NO
 
 ## 12. Material review repair history
 
-The first candidate head:
+The authorization has preserved forward-only repair history.
+
+### Initial candidate
 
 ```text
 HEAD = ad1a66483bd972b1a82a4d32dd833237c3c099e8
@@ -369,11 +344,23 @@ TREE = baa62bdefb1ae3c84ad7d27ebeae01b90fbf7cdb
 AUTHORIZATION_BLOB = fea3064bb7908cf0bdca95855176ea60ae6a75ba
 ```
 
-was **not qualified**. CodeRabbit FINAL-METADATA review comment `5530930105` found one material defect: the candidate required an objectively provable repository-history chronology while simultaneously requiring a pure/no-Git/no-network contract, but did not define a closed proof object that the pure implementation could validate.
+CodeRabbit comment `5530930105` found a material defect: objective Git ancestry was required but no closed proof object was defined for the pure/no-Git/no-network implementation.
 
-This revision repairs that defect forward by specifying `p2-r6-git-ancestry-proof/v1`, raw Git commit-content binding, local Git object-ID recomputation, exact parent extraction, directed chain validation, fail-closed chronology semantics, and an explicit ban on hidden Git/filesystem/subprocess/network resolution.
+### First repair
 
-The earlier head/check/review evidence is historical only and must not be reused as final qualification evidence for this revised head.
+```text
+HEAD = 4598031bef5bfc05219f528f81ed6c653024b476
+TREE = baa4625c20d77fae9f4dcbfb421644d856b019c3
+AUTHORIZATION_BLOB = ab7448aaa6aa4c7a950491c9346527acac12ba74
+```
+
+This defined raw Git-object verification and a closed ancestry chain. CodeRabbit comment `5531013980` found a second material defect: object integrity + ancestry did not independently bind those objects to canonical Kodac membership.
+
+### Current repair
+
+This revision closes the second defect by narrowing the initial source class to exactly two Git commit objects and defining an immutable canonical-admission binding over exact commit SHA-1, tree SHA-1, and raw-content SHA-256 identities. The runtime contract cannot expand that set from caller input.
+
+All CI/review evidence on predecessor heads is historical only and may not count toward final qualification.
 
 ## 13. Required implementation evidence
 
@@ -383,27 +370,13 @@ The later implementation PR must create:
 docs/planning/KODAC_P2_R6_REPOSITORY_HISTORY_CORPUS_ADMISSION_EVIDENCE_2026-09-03.md
 ```
 
-The evidence record must bind:
-
-- this canonical authorization merge and post-merge proof;
-- implementation base/head/tree;
-- exact allowlist realization and final blobs;
-- source corpus/artifact identities used by fixtures;
-- chronology proof schema/version and exact proof identities used by fixtures;
-- exact deterministic test results;
-- Governance and K2 qualification identities;
-- at least two distinct independent substantive exact-head semantic review channels;
-- zero unresolved actionable findings/threads;
-- active ruleset/no-bypass proof;
-- guarded expected-head merge conditions;
-- post-merge parent/tree/blob/signature/applicable-check proof;
-- limitations and all preserved non-grants.
+It must bind this canonical authorization merge/proof; implementation base/head/tree; exact allowlist and blobs; binding/proof identities; exact fixture source identities; deterministic tests; Governance/K2 identities; two independent substantive exact-head semantic review channels; zero actionable findings/threads; active no-bypass ruleset; guarded merge; mandatory post-merge parent/tree/blob/signature/check proof; limitations and non-grants.
 
 Candidate-time evidence must not claim future canonical closure.
 
-## 14. Authorization-candidate qualification gate
+## 14. Authorization qualification gate
 
-This one-path authorization candidate may merge only when one frozen exact head proves:
+This one-path candidate may merge only when one frozen exact head proves:
 
 ```text
 PULL_REF == BRANCH_REF == EXACT_HEAD
@@ -411,6 +384,8 @@ BASE == CURRENT_CANONICAL_MAIN
 BEHIND_BY = 0
 CHANGED_PATHS = EXACTLY 1
 AUTHORIZATION_BLOB = FROZEN EXACT IDENTITY
+CURRENT_HEAD DESCENDS FROM 4598031bef5bfc05219f528f81ed6c653024b476
+4598031bef5bfc05219f528f81ed6c653024b476 PARENT INCLUDES ad1a66483bd972b1a82a4d32dd833237c3c099e8
 APPLICABLE REQUIRED CI = TERMINAL SUCCESS OR CANONICALLY PROVEN NON-APPLICABLE
 INDEPENDENT SUBSTANTIVE SEMANTIC REVIEW = 2 / 2 TERMINAL CLEAN ON EXACT HEAD/CURRENT METADATA
 UNRESOLVED MATERIAL/MINOR ACTIONABLE FINDINGS = 0
@@ -419,20 +394,22 @@ RULESET 20707483 = ACTIVE / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-Any repository-byte, head, base, or current-relevant metadata movement invalidates prior qualification and requires fresh exact-head qualification.
+Any repository-byte, head, base, or current-relevant metadata movement invalidates prior qualification.
 
-## 15. Guarded merge and post-merge proof
+## 15. Guarded merge and mandatory post-merge proof
 
-Merge must be a normal history-preserving guarded merge using the exact qualified `expected_head_sha`.
+Merge must be a normal history-preserving merge using the exact qualified `expected_head_sha`.
 
-Before P2-R6 implementation authority becomes effective, mandatory post-merge proof must establish:
+Before P2-R6 implementation authority becomes effective, post-merge proof must establish:
 
 - protected `main` equals the returned merge SHA;
-- ordered parents are pre-merge canonical main then exact qualified authorization head;
+- ordered merge parents are pre-merge canonical main then the exact qualified authorization head;
 - merge tree equals the qualified tree;
-- authorization blob on `main` equals the qualified blob;
-- GitHub merge verification is `verified / valid`;
-- applicable post-merge checks succeed, with K2 push non-applicability represented honestly when path filters exclude the docs-only merge;
+- authorization blob on main equals the qualified blob;
+- merge verification is `verified / valid`;
+- the exact qualified second parent descends from `4598031bef5bfc05219f528f81ed6c653024b476`;
+- `4598031bef5bfc05219f528f81ed6c653024b476` has `ad1a66483bd972b1a82a4d32dd833237c3c099e8` as its exact parent;
+- applicable post-merge checks succeed, with non-applicability represented honestly;
 - PR is merged;
 - ruleset `20707483` remains active with `bypass_actors=[]` and `current_user_can_bypass=never`;
 - `WAIVER=NO`.
@@ -445,10 +422,6 @@ P2-R6 REPOSITORY-HISTORY CORPUS ADMISSION IMPLEMENTATION = AUTHORIZED
 
 ## 16. Boundary after successful P2-R6 implementation
 
-Successful P2-R6 implementation may establish only a canonical local repository-history corpus-admission/provenance/chronology mechanism.
+Successful P2-R6 implementation may establish only the fixed two-object local Git-history admission/provenance/chronology mechanism above. It does not close P2 overall or authorize participant execution by composition.
 
-It does not close P2 overall or authorize benchmark execution by composition.
-
-After its implementation and any required current-view reconciliation are canonical, fresh successor analysis must determine whether the next minimum unit is additional corpus coverage, participant execution authorization, evaluator/result attestation, context-specific measurement, or another evidence gap.
-
-No P2-R7 semantic slice is inferred by numbering alone.
+After implementation and any required reconciliation are canonical, fresh successor analysis must determine the next minimum unit. No P2-R7 semantic slice is inferred by numbering alone.
