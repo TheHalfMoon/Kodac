@@ -168,8 +168,14 @@ type ProvenanceOptions = CorpusOptions & {
   readonly sharedSeed?: string
 }
 
-function clone<T>(value: T): T {
-  return structuredClone(value)
+type Mutable<T> = T extends readonly (infer U)[]
+  ? Mutable<U>[]
+  : T extends object
+    ? { -readonly [K in keyof T]: Mutable<T[K]> }
+    : T
+
+function clone<T>(value: T): Mutable<T> {
+  return structuredClone(value) as Mutable<T>
 }
 
 function hex(char: string): string {
@@ -551,7 +557,7 @@ function makeScenario(
 }
 
 function reconstructR13(scenario: Scenario) {
-  const bundle = scenario.bundle as Record<string, unknown>
+  const bundle = scenario.bundle as unknown as Record<string, unknown>
   return buildReductionDirectionBindingEvidence(
     bundle.strategyDeclaration,
     bundle.compositionDeclaration,
@@ -1067,7 +1073,7 @@ test("P3-R17 rejects unsorted, duplicate, empty, and unsupported caller provenan
     const changed = clone(declaration) as unknown as Record<string, unknown>
     const provenance = changed.provenanceCriteria as Record<string, unknown>
     provenance.requiredCorpusRoles = value
-    assert.throws(() => execute(pair, criteria, bundle, changed), /P3-R17 contract violation:/)
+    assert.throws(() => execute(pair, criteria, bundle, changed as never), /P3-R17 contract violation:/)
   }
 })
 
@@ -1186,7 +1192,7 @@ test("P3-R17 output is detached from caller mutation and preserves complete trus
   const pair = latePair()
   const criteria = relationCriteria(pair)
   const bundle = provenanceBundle(pair)
-  const declaration = qualificationDeclaration(pair, criteria, bundle)
+  const declaration = clone(qualificationDeclaration(pair, criteria, bundle))
   const trusted16 = buildDeclaredStrategyDirectionalRelationCriterionMatchEvidence(
     pair.left.bundle,
     pair.right.bundle,
