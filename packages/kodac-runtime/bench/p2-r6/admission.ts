@@ -30,7 +30,6 @@ const PROOF_KEYS = [
   "commit_chain",
   "proof_identity",
 ] as const
-
 const PROOF_PREIMAGE_KEYS = [
   "schema_version",
   "canonical_admission_binding_identity",
@@ -38,13 +37,7 @@ const PROOF_PREIMAGE_KEYS = [
   "reality_check_anchor_commit",
   "commit_chain",
 ] as const
-
-const COMMIT_ENTRY_KEYS = [
-  "commit_sha",
-  "raw_commit_content_base64",
-  "parent_commit_shas",
-] as const
-
+const COMMIT_ENTRY_KEYS = ["commit_sha", "raw_commit_content_base64", "parent_commit_shas"] as const
 const DECLARATION_KEYS = [
   "schema_version",
   "benchmark_id",
@@ -52,7 +45,6 @@ const DECLARATION_KEYS = [
   "development",
   "reality_check",
 ] as const
-
 const DECLARATION_ENTRY_KEYS = [
   "corpus_id",
   "case_id",
@@ -60,7 +52,6 @@ const DECLARATION_ENTRY_KEYS = [
   "contamination_status",
   "overlap_status",
 ] as const
-
 const ADMISSION_RECORD_KEYS = [
   "schema_version",
   "benchmark_id",
@@ -102,37 +93,13 @@ export interface P2R6CanonicalAdmissionBinding {
   schema_version: "p2-r6-canonical-admission-binding/v1"
   source_repository: typeof P2_R6_SOURCE_REPOSITORY
   repository_object_format: "sha1"
-  admitted_git_commits: readonly [
-    P2R6AdmissionBindingEntry,
-    P2R6AdmissionBindingEntry,
-  ]
+  admitted_git_commits: [P2R6AdmissionBindingEntry, P2R6AdmissionBindingEntry]
 }
-
-export const P2_R6_CANONICAL_ADMISSION_BINDING: P2R6CanonicalAdmissionBinding =
-  deepFreeze<P2R6CanonicalAdmissionBinding>({
-    schema_version: "p2-r6-canonical-admission-binding/v1",
-    source_repository: P2_R6_SOURCE_REPOSITORY,
-    repository_object_format: "sha1",
-    admitted_git_commits: [
-      {
-        commit_sha: P2_R6_DEVELOPMENT_COMMIT,
-        tree_sha: "baa62bdefb1ae3c84ad7d27ebeae01b90fbf7cdb",
-        raw_commit_content_sha256:
-          "sha256:f8420121f479d643dbd25eb3483ca2ec6c38d1de73a186e4640e7e3ebdf2d5d5",
-      },
-      {
-        commit_sha: P2_R6_REALITY_CHECK_COMMIT,
-        tree_sha: "baa4625c20d77fae9f4dcbfb421644d856b019c3",
-        raw_commit_content_sha256:
-          "sha256:0b1aa165dce9304564d0aa34040362d205688ccc0034a80ad40f36c8f55a8d64",
-      },
-    ],
-  })
 
 export interface P2R6CommitProofEntry {
   commit_sha: string
   raw_commit_content_base64: string
-  parent_commit_shas: readonly string[]
+  parent_commit_shas: string[]
 }
 
 export interface P2R6ProofIdentityPreimage {
@@ -140,7 +107,7 @@ export interface P2R6ProofIdentityPreimage {
   canonical_admission_binding_identity: typeof P2_R6_CANONICAL_ADMISSION_BINDING_IDENTITY
   development_anchor_commit: typeof P2_R6_DEVELOPMENT_COMMIT
   reality_check_anchor_commit: typeof P2_R6_REALITY_CHECK_COMMIT
-  commit_chain: readonly [P2R6CommitProofEntry, P2R6CommitProofEntry]
+  commit_chain: [P2R6CommitProofEntry, P2R6CommitProofEntry]
 }
 
 export interface P2R6GitAncestryProof extends P2R6ProofIdentityPreimage {
@@ -194,17 +161,20 @@ export interface P2R6AdmissionRecord {
   admission_identity: string
 }
 
+type AdmissionCore = Omit<P2R6AdmissionRecord, "case_evidence_identity" | "admission_identity">
+type AdmissionWithoutIdentity = Omit<P2R6AdmissionRecord, "admission_identity">
+
 interface ValidatedCommit {
   entry: P2R6CommitProofEntry
-  raw_content: Buffer
-  parsed_tree: string
-  parsed_parents: readonly string[]
+  rawContent: Buffer
+  parsedTree: string
+  parsedParents: string[]
   binding: P2R6AdmissionBindingEntry
 }
 
 interface InternalValidatedProof {
   proof: P2R6GitAncestryProof
-  commits: readonly [ValidatedCommit, ValidatedCommit]
+  commits: [ValidatedCommit, ValidatedCommit]
 }
 
 function fail(message: string): never {
@@ -286,13 +256,9 @@ function deepFreeze<T>(value: T): T {
     return value
   }
   if (Array.isArray(value)) {
-    for (const entry of value) {
-      deepFreeze(entry)
-    }
+    for (const entry of value) deepFreeze(entry)
   } else {
-    for (const entry of Object.values(value as UnknownRecord)) {
-      deepFreeze(entry)
-    }
+    for (const entry of Object.values(value as UnknownRecord)) deepFreeze(entry)
   }
   return Object.freeze(value)
 }
@@ -302,8 +268,10 @@ function rawSha256(bytes: Buffer): string {
 }
 
 function gitCommitSha1(bytes: Buffer): string {
-  const prefix = Buffer.from(`commit ${bytes.length}\0`, "ascii")
-  return createHash("sha1").update(prefix).update(bytes).digest("hex")
+  return createHash("sha1")
+    .update(Buffer.from(`commit ${bytes.length}\0`, "ascii"))
+    .update(bytes)
+    .digest("hex")
 }
 
 function canonicalBase64(value: unknown, label: string): { encoded: string; decoded: Buffer } {
@@ -322,30 +290,23 @@ function canonicalBase64(value: unknown, label: string): { encoded: string; deco
   return { encoded: value, decoded }
 }
 
-function parentList(value: unknown, label: string): readonly string[] {
-  if (!Array.isArray(value)) {
-    fail(`${label} must be an array`)
-  }
+function parentList(value: unknown, label: string): string[] {
+  if (!Array.isArray(value)) fail(`${label} must be an array`)
   return value.map((entry, index) => sha1(entry, `${label}[${index}]`))
 }
 
-function normalizeCommitEntry(value: unknown, label: string): {
-  entry: P2R6CommitProofEntry
-  decoded: Buffer
-} {
+function normalizeCommitEntry(
+  value: unknown,
+  label: string,
+): { entry: P2R6CommitProofEntry; decoded: Buffer } {
   const current = record(value, label)
   exactKeys(current, COMMIT_ENTRY_KEYS, label)
-  const commitSha = sha1(current.commit_sha, `${label}.commit_sha`)
-  const base64 = canonicalBase64(
-    current.raw_commit_content_base64,
-    `${label}.raw_commit_content_base64`,
-  )
-  const parents = parentList(current.parent_commit_shas, `${label}.parent_commit_shas`)
+  const base64 = canonicalBase64(current.raw_commit_content_base64, `${label}.raw_commit_content_base64`)
   return {
     entry: {
-      commit_sha: commitSha,
+      commit_sha: sha1(current.commit_sha, `${label}.commit_sha`),
       raw_commit_content_base64: base64.encoded,
-      parent_commit_shas: [...parents],
+      parent_commit_shas: parentList(current.parent_commit_shas, `${label}.parent_commit_shas`),
     },
     decoded: base64.decoded,
   }
@@ -353,17 +314,12 @@ function normalizeCommitEntry(value: unknown, label: string): {
 
 function normalizeProofPreimage(value: unknown): {
   preimage: P2R6ProofIdentityPreimage
-  decoded: readonly [Buffer, Buffer]
+  decoded: [Buffer, Buffer]
 } {
   const current = record(value, "proof identity preimage")
   exactKeys(current, PROOF_PREIMAGE_KEYS, "proof identity preimage")
-  if (current.schema_version !== P2_R6_PROOF_SCHEMA) {
-    fail("unsupported proof schema")
-  }
-  if (
-    current.canonical_admission_binding_identity !==
-    P2_R6_CANONICAL_ADMISSION_BINDING_IDENTITY
-  ) {
+  if (current.schema_version !== P2_R6_PROOF_SCHEMA) fail("unsupported proof schema")
+  if (current.canonical_admission_binding_identity !== P2_R6_CANONICAL_ADMISSION_BINDING_IDENTITY) {
     fail("proof canonical_admission_binding_identity does not match the canonical binding")
   }
   if (current.development_anchor_commit !== P2_R6_DEVELOPMENT_COMMIT) {
@@ -390,32 +346,25 @@ function normalizeProofPreimage(value: unknown): {
 }
 
 export function deriveP2R6ProofIdentity(value: unknown): string {
-  const current = snapshot<unknown>(value, "proof identity preimage")
-  const { preimage } = normalizeProofPreimage(current)
-  return sha256Canonical(preimage)
+  const clean = snapshot<unknown>(value, "proof identity preimage")
+  return sha256Canonical(normalizeProofPreimage(clean).preimage)
 }
 
-function parseCommitHeaders(raw: Buffer, label: string): {
-  tree: string
-  parents: readonly string[]
-} {
+function parseCommitHeaders(raw: Buffer, label: string): { tree: string; parents: string[] } {
   const boundary = raw.indexOf(Buffer.from("\n\n", "ascii"))
-  if (boundary <= 0) {
-    fail(`${label} must contain an unambiguous Git header/body boundary`)
-  }
-  const header = raw.subarray(0, boundary).toString("utf8")
-  if (header.includes("\r") || header.includes("\0")) {
+  if (boundary <= 0) fail(`${label} must contain an unambiguous Git header/body boundary`)
+  const headerBytes = raw.subarray(0, boundary)
+  const header = headerBytes.toString("utf8")
+  if (!Buffer.from(header, "utf8").equals(headerBytes) || header.includes("\r") || header.includes("\0")) {
     fail(`${label} contains a non-canonical Git header`)
   }
+
   const lines = header.split("\n")
   let tree: string | null = null
   const parents: string[] = []
   let previousKey: string | null = null
-
   for (const [index, line] of lines.entries()) {
-    if (line.length === 0) {
-      fail(`${label} header line ${index} is empty`)
-    }
+    if (line.length === 0) fail(`${label} header line ${index} is empty`)
     if (line.startsWith(" ")) {
       if (previousKey === null || previousKey === "tree" || previousKey === "parent") {
         fail(`${label} has an invalid continuation line`)
@@ -423,26 +372,19 @@ function parseCommitHeaders(raw: Buffer, label: string): {
       continue
     }
     const match = /^([a-z][a-z0-9-]*) (.+)$/.exec(line)
-    if (match === null) {
-      fail(`${label} header line ${index} is malformed`)
-    }
-    const [, key, payload] = match
+    if (match === null) fail(`${label} header line ${index} is malformed`)
+    const key = match[1]!
+    const payload = match[2]!
     previousKey = key
     if (key === "tree") {
-      if (!SHA1.test(payload) || tree !== null) {
-        fail(`${label} must contain exactly one canonical tree header`)
-      }
+      if (!SHA1.test(payload) || tree !== null) fail(`${label} must contain exactly one canonical tree header`)
       tree = payload
     } else if (key === "parent") {
-      if (!SHA1.test(payload)) {
-        fail(`${label} contains a malformed parent header`)
-      }
+      if (!SHA1.test(payload)) fail(`${label} contains a malformed parent header`)
       parents.push(payload)
     }
   }
-  if (tree === null) {
-    fail(`${label} must contain exactly one canonical tree header`)
-  }
+  if (tree === null) fail(`${label} must contain exactly one canonical tree header`)
   return { tree, parents }
 }
 
@@ -450,65 +392,76 @@ function sameStringArray(left: readonly string[], right: readonly string[]): boo
   return left.length === right.length && left.every((entry, index) => entry === right[index])
 }
 
+export const P2_R6_CANONICAL_ADMISSION_BINDING: P2R6CanonicalAdmissionBinding =
+  deepFreeze<P2R6CanonicalAdmissionBinding>({
+    schema_version: "p2-r6-canonical-admission-binding/v1",
+    source_repository: P2_R6_SOURCE_REPOSITORY,
+    repository_object_format: "sha1",
+    admitted_git_commits: [
+      {
+        commit_sha: P2_R6_DEVELOPMENT_COMMIT,
+        tree_sha: "baa62bdefb1ae3c84ad7d27ebeae01b90fbf7cdb",
+        raw_commit_content_sha256:
+          "sha256:f8420121f479d643dbd25eb3483ca2ec6c38d1de73a186e4640e7e3ebdf2d5d5",
+      },
+      {
+        commit_sha: P2_R6_REALITY_CHECK_COMMIT,
+        tree_sha: "baa4625c20d77fae9f4dcbfb421644d856b019c3",
+        raw_commit_content_sha256:
+          "sha256:0b1aa165dce9304564d0aa34040362d205688ccc0034a80ad40f36c8f55a8d64",
+      },
+    ],
+  })
+
 function assertCanonicalBinding(): void {
-  const computed = sha256Canonical(P2_R6_CANONICAL_ADMISSION_BINDING)
-  if (computed !== P2_R6_CANONICAL_ADMISSION_BINDING_IDENTITY) {
+  if (sha256Canonical(P2_R6_CANONICAL_ADMISSION_BINDING) !== P2_R6_CANONICAL_ADMISSION_BINDING_IDENTITY) {
     fail("embedded canonical admission binding identity mismatch")
   }
 }
 
-function validateCommit(
-  entry: P2R6CommitProofEntry,
-  raw: Buffer,
-  index: 0 | 1,
-): ValidatedCommit {
+function validateCommit(entry: P2R6CommitProofEntry, raw: Buffer, index: 0 | 1): ValidatedCommit {
   const label = `proof commit_chain[${index}]`
   const parsed = parseCommitHeaders(raw, label)
-  const rawDigest = rawSha256(raw)
-  const framedSha = gitCommitSha1(raw)
-
-  if (framedSha !== entry.commit_sha) {
+  if (gitCommitSha1(raw) !== entry.commit_sha) {
     fail(`${label}.commit_sha does not match the framed Git commit object`)
   }
   if (!sameStringArray(parsed.parents, entry.parent_commit_shas)) {
     fail(`${label}.parent_commit_shas does not match parsed Git parent headers`)
   }
-
+  const rawDigest = rawSha256(raw)
   const matches = P2_R6_CANONICAL_ADMISSION_BINDING.admitted_git_commits.filter(
     (candidate) =>
       candidate.commit_sha === entry.commit_sha &&
       candidate.tree_sha === parsed.tree &&
       candidate.raw_commit_content_sha256 === rawDigest,
   )
-  if (matches.length !== 1) {
-    fail(`${label} does not match exactly one canonically admitted Git object`)
-  }
-  const binding = matches[0]!
+  if (matches.length !== 1) fail(`${label} does not match exactly one canonically admitted Git object`)
   return {
     entry,
-    raw_content: raw,
-    parsed_tree: parsed.tree,
-    parsed_parents: [...parsed.parents],
-    binding,
+    rawContent: raw,
+    parsedTree: parsed.tree,
+    parsedParents: [...parsed.parents],
+    binding: matches[0]!,
   }
 }
 
 function validateProofInternal(value: unknown): InternalValidatedProof {
   assertCanonicalBinding()
-  const current = snapshot<unknown>(value, "Git ancestry proof")
-  const root = record(current, "Git ancestry proof")
+  const clean = snapshot<unknown>(value, "Git ancestry proof")
+  const root = record(clean, "Git ancestry proof")
   exactKeys(root, PROOF_KEYS, "Git ancestry proof")
-  sha256Identity(root.proof_identity, "Git ancestry proof.proof_identity")
-
-  const preimageValue = Object.fromEntries(
-    PROOF_PREIMAGE_KEYS.map((key) => [key, root[key]]),
-  )
-  const { preimage, decoded } = normalizeProofPreimage(preimageValue)
+  const suppliedIdentity = sha256Identity(root.proof_identity, "Git ancestry proof.proof_identity")
+  const { preimage, decoded } = normalizeProofPreimage({
+    schema_version: root.schema_version,
+    canonical_admission_binding_identity: root.canonical_admission_binding_identity,
+    development_anchor_commit: root.development_anchor_commit,
+    reality_check_anchor_commit: root.reality_check_anchor_commit,
+    commit_chain: root.commit_chain,
+  })
   const proofIdentity = sha256Canonical(preimage)
-  if (proofIdentity !== root.proof_identity) {
+  if (proofIdentity !== suppliedIdentity) {
     fail("Git ancestry proof.proof_identity does not match the recomputed closed preimage")
   }
-
   if (preimage.commit_chain[0].commit_sha !== P2_R6_DEVELOPMENT_COMMIT) {
     fail("proof development commit is not the canonical development anchor")
   }
@@ -518,18 +471,13 @@ function validateProofInternal(value: unknown): InternalValidatedProof {
   if (new Set(preimage.commit_chain.map((entry) => entry.commit_sha)).size !== 2) {
     fail("proof commit identities must be distinct")
   }
-
   const development = validateCommit(preimage.commit_chain[0], decoded[0], 0)
   const reality = validateCommit(preimage.commit_chain[1], decoded[1], 1)
-  if (!reality.parsed_parents.includes(development.entry.commit_sha)) {
+  if (reality.parsedParents.length !== 1 || reality.parsedParents[0] !== development.entry.commit_sha) {
     fail("proof does not establish the exact development-to-reality direct ancestry")
   }
-
   return {
-    proof: {
-      ...preimage,
-      proof_identity: proofIdentity,
-    },
+    proof: { ...preimage, proof_identity: proofIdentity },
     commits: [development, reality],
   }
 }
@@ -542,62 +490,40 @@ export function validateP2R6GitAncestryProof(value: unknown): P2R6ValidatedProof
   })
 }
 
-function normalizeDeclarationEntry(
-  value: unknown,
-  label: string,
-): P2R6AdmissionDeclarationEntry {
+function normalizeDeclarationEntry(value: unknown, label: string): P2R6AdmissionDeclarationEntry {
   const current = record(value, label)
   exactKeys(current, DECLARATION_ENTRY_KEYS, label)
   return {
     corpus_id: stableId(current.corpus_id, `${label}.corpus_id`),
     case_id: stableId(current.case_id, `${label}.case_id`),
     task_family: stableId(current.task_family, `${label}.task_family`),
-    contamination_status: contaminationStatus(
-      current.contamination_status,
-      `${label}.contamination_status`,
-    ),
+    contamination_status: contaminationStatus(current.contamination_status, `${label}.contamination_status`),
     overlap_status: overlapStatus(current.overlap_status, `${label}.overlap_status`),
   }
 }
 
 function normalizeDeclaration(value: unknown): P2R6AdmissionDeclaration {
-  const current = snapshot<unknown>(value, "admission declaration")
-  const root = record(current, "admission declaration")
+  const clean = snapshot<unknown>(value, "admission declaration")
+  const root = record(clean, "admission declaration")
   exactKeys(root, DECLARATION_KEYS, "admission declaration")
   if (root.schema_version !== P2_R6_ADMISSION_DECLARATION_SCHEMA) {
     fail("unsupported admission declaration schema")
   }
   const development = normalizeDeclarationEntry(root.development, "admission development")
-  const reality = normalizeDeclarationEntry(root.reality_check, "admission reality_check")
-  if (development.corpus_id === reality.corpus_id) {
+  const realityCheck = normalizeDeclarationEntry(root.reality_check, "admission reality_check")
+  if (development.corpus_id === realityCheck.corpus_id) {
     fail("development and reality-check corpus identities must not alias")
   }
-  if (development.case_id === reality.case_id) {
+  if (development.case_id === realityCheck.case_id) {
     fail("development and reality-check case identities must not alias")
   }
   return {
     schema_version: P2_R6_ADMISSION_DECLARATION_SCHEMA,
     benchmark_id: stableId(root.benchmark_id, "admission benchmark_id"),
-    benchmark_protocol_version: stableId(
-      root.benchmark_protocol_version,
-      "admission benchmark_protocol_version",
-    ),
+    benchmark_protocol_version: stableId(root.benchmark_protocol_version, "admission benchmark_protocol_version"),
     development,
-    reality_check: reality,
+    reality_check: realityCheck,
   }
-}
-
-function caseEvidencePreimage(
-  recordValue: Omit<P2R6AdmissionRecord, "admission_identity">,
-): UnknownRecord {
-  const { case_evidence_identity: _ignored, ...preimage } = recordValue
-  return preimage
-}
-
-function admissionIdentityPreimage(
-  recordValue: Omit<P2R6AdmissionRecord, "admission_identity">,
-): UnknownRecord {
-  return { ...recordValue }
 }
 
 function buildAdmissionRecord(
@@ -608,7 +534,7 @@ function buildAdmissionRecord(
   const index = role === "development" ? 0 : 1
   const declared = role === "development" ? declaration.development : declaration.reality_check
   const validatedCommit = proof.commits[index]
-  const withoutCaseAndAdmission = {
+  const core: AdmissionCore = {
     schema_version: P2_R6_ADMISSION_RECORD_SCHEMA,
     benchmark_id: declaration.benchmark_id,
     benchmark_protocol_version: declaration.benchmark_protocol_version,
@@ -616,7 +542,7 @@ function buildAdmissionRecord(
     canonical_admission_binding_identity: P2_R6_CANONICAL_ADMISSION_BINDING_IDENTITY,
     corpus_id: declared.corpus_id,
     corpus_role: role,
-    corpus_digest: rawSha256(validatedCommit.raw_content),
+    corpus_digest: rawSha256(validatedCommit.rawContent),
     source_repository: P2_R6_SOURCE_REPOSITORY,
     source_repository_commit: validatedCommit.binding.commit_sha,
     source_tree_identity: validatedCommit.binding.tree_sha,
@@ -626,83 +552,87 @@ function buildAdmissionRecord(
     chronology_scheme: P2_R6_CHRONOLOGY_SCHEME,
     development_freeze_anchor: P2_R6_DEVELOPMENT_COMMIT,
     reality_check_anchor: P2_R6_REALITY_CHECK_COMMIT,
-    chronology_status: "later-in-time" as const,
+    chronology_status: "later-in-time",
     chronology_proof_identity: proof.proof.proof_identity,
     contamination_status: declared.contamination_status,
     overlap_status: declared.overlap_status,
   }
-
-  if (withoutCaseAndAdmission.corpus_digest !== withoutCaseAndAdmission.source_raw_content_sha256) {
+  if (core.corpus_digest !== core.source_raw_content_sha256) {
     fail(`${role} corpus_digest does not equal the validated raw Git content digest`)
   }
-
-  const caseEvidenceIdentity = sha256Canonical(withoutCaseAndAdmission)
-  const withoutAdmission: Omit<P2R6AdmissionRecord, "admission_identity"> = {
-    ...withoutCaseAndAdmission,
-    case_evidence_identity: caseEvidenceIdentity,
+  const withoutAdmission: AdmissionWithoutIdentity = {
+    ...core,
+    case_evidence_identity: sha256Canonical(core),
   }
-  const admissionIdentity = sha256Canonical(admissionIdentityPreimage(withoutAdmission))
   return {
     ...withoutAdmission,
-    admission_identity: admissionIdentity,
+    admission_identity: sha256Canonical(withoutAdmission),
   }
 }
 
 export function deriveP2R6AdmissionRecords(
   proofValue: unknown,
   declarationValue: unknown,
-): readonly [P2R6AdmissionRecord, P2R6AdmissionRecord] {
+): [P2R6AdmissionRecord, P2R6AdmissionRecord] {
   const proof = validateProofInternal(proofValue)
   const declaration = normalizeDeclaration(declarationValue)
-  const records: [P2R6AdmissionRecord, P2R6AdmissionRecord] = [
-    buildAdmissionRecord("development", declaration, proof),
-    buildAdmissionRecord("reality-check", declaration, proof),
-  ]
-  return deepFreeze(snapshot(records, "derived admission records"))
+  return deepFreeze(
+    snapshot<[P2R6AdmissionRecord, P2R6AdmissionRecord]>(
+      [
+        buildAdmissionRecord("development", declaration, proof),
+        buildAdmissionRecord("reality-check", declaration, proof),
+      ],
+      "derived admission records",
+    ),
+  )
 }
 
-function normalizeSerializedRecord(value: unknown, label: string): P2R6AdmissionRecord {
+function validateSerializedRecordIdentity(
+  value: unknown,
+  expected: P2R6AdmissionRecord,
+  label: string,
+): P2R6AdmissionRecord {
   const current = record(value, label)
   exactKeys(current, ADMISSION_RECORD_KEYS, label)
-  sha256Identity(current.case_evidence_identity, `${label}.case_evidence_identity`)
-  sha256Identity(current.admission_identity, `${label}.admission_identity`)
-  return current as unknown as P2R6AdmissionRecord
+  const suppliedCase = sha256Identity(current.case_evidence_identity, `${label}.case_evidence_identity`)
+  const suppliedAdmission = sha256Identity(current.admission_identity, `${label}.admission_identity`)
+  const { case_evidence_identity: _case, admission_identity: _admission, ...core } = current
+  const recomputedCase = sha256Canonical(core)
+  if (recomputedCase !== suppliedCase) {
+    fail(`${label}.case_evidence_identity does not match its closed preimage`)
+  }
+  const recomputedAdmission = sha256Canonical({ ...core, case_evidence_identity: recomputedCase })
+  if (recomputedAdmission !== suppliedAdmission) {
+    fail(`${label}.admission_identity does not match the complete closed record preimage`)
+  }
+  if (canonicalize(current) !== canonicalize(expected)) {
+    fail(`${label} does not match the proof-bound derived admission record`)
+  }
+  return expected
 }
 
 export function validateP2R6AdmissionRecords(
   value: unknown,
   proofValue: unknown,
   declarationValue: unknown,
-): readonly [P2R6AdmissionRecord, P2R6AdmissionRecord] {
+): [P2R6AdmissionRecord, P2R6AdmissionRecord] {
   const serialized = snapshot<unknown>(value, "serialized admission records")
   if (!Array.isArray(serialized) || serialized.length !== 2) {
     fail("serialized admission records must contain exactly two records")
   }
-  const normalized: [P2R6AdmissionRecord, P2R6AdmissionRecord] = [
-    normalizeSerializedRecord(serialized[0], "serialized admission records[0]"),
-    normalizeSerializedRecord(serialized[1], "serialized admission records[1]"),
-  ]
   const expected = deriveP2R6AdmissionRecords(proofValue, declarationValue)
-
-  for (const [index, recordValue] of normalized.entries()) {
-    const label = `serialized admission records[${index}]`
-    const expectedRole = index === 0 ? "development" : "reality-check"
-    if (recordValue.corpus_role !== expectedRole) {
-      fail(`${label}.corpus_role is not in the canonical role order`)
-    }
-    const { admission_identity: serializedAdmissionIdentity, ...withoutAdmission } = recordValue
-    const recomputedCase = sha256Canonical(caseEvidencePreimage(withoutAdmission))
-    if (recomputedCase !== recordValue.case_evidence_identity) {
-      fail(`${label}.case_evidence_identity does not match its closed preimage`)
-    }
-    const recomputedAdmission = sha256Canonical(admissionIdentityPreimage(withoutAdmission))
-    if (recomputedAdmission !== serializedAdmissionIdentity) {
-      fail(`${label}.admission_identity does not match the complete closed record preimage`)
-    }
-    if (canonicalize(recordValue) !== canonicalize(expected[index])) {
-      fail(`${label} does not match the proof-bound derived admission record`)
-    }
+  const development = validateSerializedRecordIdentity(
+    serialized[0],
+    expected[0],
+    "serialized admission records[0]",
+  )
+  const realityCheck = validateSerializedRecordIdentity(
+    serialized[1],
+    expected[1],
+    "serialized admission records[1]",
+  )
+  if (development.corpus_role !== "development" || realityCheck.corpus_role !== "reality-check") {
+    fail("serialized admission records are not in canonical role order")
   }
-
-  return deepFreeze(snapshot(normalized, "validated serialized admission records"))
+  return deepFreeze(snapshot([development, realityCheck], "validated serialized admission records"))
 }
