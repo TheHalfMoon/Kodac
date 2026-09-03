@@ -1528,3 +1528,48 @@ test("P3-R17 owned semantic surface adds no unauthorized ranking, threshold, sta
     assert.equal(compact.some((key) => key.includes(forbidden)), false, forbidden)
   }
 })
+
+test("P3-R17 explicitly binds the trusted R16 late-chain task family to the context-selection provenance domain", () => {
+  const output = execute()
+  const pairwise = output.criterionMatchEvidence.directionalRelationEvidence.pairwiseComparisonEvidence
+  const reductions = [
+    pairwise.leftDirectionBindingEvidence.reductionEvidence,
+    pairwise.rightDirectionBindingEvidence.reductionEvidence,
+  ]
+  const lateTaskFamilies = [...new Set(
+    reductions.flatMap((reduction) =>
+      reduction.dimensionReductions.flatMap((entry) => [
+        entry.memberAObservation.task_family,
+        entry.memberBObservation.task_family,
+      ]),
+    ),
+  )].sort()
+  assert.deepEqual(lateTaskFamilies, [P3_R8_TASK_FAMILY])
+  assert.equal(output.benchmarkProvenanceEvidence.taskFamily, P3_R8_TASK_FAMILY)
+})
+
+test("P3-R17 rejects late-chain task-family drift before reading the provenance reconstruction root", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+  let fifthReads = 0
+  const hostileFifth = new Proxy({}, {
+    get() { fifthReads += 1; throw new Error("fifth root read") },
+    ownKeys() { fifthReads += 1; throw new Error("fifth root read") },
+  })
+  const lateTaskFamilyDrift = clone(pair.left.bundle) as unknown as Record<string, unknown>
+  ;(lateTaskFamilyDrift.strategyDeclaration as Record<string, unknown>).taskFamily = "other-task-family"
+  assert.throws(
+    () => buildLateChainBenchmarkProvenanceSubstrateQualificationEvidence(
+      lateTaskFamilyDrift,
+      pair.right.bundle,
+      pair.declaration,
+      criteria,
+      hostileFifth,
+      declaration,
+    ),
+    /P3-R8 contract violation: strategyDeclaration.taskFamily must be context-selection/,
+  )
+  assert.equal(fifthReads, 0)
+})
