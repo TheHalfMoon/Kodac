@@ -1,7 +1,7 @@
 # Kodac P3-R17 — Late-Chain Benchmark-Provenance Substrate Qualification Evidence Candidate
 
-Status: **IMPLEMENTATION_CANDIDATE / NOT_CANONICAL / NOT_QUALIFIED**  
-Date: 2026-09-03  
+Status: **IMPLEMENTATION_CANDIDATE / NOT_CANONICAL / NOT_QUALIFIED**
+Date: 2026-09-03
 Waiver: **NO**
 
 ## Canonical authority
@@ -61,6 +61,7 @@ EXACT SIX-ARGUMENT ARITY GATE
 -> RECONSTRUCT CANONICAL P3-R3 FROM THE SAME BUNDLE ONLY FOR R4 IDENTITY / POLICY-ORIENTATION SUPPORT
 -> REQUIRE R4.p3R3EvidenceIdentity == R3.evidenceIdentity
 -> BIND BENCHMARK + PROTOCOL ACROSS R16 / R4 / R3
+-> BIND TRUSTED R16 LATE-CHAIN OBSERVATION TASK FAMILY TO context-selection AND REQUIRE R4 / R3 IN THE SAME DOMAIN
 -> BIND LEFT / RIGHT R3 POLICY IDENTITIES TO THE CORRESPONDING LATE-CHAIN MEMBER POLICY IDENTITIES
 -> BIND R4 TO EXACTLY THE SAME TWO DISTINCT (caseId, r1ResultIdentity) TUPLES PRESERVED BY BOTH LATE-CHAIN STRATEGY SIDES
 -> HARDEN ARGUMENT 6 AS THE EXACT CALLER QUALIFICATION DECLARATION
@@ -72,7 +73,7 @@ EXACT SIX-ARGUMENT ARITY GATE
 -> RETURN DETACHED DEEPLY FROZEN OUTPUT
 ```
 
-Arguments 1-4 are not independently interpreted by R17. Canonical R16 remains the only source of late-chain metric-criterion truth. Canonical R4 remains the only source of provenance truth. Canonical R3 reconstruction is only identity/orientation support for the R4 binding.
+Arguments 1-4 are not independently interpreted by R17. Canonical R16 remains the only source of late-chain metric-criterion truth. Canonical R4 remains the only source of provenance truth. Canonical R3 reconstruction is only identity/orientation support for the R4 binding. R17 does not invent a top-level R16 task-family field; it derives the late-chain task-family set only from the canonical trusted R16 reduction observations already present in the predecessor evidence.
 
 ## Explicit bounded cross-chain claim
 
@@ -81,6 +82,7 @@ The implementation can establish only:
 ```text
 same benchmarkId
 same benchmarkProtocolVersion
+same context-selection task family
 same left/right policy orientation
 same exact two-case (caseId, r1ResultIdentity) substrate
 literal caller provenance criteria match
@@ -96,7 +98,7 @@ sameSharedEvaluationContext
 earlyLateComparisonEquivalent
 ```
 
-A canonical R4/R3 reconstruction may use a different plan/request/shared-evaluation/comparison-policy context while sharing the authorized benchmark, policy orientation, and exact two-case R1 substrate. R17 does not silently reject or relabel that difference as comparison equivalence.
+A canonical R4/R3 reconstruction may use a different plan/request/shared-evaluation/comparison-policy context while sharing the authorized benchmark, task-family domain, policy orientation, and exact two-case R1 substrate. R17 does not silently reject or relabel that difference as comparison equivalence.
 
 ## Closed caller declaration and provenance semantics
 
@@ -196,6 +198,7 @@ The focused test source covers the required categories, including:
 - trusted R16 and R4 identity binding;
 - R4/R3 identity binding;
 - benchmark/protocol mismatch rejection;
+- trusted R16 late-chain `context-selection` task-family binding and predecessor fail-closed drift rejection before argument 5 is read;
 - left/right policy swap and unrelated policy-pair rejection;
 - mixed member policy identity rejection;
 - caseId and R1-result substitution rejection;
