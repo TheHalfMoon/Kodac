@@ -20,7 +20,9 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P2 overall | **OPEN** | General/public KodacBench is not closed |
 | P2-R6+ | **NOT_AUTHORIZED** | Separate authority required |
 | P3-R1 through P3-R17 | **CLOSED_CANONICAL individually** | Bounded deterministic context/evidence mechanisms only |
-| P3 bounded R1-R17 engineering closeout | **CURRENT SIX-PATH CANDIDATE / NOT CANONICAL UNTIL QUALIFIED + MERGED + POST-PROVEN** | Authority: PR #312 / `7686adfd4cf5a21a2c658e6c211d9c0509b730c8` / proof `5528344277` |
+| P3 bounded R1-R17 engineering closeout | **CLOSED_CANONICAL** | PR #313 / `3772003d026488ab274883934d4a14a8e47a4185` / proof `5530355917` |
+| P3 post-closeout current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #314 / `bbe5ef4f7046a5775519d62cf1e969e96cb05dee` / proof `5530633976` |
+| P3 post-closeout current-view reconciliation | **CURRENT FIVE-PATH CANDIDATE / NOT CANONICAL UNTIL QUALIFIED + MERGED + POST-PROVEN** | No successor authority until this reconciliation completes |
 | P3 overall | **OPEN** | No repository-owned aggregate, ranking/promotion/default, statistics, real benchmark execution or public quality claim established |
 | P3-R18+ | **NOT_AUTHORIZED** | No later implementation authority inferred by sequence |
 | P4-P8 | **NOT_AUTHORIZED** | Separate authority required |
@@ -49,12 +51,13 @@ R14: #298 authorization -> #299 implementation -> #300 reconciliation
 R15: #301 authorization -> #302 implementation -> #304 reconciliation
 R16: #305 authorization -> #307 implementation -> #308 reconciliation
 R17: #309 authorization -> #310 implementation -> #311 reconciliation
-R1-R17 closeout: #312 authorization -> current closeout candidate
+R1-R17 closeout: #312 authorization -> #313 closeout / CLOSED_CANONICAL
+Post-closeout current-view reconciliation: #314 authorization -> current five-path reconciliation candidate
 ```
 
-Closed-unmerged/superseded/stale candidates remain historical non-authority. The closeout evidence preserves material examples #254, #259, #292 and #306, exact-head invalidation after repairs, workflow retry/non-applicability and R8 H4 recovery history.
+Closed-unmerged/superseded/stale candidates remain historical non-authority. The canonical closeout evidence preserves material examples #254, #259, #292 and #306, exact-head invalidation after repairs, workflow retry/non-applicability and R8 H4 recovery history.
 
-## Closeout authority
+## Canonical closeout and reconciliation authority
 
 ```text
 P3_R17_RECONCILIATION = PR #311 / b1ab1a16067e7d8a2bc720ccba475c6556d0525c
@@ -62,14 +65,20 @@ P3_R17_RECONCILIATION_POST_MERGE_PROOF = #311 / 5527606835
 P3_R1_R17_CLOSEOUT_ANALYSIS = #311 / 5527641999
 P3_R1_R17_CLOSEOUT_AUTHORIZATION = PR #312 / 7686adfd4cf5a21a2c658e6c211d9c0509b730c8
 P3_R1_R17_CLOSEOUT_AUTHORIZATION_POST_MERGE_PROOF = #312 / 5528344277
+P3_R1_R17_CLOSEOUT = PR #313 / 3772003d026488ab274883934d4a14a8e47a4185
+P3_R1_R17_CLOSEOUT_POST_MERGE_PROOF = #313 / 5530355917
+P3_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #313 / 5530383125
+P3_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = PR #314 / bbe5ef4f7046a5775519d62cf1e969e96cb05dee
+P3_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION_POST_MERGE_PROOF = #314 / 5530633976
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-The current candidate is restricted to exactly:
+## Current authorized reconciliation scope
+
+Exactly five paths are authorized:
 
 ```text
-docs/planning/KODAC_P3_BOUNDED_R1_R17_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-03.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -77,24 +86,35 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path is authorized.
+No sixth path is authorized. The reconciliation changes only current views and does not reopen or modify the canonical #313 closeout evidence or any historical P3 mechanism.
 
-## Bounded result if and only if this candidate completes its gate
+## Required current result
+
+The already-canonical bounded engineering result is:
 
 ```text
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
+```
+
+The current five-path reconciliation itself remains conditional until exact-head qualification, guarded normal merge, and mandatory post-merge proof. If that gate completes:
+
+```text
+P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+```
+
+The following remain simultaneously true:
+
+```text
 P3 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
+REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
-
-The closeout candidate itself must prove exact six-path containment, `behind_by=0`, applicable Governance/K2 or canonical non-applicability, two distinct independent substantive terminal-clean semantic review channels, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact expected head and mandatory post-merge main/parents/tree/six-blobs/signature/check/ruleset proof.
 
 ## Preserved non-grants
 
@@ -108,10 +128,15 @@ THREE-OR-MORE-STRATEGY / UNBOUNDED COMPARISON = NOT_AUTHORIZED
 CROSS-DIMENSION AGGREGATE / WEIGHTING / MAJORITY / PARETO = NOT_AUTHORIZED
 RANKING / LEADERBOARD / PROMOTION / DEFAULT / WINNER = NOT_AUTHORIZED
 STATISTICS / SIGNIFICANCE / CONFIDENCE / P-VALUE / EFFECT-SIZE = NOT_AUTHORIZED
-PROVIDER / MODEL / REVIEWER / EVALUATOR EXECUTION = NOT_AUTHORIZED
-PERSISTENCE / TELEMETRY / LEARNING = NOT_AUTHORIZED
-PRODUCT / RELEASE / PACKAGE PUBLICATION = NOT_AUTHORIZED
+PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
+PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
+NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
+PRODUCT / RELEASE / PACKAGE PUBLICATION / PUBLIC SUPERIORITY CLAIM = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
+
+## Next boundary
+
+Only after the current five-path reconciliation becomes canonical and post-merge proven may fresh evidence-driven successor analysis run. Sequence alone creates no P3-R18, P4, release or project-completion authority.

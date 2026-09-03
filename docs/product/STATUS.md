@@ -2,7 +2,7 @@
 
 The pre-existing files in `docs/product/` remain preserved historical planning inputs. They do not override accepted Kodac ADRs, live GitHub truth, root `AGENTS.md`, current roadmap views or exact canonical authorization/evidence records.
 
-## Canonical engineering state at closeout-candidate start
+## Current canonical engineering state
 
 ```text
 K3 = CLOSED FOR THE CANONICAL K3-R1 THROUGH K3-R6 BOUNDED SCOPE
@@ -17,7 +17,9 @@ P2-R6+ = NOT_AUTHORIZED
 
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL INDIVIDUALLY
 P3 BOUNDED R1-R17 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
-P3 BOUNDED R1-R17 ENGINEERING SCOPE = NOT_YET_CLOSED UNTIL THIS SIX-PATH CLOSEOUT CANDIDATE QUALIFIES, MERGES, AND PASSES POST-MERGE PROOF
+P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
+P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL
+P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT FIVE-PATH CANDIDATE / NOT CANONICAL UNTIL QUALIFIED + MERGED + POST-PROVEN
 P3 OVERALL = OPEN
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
@@ -25,23 +27,20 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-## Canonical closeout authority
+## Canonical closeout and reconciliation authority
 
 ```text
-P3_R17_CURRENT_VIEW_RECONCILIATION_PR = #311
-P3_R17_CURRENT_VIEW_RECONCILIATION_MERGE = b1ab1a16067e7d8a2bc720ccba475c6556d0525c
-P3_R17_CURRENT_VIEW_RECONCILIATION_POST_MERGE_PROOF = #311 / 5527606835
+P3_R17_CURRENT_VIEW_RECONCILIATION = PR #311 / b1ab1a16067e7d8a2bc720ccba475c6556d0525c / proof 5527606835
 P3_R1_R17_CLOSEOUT_SUCCESSOR_ANALYSIS = #311 / 5527641999
-
-P3_R1_R17_CLOSEOUT_AUTHORIZATION_PR = #312
-P3_R1_R17_CLOSEOUT_AUTHORIZATION_QUALIFIED_HEAD = b38552d203a65536cccbe7af0c254c9d24573030
-P3_R1_R17_CLOSEOUT_AUTHORIZATION_MERGE = 7686adfd4cf5a21a2c658e6c211d9c0509b730c8
-P3_R1_R17_CLOSEOUT_AUTHORIZATION_POST_MERGE_PROOF = #312 / 5528344277
+P3_R1_R17_CLOSEOUT_AUTHORIZATION = PR #312 / 7686adfd4cf5a21a2c658e6c211d9c0509b730c8 / proof 5528344277
+P3_R1_R17_CLOSEOUT = PR #313 / 3772003d026488ab274883934d4a14a8e47a4185 / proof 5530355917
+P3_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #313 / 5530383125
+P3_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = PR #314 / bbe5ef4f7046a5775519d62cf1e969e96cb05dee / proof 5530633976
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-The authorization permits exactly one documentation/evidence closeout candidate across the six current paths named in `docs/roadmap/NEXT.md` and the canonical closeout evidence file. It creates no runtime, benchmark execution, provider/model, persistence, product, release, ruleset or successor implementation authority.
+PR #313 closed only the bounded P3 R1-R17 engineering/evidence lineage. PR #314 authorizes only one later documentation-only reconciliation of the five current status/navigation views. Neither creates runtime, benchmark execution, provider/model, persistence, product, release, ruleset or successor implementation authority.
 
 ## Bounded P3 meaning preserved
 
@@ -82,12 +81,11 @@ P3 R1-R17 CLOSED != P4 AUTHORITY
 P3 R1-R17 CLOSED != PROJECT COMPLETION
 ```
 
-## Current closeout candidate
+## Current five-path reconciliation candidate
 
 Exact authorized paths:
 
 ```text
-docs/planning/KODAC_P3_BOUNDED_R1_R17_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-03.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -95,18 +93,31 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path is authorized.
+No sixth path is authorized.
 
-The current candidate becomes canonical only after exact six-path containment, `behind_by=0`, applicable CI/canonical non-applicability, two independent substantive exact-head terminal-clean semantic review channels, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge using the exact expected head and complete post-merge proof.
+The reconciliation may only replace stale candidate-time closeout wording with the already-proven canonical R1-R17 bounded result, bind exact #313/#314 proof anchors needed for current navigation, preserve every still-effective non-grant, and leave successor work to a later fresh evidence-driven analysis.
 
-If and only if that gate completes, the bounded engineering result is:
+The candidate becomes canonical only after exact five-path containment, `behind_by=0`, frozen exact head/tree/five-blob identities, applicable CI/canonical non-applicability, two independent substantive exact-head terminal-clean semantic review channels, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge using the exact expected head and complete post-merge proof.
+
+The already-canonical bounded engineering result is:
 
 ```text
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
+```
+
+If and only if this five-path candidate separately qualifies, merges and passes post-merge proof, it may additionally establish:
+
+```text
+P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+```
+
+while preserving:
+
+```text
 P3 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
+REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
 P2-R6+ IMPLEMENTATION = NOT_AUTHORIZED
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
@@ -140,7 +151,7 @@ P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
 PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
-REAL BENCHMARK TASK EXECUTION = NOT_AUTHORIZED
+REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
 BENCHMARK CORPUS / MANIFEST / FIXTURE / RESULT MUTATION = NOT_AUTHORIZED
 THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION OR REDUCTION = NOT_AUTHORIZED
 THREE-OR-MORE-STRATEGY / UNBOUNDED COMPARISON = NOT_AUTHORIZED
@@ -164,3 +175,5 @@ WAIVER = NO
 ```
 
 Engineering milestone status remains separate from public release, package publication, production readiness, support, compatibility, security claims, benchmark claims, quality claims and brand launch.
+
+Only after the current five-path reconciliation itself becomes canonical and post-merge proven may fresh evidence-driven successor analysis run.
