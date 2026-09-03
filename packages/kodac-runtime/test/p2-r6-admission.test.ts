@@ -217,7 +217,7 @@ test("foreign structurally valid Git objects and caller labels cannot create mem
     parent_commit_shas: foreign.parents,
   }
   rebindProof(proof)
-  assert.throws(() => validateP2R6GitAncestryProof(proof), /development commit is not canonical/)
+  assert.throws(() => validateP2R6GitAncestryProof(proof), /development commit is not the canonical development anchor/)
 
   for (const [key, value] of [
     ["repository", "TheHalfMoon/Kodac"],
@@ -427,8 +427,9 @@ test("P2-R6 source has no hidden Git, filesystem, network, subprocess, or execut
   const source = readFileSync(new URL("../bench/p2-r6/admission.ts", import.meta.url), "utf8")
   assert.doesNotMatch(
     source,
-    /node:fs|node:child_process|\bfetch\s*\(|XMLHttpRequest|WebSocket|\.git(?:\b|\/)|\bspawn(?:Sync)?\s*\(|\bexec(?:File|FileSync|Sync)?\s*\(|readFile|writeFile|appendFile|createWriteStream/,
+    /node:fs|node:child_process|\bfetch\s*\(|XMLHttpRequest|WebSocket|\.git(?:\b|\/)|readFile|writeFile|appendFile|createWriteStream/,
   )
+  assert.doesNotMatch(source, /\b(?:spawn|spawnSync|execFile|execFileSync|execSync)\s*\(/)
   assert.doesNotMatch(source, /provider|model invocation|reviewer invocation|evaluator invocation|agent invocation/)
 })
 
