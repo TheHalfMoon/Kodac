@@ -199,6 +199,10 @@ IMPLEMENTATION_PR = #278
 QUALIFIED_HEAD = 55bee850de7e38cba2c54c13000dd6f8447f7f4c
 QUALIFIED_TREE = 9e668ba63f2ab24843aa3a12657441b164d426bd
 IMPLEMENTATION_MERGE = 576ac5d2b317fb90d1f0c6079d78cd3d899ca62d
+MERGE_PARENT_1 = e6890265c11fa3adbd14671d09b2c04b76f78954
+MERGE_PARENT_2 = 55bee850de7e38cba2c54c13000dd6f8447f7f4c
+MERGE_TREE = 9e668ba63f2ab24843aa3a12657441b164d426bd
+MERGE_VERIFICATION = verified / valid
 CONTRACTS_BLOB = d5f8d18b9e1b61378283c489c355fdd293880349
 IMPLEMENTATION_BLOB = f066b65fd44c7e6aac76b041a5336247c9f7dc2d
 TEST_BLOB = 35fd7e59f7916fa1ba4ca6dd3077489dfa95c2e4
@@ -222,6 +226,10 @@ IMPLEMENTATION_PR = #283
 QUALIFIED_HEAD = 457d12f27ededa4b60cd39b2aa946e2692b3d2f7
 QUALIFIED_TREE = adb808338c6ea1e802811728fdf2c6d3c6de373a
 IMPLEMENTATION_MERGE = 8d89875cf71715945f81b05853adeddebcb60284
+MERGE_PARENT_1 = ba9553de3384e683a54469ac7aa05545d20c0c1b
+MERGE_PARENT_2 = 457d12f27ededa4b60cd39b2aa946e2692b3d2f7
+MERGE_TREE = adb808338c6ea1e802811728fdf2c6d3c6de373a
+MERGE_VERIFICATION = verified / valid
 POST_MERGE_PROOF = #283 / 5492583969
 RECONCILIATION_PR = #284
 WAIVER = NO
@@ -247,6 +255,10 @@ IMPLEMENTATION_PR = #286
 QUALIFIED_HEAD = 1cfc0bd74d40278ad26184ad5d48675a788d97fb
 QUALIFIED_TREE = 2d300653b6afacf21e10c755aaeb0fe4070a8925
 IMPLEMENTATION_MERGE = e22019883dca10ac1ed66edff2d56d0fc2570961
+MERGE_PARENT_1 = 3b4d75133ca350ca147802fb53cc4716ab6ee2e0
+MERGE_PARENT_2 = 1cfc0bd74d40278ad26184ad5d48675a788d97fb
+MERGE_TREE = 2d300653b6afacf21e10c755aaeb0fe4070a8925
+MERGE_VERIFICATION = verified / valid
 RECONCILIATION_PR = #287
 WAIVER = NO
 ```
@@ -273,6 +285,10 @@ R11: PR #289
   qualified head = c9db09e80c27610b5f34afbcaee462bd2d9fb613
   qualified tree = 57725483a8517fc61710016849a524c0ac79fdba
   merge = 0842ed7dac95bad879cc55d720ba5646ae021f24
+  merge parent 1 = cb2362c4e0cdf651b949fe851575a123d77a9d32
+  merge parent 2 = c9db09e80c27610b5f34afbcaee462bd2d9fb613
+  merge tree = 57725483a8517fc61710016849a524c0ac79fdba
+  merge verification = verified / valid
   qualification proof = #289 / 5495132359
   review = Cubic 5495078519 + CodeRabbit 5495098393
   reconciliation = #290
@@ -281,6 +297,10 @@ R12: PR #293
   qualified head = 1e3741573b3bfd20f5746c8bda91c98c7f06206b
   qualified tree = 1d6302fb267d45a01f87538f171465a4a29256b2
   merge = 7d9de3e1ea544677eac93a455b9ab06a5ef35903
+  merge parent 1 = 0aad292ebf3e5f84804b5f731e888da43cb8e883
+  merge parent 2 = 1e3741573b3bfd20f5746c8bda91c98c7f06206b
+  merge tree = 1d6302fb267d45a01f87538f171465a4a29256b2
+  merge verification = verified / valid
   qualification proof = #293 / 5497667401
   post-merge proof = #293 / 5497699790
   superseded PR #292 remains non-authority
@@ -290,6 +310,10 @@ R13: PR #296
   qualified head = 74d07c3ad64fb5b9d7a2dd17e357260a7120489b
   qualified tree = db206d23e70cb1dda9daeda37922264ce2dfd5bf
   merge = 931c750681494895da046f4ba9c8406d77fcfddf
+  merge parent 1 = 2a67a91c6d5eef829872823f5fa6441f7a644d67
+  merge parent 2 = 74d07c3ad64fb5b9d7a2dd17e357260a7120489b
+  merge tree = db206d23e70cb1dda9daeda37922264ce2dfd5bf
+  merge verification = verified / valid
   post-merge proof = #296 / 5499792485
   reconciliation = #297
 
@@ -298,6 +322,10 @@ R14: PR #299
   qualified tree = 59dc74a3700129a9f34b0453fd8bc6c75362f6ad
   qualification proof = #299 / 5509427079
   merge = 6aa3e35418f95a2e198e3b8431297ab277eec6d3
+  merge parent 1 = fbbbcf13bdb281f0fe4296045ec2e2fa7311acdb
+  merge parent 2 = cbb5e1d8b11d15c35479856d8e79fd5dafb4ac9d
+  merge tree = 59dc74a3700129a9f34b0453fd8bc6c75362f6ad
+  merge verification = verified / valid
   post-merge proof = #299 / 5509458721
   reconciliation = #300
 
@@ -306,6 +334,10 @@ R15: PR #302
   qualified tree = af28fd6dd4e67c3a37fb18b330abfe07177b9fa2
   review = CodeRabbit 5513591270 + Cubic 5513811826
   merge = ffc9fae7f3bbb309fa5318e8747e7969726d8a1e
+  merge parent 1 = 53c9bde577783aef672504f9a463be30bcc8c657
+  merge parent 2 = 697739cd2b21e0e3fe4bf4bfbd6f5bbc792c3619
+  merge tree = af28fd6dd4e67c3a37fb18b330abfe07177b9fa2
+  merge verification = verified / valid
   post-merge proof = #302 / 5513965094
   reconciliation = #304
 
@@ -314,6 +346,10 @@ R16: PR #307
   qualified tree = 33420ca4cb95721bb08903fb0e30ef4d0312c45c
   review = CodeRabbit 5517148710 + Cubic 5517242418
   merge = 0fb9f47db144619c580c69052aa98d79c4f71dc6
+  merge parent 1 = da59d2a46d4eff5c12a60f2057a57d3572ba0e5d
+  merge parent 2 = 390f0dd5b26445aa710e37573152e637230fe129
+  merge tree = 33420ca4cb95721bb08903fb0e30ef4d0312c45c
+  merge verification = verified / valid
   post-merge proof = #307 / 5517289297
   reconciliation = #308
   superseded PR #306 remains non-authority
@@ -325,6 +361,10 @@ R17: PR #310
   qualified tree = 68e58b5aaab0cfd7fefebc2618d0aef47e351c99
   review = CodeRabbit 5527057254 + Cubic 5527076985
   merge = 598808fb611721fd8163b79c36676eded457ba91
+  merge parent 1 = a224a0ad7c7adbf9dd879e1c4ac1ddfaceed6a38
+  merge parent 2 = d93204f2bbc619d39f29bb13eccc2e680cb8fbd1
+  merge tree = 68e58b5aaab0cfd7fefebc2618d0aef47e351c99
+  merge verification = verified / valid
   post-merge Governance = 33765617586 / SUCCESS
   post-merge K2 = 33765617553 / SUCCESS
   post-merge proof = #310 / 5527154469
