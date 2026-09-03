@@ -1231,3 +1231,300 @@ test("P3-R17 semantic surface contains no score, weighting, statistics, ranking,
     assert.equal(serialized.includes(forbidden), false, forbidden)
   }
 })
+
+test("P3-R17 accepts exactly six direct arguments and rejects representative wrong arities before hostile root reads", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+  const call = buildLateChainBenchmarkProvenanceSubstrateQualificationEvidence as unknown as (...args: unknown[]) => unknown
+  assert.doesNotThrow(() => call(
+    pair.left.bundle,
+    pair.right.bundle,
+    pair.declaration,
+    criteria,
+    bundle,
+    declaration,
+  ))
+
+  let reads = 0
+  const hostile = new Proxy({}, {
+    get() { reads += 1; throw new Error("wrong-arity root read") },
+    ownKeys() { reads += 1; throw new Error("wrong-arity root read") },
+  })
+  for (let count = 0; count <= 12; count += 1) {
+    if (count === 6) continue
+    const args = Array.from({ length: count }, () => hostile)
+    assert.throws(
+      () => call(...args),
+      /P3-R17 contract violation: buildLateChainBenchmarkProvenanceSubstrateQualificationEvidence requires exactly six arguments/,
+    )
+    assert.equal(reads, 0)
+  }
+})
+
+test("P3-R17 hostile predecessor roots fail through canonical predecessor semantics before fifth-root reads", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const declaration = qualificationDeclaration(pair, criteria, provenanceBundle(pair))
+  let fifthReads = 0
+  const fifth = new Proxy({}, {
+    get() { fifthReads += 1; throw new Error("fifth root read") },
+    ownKeys() { fifthReads += 1; throw new Error("fifth root read") },
+  })
+  const hostileLeft = new Proxy(pair.left.bundle, {})
+  assert.throws(
+    () => buildLateChainBenchmarkProvenanceSubstrateQualificationEvidence(
+      hostileLeft,
+      pair.right.bundle,
+      pair.declaration,
+      criteria,
+      fifth,
+      declaration,
+    ),
+    /P3-R(14|16) contract violation:/,
+  )
+  assert.equal(fifthReads, 0)
+})
+
+test("P3-R17 rejects missing, extra, string, accessor, cycle, non-finite, and extended-array owned roots", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+
+  const missingBundle = clone(bundle) as unknown as Record<string, unknown>
+  delete missingBundle.manifest
+  assert.throws(() => execute(pair, criteria, missingBundle as never, declaration))
+
+  const extraDeclaration = { ...clone(declaration), extra: true }
+  assert.throws(() => execute(pair, criteria, bundle, extraDeclaration as never), /qualificationDeclaration keys drifted/)
+
+  assert.throws(() => execute(pair, criteria, "not-an-object" as never, declaration))
+  assert.throws(() => execute(pair, criteria, bundle, "not-an-object" as never), /qualificationDeclaration must be an object/)
+
+  let accessorReads = 0
+  const accessorBundle = clone(bundle) as unknown as Record<string, unknown>
+  Object.defineProperty(accessorBundle, "manifest", {
+    enumerable: true,
+    get() { accessorReads += 1; throw new Error("accessor must not run") },
+  })
+  assert.throws(() => execute(pair, criteria, accessorBundle as never, declaration), /must be an enumerable own data property/)
+  assert.equal(accessorReads, 0)
+
+  const cyclic = clone(declaration) as unknown as Record<string, unknown>
+  cyclic.self = cyclic
+  assert.throws(() => execute(pair, criteria, bundle, cyclic as never), /must not contain cycles/)
+
+  const nonFinite = clone(declaration) as unknown as Record<string, unknown>
+  nonFinite.qualificationPolicyIdentity = Number.POSITIVE_INFINITY
+  assert.throws(() => execute(pair, criteria, bundle, nonFinite as never), /finite JSON numbers/)
+
+  const extended = clone(declaration) as unknown as Record<string, unknown>
+  const provenance = extended.provenanceCriteria as Record<string, unknown>
+  const roles = ["development", "holdout"] as unknown[]
+  Object.defineProperty(roles, "extra", { value: true, enumerable: true })
+  provenance.requiredCorpusRoles = roles
+  assert.throws(() => execute(pair, criteria, bundle, extended as never), /extended array field/)
+})
+
+test("P3-R17 accepts all closed provenance vocabularies only in canonical ordered non-empty sets", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+  for (const requiredCorpusRoles of [
+    ["development"],
+    ["holdout"],
+    ["development", "holdout"],
+  ] as const) {
+    const changed = clone(declaration)
+    changed.provenanceCriteria = {
+      requiredCorpusRoles: [...requiredCorpusRoles],
+      allowedChronologyStatuses: ["chronology-unproven", "later-in-time", "not-later-in-time"],
+      allowedContaminationStatuses: ["known", "none-known", "unknown"],
+    }
+    const output = execute(pair, criteria, bundle, changed)
+    assert.equal(output.provenanceCriterionResult.corpusRoleCriterionState, "SATISFIED")
+    assert.equal(output.provenanceCriterionResult.chronologyCriterionState, "SATISFIED")
+    assert.equal(output.provenanceCriterionResult.contaminationCriterionState, "SATISFIED")
+  }
+
+  const invalidCases: Array<{ readonly key: string; readonly value: unknown }> = [
+    { key: "allowedChronologyStatuses", value: [] },
+    { key: "allowedChronologyStatuses", value: ["later-in-time", "later-in-time"] },
+    { key: "allowedChronologyStatuses", value: ["later-in-time", "chronology-unproven"] },
+    { key: "allowedChronologyStatuses", value: ["future"] },
+    { key: "allowedContaminationStatuses", value: [] },
+    { key: "allowedContaminationStatuses", value: ["none-known", "none-known"] },
+    { key: "allowedContaminationStatuses", value: ["none-known", "known"] },
+    { key: "allowedContaminationStatuses", value: ["clean"] },
+  ]
+  for (const invalid of invalidCases) {
+    const changed = clone(declaration) as unknown as Record<string, unknown>
+    const provenance = changed.provenanceCriteria as Record<string, unknown>
+    provenance[invalid.key] = invalid.value
+    assert.throws(() => execute(pair, criteria, bundle, changed as never), /P3-R17 contract violation:/)
+  }
+})
+
+test("P3-R17 corpus presence and chronology/contamination membership semantics are literal and independent", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+
+  const subset = clone(declaration)
+  subset.provenanceCriteria = {
+    requiredCorpusRoles: ["development"],
+    allowedChronologyStatuses: ["chronology-unproven", "later-in-time"],
+    allowedContaminationStatuses: ["known", "none-known"],
+  }
+  const satisfied = execute(pair, criteria, bundle, subset)
+  assert.deepEqual(satisfied.provenanceCriterionResult.observedCorpusRoles, ["development", "holdout"])
+  assert.equal(satisfied.provenanceCriterionResult.corpusRoleCriterionState, "SATISFIED")
+  assert.equal(satisfied.provenanceCriterionResult.chronologyCriterionState, "SATISFIED")
+  assert.equal(satisfied.provenanceCriterionResult.contaminationCriterionState, "SATISFIED")
+
+  const chronologyMismatch = clone(subset)
+  chronologyMismatch.provenanceCriteria.allowedChronologyStatuses = ["chronology-unproven"]
+  const chronologyOutput = execute(pair, criteria, bundle, chronologyMismatch)
+  assert.equal(chronologyOutput.provenanceCriterionResult.chronologyCriterionState, "NOT_SATISFIED")
+  assert.equal(chronologyOutput.provenanceCriterionResult.contaminationCriterionState, "SATISFIED")
+
+  const contaminationMismatch = clone(subset)
+  contaminationMismatch.provenanceCriteria.allowedContaminationStatuses = ["known"]
+  const contaminationOutput = execute(pair, criteria, bundle, contaminationMismatch)
+  assert.equal(contaminationOutput.provenanceCriterionResult.chronologyCriterionState, "SATISFIED")
+  assert.equal(contaminationOutput.provenanceCriterionResult.contaminationCriterionState, "NOT_SATISFIED")
+})
+
+test("P3-R17 preserves the explicit authorized R3/policy/two-case substrate binding projection", () => {
+  const output = execute()
+  assert.equal(
+    output.substrateBinding.p3R3EvidenceIdentity,
+    output.benchmarkProvenanceEvidence.p3R3EvidenceIdentity,
+  )
+  const pairwise = output.criterionMatchEvidence.directionalRelationEvidence.pairwiseComparisonEvidence
+  const leftReduction = pairwise.leftDirectionBindingEvidence.reductionEvidence
+  const rightReduction = pairwise.rightDirectionBindingEvidence.reductionEvidence
+  assert.equal(output.substrateBinding.leftPolicyIdentity, leftReduction.memberAReference.policyIdentity)
+  assert.equal(output.substrateBinding.leftPolicyIdentity, leftReduction.memberBReference.policyIdentity)
+  assert.equal(output.substrateBinding.rightPolicyIdentity, rightReduction.memberAReference.policyIdentity)
+  assert.equal(output.substrateBinding.rightPolicyIdentity, rightReduction.memberBReference.policyIdentity)
+  assert.notEqual(output.substrateBinding.leftPolicyIdentity, output.substrateBinding.rightPolicyIdentity)
+  assert.deepEqual(output.substrateBinding.memberA, {
+    caseId: leftReduction.memberAReference.caseId,
+    r1ResultIdentity: leftReduction.memberAReference.r1ResultIdentity,
+  })
+  assert.deepEqual(output.substrateBinding.memberB, {
+    caseId: leftReduction.memberBReference.caseId,
+    r1ResultIdentity: leftReduction.memberBReference.r1ResultIdentity,
+  })
+})
+
+test("P3-R17 rejects task-family drift and duplicate provenance-manifest substitution through canonical reconstruction", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+
+  const taskFamilyDrift = clone(bundle) as unknown as Record<string, unknown>
+  ;(taskFamilyDrift.p3R3Declaration as Record<string, unknown>).taskFamily = "other-task-family"
+  assert.throws(() => execute(pair, criteria, taskFamilyDrift as never, declaration))
+
+  const duplicate = clone(bundle) as unknown as Record<string, unknown>
+  const manifest = duplicate.manifest as unknown[]
+  manifest[1] = structuredClone(manifest[0])
+  assert.throws(() => execute(pair, criteria, duplicate as never, declaration))
+})
+
+test("P3-R17 semantic identity is insertion-order invariant for map-like caller roots", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+  const normal = execute(pair, criteria, bundle, declaration)
+
+  const reversedBundle = Object.fromEntries(
+    Object.entries(bundle as unknown as Record<string, unknown>).reverse(),
+  )
+  const reversedDeclaration = Object.fromEntries(
+    Object.entries(declaration as unknown as Record<string, unknown>).reverse(),
+  ) as Record<string, unknown>
+  reversedDeclaration.provenanceCriteria = Object.fromEntries(
+    Object.entries(declaration.provenanceCriteria as unknown as Record<string, unknown>).reverse(),
+  )
+  const reordered = execute(pair, criteria, reversedBundle as never, reversedDeclaration as never)
+  assert.equal(reordered.substrateQualificationEvidenceIdentity, normal.substrateQualificationEvidenceIdentity)
+})
+
+test("P3-R17 identity is sensitive to trusted R16, trusted provenance, provenance criteria, bounded binding, and root state semantics", () => {
+  const pair = latePair()
+  const criteria = relationCriteria(pair)
+  const bundle = provenanceBundle(pair)
+  const declaration = qualificationDeclaration(pair, criteria, bundle)
+  const base = execute(pair, criteria, bundle, declaration)
+
+  const changedR16Criteria = relationCriteria(pair, ["EQUAL_RAW_VALUE"])
+  const changedR16Declaration = qualificationDeclaration(pair, changedR16Criteria, bundle)
+  const changedR16 = execute(pair, changedR16Criteria, bundle, changedR16Declaration)
+  assert.notEqual(changedR16.substrateQualificationEvidenceIdentity, base.substrateQualificationEvidenceIdentity)
+
+  const changedBundle = provenanceBundle(pair, { sharedSeed: "identity-sensitive-provenance" })
+  const changedBundleDeclaration = qualificationDeclaration(pair, criteria, changedBundle)
+  const changedProvenance = execute(pair, criteria, changedBundle, changedBundleDeclaration)
+  assert.notEqual(changedProvenance.substrateQualificationEvidenceIdentity, base.substrateQualificationEvidenceIdentity)
+
+  const changedCriteria = clone(declaration)
+  changedCriteria.provenanceCriteria.allowedContaminationStatuses = ["known"]
+  const changedProvenanceCriteria = execute(pair, criteria, bundle, changedCriteria)
+  assert.notEqual(changedProvenanceCriteria.substrateQualificationEvidenceIdentity, base.substrateQualificationEvidenceIdentity)
+  assert.notEqual(changedProvenanceCriteria.substrateQualificationEvidenceState, base.substrateQualificationEvidenceState)
+
+  const { substrateQualificationEvidenceIdentity: _identity, ...projection } = base
+  const changedBindingProjection = clone(projection) as unknown as Record<string, unknown>
+  const binding = changedBindingProjection.substrateBinding as Record<string, unknown>
+  const memberA = binding.memberA as Record<string, unknown>
+  memberA.caseId = "p3-r17-case-a-identity-probe"
+  assert.notEqual(sha256Canonical(changedBindingProjection), base.substrateQualificationEvidenceIdentity)
+
+  const changedStateProjection = clone(projection) as unknown as Record<string, unknown>
+  changedStateProjection.substrateQualificationEvidenceState = "ONE_OR_MORE_DECLARED_SUBSTRATE_QUALIFICATION_CRITERIA_NOT_SATISFIED"
+  assert.notEqual(sha256Canonical(changedStateProjection), base.substrateQualificationEvidenceIdentity)
+})
+
+test("P3-R17 owned semantic surface adds no unauthorized ranking, threshold, statistics, execution, persistence, learning, ruleset, P3-closeout, P4, or completion fields", () => {
+  const output = execute()
+  const owned = {
+    qualificationDeclaration: output.qualificationDeclaration,
+    substrateBinding: output.substrateBinding,
+    provenanceCriterionResult: output.provenanceCriterionResult,
+    substrateQualificationEvidenceState: output.substrateQualificationEvidenceState,
+  }
+  const compact = [...allKeys(owned)].map((key) => key.toLowerCase().replaceAll("_", ""))
+  for (const forbidden of [
+    "score",
+    "weight",
+    "threshold",
+    "confidence",
+    "pvalue",
+    "effectsize",
+    "leaderboard",
+    "rank",
+    "promotion",
+    "winner",
+    "default",
+    "execute",
+    "persistence",
+    "telemetry",
+    "learning",
+    "release",
+    "ruleset",
+    "p3closeout",
+    "p4",
+    "projectcompletion",
+  ]) {
+    assert.equal(compact.some((key) => key.includes(forbidden)), false, forbidden)
+  }
+})
