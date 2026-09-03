@@ -1,0 +1,23 @@
+{
+  "schema_version": "p2-r6-git-ancestry-proof/v1",
+  "canonical_admission_binding_identity": "sha256:fdf839d5923765b0149edf33ad679e63039a55e04d5968674a3042985d4a268d",
+  "development_anchor_commit": "ad1a66483bd972b1a82a4d32dd833237c3c099e8",
+  "reality_check_anchor_commit": "4598031bef5bfc05219f528f81ed6c653024b476",
+  "commit_chain": [
+    {
+      "commit_sha": "ad1a66483bd972b1a82a4d32dd833237c3c099e8",
+      "raw_commit_content_base64": "dHJlZSBiYWE2MmJkZWZiMWFlM2M4NGFkN2QyN2ViZWFlMDFiOTBmYmY3Y2RiCnBhcmVudCA0MTYwNjdjNzJhYTc3MDJhNDg5MzJjYTg2ZGUyMjYwYTNjOGNlOTczCmF1dGhvciBBYmR1bGF6aXogTS4gU2hlaHJpIDxhbHNoZWhyaW9mZmljaWFsQGdtYWlsLmNvbT4gMTc4ODQ2MzA1MCArMDMwMApjb21taXR0ZXIgQWJkdWxheml6IE0uIFNoZWhyaSA8YWxzaGVocmlvZmZpY2lhbEBnbWFpbC5jb20+IDE3ODg0NjMwNTAgKzAzMDAKCmRvY3MocDIpOiBhdXRob3JpemUgUjYgcmVwb3NpdG9yeS1oaXN0b3J5IGNvcnB1cyBhZG1pc3Npb24=",
+      "parent_commit_shas": [
+        "416067c72aa7702a48932ca86de2260a3c8ce973"
+      ]
+    },
+    {
+      "commit_sha": "4598031bef5bfc05219f528f81ed6c653024b476",
+      "raw_commit_content_base64": "dHJlZSBiYWE0NjI1YzIwZDc3ZmFlOWY0ZGNiZmI0MjE2NDRkODU2YjAxOWMzCnBhcmVudCBhZDFhNjY0ODNiZDk3MmIxYTgyYTRkMzJkZDgzMzIzN2MzYzA5OWU4CmF1dGhvciBBYmR1bGF6aXogTS4gU2hlaHJpIDxhbHNoZWhyaW9mZmljaWFsQGdtYWlsLmNvbT4gMTc4ODQ2MzU5NCArMDMwMApjb21taXR0ZXIgQWJkdWxheml6IE0uIFNoZWhyaSA8YWxzaGVocmlvZmZpY2lhbEBnbWFpbC5jb20+IDE3ODg0NjM1OTQgKzAzMDAKCmRvY3MocDIpOiBkZWZpbmUgcHVyZSBSNiBjaHJvbm9sb2d5IHByb29mIGJvdW5kYXJ5",
+      "parent_commit_shas": [
+        "ad1a66483bd972b1a82a4d32dd833237c3c099e8"
+      ]
+    }
+  ],
+  "proof_identity": "sha256:1ecaa5bd2d25a7d3a9a9d57c9d5fbbf3c27c04d20a15157635de638e618c42f4"
+}
