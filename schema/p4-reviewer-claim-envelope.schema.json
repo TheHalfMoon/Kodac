@@ -156,19 +156,23 @@
       "allOf": [
         {
           "if": {
+            "type": "object",
             "properties": { "freshness": { "const": "CURRENT" } },
             "required": ["freshness"]
           },
           "then": {
+            "type": "object",
             "properties": { "state": { "const": "NEW" } }
           }
         },
         {
           "if": {
+            "type": "object",
             "properties": { "freshness": { "const": "STALE" } },
             "required": ["freshness"]
           },
           "then": {
+            "type": "object",
             "properties": {
               "state": { "const": "STALE" },
               "adjudicationState": { "const": "STALE" },
@@ -178,6 +182,7 @@
         },
         {
           "if": {
+            "type": "object",
             "properties": {
               "freshness": { "const": "CURRENT" },
               "adjudicationIdentity": { "type": "null" }
@@ -185,6 +190,7 @@
             "required": ["freshness", "adjudicationIdentity"]
           },
           "then": {
+            "type": "object",
             "properties": {
               "adjudicationState": { "const": "NEW" }
             }
@@ -192,10 +198,12 @@
         },
         {
           "if": {
+            "type": "object",
             "properties": { "adjudicationIdentity": { "type": "string" } },
             "required": ["adjudicationIdentity"]
           },
           "then": {
+            "type": "object",
             "properties": {
               "freshness": { "const": "CURRENT" },
               "state": { "const": "NEW" },
