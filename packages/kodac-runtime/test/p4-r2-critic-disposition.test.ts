@@ -411,10 +411,35 @@ test("P4-R2 hostile-structure checks reject accessors, symbols, non-enumerables,
     /acyclic non-aliased/,
   )
 
-  const proxyInput = new Proxy({ envelope, declaration: declaration(envelope) }, {})
+  let proxyTrapExecutions = 0
+  const proxyInput = new Proxy(
+    { envelope, declaration: declaration(envelope) },
+    {
+      getPrototypeOf() {
+        proxyTrapExecutions += 1
+        throw new Error("Proxy trap must not execute")
+      },
+      ownKeys() {
+        proxyTrapExecutions += 1
+        throw new Error("Proxy trap must not execute")
+      },
+      getOwnPropertyDescriptor() {
+        proxyTrapExecutions += 1
+        throw new Error("Proxy trap must not execute")
+      },
+    },
+  )
   assert.throws(
     () => buildP4CriticDisposition(proxyInput),
-    /structured-cloneable JSON data|Proxy objects/,
+    /must not contain Proxy objects/,
+  )
+  assert.equal(proxyTrapExecutions, 0)
+
+  const revoked = Proxy.revocable({ envelope, declaration: declaration(envelope) }, {})
+  revoked.revoke()
+  assert.throws(
+    () => buildP4CriticDisposition(revoked.proxy),
+    /must not contain Proxy objects/,
   )
 })
 
@@ -472,7 +497,7 @@ test("P4-R2 runtime and JSON Schema stay aligned for representable constraints",
 test("P4-R2 production source has a pure deterministic import and authority surface", () => {
   const source = readFileSync(new URL("../src/reviewer-intelligence/p4-critic-disposition.ts", import.meta.url), "utf8")
   const imports = [...source.matchAll(/from\s+["']([^"']+)["']/g)].map((match) => match[1]).sort(compareStrings)
-  assert.deepEqual(imports, ["./p4-claim-envelope.ts", "node:crypto"])
+  assert.deepEqual(imports, ["./p4-claim-envelope.ts", "node:crypto", "node:util"])
   assert.doesNotMatch(source, /node:fs|node:child_process|node:http|node:https/)
   assert.doesNotMatch(source, /\bfetch\s*\(|\bprocess\.(?:spawn|exec)|\btelemetry\b|\bdatabase\b/i)
 })

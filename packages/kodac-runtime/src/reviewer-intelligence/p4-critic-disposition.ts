@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto"
+import { types as nodeTypes } from "node:util"
 
 import {
   P4_R1_CLAIM_ENVELOPE_VERSION,
@@ -112,6 +113,7 @@ function assertJsonDataGraph(
     return
   }
   if (typeof value !== "object") fail(`${label} must contain JSON data only`)
+  if (nodeTypes.isProxy(value)) fail(`${label} must not contain Proxy objects`)
   if (depth > MAX_GRAPH_DEPTH) fail(`${label} exceeds maximum object depth ${MAX_GRAPH_DEPTH}`)
   if (seen.has(value)) fail(`${label} must be an acyclic non-aliased JSON data graph`)
   seen.add(value)
@@ -157,7 +159,7 @@ function snapshotJsonData<T>(value: T, label: string): T {
   try {
     return structuredClone(value)
   } catch {
-    return fail(`${label} must be structured-cloneable JSON data and must not contain Proxy objects`)
+    return fail(`${label} must be structured-cloneable JSON data`)
   }
 }
 
