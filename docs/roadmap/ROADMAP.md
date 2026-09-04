@@ -21,6 +21,10 @@ P2-R6 authorization         = PR #316 / dce5fece4ec71c58832960c5515a918d7d4c19d8
 P2-R6 implementation        = PR #317 / 815c7358086980dd47ef31e7014bbbeb60bc9df5 / proof 5532712515
 P2-R6 post-closeout analysis= PR #317 / comment 5532731426
 P2-R6 current-view auth     = PR #318 / 5a30f96948d0d3979842cb75c1fcbfec1b3176b4 / proof 5533032179
+P2-R6 current-view recon    = PR #319 / 2c5b8d747bdd0b8bceefb2261c8513bc16e1ec2d / proof 5538190559
+Trust v2 amendment          = PR #320 / f806a82e12302fe4925c022b5f9332e6f883541e / proof 5538367862 / PLANNING_DIRECTION_ONLY
+Trust v2 successor analysis = PR #320 / comment 5538383110
+Trust v2 current-view auth  = PR #321 / e7dcca4900962fc360fd04f4e12ca3274607193f / proof 5538855020
 Improvement master plan     = PR #209 / 3650b81ea926a066fcc7029b5b1e2f186d2ed616
 ```
 
@@ -65,13 +69,16 @@ Closed-unmerged/superseded candidates are not authority. Material examples inclu
 | P2-R1 through P2-R6 | **CLOSED_CANONICAL** | R6 is the bounded repository-history corpus-admission mechanism proven by PR #317 / proof `5532712515` |
 | P2 overall | **OPEN** | General/public KodacBench is not closed |
 | P2-R7+ | **NOT_AUTHORIZED BY NUMBERING** | Fresh analysis and separate authority required |
-| P2-R6 post-closeout current-view reconciliation | **CURRENT FIVE-PATH CANDIDATE / NOT YET CANONICAL** | Authorized by PR #318 / proof `5533032179`; must separately qualify, merge and pass post-merge proof |
+| P2-R6 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | PR #319 / `2c5b8d747bdd0b8bceefb2261c8513bc16e1ec2d` / proof `5538190559` |
 | P3-R1 through P3-R17 | **CLOSED_CANONICAL individually** | Bounded deterministic context/evidence mechanisms only |
 | P3 bounded R1-R17 engineering scope | **CLOSED_CANONICAL** | PR #313 / `3772003d026488ab274883934d4a14a8e47a4185` / proof `5530355917` |
 | P3 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | PR #315 / `416067c72aa7702a48932ca86de2260a3c8ce973` / proof `5530804202` |
 | P3 overall | **OPEN** | No repository-owned aggregate, ranking/promotion/default, statistical qualification, real benchmark execution or public quality claim established |
 | P3-R18+ | **NOT_AUTHORIZED** | No later slice implied by numbering |
-| P4-P8 | **NOT_AUTHORIZED** | Ordered dependencies and separate authority required |
+| Trust and Verification Master Plan v2 amendment | **CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY** | PR #320 / proof `5538367862`; additive to the historical master plan |
+| Trust v2 post-adoption current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #321 / proof `5538855020` |
+| Trust v2 post-adoption current-view reconciliation | **CURRENT FIVE-PATH CANDIDATE / NOT YET CANONICAL** | Must separately qualify, merge and pass post-merge proof |
+| P4-P9 future dependency map | **CANONICALLY ADOPTED PLANNING DIRECTION** | P4-P9 implementation authority remains none |
 | Project completion | **NOT_ESTABLISHED** | No project-completion proof exists |
 
 Engineering milestone state is separate from public release status.
@@ -113,31 +120,36 @@ P3 R1-R17 CLOSED != P4 AUTHORITY
 P3 R1-R17 CLOSED != PROJECT COMPLETION
 ```
 
-## Ordered improvement program
+## Ordered improvement and trust program
+
+The 2026-09-04 Trust and Verification v2 amendment supplements, rather than rewrites, the historical 2026-08-26 master plan. The following P4-P9 map is canonical planning direction only.
 
 ```text
 K6 bounded closeout [CLOSED_CANONICAL]
--> P2 deterministic measurement/evidence program
+-> P2 KodacBench 2.0
    -> R1-R5 bounded spine [CLOSED_CANONICAL]
    -> R6 repository-history corpus admission [CLOSED_CANONICAL / #317]
-   -> post-R6 five-current-view reconciliation [CURRENT AUTHORIZED CANDIDATE / #318]
-   -> fresh successor analysis [ONLY AFTER THIS RECONCILIATION IS CANONICAL + POST-MERGE PROVEN]
+   -> post-R6 five-current-view reconciliation [CLOSED_CANONICAL / #319]
    -> P2-R7+ implementation [NOT_AUTHORIZED BY NUMBERING]
 -> P3 Context Engine v2
    -> R1-R17 bounded mechanisms [INDIVIDUALLY CLOSED_CANONICAL]
    -> bounded R1-R17 engineering closeout [CLOSED_CANONICAL / #313]
    -> post-closeout five-current-view reconciliation [CLOSED_CANONICAL / #315]
    -> P3-R18+ implementation [NOT_AUTHORIZED]
--> P4 Reviewer Intelligence v2 [NOT_AUTHORIZED]
--> P5 Finding Verifier Fabric [NOT_AUTHORIZED]
--> P6 Security Validation [NOT_AUTHORIZED]
--> P7 Bounded Autofix [NOT_AUTHORIZED]
--> P8 Product / Distribution Hardening [NOT_AUTHORIZED]
+-> P4 Reviewer Intelligence v2 [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
+-> P5 Proof and Verification Fabric [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
+-> P6 Security, Supply-Chain, and Attack Validation [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
+-> P7 Bounded Remediation [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
+-> P8 Agent Trust Gateway and Developer Distribution [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
+-> P9 Continuous Assurance [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
+-> R Advanced Research [PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED]
 ```
+
+The planning map does not reopen bounded P2/P3 bytes and does not authorize the next number.
 
 ## Current reconciliation scope
 
-Exactly five paths are authorized by canonical PR #318 post-merge proof `5533032179`:
+Exactly five paths are authorized by canonical PR #321 post-merge proof `5538855020`:
 
 ```text
 docs/roadmap/NEXT.md
@@ -149,7 +161,7 @@ docs/product/STATUS.md
 
 No sixth path may change. The candidate must prove exact five-path containment, `behind_by=0`, frozen five-blob identity, applicable Governance/K2 checks or canonical non-applicability, two independent substantive terminal-clean semantic channels, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact expected head and complete post-merge proof.
 
-The reconciliation changes only current views. It does not reopen or mutate canonical #315 P3 reconciliation evidence, #316 P2-R6 authorization, #317 P2-R6 implementation evidence, #318 authorization, or any runtime mechanism.
+The reconciliation changes only current views. It does not reopen or mutate canonical #319 reconciliation evidence, #320 planning amendment bytes, #321 authorization evidence, accepted ADRs, the historical master plan, or any runtime mechanism.
 
 ## Preserved authority boundaries
 
@@ -162,7 +174,7 @@ GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
-P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
+P4-P9 IMPLEMENTATION = NOT_AUTHORIZED
 THREE-OR-MORE-CASE / UNBOUNDED COMPOSITION OR REDUCTION = NOT_AUTHORIZED
 THREE-OR-MORE-STRATEGY / UNBOUNDED COMPARISON = NOT_AUTHORIZED
 GLOBAL BETTER / WORSE / SUPERIOR / INFERIOR VERDICT = NOT_AUTHORIZED
@@ -175,6 +187,9 @@ PRODUCT / BENCHMARK / RUNTIME PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / A
 EXTERNAL GOVERNANCE REVIEW REQUIRED ONLY FOR QUALIFICATION EVIDENCE = AUTHORIZED; IT DOES NOT AUTHORIZE PRODUCT / BENCHMARK / RUNTIME INVOCATION
 NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
+TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
+AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
+CLI / API / PRODUCT INTEGRATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / SUPERIORITY CLAIM = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
@@ -183,8 +198,10 @@ WAIVER = NO
 
 ## Next boundary
 
-Only after the current P2-R6 five-path reconciliation becomes canonical and post-merge proven may fresh evidence-driven successor analysis identify another unit. No P2-R7, P3-R18, P4, release or project-completion authority is inferred from sequence alone.
+Only after the current Trust v2 post-adoption five-path reconciliation becomes canonical and post-merge proven may fresh evidence-driven successor analysis identify another unit. No P2-R7, P3-R18, P4-P9 implementation, benchmark execution, provider/model execution, remediation, product integration, release or project-completion authority is inferred from sequence alone.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
+PLANNING DIRECTION != IMPLEMENTATION AUTHORITY
+POST_MERGE PROOF != SUCCESSOR AUTHORITY
 ```
