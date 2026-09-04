@@ -12,11 +12,10 @@ K6 BOUNDED R1-R5 ENGINEERING SCOPE = CLOSED_CANONICAL
 
 P2-R1 THROUGH P2-R6 = CLOSED_CANONICAL
 P2-R6 = CLOSED_CANONICAL
+P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
-P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL
-P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT FIVE-PATH CANDIDATE / NOT CANONICAL UNTIL QUALIFIED + MERGED + POST-PROVEN
 
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL INDIVIDUALLY
 P3 BOUNDED R1-R17 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
@@ -25,12 +24,17 @@ P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL
 P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P3 OVERALL = OPEN
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
-P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
+
+TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT = CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY
+TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL
+TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION = CURRENT FIVE-PATH CANDIDATE / NOT CANONICAL UNTIL QUALIFIED + MERGED + POST-PROVEN
+P4-P9 FUTURE PLANNING DEPENDENCY MAP = CANONICALLY ADOPTED PLANNING DIRECTION
+P4-P9 IMPLEMENTATION AUTHORITY = NONE
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-## Canonical closeout and reconciliation authority
+## Canonical closeout, planning, and reconciliation authority
 
 ```text
 P3_R17_CURRENT_VIEW_RECONCILIATION = PR #311 / b1ab1a16067e7d8a2bc720ccba475c6556d0525c / proof 5527606835
@@ -45,11 +49,15 @@ P2_R6_AUTHORIZATION = PR #316 / dce5fece4ec71c58832960c5515a918d7d4c19d8 / proof
 P2_R6_IMPLEMENTATION = PR #317 / 815c7358086980dd47ef31e7014bbbeb60bc9df5 / proof 5532712515
 P2_R6_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #317 / 5532731426
 P2_R6_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = PR #318 / 5a30f96948d0d3979842cb75c1fcbfec1b3176b4 / proof 5533032179
+P2_R6_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = PR #319 / 2c5b8d747bdd0b8bceefb2261c8513bc16e1ec2d / proof 5538190559
+TRUST_VERIFICATION_V2_AMENDMENT = PR #320 / f806a82e12302fe4925c022b5f9332e6f883541e / proof 5538367862 / CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY
+TRUST_VERIFICATION_V2_SUCCESSOR_ANALYSIS = PR #320 / 5538383110
+TRUST_V2_POST_ADOPTION_RECONCILIATION_AUTHORIZATION = PR #321 / e7dcca4900962fc360fd04f4e12ca3274607193f / proof 5538855020
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
-PR #315 canonically closed the P3 post-closeout current-view reconciliation. PR #316 canonically authorized P2-R6; PR #317 canonically closed that bounded implementation; PR #318 canonically authorizes only one later documentation-only reconciliation of these five current status/navigation views. None creates benchmark participant execution, provider/model, persistence, product, release, ruleset or successor implementation authority.
+PR #315 canonically closed the P3 post-closeout current-view reconciliation. PR #317 canonically closed the bounded P2-R6 implementation and PR #319 canonically closed its post-closeout current-view reconciliation. PR #320 canonically adopted the additive Trust and Verification Master Plan v2 amendment as planning direction only. PR #321 canonically authorizes only one later documentation-only reconciliation of these five current status/navigation views. None creates benchmark participant execution, provider/model, persistence, product, remediation, release, ruleset or successor implementation authority.
 
 ## Bounded P3 meaning preserved
 
@@ -90,7 +98,30 @@ P3 R1-R17 CLOSED != P4 AUTHORITY
 P3 R1-R17 CLOSED != PROJECT COMPLETION
 ```
 
-## Current P2-R6 five-path reconciliation candidate
+## Trust and Verification v2 planning direction
+
+The canonical v2 amendment supplements, rather than rewrites, the historical 2026-08-26 master plan. Its future dependency map is:
+
+```text
+P2  KodacBench 2.0
+P3  Context Engine v2
+P4  Reviewer Intelligence v2
+P5  Proof and Verification Fabric
+P6  Security, Supply-Chain, and Attack Validation
+P7  Bounded Remediation
+P8  Agent Trust Gateway and Developer Distribution
+P9  Continuous Assurance
+R   Advanced Research
+```
+
+```text
+P4-P9 FUTURE PLANNING DEPENDENCY MAP = CANONICALLY ADOPTED PLANNING DIRECTION
+P4-P9 IMPLEMENTATION AUTHORITY = NONE
+```
+
+No stage, provider, dependency, runtime, side effect, release, or successor becomes authorized merely because it appears in this map.
+
+## Current Trust v2 five-path reconciliation candidate
 
 Exact authorized paths:
 
@@ -104,24 +135,28 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-The reconciliation may only record the already-proven P2-R6 result, bind the exact #316/#317/#318 proof anchors needed for current navigation, replace stale P3 reconciliation candidate wording with the canonical #315 result, preserve every still-effective non-grant, replace obsolete `P2-R6+ = NOT_AUTHORIZED` wording with fail-closed successor wording, and leave successor work to a later fresh evidence-driven analysis.
+The reconciliation may only record already-proven canonical truth: #319 as the closed P2-R6 post-closeout current-view reconciliation; #320 as the closed canonical Trust and Verification v2 planning amendment; the adopted future planning dependency map through P9 while preserving zero P4-P9 implementation authority; and all existing bounded closures and still-effective non-grants.
 
 The candidate becomes canonical only after exact five-path containment, `behind_by=0`, frozen exact head/tree/five-blob identities, applicable CI/canonical non-applicability, two independent substantive exact-head terminal-clean semantic review channels, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge using the exact expected head and complete post-merge proof.
 
-The already-canonical engineering results are:
+The already-canonical engineering and planning results are:
 
 ```text
 P2-R1 THROUGH P2-R6 = CLOSED_CANONICAL
 P2-R6 = CLOSED_CANONICAL
+P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
 P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT = CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY
+P4-P9 FUTURE PLANNING DEPENDENCY MAP = CANONICALLY ADOPTED PLANNING DIRECTION
+P4-P9 IMPLEMENTATION AUTHORITY = NONE
 ```
 
 If and only if this five-path candidate separately qualifies, merges and passes post-merge proof, it may additionally establish:
 
 ```text
-P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL
 ```
 
 while preserving:
@@ -133,7 +168,7 @@ GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
-P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
+P4-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
@@ -161,7 +196,7 @@ K5-R6+ = NOT_AUTHORIZED
 K6-R6+ = NOT_AUTHORIZED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
-P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
+P4-P9 IMPLEMENTATION = NOT_AUTHORIZED
 
 PRODUCT / BENCHMARK / RUNTIME PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / AGENT INVOCATION = NOT_AUTHORIZED
 EXTERNAL GOVERNANCE REVIEW REQUIRED ONLY FOR QUALIFICATION EVIDENCE = AUTHORIZED; IT DOES NOT AUTHORIZE PRODUCT / BENCHMARK / RUNTIME INVOCATION
@@ -181,6 +216,7 @@ TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
 CROSS-REPOSITORY AGGREGATION / LEARNING = NOT_AUTHORIZED
 K2 / K5 / DONE GATE / PROVEN_READY EXPANSION = NOT_AUTHORIZED
 NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
+AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 CLI / API / PRODUCT / AGENT-LOOP INTEGRATION = NOT_AUTHORIZED
 PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION / BRAND LAUNCH = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
@@ -190,4 +226,4 @@ WAIVER = NO
 
 Engineering milestone status remains separate from public release, package publication, production readiness, support, compatibility, security claims, benchmark claims, quality claims and brand launch.
 
-Only after the current P2-R6 five-path reconciliation itself becomes canonical and post-merge proven may fresh evidence-driven successor analysis run. Sequence alone creates no P2-R7, P3-R18, P4, release or project-completion authority.
+Only after the current Trust v2 post-adoption five-path reconciliation itself becomes canonical and post-merge proven may fresh evidence-driven successor analysis run. Sequence alone creates no P2-R7, P3-R18, P4-P9 implementation, benchmark execution, provider/model invocation, remediation, product integration, release or project-completion authority.
