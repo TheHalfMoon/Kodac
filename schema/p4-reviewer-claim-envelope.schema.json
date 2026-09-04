@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p4-reviewer-claim-envelope.schema.json",
+  "title": "Kodac P4-R1 Reviewer Claim Evidence Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "envelopeIdentity",
+    "sourceFinding",
+    "riskHypothesis",
+    "evidenceRefs",
+    "verifierProposals",
+    "criticState"
+  ],
+  "properties": {
+    "version": { "const": "p4-r1-reviewer-claim-envelope-v1" },
+    "envelopeIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceFinding": { "$ref": "#/$defs/sourceFinding" },
+    "riskHypothesis": { "$ref": "#/$defs/riskHypothesis" },
+    "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" },
+    "verifierProposals": {
+      "type": "array",
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/verifierProposal" }
+    },
+    "criticState": { "const": "NOT_EVALUATED" }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "boundedText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "boundedShort": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      }
+    },
+    "reviewIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewRunId",
+        "reviewerId",
+        "reviewerVersion",
+        "policyIdentity",
+        "canonicalBase",
+        "reviewedHead"
+      ],
+      "properties": {
+        "reviewRunId": { "$ref": "#/$defs/boundedShort" },
+        "reviewerId": { "$ref": "#/$defs/boundedShort" },
+        "reviewerVersion": { "$ref": "#/$defs/boundedShort" },
+        "policyIdentity": { "$ref": "#/$defs/boundedShort" },
+        "canonicalBase": { "$ref": "#/$defs/gitCommit" },
+        "reviewedHead": { "$ref": "#/$defs/gitCommit" }
+      }
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["startLine", "endLine"],
+      "properties": {
+        "startLine": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000000
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000000
+        }
+      },
+      "description": "Runtime additionally enforces startLine <= endLine because JSON Schema cannot compare sibling numeric values directly."
+    },
+    "sourceFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "findingIdentity",
+        "claimKey",
+        "review",
+        "evaluatedHead",
+        "path",
+        "summary",
+        "contractClaim",
+        "category",
+        "severity",
+        "confidenceBps",
+        "evidenceRefs",
+        "freshness",
+        "state",
+        "adjudicationState",
+        "adjudicationIdentity"
+      ],
+      "properties": {
+        "version": { "const": "kri-r2-finding-v1" },
+        "findingIdentity": { "$ref": "#/$defs/sha256" },
+        "claimKey": { "$ref": "#/$defs/boundedShort" },
+        "review": { "$ref": "#/$defs/reviewIdentity" },
+        "evaluatedHead": { "$ref": "#/$defs/gitCommit" },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\u0000]+$"
+        },
+        "range": { "$ref": "#/$defs/range" },
+        "summary": { "$ref": "#/$defs/boundedText" },
+        "contractClaim": { "$ref": "#/$defs/boundedText" },
+        "category": { "$ref": "#/$defs/boundedShort" },
+        "severity": {
+          "enum": ["blocker", "critical", "high", "medium", "low", "info"]
+        },
+        "confidenceBps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" },
+        "freshness": { "enum": ["CURRENT", "STALE"] },
+        "state": { "enum": ["NEW", "STALE"] },
+        "adjudicationState": {
+          "enum": ["NEW", "CONFIRMED", "REJECTED", "DUPLICATE", "STALE", "FIXED", "REVERIFIED"]
+        },
+        "adjudicationIdentity": {
+          "anyOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/sha256" }
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": { "freshness": { "const": "CURRENT" } },
+            "required": ["freshness"]
+          },
+          "then": {
+            "type": "object",
+            "properties": { "state": { "const": "NEW" } }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": { "freshness": { "const": "STALE" } },
+            "required": ["freshness"]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "state": { "const": "STALE" },
+              "adjudicationState": { "const": "STALE" },
+              "adjudicationIdentity": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": {
+              "freshness": { "const": "CURRENT" },
+              "adjudicationIdentity": { "type": "null" }
+            },
+            "required": ["freshness", "adjudicationIdentity"]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "adjudicationState": { "const": "NEW" }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": { "adjudicationIdentity": { "type": "string" } },
+            "required": ["adjudicationIdentity"]
+          },
+          "then": {
+            "type": "object",
+            "properties": {
+              "freshness": { "const": "CURRENT" },
+              "state": { "const": "NEW" },
+              "adjudicationState": {
+                "enum": ["CONFIRMED", "REJECTED", "DUPLICATE", "FIXED", "REVERIFIED"]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "riskHypothesis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "riskHypothesisId",
+        "riskClass",
+        "statement",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "riskHypothesisId": { "$ref": "#/$defs/sha256" },
+        "riskClass": {
+          "enum": [
+            "AUTHORIZATION_DRIFT",
+            "SECURITY_BOUNDARY",
+            "CONCURRENCY",
+            "DATA_LOSS",
+            "BUSINESS_LOGIC",
+            "DEPENDENCY_RISK",
+            "CI_BYPASS",
+            "AGENT_POLICY_POISONING",
+            "RESOURCE_BOUND",
+            "COMPATIBILITY",
+            "SPEC_INTENT"
+          ]
+        },
+        "statement": { "$ref": "#/$defs/boundedText" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "verifierProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "proposalId",
+        "verifierClass",
+        "objective",
+        "evidenceRefs"
+      ],
+      "properties": {
+        "proposalId": { "$ref": "#/$defs/sha256" },
+        "verifierClass": {
+          "enum": [
+            "STATIC_RULE",
+            "TYPECHECK",
+            "LINTER",
+            "SCHEMA_VALIDATION",
+            "UNIT_TEST",
+            "FOCUSED_TEST",
+            "GENERATED_REGRESSION",
+            "PROPERTY_TEST",
+            "MUTATION_TEST",
+            "SANDBOX_EXECUTION",
+            "SECURITY_SCAN",
+            "DEPENDENCY_ANALYSIS",
+            "PROVENANCE_CHECK",
+            "EXPLOIT_REPRODUCTION",
+            "NETWORK_POLICY_TEST",
+            "CONTEXTUAL_RUBRIC",
+            "FORMAL_PROOF",
+            "MANUAL_EXTERNAL_ATTESTATION"
+          ]
+        },
+        "objective": { "$ref": "#/$defs/boundedText" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    }
+  }
+}
