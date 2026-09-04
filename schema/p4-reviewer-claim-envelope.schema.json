@@ -178,6 +178,20 @@
         },
         {
           "if": {
+            "properties": {
+              "freshness": { "const": "CURRENT" },
+              "adjudicationIdentity": { "type": "null" }
+            },
+            "required": ["freshness", "adjudicationIdentity"]
+          },
+          "then": {
+            "properties": {
+              "adjudicationState": { "const": "NEW" }
+            }
+          }
+        },
+        {
+          "if": {
             "properties": { "adjudicationIdentity": { "type": "string" } },
             "required": ["adjudicationIdentity"]
           },
