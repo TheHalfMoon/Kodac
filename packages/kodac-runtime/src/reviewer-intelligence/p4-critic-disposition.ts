@@ -107,7 +107,11 @@ function assertJsonDataGraph(
   depth: number,
   budget: { containers: number },
 ): void {
-  if (value === null || typeof value === "string" || typeof value === "boolean") return
+  if (value === null || typeof value === "boolean") return
+  if (typeof value === "string") {
+    if (!hasAtMostCodePoints(value, MAX_TEXT)) fail(`${label} exceeds maximum string length ${MAX_TEXT} Unicode code points`)
+    return
+  }
   if (typeof value === "number") {
     if (!Number.isFinite(value)) fail(`${label} must not contain non-finite numbers`)
     return
@@ -146,6 +150,7 @@ function assertJsonDataGraph(
   if (keys.length > MAX_OBJECT_KEYS) fail(`${label} exceeds maximum own-key count ${MAX_OBJECT_KEYS}`)
   for (const key of keys) {
     if (typeof key !== "string") fail(`${label} must not contain symbol properties`)
+    if (!hasAtMostCodePoints(key, MAX_SHORT)) fail(`${label} has an over-limit property name`)
     const descriptor = ownDescriptor(value, key, `${label}.${key}`)
     if (!("value" in descriptor) || descriptor.enumerable !== true) {
       fail(`${label}.${key} must be an enumerable data property; accessors and non-enumerable properties are rejected`)
@@ -176,9 +181,23 @@ function exactKeys(record: UnknownRecord, required: readonly string[], label: st
   for (const key of required) if (!Object.hasOwn(record, key)) fail(`${label} missing required property: ${key}`)
 }
 
+function hasAtMostCodePoints(value: string, max: number): boolean {
+  let count = 0
+  for (const _codePoint of value) {
+    count += 1
+    if (count > max) return false
+  }
+  return true
+}
+
 function boundedString(value: unknown, label: string, max: number): string {
-  if (typeof value !== "string" || value.length === 0 || value.length > max || value.trim().length === 0) {
-    fail(`${label} must be a non-blank string <= ${max} chars`)
+  if (
+    typeof value !== "string" ||
+    value.length === 0 ||
+    !hasAtMostCodePoints(value, max) ||
+    !/\S/u.test(value)
+  ) {
+    fail(`${label} must be a non-blank string <= ${max} Unicode code points`)
   }
   return value
 }

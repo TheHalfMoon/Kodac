@@ -207,8 +207,9 @@ function validateSchema(schemaValue: unknown, value: unknown, root: UnknownRecor
   if (schema.type === "string") {
     assert.equal(typeof value, "string", `${path} must be string`)
     const text = value as string
-    if (typeof schema.minLength === "number") assert.ok(text.length >= schema.minLength, `${path} violates minLength`)
-    if (typeof schema.maxLength === "number") assert.ok(text.length <= schema.maxLength, `${path} violates maxLength`)
+    const codePointLength = [...text].length
+    if (typeof schema.minLength === "number") assert.ok(codePointLength >= schema.minLength, `${path} violates minLength`)
+    if (typeof schema.maxLength === "number") assert.ok(codePointLength <= schema.maxLength, `${path} violates maxLength`)
     if (typeof schema.pattern === "string") assert.match(text, new RegExp(schema.pattern), `${path} violates pattern`)
   }
 
@@ -404,6 +405,13 @@ test("P4-R2 hostile-structure checks reject accessors, symbols, non-enumerables,
     /sparse array slots/,
   )
 
+  const overLimitKeyDeclaration = declaration(envelope) as unknown as UnknownRecord
+  overLimitKeyDeclaration["x".repeat(129)] = true
+  assert.throws(
+    () => buildP4CriticDisposition({ envelope, declaration: overLimitKeyDeclaration }),
+    /over-limit property name/,
+  )
+
   const cyclicDeclaration = declaration(envelope) as unknown as UnknownRecord
   cyclicDeclaration.self = cyclicDeclaration
   assert.throws(
@@ -485,6 +493,13 @@ test("P4-R2 runtime and JSON Schema stay aligned for representable constraints",
   const malformedSha = { ...clone(valid), sourceEvaluatedHead: "ABC" }
   assert.equal(schemaAccepts(schema, malformedSha), false)
   assert.throws(() => validateP4CriticDisposition(malformedSha, envelope), /git commit identity/)
+
+  const unicodeBoundary = build({ rationale: "😀".repeat(4096) }, envelope)
+  assert.equal(schemaAccepts(schema, unicodeBoundary), true)
+  assert.throws(() => build({ rationale: "😀".repeat(4097) }, envelope), /4096/)
+
+  const schemaUnicodeOverflow = { ...clone(valid), rationale: "😀".repeat(4097) }
+  assert.equal(schemaAccepts(schema, schemaUnicodeOverflow), false)
 
   const crossFieldMismatch = { ...clone(valid), evaluatedHead: OTHER_HEAD }
   assert.equal(schemaAccepts(schema, crossFieldMismatch), true)
