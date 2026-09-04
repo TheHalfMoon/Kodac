@@ -20,26 +20,26 @@ Live GitHub and exact canonical authorization/evidence records override this pag
 # Current canonical truth
 
 ```text
-CANONICAL_MAIN_AT_RECONCILIATION_START = 5a30f96948d0d3979842cb75c1fcbfec1b3176b4
+CANONICAL_MAIN_AT_RECONCILIATION_START = e7dcca4900962fc360fd04f4e12ca3274607193f
 
 P2-R1 THROUGH P2-R6 = CLOSED_CANONICAL
 P2-R6 = CLOSED_CANONICAL
+P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
 
 P3-R1 THROUGH P3-R17 INDIVIDUAL NUMBERED SLICES = CLOSED_CANONICAL
-P3-R17 CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
-P3 BOUNDED R1-R17 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
-P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL
 P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P3 OVERALL = OPEN
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
-P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
 
-P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL
-P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT FIVE-PATH CANDIDATE / NOT CANONICAL UNTIL QUALIFIED + MERGED + POST-PROVEN
+TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT = CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY
+TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL
+P4-P9 FUTURE PLANNING DEPENDENCY MAP = CANONICALLY ADOPTED PLANNING DIRECTION
+P4-P9 IMPLEMENTATION AUTHORITY = NONE
+
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
@@ -47,29 +47,24 @@ WAIVER = NO
 Canonical anchors:
 
 ```text
-P3_R17_CURRENT_VIEW_RECONCILIATION = #311 / b1ab1a16067e7d8a2bc720ccba475c6556d0525c / proof 5527606835
-P3_R1_R17_CLOSEOUT_SUCCESSOR_ANALYSIS = #311 / 5527641999
-P3_R1_R17_CLOSEOUT_AUTHORIZATION = #312 / 7686adfd4cf5a21a2c658e6c211d9c0509b730c8 / proof 5528344277
-P3_R1_R17_CLOSEOUT = #313 / 3772003d026488ab274883934d4a14a8e47a4185 / proof 5530355917
-P3_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #313 / 5530383125
-P3_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = #314 / bbe5ef4f7046a5775519d62cf1e969e96cb05dee / proof 5530633976
-P3_POST_CLOSEOUT_RECONCILIATION = #315 / 416067c72aa7702a48932ca86de2260a3c8ce973 / proof 5530804202
-P2_R6_SUCCESSOR_ANALYSIS = #315 / 5530859993
-P2_R6_AUTHORIZATION = #316 / dce5fece4ec71c58832960c5515a918d7d4c19d8 / proof 5531882213
-P2_R6_IMPLEMENTATION = #317 / 815c7358086980dd47ef31e7014bbbeb60bc9df5 / proof 5532712515
-P2_R6_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #317 / 5532731426
-P2_R6_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = #318 / 5a30f96948d0d3979842cb75c1fcbfec1b3176b4 / proof 5533032179
+P3_POST_CLOSEOUT_RECONCILIATION = PR #315 / 416067c72aa7702a48932ca86de2260a3c8ce973 / proof 5530804202
+P2_R6_AUTHORIZATION = PR #316 / dce5fece4ec71c58832960c5515a918d7d4c19d8 / proof 5531882213
+P2_R6_IMPLEMENTATION = PR #317 / 815c7358086980dd47ef31e7014bbbeb60bc9df5 / proof 5532712515
+P2_R6_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = PR #318 / 5a30f96948d0d3979842cb75c1fcbfec1b3176b4 / proof 5533032179
+P2_R6_POST_CLOSEOUT_RECONCILIATION = PR #319 / 2c5b8d747bdd0b8bceefb2261c8513bc16e1ec2d / proof 5538190559
+TRUST_VERIFICATION_V2_AMENDMENT = PR #320 / f806a82e12302fe4925c022b5f9332e6f883541e / proof 5538367862 / PLANNING_DIRECTION_ONLY
+TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = PR #321 / e7dcca4900962fc360fd04f4e12ca3274607193f / proof 5538855020
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
+The historical 2026-08-26 improvement master plan remains preserved. The Trust and Verification v2 amendment supplements it and does not rewrite predecessor evidence.
+
 ---
 
-# NOW — authorized P2-R6 post-closeout five-path current-view reconciliation candidate
+# NOW — Trust v2 post-adoption five-path current-view reconciliation
 
-The only active unit is the documentation-only reconciliation authorized by canonical PR #318 and post-merge proof `5533032179`.
-
-Exactly these five paths may change:
+Canonical PR #321 and post-merge proof `5538855020` authorize exactly one separate documentation-only reconciliation of these five paths:
 
 ```text
 docs/roadmap/NEXT.md
@@ -81,50 +76,43 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This unit may only:
+This unit may only record already-proven canonical truth:
 
-1. record the already-proven P2-R6 canonical result and exact #316/#317/#318 anchors needed for current navigation;
-2. replace stale P3 reconciliation candidate wording with the already-proven canonical #315 result;
-3. replace obsolete `P2-R6+ = NOT_AUTHORIZED` wording with fail-closed successor wording that does not infer P2-R7 authority by numbering;
-4. preserve `P2 OVERALL = OPEN`, `P3 OVERALL = OPEN`, general/public KodacBench as not closed, and every still-effective non-grant;
-5. state that only fresh evidence-driven successor analysis may follow after this reconciliation itself qualifies, merges normally, and passes mandatory post-merge proof.
+1. PR #319 / merge `2c5b8d747bdd0b8bceefb2261c8513bc16e1ec2d` / proof `5538190559` as the closed P2-R6 post-closeout current-view reconciliation;
+2. PR #320 / merge `f806a82e12302fe4925c022b5f9332e6f883541e` / proof `5538367862` as the closed canonical Trust and Verification Master Plan v2 amendment, planning-direction only;
+3. PR #321 / merge `e7dcca4900962fc360fd04f4e12ca3274607193f` / proof `5538855020` as the closed canonical authorization for this separate five-path reconciliation;
+4. the adopted future planning dependency map through P9 while preserving that P4-P9 implementation authority remains none;
+5. all already-proven bounded closures and all still-effective non-grants.
 
-Runtime source/tests, historical authorization/evidence records, workflows, schemas, dependencies/lockfiles, benchmark corpora/manifests/fixtures/results, donor code, provider/model configuration, persistence/telemetry/learning, CLI/API/product surfaces, release configuration and rulesets remain unchanged.
+Runtime source/tests, historical authorization/evidence records, workflows, schemas, dependencies/lockfiles, benchmark corpora/manifests/fixtures/results, donor code, provider/model configuration, persistence/telemetry/learning, CLI/API/product surfaces, release configuration, rulesets, and historical master-plan bytes remain unchanged.
 
-The candidate becomes canonical only after one frozen exact head proves:
+This reconciliation becomes canonical only after one frozen exact head proves:
 
 ```text
-BASE = current canonical main
+BASE = CURRENT CANONICAL MAIN AFTER PR #321 POST_MERGE_PROOF
 BEHIND_BY = 0
 CHANGED_PATHS = EXACTLY 5
-FIVE BLOBS = frozen exact identities
-APPLICABLE GOVERNANCE / K2 = TERMINAL SUCCESS OR CANONICALLY PROVEN NON-APPLICABLE
-INDEPENDENT SUBSTANTIVE SEMANTIC REVIEW = 2 / 2 TERMINAL CLEAN
-UNRESOLVED MATERIAL/MINOR ACTIONABLE FINDINGS = 0
+CHANGED_PATHS = EXACTLY THE FIVE ALLOWLISTED CURRENT VIEWS
+FIVE BLOBS = FROZEN EXACT IDENTITIES
+REQUIRED CI = TERMINAL SUCCESS OR CANONICALLY PROVEN NON_APPLICABLE
+INDEPENDENT SUBSTANTIVE EXACT_HEAD SEMANTIC REVIEW = 2 / 2 TERMINAL CLEAN
+UNRESOLVED MATERIAL / MINOR ACTIONABLE FINDINGS = 0
 UNRESOLVED ACTIONABLE REVIEW THREADS = 0
 RULESET 20707483 = active / bypass_actors=[] / current_user_can_bypass=never
-MERGE = guarded normal merge / exact expected head
-POST_MERGE PROOF = main + ordered parents + tree + five blobs + verified/valid signature + applicable checks + merged PR state + ruleset
+MERGE = GUARDED NORMAL MERGE USING exact expected_head_sha
+POST_MERGE_PROOF = main + ordered parents + tree + five blobs + verified/valid signature + applicable push checks + merged PR state + ruleset
 WAIVER = NO
 ```
 
-Only after that proof may this current reconciliation itself be recorded as:
+Only after complete post-merge proof may this unit be treated as:
 
 ```text
-P2-R6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL
 ```
 
-The already-proven engineering results remain:
+---
 
-```text
-P2-R1 THROUGH P2-R6 = CLOSED_CANONICAL
-P2-R6 = CLOSED_CANONICAL
-P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL
-P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
-P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
-```
-
-while preserving simultaneously:
+# Preserved authority boundaries
 
 ```text
 P2 OVERALL = OPEN
@@ -133,7 +121,7 @@ GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
-P4-P8 IMPLEMENTATION = NOT_AUTHORIZED
+P4-P9 IMPLEMENTATION = NOT_AUTHORIZED
 GLOBAL BETTER / WORSE / SUPERIOR / INFERIOR = NOT_AUTHORIZED
 CROSS-DIMENSION AGGREGATE / WEIGHTING / MAJORITY / PARETO POLICY = NOT_AUTHORIZED
 STATISTICS / SIGNIFICANCE / CONFIDENCE / P-VALUE / EFFECT-SIZE POLICY = NOT_AUTHORIZED
@@ -144,8 +132,10 @@ PRODUCT / BENCHMARK / RUNTIME PROVIDER / MODEL / REVIEWER / EVALUATOR / TOOL / A
 EXTERNAL GOVERNANCE REVIEW REQUIRED ONLY FOR QUALIFICATION EVIDENCE = AUTHORIZED; IT DOES NOT AUTHORIZE PRODUCT / BENCHMARK / RUNTIME INVOCATION
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
-NEW DEPENDENCIES / DONOR INTAKE = NOT_AUTHORIZED
-PUBLIC SUPERIORITY CLAIM / RELEASE / PACKAGE PUBLICATION = NOT_AUTHORIZED
+NEW DEPENDENCY / DONOR ADMISSION = NONE
+AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
+CLI / API / PRODUCT INTEGRATION = NOT_AUTHORIZED
+PUBLIC RELEASE / PACKAGE PUBLICATION = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
@@ -157,22 +147,34 @@ WAIVER = NO
 
 Only after this exact five-path reconciliation is canonical and post-merge proven may fresh successor analysis run.
 
-Do **not** infer `P2-R7`, P2 overall closure, P3-R18, P3 overall closure, cross-dimension aggregation, ranking, promotion, winner/default selection, statistical policy, benchmark execution, P4-P8, public release or project completion by numbering or composition.
+Do **not** infer by numbering or composition:
 
-Fresh analysis must re-read live `main`, the complete canonical P2/P3 chain, ADR-0010, the durable improvement plan, review/CI history and relevant precedent. A new unit requires one concrete canonical gap and its own explicit authority.
+```text
+P2-R7
+P2 OVERALL CLOSURE
+P3-R18
+P3 OVERALL CLOSURE
+P4
+P5
+P6
+P7
+P8
+P9
+REAL BENCHMARK EXECUTION
+PROVIDER / MODEL EXECUTION
+AUTOFIX
+PRODUCT INTEGRATION
+PUBLIC RELEASE
+PROJECT COMPLETION
+```
+
+A later unit requires one concrete canonical gap, predecessor closure, roadmap-reconciliation check, explicit bounded authorization, exact allowlist, qualification, independent semantic review, guarded merge, and post-merge proof.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
-CALLER POLICY / CRITERIA != REPOSITORY POLICY
-PAIRWISE / DIRECTIONAL EVIDENCE != GLOBAL SUPERIORITY
-LITERAL PROVENANCE != HOLDOUT SUFFICIENCY / UNBIASEDNESS / CONTAMINATION FREEDOM
-P2-R6 CLOSED != P2 OVERALL CLOSED
-P2-R6 CLOSED != GENERAL / PUBLIC KODACBENCH COMPLETE
-P2-R6 CLOSED != P2-R7+ AUTHORITY
-P3 BOUNDED R1-R17 CLOSED != P3 OVERALL CLOSED
-P3 BOUNDED R1-R17 CLOSED != P3-R18+ AUTHORITY
-P3 BOUNDED R1-R17 CLOSED != P4 AUTHORITY
-P2/P3 BOUNDED CLOSURES != PROJECT COMPLETION
+PLANNING DIRECTION != IMPLEMENTATION AUTHORITY
+POST_MERGE PROOF != SUCCESSOR AUTHORITY
+WAIVER = NO
 ```
 
 ---
@@ -181,14 +183,10 @@ P2/P3 BOUNDED CLOSURES != PROJECT COMPLETION
 
 - Working rules: `AGENTS.md`
 - Current action: `docs/roadmap/NEXT.md`
-- P3 post-closeout reconciliation proof: PR #315 / comment `5530804202`
-- P2-R6 successor analysis: PR #315 / comment `5530859993`
-- P2-R6 authorization: `docs/planning/KODAC_P2_R6_REPOSITORY_HISTORY_CORPUS_ADMISSION_AUTHORIZATION_2026-09-03.md`
-- P2-R6 authorization post-merge proof: PR #316 / comment `5531882213`
-- P2-R6 implementation evidence: `docs/planning/KODAC_P2_R6_REPOSITORY_HISTORY_CORPUS_ADMISSION_EVIDENCE_2026-09-03.md`
-- P2-R6 implementation post-merge proof: PR #317 / comment `5532712515`
-- P2-R6 post-closeout reconciliation analysis: PR #317 / comment `5532731426`
-- Current reconciliation authorization: `docs/planning/KODAC_P2_R6_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-04.md`
-- Current reconciliation authorization post-merge proof: PR #318 / comment `5533032179`
-- Durable plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
+- P2-R6 post-closeout reconciliation proof: PR #319 / comment `5538190559`
+- Trust and Verification v2 amendment: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
+- Trust and Verification v2 amendment proof: PR #320 / comment `5538367862`
+- Current reconciliation authorization: `docs/planning/KODAC_TRUST_VERIFICATION_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-04.md`
+- Current reconciliation authorization post-merge proof: PR #321 / comment `5538855020`
+- Durable historical plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Benchmark governance: `docs/adr/ADR-0010-benchmark-first-donor-selection.md`
