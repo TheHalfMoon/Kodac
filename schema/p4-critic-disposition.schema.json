@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p4-critic-disposition.schema.json",
+  "title": "Kodac P4-R2 Structured Critic Disposition",
+  "description": "A deterministic evidence record binding one exact validated P4-R1 reviewer-claim envelope to one explicit caller-supplied critic disposition. Runtime validation additionally enforces content-derived disposition identity and exact cross-field P4-R1/source/evaluated-head bindings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "dispositionIdentity",
+    "p4R1EnvelopeIdentity",
+    "p4R1EnvelopeVersion",
+    "sourceFindingIdentity",
+    "sourceReviewedHead",
+    "sourceEvaluatedHead",
+    "criticId",
+    "criticVersion",
+    "criticPolicyIdentity",
+    "evaluatedHead",
+    "disposition",
+    "rationale",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "version": {
+      "const": "p4-r2-critic-disposition-v1"
+    },
+    "dispositionIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "p4R1EnvelopeIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "p4R1EnvelopeVersion": {
+      "const": "p4-r1-reviewer-claim-envelope-v1"
+    },
+    "sourceFindingIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "sourceReviewedHead": {
+      "$ref": "#/$defs/gitCommit"
+    },
+    "sourceEvaluatedHead": {
+      "$ref": "#/$defs/gitCommit"
+    },
+    "criticId": {
+      "$ref": "#/$defs/boundedShort"
+    },
+    "criticVersion": {
+      "$ref": "#/$defs/boundedShort"
+    },
+    "criticPolicyIdentity": {
+      "$ref": "#/$defs/boundedShort"
+    },
+    "evaluatedHead": {
+      "$ref": "#/$defs/gitCommit"
+    },
+    "disposition": {
+      "enum": [
+        "SUPPORTED",
+        "CONTRADICTED",
+        "UNVERIFIED_CONCERN",
+        "DUPLICATE_OR_SUPERSEDED"
+      ]
+    },
+    "rationale": {
+      "$ref": "#/$defs/boundedText"
+    },
+    "evidenceRefs": {
+      "$ref": "#/$defs/evidenceRefs"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "boundedShort": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "\\S"
+    },
+    "boundedText": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096,
+      "pattern": "\\S"
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024,
+        "pattern": "\\S"
+      }
+    }
+  }
+}
