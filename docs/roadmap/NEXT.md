@@ -8,7 +8,7 @@ This file is navigation/status only. It does not create implementation, executio
 
 Before any mutation:
 
-1. re-read live GitHub `main`, open PRs, exact heads, changed paths, checks, comments/reviews/threads, mergeability, and ruleset `20707483`;
+1. re-read live GitHub `main`, open PRs, exact heads, changed paths, checks, reviews/threads, mergeability, and ruleset `20707483`;
 2. read root `AGENTS.md`;
 3. read this file;
 4. read the exact canonical authorization/evidence record for the active unit;
@@ -45,8 +45,8 @@ TRUST_V2_POST_ADOPTION_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL
 
 P4-R1 = CLOSED_CANONICAL
 P4-R2 = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 ENGINEERING SCOPE = NOT_YET_CLOSED_CANONICAL
+P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
+P4 BOUNDED R1-R2 CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
 P4 OVERALL = OPEN
 P4-R3+ IMPLEMENTATION = NOT_AUTHORIZED
 
@@ -65,18 +65,20 @@ P4_R2_AUTHORIZATION = PR #326 / 9443d15c02c143e4c4acc64b79817476b912ba1e / proof
 P4_R2_IMPLEMENTATION = PR #327 / 2641eb7493b6b6747f3cb56fa69e853305d54692 / proof 5547377851
 P4_POST_R2_SUCCESSOR_ANALYSIS = PR #327 / comment 5547425939 / ANALYSIS_ONLY
 P4_R1_R2_CLOSEOUT_AUTHORIZATION = PR #328 / f8641ec272301c991fe47cc879a45f10d48d3587 / proof 5547478904
+P4_R1_R2_CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
+P4_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = PR #329 / comment 5547558110 / ANALYSIS_ONLY
+P4_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = PR #330 / fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
 ---
 
-# NOW — P4 bounded R1-R2 engineering closeout
+# NOW — P4 post-closeout five-current-view reconciliation
 
-Canonical PR #328 and post-merge proof `5547478904` authorize exactly one documentation/evidence closeout candidate changing exactly six paths:
+Canonical PR #330 and post-merge proof `5547581664` authorize exactly this documentation-only reconciliation of five paths:
 
 ```text
-docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -84,63 +86,11 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path is authorized.
+No sixth path is authorized.
 
-The candidate may record already-proven P4-R1/P4-R2 lineage, exact canonical implementation identities, required machine evidence, material repair history, current no-bypass governance, and candidate-safe current-view state.
+This reconciliation may only record already-proven P4 bounded-closeout truth and preserve all non-grants. It may not modify historical closeout evidence, runtime source/tests, schemas, workflows, dependencies/lockfiles, KRI code, benchmark data/results, provider/model configuration, persistence/telemetry/learning, product implementation, release configuration, or rulesets.
 
-It may not modify runtime source/tests, schemas, historical evidence, workflows, dependencies/lockfiles, KRI adjudication, benchmark data/results, provider/model/reviewer configuration, persistence/telemetry/learning, product surfaces, release configuration, or rulesets.
-
-This unit becomes canonical only if one frozen exact head proves:
-
-```text
-BASE = CURRENT CANONICAL MAIN
-BEHIND_BY = 0
-CHANGED_PATHS = EXACTLY 6
-SIX BLOBS = FROZEN EXACT IDENTITIES
-P4-R1 / P4-R2 CANONICAL IMPLEMENTATION BLOBS = UNCHANGED
-REQUIRED CI = TERMINAL SUCCESS OR CANONICALLY PROVEN NON_APPLICABLE
-INTERNAL SUBSTANTIVE SEMANTIC INSPECTION = CLEAN
-KNOWN ACTIONABLE DEFECTS = 0
-UNRESOLVED ACTIONABLE REVIEW THREADS = 0
-REQUIRED_EXTERNAL_SEMANTIC_REVIEW_COUNT = 0
-EXTERNAL_REVIEW = OPTIONAL_ADVISORY_EVIDENCE
-RULESET 20707483 = active / bypass_actors=[] / current_user_can_bypass=never
-MERGE = GUARDED NORMAL MERGE USING exact expected_head_sha
-POST_MERGE_PROOF = REQUIRED
-WAIVER = NO
-```
-
-Only successful post-merge proof may establish:
-
-```text
-P4-R1 THROUGH P4-R2 INDIVIDUAL SLICES = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
-```
-
-This must remain distinct from:
-
-```text
-P4 OVERALL = CLOSED
-P4-R3+ AUTHORITY
-P5 AUTHORITY
-REVIEWER / CRITIC / VERIFIER EXECUTION AUTHORITY
-PROJECT COMPLETION
-```
-
----
-
-# Why there is no automatic P4-R3
-
-Fresh canonical analysis after P4-R2 established:
-
-```text
-GAP-05 REVIEWER DISAGREEMENT PROTOCOL = BOUNDED BY P4-R2
-FIRST-CLASS VERIFIER PROPOSALS = ALREADY PRESENT IN P4-R1
-ACTUAL VERIFIER EXECUTION / RESULTS = LATER P5 PLANNING DIRECTION
-P4-R3+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
-```
-
-Therefore the current unit is bounded closeout, not another invented numbered mechanism.
+The reconciliation itself must qualify on one frozen exact head, merge normally with exact expected-head protection, and pass mandatory post-merge proof before fresh successor analysis begins.
 
 ---
 
@@ -151,17 +101,18 @@ P2 OVERALL = OPEN
 P3 OVERALL = OPEN
 P4 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-REAL BENCHMARK TASK / PARTICIPANT EXECUTION = NOT_AUTHORIZED
+REAL BENCHMARK EXECUTION = NOT_AUTHORIZED
 P2-R7+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ IMPLEMENTATION = NOT_AUTHORIZED
 P4-R3+ IMPLEMENTATION = NOT_AUTHORIZED
 P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
+KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
 VERIFIER PROPOSAL != VERIFICATION RESULT
 CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
+NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
-NEW DEPENDENCY / DONOR ADMISSION = NONE
 AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / SUPERIORITY CLAIM = NOT_AUTHORIZED
@@ -172,11 +123,11 @@ WAIVER = NO
 
 ---
 
-# THEN — fresh post-closeout reconciliation/successor analysis only
+# THEN — fresh evidence-driven successor analysis only
 
-After successful P4 bounded closeout post-merge proof, re-read live repository truth. Do not infer P4-R3 or P5 by sequence.
+After this five-path reconciliation itself is post-merge proven, re-read live repository truth and the existing K5/KRI/P4/P5 planning substrate before creating any later authority.
 
-If the closeout makes these five current views procedurally stale, create/adopt a separate bounded current-view reconciliation authorization before changing them again. Only after any required reconciliation is canonical may fresh evidence-driven successor analysis determine a later unit.
+Do not infer P4-R3 or P5 by numbering. A later unit requires one concrete canonical gap, dependency-correct minimum scope, explicit bounded authorization, exact allowlist, exact-head qualification, guarded merge, and post-merge proof.
 
 ```text
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
@@ -192,8 +143,8 @@ WAIVER = NO
 
 - Working rules: `AGENTS.md`
 - Current action: `docs/roadmap/NEXT.md`
-- P4 bounded closeout authorization: `docs/planning/KODAC_P4_BOUNDED_R1_R2_CLOSEOUT_AUTHORIZATION_2026-09-05.md`
-- P4 bounded closeout evidence candidate: `docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md`
+- P4 closeout evidence: `docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md`
+- P4 reconciliation authorization: `docs/planning/KODAC_P4_R1_R2_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
 - Trust v2 planning direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
 - Durable historical plan: `docs/planning/KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md`
 - Final gap review: `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
