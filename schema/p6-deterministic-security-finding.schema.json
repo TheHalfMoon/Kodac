@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p6-deterministic-security-finding.schema.json",
+  "title": "Kodac P6-R1 Deterministic Security Finding",
+  "description": "A pure provider-neutral deterministic-analyzer finding record bound to a fully validated P5-R1 evidence provenance binding. Runtime validation additionally enforces content-derived findingIdentity and canonical reference ordering. This schema carries no raw secret or analyzer-match payload and grants no scanner execution, proof, adjudication, exploitability, authority, or side effect.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "findingIdentity",
+    "origin",
+    "provenanceBinding",
+    "lane",
+    "ruleId",
+    "severity",
+    "location",
+    "nativeRecordDigest",
+    "fingerprint",
+    "referenceIds"
+  ],
+  "properties": {
+    "version": {
+      "const": "p6-r1-deterministic-security-finding-v1"
+    },
+    "findingIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "origin": {
+      "const": "DETERMINISTIC_ANALYZER"
+    },
+    "provenanceBinding": {
+      "$ref": "https://kodac.dev/schema/p5-evidence-provenance.schema.json"
+    },
+    "lane": {
+      "enum": [
+        "STATIC_ANALYSIS",
+        "DEPENDENCY_ANALYSIS",
+        "SECRET_DETECTION",
+        "SUPPLY_CHAIN_PROVENANCE",
+        "CI_WORKFLOW_INTEGRITY"
+      ]
+    },
+    "ruleId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "severity": {
+      "enum": [
+        "BLOCKER",
+        "CRITICAL",
+        "HIGH",
+        "MEDIUM",
+        "LOW",
+        "INFO"
+      ]
+    },
+    "location": {
+      "$ref": "#/$defs/location"
+    },
+    "nativeRecordDigest": {
+      "$ref": "#/$defs/sha256"
+    },
+    "fingerprint": {
+      "$ref": "#/$defs/sha256"
+    },
+    "referenceIds": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/referenceId"
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "unicodeScalarText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:[^\\u0000\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+$"
+    },
+    "repositoryPath": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 1024
+        },
+        {
+          "pattern": "^(?!/)(?![A-Za-z]:/)(?!.*\\\\)(?!.*//)(?!\\.\\.?$)(?!\\.\\.?/)(?!.*\\/\\.\\.?\\/)(?!.*\\/\\.\\.?$)(?!.*[\\u0000-\\u001F\\u007F]).+$"
+        }
+      ]
+    },
+    "referenceId": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 256
+        },
+        {
+          "pattern": "^(?!.*[\\u0000-\\u001F\\u007F])(?=.*\\S).+$"
+        }
+      ]
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "dependentRequired": {
+        "startLine": [
+          "endLine"
+        ],
+        "endLine": [
+          "startLine"
+        ]
+      },
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/repositoryPath"
+        },
+        "startLine": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "endLine": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        }
+      }
+    }
+  }
+}
