@@ -257,7 +257,7 @@ test("P5-R1 rejects malformed identities, unsupported freshness, and tampered co
   ;(unsupportedFreshness.freshness as { state: string }).state = "UNKNOWN"
   assert.throws(() => buildP5EvidenceProvenanceBinding(unsupportedFreshness), /freshness.state/)
 
-  const tampered = structuredClone(buildP5EvidenceProvenanceBinding(fixtureInput())) as UnknownRecord
+  const tampered = structuredClone(buildP5EvidenceProvenanceBinding(fixtureInput())) as unknown as UnknownRecord
   tampered.bindingIdentity = SHA_F
   assert.throws(() => validateP5EvidenceProvenanceBinding(tampered), /does not match the canonical semantic content/)
 })
@@ -337,25 +337,25 @@ test("P5-R1 runtime and schema agree on canonical structural boundaries includin
   assert.ok(schemaAccepts(schema, valid))
   assert.deepEqual(validateP5EvidenceProvenanceBinding(valid), valid)
 
-  const tooLong = structuredClone(valid) as UnknownRecord
+  const tooLong = structuredClone(valid) as unknown as UnknownRecord
   const tooLongSource = tooLong.source as UnknownRecord
   tooLongSource.sourceRef = "😀".repeat(P5_R1_EVIDENCE_PROVENANCE_LIMITS.maxSourceRefCodePoints + 1)
   assert.equal(schemaAccepts(schema, tooLong), false)
   assert.throws(() => validateP5EvidenceProvenanceBinding(tooLong), /sourceRef/)
 
-  const nul = structuredClone(valid) as UnknownRecord
+  const nul = structuredClone(valid) as unknown as UnknownRecord
   const nulRevision = nul.revision as UnknownRecord
   nulRevision.repositoryId = "repo\0id"
   assert.equal(schemaAccepts(schema, nul), false)
   assert.throws(() => validateP5EvidenceProvenanceBinding(nul), /repositoryId/)
 
-  const loneSurrogate = structuredClone(valid) as UnknownRecord
+  const loneSurrogate = structuredClone(valid) as unknown as UnknownRecord
   const surrogateProducer = loneSurrogate.producer as UnknownRecord
   surrogateProducer.producerVersion = "v\ud800"
   assert.equal(schemaAccepts(schema, loneSurrogate), false)
   assert.throws(() => validateP5EvidenceProvenanceBinding(loneSurrogate), /valid Unicode scalar values/)
 
-  const badEnum = structuredClone(valid) as UnknownRecord
+  const badEnum = structuredClone(valid) as unknown as UnknownRecord
   const badFreshness = badEnum.freshness as UnknownRecord
   badFreshness.state = "UNKNOWN"
   assert.equal(schemaAccepts(schema, badEnum), false)
