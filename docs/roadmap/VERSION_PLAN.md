@@ -24,11 +24,13 @@ GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL INDIVIDUALLY
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
+P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P3 OVERALL = OPEN
 P3-R18+ = NOT_AUTHORIZED
 
 P4-R1 = CLOSED_CANONICAL
 P4-R2 = CLOSED_CANONICAL
+P4 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
 P4 POST-CLOSEOUT RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #330 / proof 5547581664
@@ -46,16 +48,16 @@ WAIVER = NO
 
 ```text
 #323  P4-R1 authorization
--> #324  P4-R1 Reviewer Claim Evidence Envelope implementation
--> #325  Founder external semantic-review gate supersession
--> #326  P4-R2 authorization
--> #327  P4-R2 Structured Critic Disposition implementation
--> #327 comment 5547425939  fresh analysis / no justified P4-R3 mechanism
--> #328  bounded R1-R2 engineering closeout authorization
--> #329  bounded R1-R2 canonical closeout
--> #329 comment 5547558110  post-closeout reconciliation analysis
--> #330  post-closeout five-current-view reconciliation authorization
--> CURRENT  five-current-view reconciliation
+  -> #324  P4-R1 Reviewer Claim Evidence Envelope implementation
+  -> #325  Founder external semantic-review gate supersession
+  -> #326  P4-R2 authorization
+  -> #327  P4-R2 Structured Critic Disposition implementation
+  -> #327 comment 5547425939 fresh analysis: no justified P4-R3 mechanism
+  -> #328  bounded R1-R2 engineering closeout authorization
+  -> #329  bounded R1-R2 canonical closeout
+  -> #329 comment 5547558110 post-closeout reconciliation analysis
+  -> #330  post-closeout five-current-view reconciliation authorization
+  -> CURRENT: five-current-view reconciliation
 ```
 
 Canonical merge/proof anchors:
