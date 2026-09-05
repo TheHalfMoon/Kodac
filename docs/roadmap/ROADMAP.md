@@ -26,7 +26,8 @@ This file is a current engineering roadmap view. It does not create implementati
 | P4-R1 | **CLOSED_CANONICAL** | Reviewer Claim Evidence Envelope Foundation |
 | P4-R2 | **CLOSED_CANONICAL** | Structured Critic Disposition |
 | P4 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | PR #328 / proof `5547478904` |
-| P4 bounded R1-R2 engineering scope | **CURRENT CLOSEOUT CANDIDATE / NOT YET CLOSED_CANONICAL** | Requires its own exact-head qualification, guarded merge, and post-merge proof |
+| P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | PR #329 / `6f65503fa4abdcf5c20c15d2e54265ab01c929d3` / proof `5547554548` |
+| P4 post-closeout current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #330 / `fa74f7653a2105152fc48aacc293e98142fea7fa` / proof `5547581664` |
 | P4 overall | **OPEN** | Bounded R1-R2 closeout is not P4 overall closure |
 | P4-R3+ | **NOT_AUTHORIZED** | No authority by numbering |
 | P5-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | Fresh gap + separate authorization required |
@@ -75,6 +76,20 @@ P4 bounded R1-R2 closeout authorization
   PR #328
   merge f8641ec272301c991fe47cc879a45f10d48d3587
   post-merge proof 5547478904
+
+P4 bounded R1-R2 canonical closeout
+  PR #329
+  merge 6f65503fa4abdcf5c20c15d2e54265ab01c929d3
+  post-merge proof 5547554548
+
+Post-closeout reconciliation analysis
+  PR #329 / comment 5547558110
+  analysis-only / no authority created
+
+P4 post-closeout current-view reconciliation authorization
+  PR #330
+  merge fa74f7653a2105152fc48aacc293e98142fea7fa
+  post-merge proof 5547581664
 ```
 
 ---
@@ -148,7 +163,7 @@ Both were repaired inside the three-path allowlist. Prior-head CI/review evidenc
 
 ---
 
-## Why bounded closeout is next instead of P4-R3
+## Why there is still no automatic P4-R3
 
 Fresh canonical analysis after P4-R2 established:
 
@@ -160,16 +175,15 @@ additional concrete P4 runtime/schema/test gap = none proven
 P4-R3+ authority by numbering = rejected
 ```
 
-The minimum supported current unit is therefore the separately authorized six-path P4 bounded R1-R2 engineering closeout.
+The bounded R1-R2 engineering scope is now closed canonical through PR #329. That closure does not create P4-R3 or P5 authority. The minimum current unit is the separately authorized post-closeout five-current-view reconciliation created by PR #330.
 
 ---
 
-## Current authorized closeout
+## Current authorized reconciliation
 
-Canonical PR #328 authorizes exactly:
+Canonical PR #330 authorizes exactly:
 
 ```text
-docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -177,23 +191,11 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path is authorized.
+No sixth path is authorized.
 
-Only after the exact closeout candidate qualifies, merges with exact expected-head protection, and passes complete post-merge proof may it establish:
+The reconciliation may only replace candidate-time P4 bounded-closeout state with the now-proven canonical state, bind the exact PR #329 closeout anchors needed for current navigation/status, preserve P4 overall as open and every still-effective non-grant, and state that only fresh evidence-driven successor analysis may follow after the reconciliation itself qualifies, merges, and passes mandatory post-merge proof.
 
-```text
-P4-R1 THROUGH P4-R2 INDIVIDUAL SLICES = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
-```
-
-It must preserve:
-
-```text
-P4 OVERALL = OPEN
-P4-R3+ = NOT_AUTHORIZED
-P5-P9 = IMPLEMENTATION NOT_AUTHORIZED
-PROJECT COMPLETION = NOT_ESTABLISHED
-```
+It may not modify historical closeout evidence, runtime source/tests, schemas, workflows, dependencies/lockfiles, KRI adjudication, benchmark data/results, provider/model configuration, persistence/telemetry/learning, product implementation, release configuration, or rulesets.
 
 ---
 
@@ -213,7 +215,8 @@ K6 bounded closeout [CLOSED_CANONICAL]
 -> P4 Reviewer Intelligence v2
    -> R1 Reviewer Claim Evidence Envelope [CLOSED_CANONICAL]
    -> R2 Structured Critic Disposition [CLOSED_CANONICAL]
-   -> bounded R1-R2 engineering closeout [CURRENT CANDIDATE]
+   -> bounded R1-R2 engineering closeout [CLOSED_CANONICAL]
+   -> post-closeout current-view reconciliation [CURRENT]
    -> P4 overall [OPEN]
 -> P5 Proof and Verification Fabric [PLANNING DIRECTION ONLY]
 -> P6 Security, Supply-Chain, and Attack Validation [PLANNING DIRECTION ONLY]
@@ -242,8 +245,10 @@ P3-R18+ = NOT_AUTHORIZED
 P4-R3+ = NOT_AUTHORIZED
 P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
+KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
 VERIFIER PROPOSAL != VERIFICATION RESULT
 CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
+REVIEW AGREEMENT != PROOF
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -259,9 +264,9 @@ WAIVER = NO
 
 ## Next boundary
 
-The immediate task is qualification, guarded merge, and mandatory post-merge proof of the authorized P4 bounded R1-R2 closeout candidate.
+The immediate task is exact-head qualification, guarded merge, and mandatory post-merge proof of the authorized five-current-view reconciliation.
 
-After that proof, fresh live analysis must determine whether the candidate-safe current views require a separate post-closeout reconciliation authorization and reconciliation. Only after any required reconciliation becomes canonical may fresh successor analysis consider later gaps.
+Only after that proof may fresh evidence-driven successor analysis consider a later bounded unit. Do not infer P4-R3 or P5 by sequence.
 
 ```text
 PLANNING DIRECTION != IMPLEMENTATION AUTHORITY

@@ -31,7 +31,9 @@ P3-R18+ = NOT_AUTHORIZED
 P4-R1 = CLOSED_CANONICAL
 P4-R2 = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 ENGINEERING SCOPE = CURRENT CLOSEOUT CANDIDATE / NOT YET CLOSED_CANONICAL
+P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
+P4 BOUNDED R1-R2 CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
+P4 POST-CLOSEOUT RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #330 / proof 5547581664
 P4 OVERALL = OPEN
 P4-R3+ = NOT_AUTHORIZED
 
@@ -52,7 +54,10 @@ WAIVER = NO
   -> #327  P4-R2 Structured Critic Disposition implementation
   -> #327 comment 5547425939 fresh analysis: no justified P4-R3 mechanism
   -> #328  bounded R1-R2 engineering closeout authorization
-  -> CURRENT: six-path bounded R1-R2 closeout candidate
+  -> #329  bounded R1-R2 canonical closeout
+  -> #329 comment 5547558110 post-closeout reconciliation analysis
+  -> #330  post-closeout five-current-view reconciliation authorization
+  -> CURRENT: five-current-view reconciliation
 ```
 
 Canonical merge/proof anchors:
@@ -64,6 +69,8 @@ Canonical merge/proof anchors:
 #326 = 9443d15c02c143e4c4acc64b79817476b912ba1e / proof 5547225344
 #327 = 2641eb7493b6b6747f3cb56fa69e853305d54692 / proof 5547377851
 #328 = f8641ec272301c991fe47cc879a45f10d48d3587 / proof 5547478904
+#329 = 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
+#330 = fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
 ```
 
 ---
@@ -98,12 +105,11 @@ Neither executes a reviewer, critic, verifier, provider, or model. Neither mutat
 
 ---
 
-## Current closeout candidate
+## Current reconciliation
 
-The only active bounded unit authorized by canonical PR #328 is a documentation/evidence closeout over exactly six paths:
+Canonical PR #330 authorizes exactly these five current views and no sixth path:
 
 ```text
-docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -111,16 +117,9 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-The candidate may not modify runtime, schemas, tests, dependencies, workflows, KRI adjudication, persistence, product/release surfaces, or rulesets.
+The reconciliation records already-proven bounded P4 closure. It does not create implementation authority.
 
-The conditional result is only:
-
-```text
-P4-R1 THROUGH P4-R2 = CLOSED_CANONICAL INDIVIDUALLY
-P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
-```
-
-and only after exact-head qualification, guarded merge, and complete post-merge proof.
+It must still pass exact-head CI, internal substantive semantic inspection, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact `expected_head_sha`, and mandatory post-merge proof.
 
 ---
 
@@ -142,7 +141,7 @@ R   Advanced Research
 
 This map does not grant implementation authority.
 
-After P4 bounded closeout proof, fresh repository evidence must determine whether a separate current-view reconciliation is first required and whether any later P5-or-other bounded authorization is justified. No stage advances by numbering.
+After this P4 current-view reconciliation is post-merge proven, fresh repository evidence must determine any later minimum bounded unit. No P4-R3 or P5 unit advances by numbering.
 
 ---
 
@@ -174,8 +173,10 @@ P3-R18+ = NOT_AUTHORIZED
 P4-R3+ = NOT_AUTHORIZED
 P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
+KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
 VERIFIER PROPOSAL != VERIFICATION RESULT
 CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
+REVIEW AGREEMENT != PROOF
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -191,4 +192,4 @@ WAIVER = NO
 
 ## Version/release boundary
 
-No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by the current P4 bounded closeout. Version/release work requires its own exact canonical authority.
+No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this reconciliation. Version/release work requires its own exact canonical authority.

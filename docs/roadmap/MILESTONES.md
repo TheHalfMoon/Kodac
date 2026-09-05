@@ -31,7 +31,8 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | Founder external-review policy supersession | **CLOSED_CANONICAL** | PR #325 / proof `5541068578`; external semantic review cardinality = 0 |
 | P4-R2 | **CLOSED_CANONICAL** | PR #327 / `2641eb7493b6b6747f3cb56fa69e853305d54692` / proof `5547377851` |
 | P4 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | PR #328 / `f8641ec272301c991fe47cc879a45f10d48d3587` / proof `5547478904` |
-| P4 bounded R1-R2 engineering scope | **CURRENT CLOSEOUT CANDIDATE / NOT YET CLOSED_CANONICAL** | Six-path docs/evidence closeout must qualify, merge, and pass post-merge proof |
+| P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | PR #329 / `6f65503fa4abdcf5c20c15d2e54265ab01c929d3` / proof `5547554548` |
+| P4 post-closeout current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #330 / `fa74f7653a2105152fc48aacc293e98142fea7fa` / proof `5547581664` |
 | P4 overall | **OPEN** | Bounded R1-R2 closeout is not overall closure |
 | P4-R3+ | **NOT_AUTHORIZED** | Fresh concrete gap + separate authority required |
 | P5-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | No implementation authority by sequence |
@@ -51,6 +52,9 @@ P4_R2_AUTHORIZATION = #326 / 9443d15c02c143e4c4acc64b79817476b912ba1e / proof 55
 P4_R2_IMPLEMENTATION = #327 / 2641eb7493b6b6747f3cb56fa69e853305d54692 / proof 5547377851
 P4_POST_R2_SUCCESSOR_ANALYSIS = #327 / comment 5547425939 / ANALYSIS_ONLY
 P4_R1_R2_CLOSEOUT_AUTHORIZATION = #328 / f8641ec272301c991fe47cc879a45f10d48d3587 / proof 5547478904
+P4_R1_R2_CLOSEOUT = #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
+P4_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #329 / comment 5547558110 / ANALYSIS_ONLY
+P4_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = #330 / fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
@@ -81,7 +85,7 @@ packages/kodac-runtime/test/p4-r2-critic-disposition.test.ts
   = 7877e865b66a99763dab477938dc4e7b8b9d77a8
 ```
 
-The current closeout may prove those bytes; it may not modify them.
+The current reconciliation may not modify those bytes.
 
 ---
 
@@ -128,12 +132,11 @@ These repairs are canonical history and must not be rewritten as first-attempt s
 
 ---
 
-## Current closeout gate
+## Current reconciliation gate
 
-Canonical PR #328 authorizes exactly six paths:
+Canonical PR #330 authorizes exactly five paths:
 
 ```text
-docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -141,13 +144,16 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-The closeout remains conditional until one exact head proves:
+No sixth path is authorized.
+
+The reconciliation only updates current navigation/status to the already-proven P4 bounded-closeout truth. It does not change historical evidence or implementation.
+
+It must still prove on one frozen exact head:
 
 ```text
 BEHIND_BY = 0
-CHANGED_PATHS = EXACTLY 6
-SIX BLOBS = FROZEN
-CANONICAL P4 IMPLEMENTATION BLOBS = UNCHANGED
+CHANGED_PATHS = EXACTLY 5
+FIVE BLOBS = FROZEN
 REQUIRED CI = TERMINAL SUCCESS OR PROVEN NON_APPLICABLE
 INTERNAL SUBSTANTIVE SEMANTIC INSPECTION = CLEAN
 KNOWN ACTIONABLE DEFECTS = 0
@@ -158,14 +164,6 @@ GUARDED NORMAL MERGE WITH exact expected_head_sha = REQUIRED
 COMPLETE POST_MERGE_PROOF = REQUIRED
 WAIVER = NO
 ```
-
-Only then may:
-
-```text
-P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
-```
-
-be established.
 
 ---
 
@@ -183,6 +181,9 @@ P4-R3+ = NOT_AUTHORIZED
 P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
 KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
+VERIFIER PROPOSAL != VERIFICATION RESULT
+CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
+REVIEW AGREEMENT != PROOF
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -198,6 +199,4 @@ WAIVER = NO
 
 ## Next boundary
 
-After successful closeout post-merge proof, run fresh reconciliation/successor analysis. Do not infer P4-R3 or P5.
-
-If these candidate-safe current views become stale relative to the proven bounded closeout, a separate current-view reconciliation authorization is required before a later five-path reconciliation.
+After this five-current-view reconciliation itself is post-merge proven, run fresh evidence-driven successor analysis. Do not infer P4-R3 or P5 by numbering or planning order.
