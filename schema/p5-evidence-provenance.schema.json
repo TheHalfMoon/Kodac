@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://kodac.dev/schema/p5-evidence-provenance.schema.json",
   "title": "Kodac P5-R1 Evidence Provenance Binding",
-  "description": "A pure provider-neutral provenance sidecar binding one already-existing evidence identity/ref/digest to exact revision, producer, configuration, policy, scope, input, environment, and caller-supplied freshness-basis identities. Runtime validation additionally enforces valid Unicode scalar strings and the content-derived bindingIdentity; this schema does not validate source evidence, compute freshness, grant authority, or execute a verifier.",
+  "description": "A pure provider-neutral provenance sidecar binding one already-existing evidence identity/ref/digest to exact revision, producer, configuration, policy, scope, input, environment, and caller-supplied freshness-basis identities. Runtime validation additionally enforces the content-derived bindingIdentity; this schema does not validate source evidence, compute freshness, grant authority, or execute a verifier.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -58,6 +58,11 @@
       "type": "string",
       "pattern": "^[0-9a-f]{40}$"
     },
+    "unicodeScalarText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:[^\\u0000\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+$"
+    },
     "sourceKind": {
       "type": "string",
       "minLength": 1,
@@ -65,24 +70,44 @@
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
     },
     "sourceRef": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 1024
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 1024
+        }
+      ]
     },
     "repositoryId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 512
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 512
+        }
+      ]
     },
     "producerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 512
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 512
+        }
+      ]
     },
     "producerVersion": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 128
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 128
+        }
+      ]
     },
     "source": {
       "type": "object",
