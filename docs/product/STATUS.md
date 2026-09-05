@@ -36,27 +36,29 @@ PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P5 OVERALL = NOT_CLOSED
 
-P6-R1 AUTHORIZATION = CLOSED_CANONICAL / #344 / proof 5551754576
 P6-R1 DETERMINISTIC SECURITY FINDING FOUNDATION = CLOSED_CANONICAL / #345 / proof 5551884329
-P6-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #347 / proof 5551961606
-P6 BOUNDED R1 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / #348 / proof 5551993370
 P6 BOUNDED R1 ENGINEERING SCOPE = CLOSED_CANONICAL / #349 / proof 5552035602
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #350 / proof 5552132556
 P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #351 / proof 5552175515
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
 P7-R1 AUTHORIZATION = CLOSED_CANONICAL / #352 / proof 5552233040
 P7-R1 IMMUTABLE PATCH PROPOSAL FOUNDATION = CLOSED_CANONICAL / #353 / proof 5552429216
-P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #354 / proof 5552462948
-P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-P7-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #355 / proof 5552575380
+P7-R2 PATCH-APPLICATION AUTHORIZATION = CLOSED_CANONICAL / #356 / proof 5552630320
+P7-R2 PATCH-APPLICATION AUTHORIZATION IMPLEMENTATION = CLOSED_CANONICAL / #357 / proof 5552730805
+P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #358 / proof 5552762029
+P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R3+ = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 
 PATCH_APPLICATION = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
+FILESYSTEM_GIT_WRITE = NOT_AUTHORIZED
 REPOSITORY_WRITE_AUTHORITY = NONE
+K2_INVOCATION = NOT_AUTHORIZED
 K2_AUTHORITY_EXPANSION = NONE
+APPLIED_VERIFIED_FIXED_DONE = NOT_ESTABLISHED
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
 PROVIDER_MODEL_INVOCATION = NOT_AUTHORIZED
@@ -74,36 +76,38 @@ WAIVER = NO
 
 ---
 
-## Product-facing P5/P6/P7 meaning
+## Product-facing P7 meaning
 
-P5 and P6 bounded closures remain internal trust/evidence/security mechanisms. They do not imply product availability, API stability, package publication, provider/model availability, scanner execution, proof completion, or release authority.
+P7-R1 and P7-R2 remain internal bounded trust/remediation data contracts. They do not imply product availability, API stability, package publication, patch execution, repository mutation, K2 invocation, verified remediation, finding closure, Done Gate, or release authority.
 
-P7-R1 is also internal and bounded. It provides one pure/data-only immutable patch proposal contract over a current KRI-R2 finding and its first `CONFIRM` adjudication. It binds exact canonical-base/target-head identities, an immutable patch-artifact SHA-256 identity, and one bounded canonically ordered declared change set into a deterministic content-addressed detached/frozen `PROPOSED` record.
+P7-R1 provides one pure/data-only immutable patch proposal contract over a current KRI-R2 finding and its first `CONFIRM` adjudication.
 
-P7-R1 does **not** fetch, parse, trust, apply, or execute patch bytes; write repository state; invoke K2; mark a finding fixed; establish verified remediation or Done Gate; expose a product/API/CLI surface; or authorize release.
+P7-R2 provides a separate pure/data-only immutable `AUTHORIZED_TO_APPLY` decision record over one exact valid P7-R1 proposal. It derives repository identity, canonical base, target head, patch-artifact digest, and the exact write allowlist from the validated P7-R1 source proposal; callers cannot independently expand or substitute that write scope.
 
-Canonical P7-R1 implementation blobs:
+Canonical P7-R2 implementation blobs:
 
 ```text
-P7-R1 source = 1dbf53388e22e0c88c6d90fa07f3f7f02a0b36f7
-P7-R1 schema = 3e9665d2e157ffb69d09f81324abc32c9ae2cb18
-P7-R1 test = 5eeee7b8f9027e759366e697b7c1924e2739d84c
+P7-R2 source = a8740b04e650c3317b65584ecdac6c8a4b764d10
+P7-R2 schema = fec866d048a1d4fc93d712fbd676030bbd93d24f
+P7-R2 test = 6764094e259ef5b22d5899ab5104f969e9f27fd2
 ```
 
 Required non-equivalences:
 
 ```text
 PATCH_PROPOSAL != AUTHORIZATION_TO_APPLY
-PATCH_PROPOSAL != APPLIED_PATCH
-PATCH_PROPOSAL != VERIFIED_REMEDIATION
-PATCH_PROPOSAL != FIXED_FINDING
-PATCH_PROPOSAL != DONE_GATE
-PATCH_ARTIFACT_DIGEST != PATCH_VALIDATION
-DECLARED_CHANGE_SET != EXECUTED_WRITE_SET
-P7-R1 CLOSED != P7-R2+ AUTHORITY
-P7-R1 CLOSED != P7 OVERALL CLOSED
-P7-R1 CLOSED != P8 AUTHORITY
-P7-R1 CLOSED != PROJECT COMPLETION
+AUTHORIZED_TO_APPLY != PATCH_APPLICATION
+AUTHORIZED_TO_APPLY != K2_EXECUTION
+AUTHORIZED_TO_APPLY != GENERIC_K2_ONE_SHOT_APPROVAL
+AUTHORIZED_TO_APPLY != APPLIED_PATCH
+AUTHORIZED_TO_APPLY != VERIFIED_REMEDIATION
+AUTHORIZED_TO_APPLY != FIXED_FINDING
+AUTHORIZED_TO_APPLY != DONE_GATE
+WRITE_ALLOWLIST != EXECUTED_WRITE_SET
+P7-R2 CLOSED != P7-R3+ AUTHORITY
+P7-R2 CLOSED != P7 OVERALL CLOSED
+P7-R2 CLOSED != P8 AUTHORITY
+P7-R2 CLOSED != PROJECT COMPLETION
 ```
 
 ---
@@ -111,11 +115,26 @@ P7-R1 CLOSED != PROJECT COMPLETION
 ## Canonical P7 proof anchors
 
 ```text
-#351 P6 post-closeout current-view reconciliation = CLOSED_CANONICAL / proof 5552175515
-#352 P7-R1 authorization = CLOSED_CANONICAL / proof 5552233040
-#353 P7-R1 immutable patch proposal implementation = ce48aa20845874e8b0d9e9e7b250f1499bc4664e / proof 5552429216
-#353 post-merge reconciliation analysis = comment 5552433653 / ANALYSIS_ONLY
-#354 P7-R1 post-merge current-view reconciliation authorization = 352eaa28879275e500026cf8d787bb25322b6ef2 / proof 5552462948
+#355 P7-R1 post-merge current-view reconciliation
+  = 8bf95e90e42a1c27193942b336a3bc744b7cd7d8 / proof 5552575380
+
+#355 successor analysis
+  = comment 5552596379 / ANALYSIS_ONLY
+
+#356 P7-R2 patch-application authorization
+  = 0bd5aa263df07057b99bdf408a4b0cdab2636063 / proof 5552630320
+
+#357 P7-R2 patch-application authorization implementation
+  = 7bf6af800c0fa2b6413d3284a4f97db2b8683547 / proof 5552730805
+  qualified head = 39497ed25fac7ae7870b10c5b8f87eac73a6eb4d
+
+#357 post-R2 current-view reconciliation analysis
+  = comment 5552739213 / ANALYSIS_ONLY
+
+#358 P7-R2 post-merge current-view reconciliation authorization
+  = 91f442a889ac825bca6a944830e64995be931da8 / proof 5552762029
+  qualified head = 3cb314d513c2c41baad9f9d654e4961a3507d8bb
+
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 ```
 
@@ -123,7 +142,7 @@ RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 
 ## Current authorized unit
 
-Canonical #354 and proof `5552462948` authorize exactly this five-path documentation-only reconciliation candidate:
+Canonical #358 and proof `5552762029` authorize exactly this five-path documentation-only reconciliation candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -135,12 +154,12 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-The candidate records only already-proven canonical P6/P7-R1 facts and preserves every still-effective non-grant. It changes no runtime, schema, tests, workflows, dependencies, lockfiles, historical authorization/evidence records, KRI/K5/K2 authority, persistence, product implementation, release surface, or repository protection.
+The candidate records only already-proven P7-R1/P7-R2 facts and preserves every still-effective non-grant. It changes no runtime, schema, tests, workflows, dependencies, lockfiles, historical authorization/evidence records, KRI/K5/K2 authority, persistence, product implementation, release surface, or repository protection.
 
 The candidate cannot claim its own reconciliation closure before guarded merge and external post-merge proof:
 
 ```text
-P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -175,13 +194,13 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R3+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
+FILESYSTEM_GIT_WRITE = NOT_AUTHORIZED
 REPOSITORY_WRITE_AUTHORITY = NONE
+K2_INVOCATION = NOT_AUTHORIZED
 K2_AUTHORITY_EXPANSION = NONE
-SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
-SARIF_INGESTION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION EXPANSION = NOT_AUTHORIZED
 SECRET_ACCESS = NOT_AUTHORIZED
 NETWORK_ACCESS = NOT_AUTHORIZED
@@ -204,4 +223,4 @@ WAIVER = NO
 
 Complete exact-head qualification, guarded merge, and post-merge proof for this exact five-current-view reconciliation. Only then may fresh successor-authority analysis determine whether any additional bounded P7 mechanism is independently necessary and non-duplicative.
 
-No P7-R2, patch application, K2 invocation, autofix, provider/model invocation, product integration, release, or project-completion authority follows by numbering or composition.
+No P7-R3, patch application, K2 invocation, autofix, provider/model invocation, product integration, release, or project-completion authority follows by numbering or composition.
