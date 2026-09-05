@@ -1,0 +1,204 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-agent-completion-evidence-binding.schema.json",
+  "title": "Kodac P7-R9 Agent Completion Evidence Binding",
+  "description": "Pure data-only binding from one exact P7-R8 command-success evidence predecessor plus one exact canonical agent.loop.completed event to AGENT_COMPLETION_EVIDENCE_BOUND. It grants no complete session-history, workspace/Git/ledger proof, VERIFIED, Done Gate, execution, or completion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "evidenceIdentity",
+    "state",
+    "sourceCommandSuccessEvidenceIdentity",
+    "sourceVerificationReportBindingIdentity",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "appliedEvidenceIdentity",
+    "verificationPlanBindingIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "postStateDigest",
+    "verificationPlanDigest",
+    "verificationReportIdentity",
+    "verificationSessionId",
+    "verificationStartedAt",
+    "verificationCompletedAt",
+    "agentCompletionCheckSummary",
+    "agentCompletionCheckEvidence",
+    "agentCompletionEventIdentity",
+    "agentCompletionEventProtocol",
+    "agentCompletionEventVersion",
+    "agentCompletionEventId",
+    "agentCompletionEventSequence",
+    "agentCompletionEventEmittedAt",
+    "agentCompletionEventType",
+    "agentCompletionReason",
+    "agentCompletionBudget"
+  ],
+  "properties": {
+    "version": {
+      "const": "p7-r9-agent-completion-evidence-binding-v1"
+    },
+    "evidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "const": "AGENT_COMPLETION_EVIDENCE_BOUND"
+    },
+    "sourceCommandSuccessEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceVerificationReportBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "proposalIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "authorizationIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "intentBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "appliedEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationPlanBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repositoryIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "canonicalBase": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "targetHead": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "postStateDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationPlanDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationReportIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "verificationStartedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "verificationCompletedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "agentCompletionCheckSummary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4096
+    },
+    "agentCompletionCheckEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": {
+            "const": "event"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      }
+    },
+    "agentCompletionEventIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "agentCompletionEventProtocol": {
+      "const": "kodac.event"
+    },
+    "agentCompletionEventVersion": {
+      "const": 1
+    },
+    "agentCompletionEventId": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "agentCompletionEventSequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "agentCompletionEventEmittedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "agentCompletionEventType": {
+      "const": "agent.loop.completed"
+    },
+    "agentCompletionReason": {
+      "const": "completed"
+    },
+    "agentCompletionBudget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "turnsUsed",
+        "toolCallsUsed",
+        "failuresUsed",
+        "elapsedMs"
+      ],
+      "properties": {
+        "turnsUsed": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "toolCallsUsed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "failuresUsed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "elapsedMs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}
