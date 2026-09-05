@@ -24,11 +24,15 @@ P2-R7+ = NOT_AUTHORIZED BY NUMBERING
 
 P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL INDIVIDUALLY
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
+P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P3 OVERALL = OPEN
 P3-R18+ = NOT_AUTHORIZED
 
+TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT = CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY
+
 P4-R1 = CLOSED_CANONICAL
 P4-R2 = CLOSED_CANONICAL
+P4 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
 P4 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #330 / proof 5547581664
@@ -97,6 +101,16 @@ No sixth path is authorized.
 The reconciliation records the already-proven P4 bounded-closeout truth and preserves every still-effective non-grant. It changes no runtime, schema, test, dependency, workflow, KRI adjudication, persistence, product implementation, or release surface.
 
 It must itself qualify, merge guarded, and pass mandatory post-merge proof before fresh successor analysis.
+
+---
+
+## Material evidence integrity
+
+P4-R1 and P4-R2 both preserve forward-only repair history rather than rewriting qualification as first-attempt success.
+
+P4-R1 required a schema conditional-object parity repair and later forward-only reconciliation after Founder-governance movement of canonical `main`; frozen implementation blobs were preserved and exact-head CI was rerun.
+
+P4-R2 repaired hostile Proxy trap exposure before validation rejection and Unicode length drift between JavaScript UTF-16 semantics and JSON Schema code-point semantics. Each byte movement invalidated prior-head qualification evidence.
 
 ---
 
