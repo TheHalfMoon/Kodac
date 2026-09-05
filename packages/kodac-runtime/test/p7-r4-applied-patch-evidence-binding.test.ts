@@ -66,6 +66,15 @@ function sha256(value: string): string {
   return createHash("sha256").update(value, "utf8").digest("hex")
 }
 
+function approvalRequestIdentity(): string {
+  const intent = JSON.stringify({
+    capability: "repo.apply_patch",
+    paths: ["src/a.ts", "src/b.ts", "src/c.ts"],
+    inputDigest: sha256(PATCH),
+  })
+  return sha256(`kodac-h4-r1-one-shot-approval-v1\n${intent}`)
+}
+
 function claim(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
     claimKey: "p7-r4-source-finding",
@@ -315,7 +324,7 @@ test("P7-R4 rejects blocked, failed, non-allow, and malformed success receipts",
 test("P7-R4 validates optional one-shot approval evidence instead of trusting it", () => {
   const approval = {
     version: "kodac-h4-r1-one-shot-approval-v1",
-    requestIdentity: "4".repeat(64),
+    requestIdentity: approvalRequestIdentity(),
     requestInstanceId: APPROVAL_INSTANCE_ID,
     decisionEvidenceIdentity: "5".repeat(64),
     outcome: "allowed-once",
@@ -324,8 +333,11 @@ test("P7-R4 validates optional one-shot approval evidence instead of trusting it
   const built = buildP7AppliedPatchEvidenceBinding(input)
   assert.equal(built.approvalEvidenceIdentity, "5".repeat(64))
 
-  const bad = fixtureInput({ approval: { ...approval, outcome: "rejected" } })
-  assert.throws(() => buildP7AppliedPatchEvidenceBinding(bad), /approval.outcome/)
+  const badOutcome = fixtureInput({ approval: { ...approval, outcome: "rejected" } })
+  assert.throws(() => buildP7AppliedPatchEvidenceBinding(badOutcome), /approval.outcome/)
+
+  const badIntent = fixtureInput({ approval: { ...approval, requestIdentity: "4".repeat(64) } })
+  assert.throws(() => buildP7AppliedPatchEvidenceBinding(badIntent), /approval.requestIdentity/)
 })
 
 test("P7-R4 rejects malformed confinement evidence rather than copying it", () => {
@@ -350,32 +362,44 @@ test("P7-R4 rejects unknown receipt authority fields", () => {
 })
 
 test("P7-R4 fails closed on hostile receipt containers", () => {
-  const proxy = fixtureInput()
+  const proxy = structuredClone(fixtureInput()) as MutableRecord
   proxy.executionReceipt = new Proxy(structuredClone(proxy.executionReceipt), {}) as ExecutionReceipt
-  assert.throws(() => buildP7AppliedPatchEvidenceBinding(proxy), /non-proxy plain object/)
+  assert.throws(
+    () => buildP7AppliedPatchEvidenceBinding(proxy as P7AppliedPatchEvidenceBindingBuildInput),
+    /non-proxy plain object/,
+  )
 
-  const accessor = fixtureInput()
+  const accessor = structuredClone(fixtureInput()) as MutableRecord
   const accessorReceipt = structuredClone(accessor.executionReceipt) as MutableRecord
   Object.defineProperty(accessorReceipt, "inputDigest", {
     enumerable: true,
     get() { return sha256(PATCH) },
   })
   accessor.executionReceipt = accessorReceipt as ExecutionReceipt
-  assert.throws(() => buildP7AppliedPatchEvidenceBinding(accessor), /data property/)
+  assert.throws(
+    () => buildP7AppliedPatchEvidenceBinding(accessor as P7AppliedPatchEvidenceBindingBuildInput),
+    /data property/,
+  )
 
-  const custom = fixtureInput()
+  const custom = structuredClone(fixtureInput()) as MutableRecord
   const customReceipt = structuredClone(custom.executionReceipt) as MutableRecord
   Object.setPrototypeOf(customReceipt.policy, { injected: true })
   custom.executionReceipt = customReceipt as ExecutionReceipt
-  assert.throws(() => buildP7AppliedPatchEvidenceBinding(custom), /plain object/)
+  assert.throws(
+    () => buildP7AppliedPatchEvidenceBinding(custom as P7AppliedPatchEvidenceBindingBuildInput),
+    /plain object/,
+  )
 
-  const sparse = fixtureInput()
+  const sparse = structuredClone(fixtureInput()) as MutableRecord
   const sparseReceipt = structuredClone(sparse.executionReceipt) as MutableRecord
   sparseReceipt.paths = new Array(3)
   sparseReceipt.paths[0] = "src/a.ts"
   sparseReceipt.paths[2] = "src/c.ts"
   sparse.executionReceipt = sparseReceipt as ExecutionReceipt
-  assert.throws(() => buildP7AppliedPatchEvidenceBinding(sparse), /sparse|paths/)
+  assert.throws(
+    () => buildP7AppliedPatchEvidenceBinding(sparse as P7AppliedPatchEvidenceBindingBuildInput),
+    /sparse|paths/,
+  )
 })
 
 test("P7-R4 output is detached and deeply immutable", () => {
