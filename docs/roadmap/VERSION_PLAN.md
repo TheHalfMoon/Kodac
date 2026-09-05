@@ -31,7 +31,9 @@ P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL
 P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
 P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #339 / proof 5551404984
 P5 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / #340 / proof 5551456429
-P5 BOUNDED R1-R2 ENGINEERING SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / #341 / proof 5551577054
+P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #342 / proof 5551608905
+P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
@@ -59,7 +61,10 @@ WAIVER = NO
   -> #339 P5-R2 current-view reconciliation
   -> #339 comment 5551419975 fresh post-R2 analysis / ANALYSIS_ONLY
   -> #340 P5 bounded R1-R2 closeout authorization
-  -> CURRENT: six-path bounded R1-R2 closeout candidate
+  -> #341 P5 bounded R1-R2 engineering closeout
+  -> #341 comment 5551579509 post-closeout reconciliation analysis / ANALYSIS_ONLY
+  -> #342 P5 post-closeout current-view reconciliation authorization
+  -> CURRENT: five-path post-closeout current-view reconciliation candidate
 ```
 
 Canonical anchors:
@@ -74,6 +79,8 @@ Canonical anchors:
 #338 = de2735ffd7698e13f4adfb4a2c7ef98ee32177d3 / proof 5551292787
 #339 = b5785beb24b0f939fc3d9c51b5292efbe5e0ee82 / proof 5551404984
 #340 = 8eb6dd521e4c5ecc1bd964576bffd4f1e7cfd4fb / proof 5551456429
+#341 = 13ebbbbb3f1a3bb0a32c2873aa9ea6c67c1c8b9a / proof 5551577054
+#342 = 8c4f57ba9245e9911422e3e14864f4258897621a / proof 5551608905
 ```
 
 ---
@@ -107,12 +114,11 @@ RELATION EDGE != PROOFGRAPH / GRAPH STORAGE / TRAVERSAL / INFERENCE
 
 ---
 
-## Current closeout
+## Current reconciliation
 
-Canonical #340 authorizes only:
+Canonical #342 authorizes only:
 
 ```text
-docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -120,7 +126,13 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path. This candidate may aggregate canonical R1-R2 lineage but must not self-certify its own closeout. Only future external post-merge proof may establish aggregate bounded closure.
+No sixth path. This candidate may record the already-proven bounded R1-R2 closeout but must not self-certify its own reconciliation. Only future external post-merge proof may establish reconciliation closure.
+
+Until then:
+
+```text
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+```
 
 ---
 
@@ -175,4 +187,6 @@ WAIVER = NO
 
 ## Version/release boundary
 
-No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this closeout candidate.
+No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this reconciliation candidate.
+
+Only after the five-view reconciliation is post-merge proven may fresh successor analysis run. No P5-R3, ProofGraph, automatic freshness, P6, product, or release authority follows by composition.
