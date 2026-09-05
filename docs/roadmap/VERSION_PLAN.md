@@ -34,10 +34,16 @@ P4 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
 P4 POST-CLOSEOUT RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #330 / proof 5547581664
+P4 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #331 / proof 5550826662
 P4 OVERALL = OPEN
 P4-R3+ = NOT_AUTHORIZED
 
-P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
+P5-R1 AUTHORIZATION = CLOSED_CANONICAL / PR #332 / proof 5550880869
+P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL / PR #333 / proof 5550968215
+P5-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #334 / proof 5550995814
+P5-R2+ = NOT_AUTHORIZED
+P5 OVERALL = NOT_CLOSED
+P6-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
@@ -57,7 +63,7 @@ WAIVER = NO
   -> #329  bounded R1-R2 canonical closeout
   -> #329 comment 5547558110 post-closeout reconciliation analysis
   -> #330  post-closeout five-current-view reconciliation authorization
-  -> CURRENT: five-current-view reconciliation
+  -> #331  post-closeout five-current-view reconciliation
 ```
 
 Canonical merge/proof anchors:
@@ -71,6 +77,7 @@ Canonical merge/proof anchors:
 #328 = f8641ec272301c991fe47cc879a45f10d48d3587 / proof 5547478904
 #329 = 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
 #330 = fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
+#331 = af6a225e5151ed5717d112ee9281f440f32d4693 / proof 5550826662
 ```
 
 ---
@@ -105,9 +112,73 @@ Neither executes a reviewer, critic, verifier, provider, or model. Neither mutat
 
 ---
 
+## Canonical P5-R1 sequence
+
+```text
+#331 comment 5550850246 fresh successor analysis
+  -> #332 P5-R1 Evidence Provenance Binding authorization
+  -> #333 P5-R1 Evidence Provenance Binding implementation
+     -> initial exact-head TypeScript qualification failure at 35dd6b2434a3586f320f378dd5aa30428fcc3ed2
+     -> forward-only test repair
+     -> final qualified head 7ccc8516938be0578d7648c4b7f07e89af86b306
+  -> #333 comment 5550978486 post-R1 reconciliation analysis
+  -> #334 P5-R1 post-merge current-view reconciliation authorization
+  -> CURRENT: five-current-view reconciliation
+```
+
+Canonical merge/proof anchors:
+
+```text
+#332 = 39a732aecee8ebd69c5f294d2aa135288edc6d97 / proof 5550880869
+#333 = cef7a375e366795913879bed82f3d2bffe7647aa / proof 5550968215
+#334 = 3ef17af23c686b18aa0f383c681b72c672137d51 / proof 5550995814
+```
+
+---
+
+## P5-R1 release-independent meaning
+
+P5-R1 is an internal bounded deterministic provenance contract. Its canonical closure does not imply source-evidence validity, automatic freshness evaluation, proof completion, package publication, API stability, product readiness, provider/model availability, verifier execution, or release authority.
+
+P5-R1 provides:
+
+```text
+existing evidence identity / ref / digest
+-> exact repository base/head + repository identity
+-> producer id/version/configuration identity
+-> policy/scope/input/environment identities
+-> caller-supplied CURRENT | STALE + freshness basis identity
+-> deterministic content-addressed detached/frozen provenance binding
+```
+
+Canonical implementation blobs:
+
+```text
+packages/kodac-runtime/src/verification/p5-evidence-provenance.ts
+  = 4c8d708070e950d2902308ca1977ce5267acec29
+schema/p5-evidence-provenance.schema.json
+  = b7c1d2573a1dbe3b34c5a1e5dc0a5c2fceb1418e
+packages/kodac-runtime/test/p5-r1-evidence-provenance.test.ts
+  = 512ab506898d945aed8381352906c4e03bcbd487
+```
+
+Required non-equivalences:
+
+```text
+PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION
+PROVENANCE BINDING != PROOF
+PROVENANCE BINDING != AUTHORITY
+CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
+P5-R1 CLOSED != P5-R2+ AUTHORITY
+P5-R1 CLOSED != P5 OVERALL CLOSED
+P5-R1 CLOSED != PROJECT COMPLETION
+```
+
+---
+
 ## Current reconciliation
 
-Canonical PR #330 authorizes exactly these five current views and no sixth path:
+Canonical PR #334 authorizes exactly these five current views and no sixth path:
 
 ```text
 docs/roadmap/NEXT.md
@@ -117,7 +188,7 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-The reconciliation records already-proven bounded P4 closure. It does not create implementation authority.
+The reconciliation records already-proven P4/P5-R1 truth. It does not create implementation authority.
 
 It must still pass exact-head CI, internal substantive semantic inspection, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact `expected_head_sha`, and mandatory post-merge proof.
 
@@ -141,7 +212,7 @@ R   Advanced Research
 
 This map does not grant implementation authority.
 
-After this P4 current-view reconciliation is post-merge proven, fresh repository evidence must determine any later minimum bounded unit. No P4-R3 or P5 unit advances by numbering.
+After this P5-R1 current-view reconciliation is post-merge proven, fresh repository evidence must determine any later minimum bounded unit. No P5-R2 unit advances by numbering.
 
 ---
 
@@ -166,17 +237,25 @@ All other qualification requirements remain effective: exact-head identity, requ
 P2 OVERALL = OPEN
 P3 OVERALL = OPEN
 P4 OVERALL = OPEN
+P5 OVERALL = NOT_CLOSED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK EXECUTION = NOT_AUTHORIZED
 P2-R7+ = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ = NOT_AUTHORIZED
 P4-R3+ = NOT_AUTHORIZED
-P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
+P5-R2+ = NOT_AUTHORIZED
+P6-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
 KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
+PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION
+PROVENANCE BINDING != PROOF
+PROVENANCE BINDING != AUTHORITY
+CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
 VERIFIER PROPOSAL != VERIFICATION RESULT
 CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
 REVIEW AGREEMENT != PROOF
+PROOFGRAPH = NOT_AUTHORIZED
+KRI / K5 / K2 AUTHORITY MUTATION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
