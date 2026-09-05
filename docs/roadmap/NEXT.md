@@ -39,8 +39,6 @@ P3 OVERALL = OPEN
 P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
 P4 OVERALL = OPEN
 
-P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL
-P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
 P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / PR #341 / proof 5551577054
 P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #343 / proof 5551673149
 P5-R3+ = NOT_AUTHORIZED
@@ -52,19 +50,7 @@ P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #351 / proo
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
-P7-R1 AUTHORIZATION = CLOSED_CANONICAL / PR #352 / proof 5552233040
-P7-R1 IMMUTABLE PATCH PROPOSAL FOUNDATION = CLOSED_CANONICAL / PR #353 / proof 5552429216
-P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #355 / proof 5552575380
-P7-R2 PATCH-APPLICATION AUTHORIZATION = CLOSED_CANONICAL / PR #356 / proof 5552630320
-P7-R2 PATCH-APPLICATION AUTHORIZATION IMPLEMENTATION = CLOSED_CANONICAL / PR #357 / proof 5552730805
-P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #359 / proof 5552811852
-P7-R3 PRE-EXECUTION INTENT-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #360 / proof 5552924883
-P7-R3 PRE-EXECUTION INTENT-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #361 / proof 5553018473
-P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #362 / proof 5553049120
-P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #363 / proof 5553345846
-P7-R4 APPLIED PATCH EVIDENCE BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #364 / proof 5553391471
-P7-R4 APPLIED PATCH EVIDENCE BINDING = CLOSED_CANONICAL / PR #365 / proof 5553509882
-P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #366 / proof 5553556112
+P7-R1 THROUGH P7-R4 BOUNDED DATA-CONTRACT WORK = CLOSED_CANONICAL
 P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #367 / proof 5553600421
 P7-R5 SUCCESSOR ANALYSIS = PR #367 / comment 5553695694 / ANALYSIS_ONLY
 P7-R5 POST-APPLY VERIFICATION-PLAN-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #368 / proof 5553737255
@@ -72,16 +58,30 @@ P7-R5 POST-APPLY VERIFICATION-PLAN-BINDING IMPLEMENTATION = CLOSED_CANONICAL / P
 P7-R5 STATE MEANING = VERIFICATION_PLAN_BOUND_ONLY
 P7-R5 CURRENT-VIEW RECONCILIATION ANALYSIS = PR #369 / comment 5553949322 / ANALYSIS_ONLY
 P7-R5 CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #370 / proof 5553973273
-P7-R5 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-P7-R6+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R5 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #371 / proof 5554045522
+
+P7-R6 SUCCESSOR ANALYSIS = PR #371 / comment 5554059103 / ANALYSIS_ONLY
+P7-R6 VERIFICATION-REPORT-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #372 / proof 5554084156
+P7-R6 VERIFICATION-REPORT-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #373 / proof 5554262587
+P7-R6 STATE MEANING = VERIFICATION_REPORT_BOUND_ONLY
+
+P7-R5 SERIALIZED-PREIMAGE DEFECT ANALYSIS = PR #373 / comment 5554227350 / ANALYSIS_ONLY
+P7-R5 SERIALIZED-PREIMAGE REPAIR AUTHORIZATION = CLOSED_CANONICAL / PR #374 / proof 5554295213
+P7-R5 SERIALIZED-PREIMAGE REPAIR = CLOSED_CANONICAL / PR #375 / proof 5554351748
+PR #376 = CLOSED_UNMERGED_SUPERSEDED / comment 5554361857
+
+P7-R6 POST-REPAIR CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #377 / proof 5554415271
+P7-R6 POST-REPAIR CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R7+ = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
+PROJECT COMPLETION = NOT_ESTABLISHED
 ```
 
 ---
 
 ## NOW — authorized exact five-view reconciliation
 
-Canonical PR #370 and post-merge proof `5553973273` authorize exactly this documentation-only candidate:
+Canonical PR #377 and post-merge proof `5554415271` authorize exactly this documentation-only candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -93,64 +93,81 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate records only already-proven canonical P7-R4/P7-R5 truth and preserves prior canonical program facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate records only already-proven canonical R5/R6/repair truth and preserves prior canonical program boundaries. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
 It cannot certify its own closure. Until guarded merge and complete external post-merge proof exist:
 
 ```text
-P7-R5 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R6 POST-REPAIR CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
 
-## Canonical P7-R5 anchors
+## Canonical P7-R5 / P7-R6 anchors
 
 ```text
-#367 P7-R4 post-merge current-view reconciliation
-  proof 5553600421
+#371
+  P7-R5 post-merge current-view reconciliation
+  proof = 5554045522
 
-#367 comment 5553695694
-  P7-R5 successor analysis / ANALYSIS_ONLY
+#371 comment 5554059103
+  P7-R6 successor analysis / ANALYSIS_ONLY
 
-#368 P7-R5 post-apply verification-plan-binding authorization
-  proof 5553737255
+#372
+  P7-R6 verification-report-binding authorization
+  proof = 5554084156
 
-#369 P7-R5 post-apply verification-plan-binding implementation
-  qualified head 65e69bf8177526bd161aefac29185a783f41bab6
-  merge b0ee0485e7b58d0583f86c16b34ebe5214467ae7
-  proof 5553946597
-  state = VERIFICATION_PLAN_BOUND_ONLY
+#373
+  P7-R6 verification-report-binding implementation
+  proof = 5554262587
+  state = VERIFICATION_REPORT_BOUND_ONLY
 
-#369 comment 5553949322
-  P7-R5 current-view reconciliation analysis / ANALYSIS_ONLY
+#373 comment 5554227350
+  P7-R5 serialized-preimage defect analysis / ANALYSIS_ONLY
 
-#370 P7-R5 current-view reconciliation authorization
-  qualified head 8712216b0a92cf206a447867caf61ebb23305eb1
-  merge eb9ac9e9a0108b61d044e592192603ee363acd1a
-  proof 5553973273
+#374
+  P7-R5 serialized-preimage repair authorization
+  proof = 5554295213
+
+#375
+  P7-R5 serialized-preimage repair
+  proof = 5554351748
+
+#376
+  CLOSED_UNMERGED_SUPERSEDED / comment 5554361857
+
+#377
+  post-R6 / post-repair current-view reconciliation authorization
+  qualified head = 5c78da77e56bedc223d9d67fc4706f46432615df
+  merge = 1c1bca10019dc92e32dedcaa9c1820cf01bb7a89
+  proof = 5554415271
 
 CURRENT
   exact five-current-view reconciliation candidate
 ```
 
-Canonical P7-R5 implementation blobs:
+Canonical implementation identities that this view may record:
 
 ```text
-source = a243f4dcea8499404d64df7b848504e57ffb6697
-schema = 04f596f6a3053effb436f65e85de9b1b376fea4d
-test = ecd515a58f3cfd4abaa89001f80192c68e39b91b
+P7-R5 source = 723edd547dddc75987fca96ea70e8ea176ee9a3b
+P7-R5 schema = 04f596f6a3053effb436f65e85de9b1b376fea4d
+P7-R5 test = a920f774e8e99b8b63e222cac03171a4c8c0f64b
+P7-R6 source = 3ec02f33eec231e0f90a0a1da069c620db9b379c
+P7-R6 schema = 304db4fa8287c28a35a1ce4a7f8c8a79a9888fe1
+P7-R6 test = b3675abd40da8e16b2b48f7b2403915b91e1ca18
 ```
 
 ---
 
-## Bounded P7-R4 / P7-R5 meaning
+## Bounded P7-R4 / P7-R5 / P7-R6 meaning
 
 ```text
 APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
 VERIFICATION_PLAN_BOUND_ONLY = ESTABLISHED_BY_P7_R5_CONTRACT
+VERIFICATION_REPORT_BOUND_ONLY = ESTABLISHED_BY_P7_R6_CONTRACT
 ```
 
-P7-R4 remains a pure/data-only applied-patch evidence binding. P7-R5 adds one pure/data-only deterministic content-addressed post-apply verification-plan binding. P7-R5 revalidates one exact P7-R4 applied-evidence lineage and one supplied current `kodac.verification-plan`, reproduces the current planner stable-projection digest, requires exact applied changed paths and at least one tests-category command, and binds that plan to the applied lineage without executing anything.
+P7-R4 is a pure/data-only applied-patch evidence binding. P7-R5 is a pure/data-only deterministic content-addressed verification-plan binding. Its serialized-preimage repair changes validation consistency for the supplied record; it does not change the historical identity algorithm or rewrite historical records. P7-R6 is a pure/data-only deterministic content-addressed verification-report binding over one exact canonically revalidated P7-R5 predecessor and one supplied current verification report. It validates report structure and consistency without invoking verification.
 
 ```text
 APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
@@ -158,20 +175,20 @@ APPLIED_EVIDENCE_BINDING != VERIFICATION
 VERIFICATION_PLAN_BOUND != VERIFICATION_PLANNER_EXECUTION
 VERIFICATION_PLAN_BOUND != VERIFICATION_EXECUTION
 VERIFICATION_PLAN_BOUND != VERIFICATION_REPORT
-VERIFICATION_PLAN_BOUND != VERIFICATION_FAILED
-VERIFICATION_PLAN_BOUND != VERIFIED
-VERIFICATION_PLAN_BOUND != FIXED
-VERIFICATION_PLAN_BOUND != REVERIFIED
-VERIFICATION_PLAN_BOUND != DONE_GATE
-VERIFICATION_PLAN_BOUND != K2_INVOCATION
-VERIFICATION_PLAN_BOUND != AUTOFIX
-PLAN_DIGEST != VERIFICATION_RESULT
-TESTS_PLANNED != TESTS_EXECUTED
-TESTS_PLANNED != TESTS_PASSED
-P7-R5 CLOSED != P7-R6+ AUTHORITY
-P7-R5 CLOSED != P7 OVERALL CLOSED
-P7-R5 CLOSED != P8 AUTHORITY
-P7-R5 CLOSED != PROJECT COMPLETION
+VERIFICATION_REPORT_BOUND != VERIFICATION_ENGINE_INVOCATION
+VERIFICATION_REPORT_BOUND != VERIFICATION_EXECUTION
+VERIFICATION_REPORT_BOUND != VERIFICATION_FAILED
+VERIFICATION_REPORT_BOUND != VERIFIED
+VERIFICATION_REPORT_BOUND != FIXED
+VERIFICATION_REPORT_BOUND != REVERIFIED
+VERIFICATION_REPORT_BOUND != DONE_GATE
+VERIFICATION_REPORT_BOUND != K2_INVOCATION
+VERIFICATION_REPORT_BOUND != AUTOFIX
+REPORT_PASSED != VERIFIED_REMEDIATION
+P7-R6 CLOSED != P7-R7+ AUTHORITY
+P7-R6 CLOSED != P7 OVERALL CLOSED
+P7-R6 CLOSED != P8 AUTHORITY
+P7-R6 CLOSED != PROJECT COMPLETION
 ```
 
 ---
@@ -192,7 +209,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R6+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R7+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
 FILESYSTEM_GIT_WRITE = NOT_AUTHORIZED
@@ -231,11 +248,10 @@ WAIVER = NO
 
 Only after this exact five-path reconciliation qualifies, merges guarded, and receives complete post-merge proof may fresh successor-authority analysis run from then-live repository truth.
 
-Do not infer P7-R6, verification execution, `VERIFICATION_FAILED`, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, patch application, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering or composition.
+Do not infer P7-R7+, verification execution, `VERIFICATION_FAILED`, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, patch application, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering or composition.
 
 ## Navigation
 
 - Working rules: `AGENTS.md`
-- P7-R5 authorization: `docs/planning/KODAC_P7_R5_POST_APPLY_VERIFICATION_PLAN_BINDING_AUTHORIZATION_2026-09-05.md`
-- P7-R5 reconciliation authorization: `docs/planning/KODAC_P7_R5_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
+- Current reconciliation authorization: `docs/planning/KODAC_P7_R6_POST_REPAIR_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
