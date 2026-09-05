@@ -529,3 +529,28 @@ test("P7-R5 schema mirrors the bounded state while production remains pure data-
     assert.equal(sourceText.includes(forbidden), false, `production source must not contain ${forbidden}`)
   }
 })
+
+test("P7-R5 rejects reordered root and nested serialized binding preimages", () => {
+  const input = fixtureInput()
+  const built = buildP7PostApplyVerificationPlanBinding(input)
+
+  const rootReordered = {
+    state: built.state,
+    ...structuredClone(built),
+  } as MutableRecord
+  assert.throws(
+    () => validateP7PostApplyVerificationPlanBinding(rootReordered, input),
+    /supplied serialized binding preimage/,
+  )
+
+  const nestedReordered = structuredClone(built) as MutableRecord
+  const plan = nestedReordered.verificationPlan as MutableRecord
+  nestedReordered.verificationPlan = {
+    risk: plan.risk,
+    ...plan,
+  }
+  assert.throws(
+    () => validateP7PostApplyVerificationPlanBinding(nestedReordered, input),
+    /supplied serialized binding preimage/,
+  )
+})
