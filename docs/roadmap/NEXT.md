@@ -96,6 +96,21 @@ The reconciliation itself must qualify on one frozen exact head, merge normally 
 
 ---
 
+# Why there is still no automatic P4-R3
+
+Fresh canonical analysis after P4-R2 established:
+
+```text
+GAP-05 REVIEWER DISAGREEMENT PROTOCOL = BOUNDED BY P4-R2
+FIRST-CLASS VERIFIER PROPOSALS = ALREADY PRESENT IN P4-R1
+ACTUAL VERIFIER EXECUTION / RESULTS = LATER P5 PLANNING DIRECTION
+P4-R3+ IMPLEMENTATION = NOT_AUTHORIZED BY NUMBERING
+```
+
+The bounded R1-R2 engineering scope is now closed canonical through PR #329. That closure does not create P4-R3 or P5 authority; the current authorized unit is the separate five-current-view reconciliation created by PR #330.
+
+---
+
 # Preserved authority boundaries
 
 ```text
@@ -146,6 +161,7 @@ WAIVER = NO
 
 - Working rules: `AGENTS.md`
 - Current action: `docs/roadmap/NEXT.md`
+- P4 bounded closeout authorization: `docs/planning/KODAC_P4_BOUNDED_R1_R2_CLOSEOUT_AUTHORIZATION_2026-09-05.md`
 - P4 closeout evidence: `docs/planning/KODAC_P4_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md`
 - P4 reconciliation authorization: `docs/planning/KODAC_P4_R1_R2_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
 - Trust v2 planning direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
