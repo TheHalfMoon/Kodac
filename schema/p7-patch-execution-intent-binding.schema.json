@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-patch-execution-intent-binding.schema.json",
+  "title": "Kodac P7-R3 Patch Execution Intent Binding",
+  "description": "A pure data-only immutable pre-execution binding from one exact valid P7-R2 AUTHORIZED_TO_APPLY record and its P7-R1 proposal to exact inert patch bytes and the corresponding repo.apply_patch intent projection. This schema grants no patch application, K2 invocation, filesystem/Git write, APPLIED/VERIFIED/FIXED/REVERIFIED lifecycle state, autofix, provider/model, network, persistence, product-integration, release, or project-completion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "bindingIdentity",
+    "authorizationIdentity",
+    "authorizationVersion",
+    "proposalIdentity",
+    "proposalVersion",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "patchArtifactDigest",
+    "capability",
+    "inputDigest",
+    "paths",
+    "operations",
+    "patchByteLength"
+  ],
+  "properties": {
+    "version": { "const": "p7-r3-patch-execution-intent-binding-v1" },
+    "bindingIdentity": { "$ref": "#/$defs/sha256" },
+    "authorizationIdentity": { "$ref": "#/$defs/sha256" },
+    "authorizationVersion": { "const": "p7-r2-patch-application-authorization-v1" },
+    "proposalIdentity": { "$ref": "#/$defs/sha256" },
+    "proposalVersion": { "const": "p7-r1-immutable-patch-proposal-v1" },
+    "repositoryIdentity": { "$ref": "#/$defs/identityText" },
+    "canonicalBase": { "$ref": "#/$defs/gitCommit" },
+    "targetHead": { "$ref": "#/$defs/gitCommit" },
+    "patchArtifactDigest": { "$ref": "#/$defs/sha256" },
+    "capability": { "const": "repo.apply_patch" },
+    "inputDigest": { "$ref": "#/$defs/sha256" },
+    "paths": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/repositoryPath" },
+      "description": "Runtime requires exact equality with the validated P7-R2 writeAllowlist and therefore with the canonical K2 path projection for the validated patch."
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/operation" },
+      "description": "Runtime requires exact path-and-operation equality with the validated P7-R1 change projection in canonical order."
+    },
+    "patchByteLength": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1048576,
+      "description": "Exact UTF-8 byte length of the bound inert patch text."
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "unicodeScalarText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:[^\\u0000\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+$"
+    },
+    "identityText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 256 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F])(?=.*\\S).+$" }
+      ]
+    },
+    "repositoryPath": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 1024 },
+        {
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*//)(?!\\.\\.?$)(?!\\.\\.?/)(?!.*\\/\\.\\.?\\/)(?!.*\\/\\.\\.?$)(?!.*[\\u0000-\\u001F\\u007F]).+$"
+        }
+      ]
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "operation"],
+      "properties": {
+        "path": { "$ref": "#/$defs/repositoryPath" },
+        "operation": { "enum": ["ADD", "MODIFY", "DELETE"] }
+      }
+    }
+  }
+}
