@@ -8,7 +8,7 @@ This file is navigation/status only. It does not create implementation, executio
 
 Before any mutation:
 
-1. re-read live GitHub `main`, open PRs, exact heads, changed paths, checks, reviews/threads, mergeability, and ruleset `20707483`;
+1. re-read live GitHub `main`, open PRs, exact heads, changed paths, checks, comments/reviews/threads, mergeability, and ruleset `20707483`;
 2. read root `AGENTS.md`;
 3. read this file;
 4. read the exact canonical authorization/evidence record for the active unit;
@@ -133,7 +133,7 @@ Do not infer P4-R3 or P5 by numbering. A later unit requires one concrete canoni
 MINIMUM SUFFICIENT EVIDENCE > MAXIMUM CONTEXT VOLUME
 PLANNING DIRECTION != IMPLEMENTATION AUTHORITY
 POST_MERGE PROOF != SUCCESSOR AUTHORITY
-DONE = EVIDENCE_BACKED_COMPLETION
+DONE = EVIDENCE_BACKED COMPLETION
 WAIVER = NO
 ```
 
