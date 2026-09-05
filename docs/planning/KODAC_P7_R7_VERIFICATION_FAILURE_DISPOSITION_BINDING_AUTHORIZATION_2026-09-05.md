@@ -7,7 +7,7 @@ Waiver: **NO**
 
 ---
 
-## 1. Canonical basis
+## 1. Canonical basis and superseded candidate
 
 ```text
 CANONICAL_MAIN_AT_CANDIDATE_START = 3f89133d923e7aa716a3d7fedba71ccb6070caf0
@@ -23,62 +23,51 @@ PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-This forward-only revision repairs the material finding on the initial authorization head. No CI, review, qualification, or merge evidence from `ca237d0fcebf3e5e72e223b22bcc5909a7adef35` may be reused for this revised candidate.
+The initial head `ca237d0fcebf3e5e72e223b22bcc5909a7adef35` is permanently superseded and not qualified. It incorrectly allowed `VERIFICATION_FAILED` to be derived from a failed caller-supplied R6 report without authoritative command-execution failure evidence. No CI, review, or qualification from that head may be reused.
 
-This record is documentation-only. While unmerged or not post-merge proven, it creates no runtime, schema, test, lifecycle, verification-execution, K2, Done Gate, product, release, successor, or project-completion authority.
-
-The `P7-R7` label is descriptive only. Numbering itself grants nothing.
+This authorization remains documentation-only and creates no implementation authority until its own exact final head independently qualifies, merges guarded, and receives complete post-merge proof.
 
 ---
 
-## 2. Material defect in the initial candidate
+## 2. Evidence boundary discovered by substantive review
 
-The initial candidate proposed deriving `VERIFICATION_FAILED` directly from:
-
-```text
-one canonically revalidated P7-R6 binding
-+ verificationReportPassed == false
-```
-
-That is insufficient.
-
-Canonical P7-R6 consumes a caller-supplied report as data. It proves report structure, exact R5 planned-command/check correspondence, deterministic report identity, and internal pass/fail consistency. It deliberately does **not** prove that every failed check represents an authoritative external execution outcome.
-
-Fresh live inspection of `runVerificationEngine(...)` confirms:
-
-- a failed planned command caused by `ExecutionFailedError` carries one K2 `ExecutionReceipt` reference;
-- other failures, including some base-check failures and pre-execution failures, may have no execution receipt;
-- P7-R6 validates receipt evidence as bounded references and does not revalidate referenced receipt objects or ledger contents;
-- canonical R6 explicitly preserves `VERIFICATION_REPORT_BOUND != VERIFICATION_FAILED`.
-
-Therefore:
+Canonical P7-R6 proves one exact supplied verification report is structurally and semantically bound to the P7-R5 plan lineage. It explicitly preserves:
 
 ```text
-FAILED_REPORT_BOOLEAN_ALONE != VERIFICATION_FAILED_LIFECYCLE_TRUTH
-FAILED_BASE_CHECK_WITHOUT_EXECUTION_RECEIPT != VERIFICATION_FAILED_LIFECYCLE_TRUTH_FOR_THIS_CONTRACT
-CALLER_SUPPLIED_RECEIPT_REF_ALONE != AUTHORITATIVE_EXECUTION_FAILURE
+VERIFICATION_REPORT_BOUND != VERIFICATION_FAILED
+VERIFICATION_REPORT_BOUND != VERIFIED
+REPORT.passed != VERIFIED_REMEDIATION
+REPORT.passed != DONE_GATE
 ```
 
-This revision removes that overclaim.
+Live `runVerificationEngine(...)` proves why those distinctions matter:
+
+- some failed checks are produced without any K2 execution receipt;
+- a failed planned command carries receipt evidence only when `ExecutionGateway.runCommand(...)` produces an `ExecutionFailedError` receipt;
+- R6 validates receipt evidence references but does not revalidate the referenced receipt object or ledger content;
+- therefore a failed report boolean or bare receipt reference is insufficient for canonical `VERIFICATION_FAILED` lifecycle truth.
+
+The future R7 contract may establish `VERIFICATION_FAILED` only from one exact **receipt-backed planned verification command failure** whose complete K2 execution receipt and exact command-intent preimage are independently revalidated against the R5/R6 lineage.
+
+Base-check-only failure, report-only failure, and receipt-reference-only failure remain outside the contract.
 
 ---
 
-## 3. Why the repaired successor is evidence-safe and non-duplicative
+## 3. Accepted repository pattern
 
-Canonical P7 currently establishes:
+P7-R4 already establishes the accepted evidence pattern for an existing K2 receipt:
 
 ```text
-P7-R1 = immutable patch proposal
-P7-R2 = pure/data-only authorization to apply one exact proposal
-P7-R3 = pure/data-only exact patch / repo.apply_patch intent binding
-P7-R4 = pure/data-only APPLIED evidence binding over one supplied existing successful K2 repo.apply_patch receipt
-P7-R5 = pure/data-only VERIFICATION_PLAN_BOUND binding over one exact supplied verification plan
-P7-R6 = pure/data-only VERIFICATION_REPORT_BOUND binding over one exact supplied verification report
+supplied existing K2 ExecutionReceipt
++ strict receipt normalization
++ exact capability / policy / outcome validation
++ exact inputDigest linkage to canonical predecessor intent
+-> later pure/data-only P7 evidence state
 ```
 
-The existing K2 `ExecutionReceipt` remains the repository's execution-outcome evidence authority. P7-R4 already demonstrates the accepted pattern: consume an existing supplied receipt as data, strictly validate its bounded structure, and require its `inputDigest` plus capability/scope/outcome to match the exact canonical predecessor intent before deriving a later P7 evidence state.
+R7 must follow the same trust shape rather than treating an R6 boolean as execution evidence.
 
-For verification commands, the current `ExecutionGateway` computes the command intent digest from the exact serialized preimage:
+For generic `ExecutionGateway.runCommand(...)`, the current command input digest is:
 
 ```text
 sha256(JSON.stringify({
@@ -91,31 +80,36 @@ sha256(JSON.stringify({
 }))
 ```
 
-where `env` is key-sorted by the gateway before hashing.
+The gateway sorts environment keys before hashing.
 
-The current verification engine materializes one planned command using:
+For a command actually materialized by the current verification engine:
 
 ```text
-capability = verification.command.<plan-command-id>
-args = exact plan args
+capability = verification.command.<command.id>
+paths = []
+policy.decision = allow
+approval = absent
+confinement = absent
+args = exact R5 command args
 allowedExitCodes = [0]
 timeoutMs = command.timeoutMs ?? 30000
 maxOutputBytes = command.maxOutputBytes ?? 524288
-env = sanitized verification environment
-paths = []
+env = sanitizedVerificationEnv()
 ```
 
-and records `ExecutionReceipt.result.status = failure` when the actual bounded command execution fails through `ExecutionFailedError`.
+A failed eligible command produces:
 
-Therefore one **full supplied K2 failure receipt**, whose exact intent preimage is independently reconstructed and bound to one exact R5 planned command and one exact R6 failed command check, is materially stronger evidence than a report boolean or receipt reference alone.
+```text
+ExecutionReceipt.result.status = failure
+```
 
-The repaired minimum successor is one pure/data-only receipt-backed failure disposition. It does not execute verification and does not create a generic verification-execution path.
+and the R6 failed `command.<id>` check references that receipt id as evidence kind `receipt`.
 
 ---
 
 ## 4. Conditional future implementation allowlist
 
-Only after this authorization candidate independently qualifies, merges guarded with the exact expected head, and receives complete post-merge proof may one later implementation candidate modify exactly:
+Only after this authorization becomes closed canonical may one later implementation candidate modify exactly:
 
 ```text
 packages/kodac-runtime/src/remediation/p7-verification-failure-disposition-binding.ts
@@ -125,13 +119,13 @@ packages/kodac-runtime/test/p7-r7-verification-failure-disposition-binding.test.
 
 No fourth path is authorized.
 
-The later implementation may import existing pure validation/types required to revalidate P7-R6, P7-R5, `ExecutionReceipt`, and confinement evidence. It may not modify P7-R1 through P7-R6 predecessors, verification planner/engine/types/Done Gate, K5, K2, ExecutionGateway, filesystem, receipt ledger, CLI, workflows, dependencies/lockfiles, accepted ADRs, current-view files, historical authorization/evidence, product, release, rulesets, provider/model configuration, persistence, telemetry, or any other path.
+No predecessor P7 source, verification planner/engine/type, Done Gate, K5, K2, ExecutionGateway, ledger, CLI, workflow, dependency, lockfile, ADR, current-view, product, release, persistence, provider/model, ruleset, or historical evidence path may be modified by the later implementation.
 
 ---
 
-## 5. Required future contract input
+## 5. Required future build input
 
-The later builder/validator must take, at minimum:
+The later contract must take at minimum:
 
 ```text
 sourceVerificationReportBinding
@@ -141,15 +135,15 @@ executionIntentPreimage
 executionReceipt
 ```
 
-`sourceVerificationReportBindingInput` must be the exact predecessor/build input required by the canonical P7-R6 validator. The later implementation must call that canonical validator rather than trusting duplicated source fields.
+The canonical P7-R6 validator must be called with the exact predecessor/build input required to reconstruct the R6 record. Duplicated caller claims about R6 identities, report status, plan contents, or lineage are not authoritative.
 
-`failedCommandId` selects exactly one planned command failure from the canonically validated R6 report. The implementation must reject arbitrary caller-selected checks, base checks, extra command ids, passing command checks, and command ids absent from the exact R5-bound plan.
+`failedCommandId` must identify exactly one command in the canonically revalidated R5-bound plan and exactly one R6 check `command.<failedCommandId>`.
 
 ---
 
-## 6. Required exact source relation
+## 6. Exact eligibility gate
 
-The later contract may produce a disposition only when all of the following are true:
+All of these conditions are mandatory:
 
 ```text
 validated R6 state == VERIFICATION_REPORT_BOUND
@@ -157,35 +151,34 @@ validated R6 verificationReportPassed == false
 validated R6 verificationReport.passed == false
 failedCommandId exists exactly once in validated R5 plan
 R6 contains exactly one check id == command.<failedCommandId>
-that R6 check category == exact R5 planned command category
-that R6 check status == fail
-that R6 check evidence contains executionReceipt.receiptId as kind == receipt
-executionReceipt capability == verification.command.<failedCommandId>
-executionReceipt paths == []
-executionReceipt policy.decision == allow
-executionReceipt result.status == failure
-executionReceipt inputDigest == digest(executionIntentPreimage)
+R6 failed-command check category == exact R5 command category
+R6 failed-command check status == fail
+R6 failed-command check evidence contains executionReceipt.receiptId as kind == receipt
+executionReceipt.receiptId = canonical UUID v4
+executionReceipt.capability == verification.command.<failedCommandId>
+executionReceipt.paths == exact empty dense array
+executionReceipt.policy.decision == allow
+executionReceipt.approval == absent
+executionReceipt.confinement == absent
+executionReceipt.result.status == failure
+executionReceipt.inputDigest == recomputed digest of exact executionIntentPreimage
 executionIntentPreimage args == exact R5 plan args
 executionIntentPreimage allowedExitCodes == [0]
-executionIntentPreimage timeoutMs == exact engine materialization (plan timeoutMs ?? 30000)
-executionIntentPreimage maxOutputBytes == exact engine materialization (plan maxOutputBytes ?? 524288)
-executionIntentPreimage env satisfies the exact sanitized verification environment shape
-executionIntentPreimage resolved executable is compatible with the exact R5 semantic executable
+executionIntentPreimage timeoutMs == (R5 command timeoutMs ?? 30000)
+executionIntentPreimage maxOutputBytes == (R5 command maxOutputBytes ?? 524288)
+executionIntentPreimage env == valid current verification sanitizer shape
+executionIntentPreimage resolvedExecutable compatible with exact R5 semantic executable
 ```
 
-A failed report with no eligible receipt-backed planned command failure is outside this contract and must be rejected.
+Any missing condition fails closed.
 
-A base-check-only failure is outside this contract and must be rejected.
-
-A receipt reference without the complete matching receipt is outside this contract and must be rejected.
+A report with no receipt-backed failed planned command is not eligible even when `verificationReportPassed == false`.
 
 ---
 
-## 7. Required execution-intent preimage validation
+## 7. Execution-intent preimage
 
-The future contract must recompute the exact gateway input digest and must not trust caller-supplied `executionReceipt.inputDigest` alone.
-
-The execution-intent preimage must contain exactly:
+The future `executionIntentPreimage` must contain exactly:
 
 ```text
 resolvedExecutable
@@ -196,22 +189,22 @@ timeoutMs
 env
 ```
 
-The serialized digest preimage must match the current gateway key order exactly:
+The digest serialization must reproduce the current gateway key order exactly:
 
 ```text
-{
+JSON.stringify({
   executable: resolvedExecutable,
   args,
   allowedExitCodes,
   maxOutputBytes,
   timeoutMs,
-  env
-}
+  env: canonicalKeySortedEnvironment
+})
 ```
 
-The implementation must canonicalize `env` by ascending key order before hashing, matching `ExecutionGateway`'s `canonicalEnvironment(...)` behavior.
+then SHA-256 over the UTF-8 serialization.
 
-The permitted verification environment keys are exactly the current bounded sanitizer surface:
+The permitted environment keys are exactly:
 
 ```text
 NODE_ENV
@@ -228,79 +221,94 @@ TEMP
 TMPDIR
 ```
 
-Required fixed entries:
+Required fixed values:
 
 ```text
-NODE_ENV = test
-KODAC_VERIFICATION = 1
-NO_COLOR = 1
+NODE_ENV = "test"
+KODAC_VERIFICATION = "1"
+NO_COLOR = "1"
 ```
 
-No other environment key is allowed. Optional inherited keys may be absent, but when present must be bounded valid Unicode strings. The environment is evidence-bound data only; the contract does not read `process.env`.
+Every other listed key is optional caller-materialized execution evidence. If present, its value must be a bounded valid-Unicode string. No unlisted environment key is allowed. The contract must not read live `process.env`; it validates supplied historical execution-intent evidence only.
 
-The resolved executable must be bounded and must remain compatible with the semantic executable in the exact R5 plan:
+The semantic executable set is exactly:
 
 ```text
-node   -> an absolute executable path whose final portable basename is node or node.exe
+node
+python
+cargo
+go
+```
+
+Compatibility with the current verification resolver is bounded as follows:
+
+```text
+node   -> absolute path with portable basename node or node.exe
 python -> python3 or python.exe
-a cargo -> INVALID TOKEN / MUST NOT EXIST
 cargo  -> cargo or cargo.exe
 go     -> go or go.exe
 ```
 
-The literal line `a cargo -> INVALID TOKEN / MUST NOT EXIST` is a specification sentinel: the future implementation must define only the four actual semantic executables (`node`, `python`, `cargo`, `go`) and must not admit unknown executable kinds. The implementation specification/tests may omit this sentinel wording and simply enforce the exact four-value set.
-
-For `node`, this contract does not claim that an arbitrary same-basename path is intrinsically trusted. Authority for the actual execution outcome remains the supplied K2 `ExecutionReceipt`; the path is bound only to reproduce the exact receipt intent digest and to remain compatible with the R5 `node` command semantics.
+For `node`, the actual execution-outcome authority remains the K2 receipt; the path constraint prevents an unrelated semantic executable label but does not claim independent artifact trust beyond the receipt evidence.
 
 ---
 
-## 8. Required receipt validation
+## 8. Receipt normalization requirements
 
-The future implementation must apply fail-closed receipt validation at least as strict as the relevant P7-R4 receipt boundary for shared fields.
+The future implementation must validate the complete supplied receipt at least as strictly as the shared P7-R4 receipt boundary where fields overlap.
 
-At minimum:
+Required exact receipt surface for this current generic verification-command path:
 
 ```text
-receiptId = canonical UUID v4
-capability = verification.command.<failedCommandId>
-inputDigest = lowercase SHA-256
-paths = exact empty dense array
-policy = exact plain object
-policy.decision = allow
-policy.reason = bounded inert string
-approval = absent unless canonical gateway semantics make it possible and the exact approval binding can be independently validated
-confinement = absent or strictly validated through existing validateReceiptConfinementBinding and bound to inputDigest
-startedAt / completedAt = canonical bounded timestamps
-completedAt >= startedAt
-result = exact failure-result object
-result.status = failure
-result.error = bounded inert string
+receiptId
+capability
+inputDigest
+paths
+policy
+startedAt
+completedAt
+result
 ```
 
-Unknown receipt/result/policy/approval/confinement fields, proxies, accessors, symbols, custom prototypes, sparse arrays, cycles, aliases, invalid Unicode, invalid timestamps/digests/UUIDs, and resource-bound overflow must fail closed.
+`approval` and `confinement` are not part of the current eligible verification-command receipt and must be rejected if present.
 
-The future contract must derive a deterministic `executionReceiptIdentity` from the complete normalized receipt evidence and bind it into the disposition identity.
+Required semantics:
+
+```text
+receiptId = UUID v4
+capability = verification.command.<failedCommandId>
+inputDigest = lowercase SHA-256
+paths = []
+policy.decision = allow
+policy.reason = bounded valid-Unicode string
+startedAt / completedAt = canonical timestamps
+completedAt >= startedAt
+result = exact { status: "failure", error: <bounded string> }
+```
+
+Unknown fields, symbols, accessors, proxies, custom prototypes, sparse arrays, cycles, aliases, invalid Unicode, invalid timestamps/digests/UUIDs, non-JSON values, and resource-bound overflow must fail closed.
+
+The normalized receipt must receive a deterministic `executionReceiptIdentity` that is bound into the final disposition identity.
 
 ---
 
-## 9. Required disposition output
+## 9. Output and identity boundary
 
-The future output may establish only:
+The future contract may establish only:
 
 ```text
 STATE = VERIFICATION_FAILED
 ```
 
-with meaning restricted to:
+with this exact bounded meaning:
 
-> one exact canonically revalidated P7-R6 lineage contains one exact planned-command failed check that references one full supplied K2 execution receipt whose capability, failure outcome, exact command intent digest, and source relation are independently revalidated by this contract.
+> One exact canonically revalidated P7-R6 lineage contains one exact failed planned verification-command check whose referenced complete K2 failure receipt has been independently revalidated against the exact R5 command and the exact gateway command-intent digest preimage.
 
-The output must bind at least:
+The output identity must bind, directly or via the exact validated predecessor identity, at least:
 
 ```text
 version
-dispositionIdentity
-state = VERIFICATION_FAILED
+state
 sourceVerificationReportBindingIdentity
 proposalIdentity
 authorizationIdentity
@@ -317,40 +325,52 @@ verificationSessionId
 failedCommandId
 failedCommandCategory
 failedCheckSummary
-failedCheckEvidence projection
+failedCheckEvidence
 executionReceiptIdentity
 executionReceiptId
 executionInputDigest
 executionStartedAt
 executionCompletedAt
 executionFailureError
+dispositionIdentity
 ```
 
-Exact field names may differ, but no authority-relevant field may be omitted from the deterministic identity preimage.
-
-Returned data must be detached and deeply immutable.
+The implementation must use one explicit deterministic serialization rule for the non-identity preimage and test every semantic field for identity sensitivity. Returned output must be detached from caller mutation and deeply immutable.
 
 ---
 
-## 10. Explicit exclusions from the failure state
+## 10. Explicit rejection cases
 
-The future implementation must reject:
+The later implementation must reject at least:
 
 ```text
-passing R6 reports
-base-check-only failed reports
-failed planned-command checks with no receipt evidence
-receipt reference without full matching receipt
-receipt result.status != failure
-receipt capability for any other command or capability
-receipt inputDigest not reproduced by the exact execution-intent preimage
-execution-intent args/limits not equal to exact R5/engine materialization
-environment outside the sanitized verification key set
-caller-added or caller-removed source failure evidence
-caller-injected lifecycle/completion/execution authority fields
+passing R6 report
+base-check-only failed R6 report
+failed planned command without receipt evidence
+bare receipt ref without complete receipt
+receiptId not referenced by selected failed command check
+receiptId/capability mismatch
+receipt for another command
+receipt result success or blocked
+receipt policy decision other than allow
+receipt approval present
+receipt confinement present
+inputDigest mismatch
+args drift
+allowedExitCodes drift
+timeout drift
+maxOutputBytes drift
+unsafe or unknown env key
+fixed verification env value drift
+resolved executable incompatible with R5 executable kind
+R6 or predecessor/build-input tamper
+caller-injected failed check not present in source
+caller-injected VERIFIED/FIXED/REVERIFIED/Done Gate/PROVEN_READY/execution/retry/completion fields
 ```
 
-Required non-equivalences:
+---
+
+## 11. Required non-equivalences and non-grants
 
 ```text
 VERIFICATION_FAILED != VERIFICATION_ENGINE_INVOCATION
@@ -372,25 +392,9 @@ P7_R7_CLOSED != P7_R8_PLUS_AUTHORITY
 P7_R7_CLOSED != VERIFIED_AUTHORITY
 ```
 
-A failure disposition describes one receipt-proven failed verification command in the exact remediation lineage. It grants no follow-up action.
+The failure disposition grants no follow-up action, side effect, retry, re-planning, re-execution, K2 use, patch proposal, autofix, verification engine invocation, Done Gate transition, product work, or release work.
 
----
-
-## 11. Separation from K5 and Done Gate
-
-K5-R2 remains authoritative for generic source linkage. K5 package judgment/reconciliation remain authoritative for their bounded proof-review states. P7-R7 must not replace or mutate them.
-
-Preserve:
-
-```text
-K5_SUFFICIENT_PACKAGE != PROVEN_READY
-K5_VALID_RECONCILIATION != PROVEN_READY
-K5_EVIDENCE != P7_EXECUTION_AUTHORITY
-```
-
-The future P7-R7 contract must not import, invoke, wrap, mutate, or replace `DoneGate`. It must not create or claim `PROVEN_READY` or `NOT_READY`.
-
-Done Gate authority remains unchanged.
+K5-R2 remains authoritative for generic source linkage. K5 proof-package/judgment/reconciliation authority is unchanged. Done Gate remains the only accepted `PROVEN_READY / NOT_READY` authority.
 
 ---
 
@@ -399,48 +403,42 @@ Done Gate authority remains unchanged.
 The later implementation tests must cover at least:
 
 ```text
-valid failed planned command + exact failure receipt -> deterministic VERIFICATION_FAILED
+valid receipt-backed failed planned command -> deterministic VERIFICATION_FAILED
 passing R6 -> reject
-base-check-only failed R6 -> reject
-failed planned command without receipt ref -> reject
-receipt ref without full receipt -> reject
-receiptId mismatch -> reject
-capability mismatch -> reject
-failure receipt for different planned command -> reject
-result success / blocked instead of failure -> reject
+base-check-only failure -> reject
+failed planned command without receipt -> reject
+bare receipt ref -> reject
+receiptId/capability/command mismatch -> reject
+result success/blocked -> reject
+policy non-allow -> reject
+approval/confinement presence -> reject
 inputDigest mismatch -> reject
-args drift -> reject
-timeout/max-output drift -> reject
-allowedExitCodes drift -> reject
-unsafe/unknown environment key -> reject
-fixed verification env value drift -> reject
-resolved executable incompatible with R5 semantic executable -> reject
-R6/source/predecessor tampering -> reject
-caller cannot inject VERIFIED / FIXED / REVERIFIED / Done Gate / completion claims
+args/limits/env/resolved-executable drift -> reject
+R6/predecessor tamper -> reject
+caller cannot inject source failures or lifecycle claims
 identity binds every semantic field
-identity deterministic across benign caller object insertion order
+identity stable across benign object insertion order where semantics are unchanged
 mutation-after-call cannot affect result
 nested output deeply frozen
-unknown fields rejected
-Proxy/accessor/custom-prototype/symbol/sparse/cycle/hostile graphs rejected
-schema/runtime/test semantic agreement
-production source contains no verification-engine / planner / K2 / DoneGate / filesystem / Git / process / network / provider / persistence execution surface
+unknown/hostile object graph rejected
+schema/runtime/test agreement
+production source contains no planner/verification-engine/K2/DoneGate/filesystem/Git/process/network/provider/persistence execution surface
 ```
 
-Focused tests and all repository-required CI must be terminal success on one unchanged exact implementation head.
+Focused tests and all repository-required CI must pass on one unchanged exact implementation head.
 
 ---
 
-## 13. Qualification gate for this authorization candidate
+## 13. Qualification gate for this authorization
 
-Do not merge this authorization record unless one unchanged exact head proves:
+This authorization may merge only when one unchanged exact head proves:
 
 ```text
-BASE == CURRENT CANONICAL MAIN
+BASE == CURRENT_CANONICAL_MAIN
 BEHIND_BY = 0
 CHANGED_PATHS = EXACTLY 1
-CHANGED_PATH = docs/planning/KODAC_P7_R7_VERIFICATION_FAILURE_DISPOSITION_BINDING_AUTHORIZATION_2026-09-05.md
-INITIAL_HEAD_ca237d0fcebf3e5e72e223b22bcc5909a7adef35 = NOT_QUALIFIED
+EXACT_PATH = docs/planning/KODAC_P7_R7_VERIFICATION_FAILURE_DISPOSITION_BINDING_AUTHORIZATION_2026-09-05.md
+SUPERSEDED_INITIAL_HEAD = ca237d0fcebf3e5e72e223b22bcc5909a7adef35 / NOT_QUALIFIED
 REQUIRED_CI = TERMINAL_SUCCESS_OR_CANONICALLY_PROVEN_DOCS_ONLY_NON_APPLICABILITY
 INTERNAL_SUBSTANTIVE_SEMANTIC_SECURITY_INSPECTION = CLEAN
 KNOWN_ACTIONABLE_DEFECTS = 0
@@ -450,17 +448,16 @@ RULESET_20707483 = ACTIVE / SATISFIED / NO_BYPASS
 WAIVER = NO
 ```
 
-Any head/base/blob movement invalidates prior qualification.
-
-Merge must use a normal guarded PR merge with the exact qualified `expected_head_sha`. No direct write to `main`, force push, rebase, stale qualification reuse, or ruleset bypass is authorized.
+Any head/base/blob movement invalidates prior qualification. Merge must use normal guarded PR merge with the exact qualified `expected_head_sha`. No direct write to `main`, force push, rebase, stale evidence reuse, or ruleset bypass is authorized.
 
 ---
 
 ## 14. Mandatory post-merge proof
 
-This authorization creates future three-path implementation authority only after post-merge proof verifies at minimum:
+The exact three-path implementation authority in section 4 becomes active only after post-merge proof verifies:
 
 ```text
+PR_CLOSED_MERGED
 MERGE_COMMIT
 ORDERED_PARENTS
 MERGE_TREE
@@ -468,52 +465,48 @@ QUALIFIED_HEAD_TREE_EQUALITY
 AUTHORIZATION_BLOB_EQUALITY
 MERGE_SIGNATURE_VALID
 POST_MERGE_REQUIRED_CHECKS OR TRUTHFUL CANONICAL NON_APPLICABILITY
-PR_CLOSED_MERGED
 UNRESOLVED_ACTIONABLE_REVIEW_THREADS = 0
 RULESET_20707483 = ACTIVE / NO_BYPASS
+WAIVER = NO
 ```
-
-Only after that proof may the exact three implementation paths in section 4 become authorized.
 
 ---
 
 ## 15. Explicit non-grants
 
-This authorization candidate does not authorize:
-
 ```text
-IMPLEMENTATION_BEFORE_AUTHORIZATION_POST_PROOF
-VERIFICATION_FAILED_FROM_REPORT_BOOLEAN_ALONE
-VERIFICATION_FAILED_FROM_BASE_CHECK_FAILURE_ALONE
-PASS_TO_VERIFIED_PROMOTION
-VERIFIED_STATE
-FIXED_STATE
-REVERIFIED_STATE
-PROVEN_READY
-DONE_GATE_INVOCATION_OR_MUTATION
-VERIFICATION_PLANNER_INVOCATION
-VERIFICATION_ENGINE_INVOCATION
-VERIFICATION_EXECUTION
-VERIFICATION_REPORT_CREATION
-PATCH_APPLICATION
-PATCH_RETRY
-NEW_PATCH_PROPOSAL
-AUTOFIX
-K2_INVOCATION
-K2_APPROVAL_CREATION
-FILESYSTEM_OR_GIT_WRITE
-PROCESS_EXECUTION
-NETWORK_ACCESS
-SECRET_ACCESS
-PROVIDER_MODEL_INVOCATION
-K5_AUTHORITY_MUTATION
-P8_P9_IMPLEMENTATION
-PRODUCT_INTEGRATION
-PUBLIC_RELEASE_OR_PACKAGE_PUBLICATION
-PROJECT_COMPLETION
-RULESET_CHANGE_OR_BYPASS
-NEW_DEPENDENCY_OR_DONOR_ADMISSION
-PERSISTENCE_DATABASE_TELEMETRY_UPLOAD_LEARNING
+IMPLEMENTATION_BEFORE_AUTHORIZATION_POST_PROOF = NO
+VERIFICATION_FAILED_FROM_REPORT_BOOLEAN_ALONE = NO
+VERIFICATION_FAILED_FROM_BASE_CHECK_FAILURE_ALONE = NO
+PASS_TO_VERIFIED_PROMOTION = NO
+VERIFIED_STATE = NO
+FIXED_STATE = NO
+REVERIFIED_STATE = NO
+PROVEN_READY = NO
+DONE_GATE_INVOCATION_OR_MUTATION = NO
+VERIFICATION_PLANNER_INVOCATION = NO
+VERIFICATION_ENGINE_INVOCATION = NO
+VERIFICATION_EXECUTION = NO
+VERIFICATION_REPORT_CREATION = NO
+PATCH_APPLICATION = NO
+PATCH_RETRY = NO
+NEW_PATCH_PROPOSAL = NO
+AUTOFIX = NO
+K2_INVOCATION = NO
+K2_APPROVAL_CREATION = NO
+FILESYSTEM_OR_GIT_WRITE = NO
+PROCESS_EXECUTION = NO
+NETWORK_ACCESS = NO
+SECRET_ACCESS = NO
+PROVIDER_MODEL_INVOCATION = NO
+K5_AUTHORITY_MUTATION = NO
+P8_P9_IMPLEMENTATION = NO
+PRODUCT_INTEGRATION = NO
+PUBLIC_RELEASE_OR_PACKAGE_PUBLICATION = NO
+PROJECT_COMPLETION = NOT_ESTABLISHED
+RULESET_CHANGE_OR_BYPASS = NO
+NEW_DEPENDENCY_OR_DONOR_ADMISSION = NO
+PERSISTENCE_DATABASE_TELEMETRY_UPLOAD_LEARNING = NO
 ```
 
-After a future P7-R7 implementation itself becomes closed canonical, fresh repository-truth analysis is required before any current-view reconciliation or successor work. No successor follows from numbering or from the existence of a failed disposition.
+After a future R7 implementation itself becomes closed canonical, fresh repository-truth analysis is required before any current-view reconciliation or successor work. No successor follows from numbering or from the existence of a failed disposition.
