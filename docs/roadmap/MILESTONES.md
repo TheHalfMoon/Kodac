@@ -28,11 +28,13 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P5-R2 Evidence Relation Edge | **CLOSED_CANONICAL** | #337 / proof `5551261065` |
 | P5-R2 current-view reconciliation | **CLOSED_CANONICAL** | #339 / proof `5551404984` |
 | P5 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | #340 / proof `5551456429` |
-| P5 bounded R1-R2 engineering scope | **CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly six documentation/evidence paths |
+| P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | #341 / proof `5551577054` |
+| P5 post-closeout reconciliation authorization | **CLOSED_CANONICAL** | #342 / proof `5551608905` |
+| P5 post-closeout current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
 | P5-R3+ | **NOT_AUTHORIZED** | No authority by numbering/composition |
 | ProofGraph | **NOT_AUTHORIZED** | Separate future authority required |
 | Automatic freshness / dependency invalidation | **NOT_AUTHORIZED** | Separate future authority required |
-| P5 overall | **NOT_CLOSED** | Bounded scope candidate is not overall closure |
+| P5 overall | **NOT_CLOSED** | Bounded R1-R2 closure is not overall closure |
 | P6-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | Separate future authority required |
 | Project completion | **NOT_ESTABLISHED** | No canonical completion proof exists |
 
@@ -54,6 +56,9 @@ P5_R2_RECONCILIATION_AUTHORIZATION = #338 / de2735ffd7698e13f4adfb4a2c7ef98ee321
 P5_R2_RECONCILIATION = #339 / b5785beb24b0f939fc3d9c51b5292efbe5e0ee82 / proof 5551404984
 P5_POST_R2_SUCCESSOR_ANALYSIS = #339 / comment 5551419975 / ANALYSIS_ONLY
 P5_BOUNDED_R1_R2_CLOSEOUT_AUTHORIZATION = #340 / 8eb6dd521e4c5ecc1bd964576bffd4f1e7cfd4fb / proof 5551456429
+P5_BOUNDED_R1_R2_CLOSEOUT = #341 / 13ebbbbb3f1a3bb0a32c2873aa9ea6c67c1c8b9a / proof 5551577054
+P5_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #341 / comment 5551579509 / ANALYSIS_ONLY
+P5_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = #342 / 8c4f57ba9245e9911422e3e14864f4258897621a / proof 5551608905
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
@@ -72,7 +77,7 @@ P5-R2 schema = cb2574e1c656f7a5537985035ad43bb1637c51a7
 P5-R2 test = 1a78da0fbc65c2403134b42555311fe12d3f9355
 ```
 
-The closeout candidate may not modify those bytes.
+The current reconciliation may not modify those bytes.
 
 ---
 
@@ -112,14 +117,15 @@ P5-R2 preserved an unrelated pre-existing H4-R3G-B Ubuntu test failure on its fi
 
 The #338 authorization candidate also required a forward-only semantic repair from `cc518a31ba1f681c2281657ba13524112b31e1b3` to `a990f42e58d6eb2d9601a1e85e873cdd21bea952` to prevent self-certification.
 
+The #341 closeout evidence preserved its own forward-only wording repair before final qualification; pre-repair evidence is stale.
+
 ---
 
-## Current closeout gate
+## Current reconciliation gate
 
-Canonical #340 authorizes exactly six paths:
+Canonical #342 authorizes exactly five paths:
 
 ```text
-docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -127,13 +133,30 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path. The candidate must remain candidate-safe:
+No sixth path. This candidate may record already-proven P5 bounded-closeout truth only and cannot certify its own future merge/post-merge proof.
+
+It must still prove on one frozen exact head:
 
 ```text
-P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+BEHIND_BY = 0
+CHANGED_PATHS = EXACTLY 5
+FIVE BLOBS = FROZEN
+REQUIRED CI = TERMINAL SUCCESS OR PROVEN NON_APPLICABLE
+INTERNAL SUBSTANTIVE SEMANTIC INSPECTION = CLEAN
+KNOWN ACTIONABLE DEFECTS = 0
+UNRESOLVED ACTIONABLE REVIEW THREADS = 0
+REQUIRED_EXTERNAL_SEMANTIC_REVIEW_COUNT = 0
+RULESET 20707483 = active / no bypass
+GUARDED NORMAL MERGE WITH exact expected_head_sha = REQUIRED
+COMPLETE POST_MERGE_PROOF = REQUIRED
+WAIVER = NO
 ```
 
-Only external post-merge proof may later establish bounded aggregate closure.
+Until external proof exists:
+
+```text
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+```
 
 ---
 
@@ -163,4 +186,4 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-After post-merge proof, run fresh post-closeout current-view reconciliation analysis; do not infer P5-R3 or P6 by numbering.
+Only after this reconciliation itself is post-merge proven may fresh successor analysis begin. Do not infer P5-R3, ProofGraph, automatic freshness, P6, or later implementation by numbering or composition.
