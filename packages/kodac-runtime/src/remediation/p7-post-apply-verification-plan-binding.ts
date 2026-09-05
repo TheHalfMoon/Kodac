@@ -112,6 +112,7 @@ type NormalizedPlan = {
 }
 
 const SHA256 = /^[0-9a-f]{64}$/
+const CANONICAL_TIMESTAMP = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/
 const COMMAND_ID = /^[a-z0-9][a-z0-9._-]{0,63}$/i
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/u
 const CATEGORIES = new Set<P7VerificationCategory>(["syntax", "types", "lint", "tests", "custom"])
@@ -246,7 +247,9 @@ function sha256(value: unknown, label: string): string {
 }
 
 function canonicalTimestamp(value: unknown, label: string): string {
-  if (typeof value !== "string") fail(label, "must be a canonical ISO-8601 UTC timestamp")
+  if (typeof value !== "string" || !CANONICAL_TIMESTAMP.test(value)) {
+    fail(label, "must be a canonical ISO-8601 UTC timestamp")
+  }
   const parsed = Date.parse(value)
   if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) {
     fail(label, "must be a canonical ISO-8601 UTC timestamp")
@@ -353,14 +356,8 @@ function normalizedStringArray(
 }
 
 function unsafeCommandArg(value: string): boolean {
-  if (value.startsWith("/") || value.startsWith("\\") || /^[A-Za-z]:[\\/]/.test(value)) return true
-  return (
-    value === ".." ||
-    value.startsWith("../") ||
-    value.startsWith("..\\") ||
-    value.includes("/../") ||
-    value.includes("\\..\\")
-  )
+  if (value.startsWith("/") || value.startsWith("\\") || /^[A-Za-z]:/.test(value)) return true
+  return /(^|[=\\/])\.\.(?=$|[\\/])/u.test(value)
 }
 
 function normalizeCommand(value: unknown, index: number): P7VerificationCommand {
@@ -392,26 +389,30 @@ function normalizeCommand(value: unknown, index: number): P7VerificationCommand 
     },
   )
 
-  const result: {
-    id: string
-    category: P7VerificationCategory
-    executable: P7VerificationExecutable
-    args: readonly string[]
-    timeoutMs?: number
-    maxOutputBytes?: number
-  } = { id, category, executable, args: Object.freeze([...args]) }
-
+  const normalizedByKey: UnknownRecord = {
+    id,
+    category,
+    executable,
+    args: Object.freeze([...args]),
+  }
   if (Object.hasOwn(record, "timeoutMs")) {
-    result.timeoutMs = positiveInteger(record.timeoutMs, `${label}.timeoutMs`, P7_R5_VERIFICATION_PLAN_LIMITS.maxTimeoutMs)
+    normalizedByKey.timeoutMs = positiveInteger(
+      record.timeoutMs,
+      `${label}.timeoutMs`,
+      P7_R5_VERIFICATION_PLAN_LIMITS.maxTimeoutMs,
+    )
   }
   if (Object.hasOwn(record, "maxOutputBytes")) {
-    result.maxOutputBytes = positiveInteger(
+    normalizedByKey.maxOutputBytes = positiveInteger(
       record.maxOutputBytes,
       `${label}.maxOutputBytes`,
       P7_R5_VERIFICATION_PLAN_LIMITS.maxOutputBytes,
     )
   }
-  return Object.freeze(result)
+
+  const plannerOrdered: UnknownRecord = {}
+  for (const key of Object.keys(record)) plannerOrdered[key] = normalizedByKey[key]
+  return Object.freeze(plannerOrdered) as unknown as P7VerificationCommand
 }
 
 function normalizeCommands(value: unknown, maximum: number): readonly P7VerificationCommand[] {
