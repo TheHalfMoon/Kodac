@@ -207,9 +207,9 @@ The rerun did not create a new candidate head. Exact-head qualification remained
 
 ---
 
-## 7. Truth the later reconciliation must establish
+## 7. Truth the later reconciliation candidate may record
 
-After the later five-path candidate itself qualifies, merges, and passes post-merge proof, the current views may state:
+The later five-path reconciliation candidate may record only truth already canonical before that candidate is merged:
 
 ```text
 P5-R1 = CLOSED_CANONICAL
@@ -217,14 +217,16 @@ P5-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P5-R2 AUTHORIZATION = CLOSED_CANONICAL
 P5-R2 IMPLEMENTATION = CLOSED_CANONICAL
 P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
-P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 P5 OVERALL = NOT_CLOSED
 PROJECT COMPLETION = NOT_ESTABLISHED
 ```
 
-Until the later five-path reconciliation itself is merged and post-proven, candidate text must remain candidate-safe and must not claim that reconciliation is already closed canonical.
+The five current-view files must **not** claim that their own reconciliation is already closed canonical, because that closure depends on a future guarded merge and post-merge proof that do not exist while the candidate bytes are being qualified.
+
+After the five-path reconciliation later merges and passes mandatory post-merge proof, its closure is established by that post-merge evidence. Any subsequent current-view representation of that new closure requires fresh canonical analysis/authority rather than self-certification inside the pre-merge candidate.
 
 ---
 
