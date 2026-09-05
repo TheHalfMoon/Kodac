@@ -31,7 +31,9 @@ P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL
 P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
 P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #339 / proof 5551404984
 P5 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / #340 / proof 5551456429
-P5 BOUNDED R1-R2 ENGINEERING SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / #341 / proof 5551577054
+P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #342 / proof 5551608905
+P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
@@ -91,6 +93,9 @@ RELATION EDGE != PROOFGRAPH / GRAPH STORAGE / TRAVERSAL / INFERENCE
 #339 P5-R2 reconciliation = b5785beb24b0f939fc3d9c51b5292efbe5e0ee82 / proof 5551404984
 #339 fresh post-R2 analysis = comment 5551419975 / ANALYSIS_ONLY
 #340 bounded R1-R2 closeout authorization = 8eb6dd521e4c5ecc1bd964576bffd4f1e7cfd4fb / proof 5551456429
+#341 bounded R1-R2 closeout = 13ebbbbb3f1a3bb0a32c2873aa9ea6c67c1c8b9a / proof 5551577054
+#341 post-closeout reconciliation analysis = comment 5551579509 / ANALYSIS_ONLY
+#342 post-closeout reconciliation authorization = 8c4f57ba9245e9911422e3e14864f4258897621a / proof 5551608905
 RULESET = 20707483 / active / no bypass
 ```
 
@@ -98,10 +103,9 @@ RULESET = 20707483 / active / no bypass
 
 ## Current authorized unit
 
-Canonical #340 authorizes exactly this six-path documentation/evidence closeout:
+Canonical #342 authorizes exactly this five-path documentation-only current-view reconciliation:
 
 ```text
-docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -109,14 +113,14 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path is authorized.
+No sixth path is authorized.
 
-The candidate may aggregate already-proven P5 R1-R2 evidence only and must preserve every still-effective non-grant. It changes no runtime, schema, test, dependency, workflow, KRI/K5/K2 authority, persistence, product implementation, or release surface.
+The candidate records already-proven P5 R1-R2 bounded-closeout truth and preserves every still-effective non-grant. It changes no runtime, schema, test, dependency, workflow, historical authorization/evidence, KRI/K5/K2 authority, persistence, product implementation, or release surface.
 
-The candidate cannot claim its own aggregate closure before guarded merge and external post-merge proof:
+The candidate cannot claim its own reconciliation closure before guarded merge and external post-merge proof:
 
 ```text
-P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -129,7 +133,7 @@ P5-R2 preserves its same-head Ubuntu rerun after one unrelated pre-existing H4-R
 
 The #338 authorization preserves its own forward-only semantic repair from `cc518a31ba1f681c2281657ba13524112b31e1b3` to `a990f42e58d6eb2d9601a1e85e873cdd21bea952` to prevent premature self-certification.
 
-The current closeout evidence ledger also preserves a forward-only wording repair on its branch; pre-repair head evidence is stale.
+The #341 closeout evidence preserves its forward-only wording repair before final qualification; pre-repair evidence is stale.
 
 ---
 
@@ -178,4 +182,4 @@ WAIVER = NO
 
 ## Next product-status boundary
 
-Complete exact-head qualification, guarded merge, and post-merge proof for the six-path P5 bounded R1-R2 closeout candidate. Only then may fresh post-closeout reconciliation analysis begin. No P5-R3, ProofGraph, P6, product, or release authority follows by composition.
+Complete exact-head qualification, guarded merge, and post-merge proof for this P5 post-closeout five-view reconciliation. Only then may fresh canonical successor analysis identify another bounded unit. No P5-R3, ProofGraph, automatic freshness, P6, product, or release authority follows by composition.

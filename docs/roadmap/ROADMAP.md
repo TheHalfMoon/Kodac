@@ -27,11 +27,13 @@ This is a current engineering roadmap view only. It does not create implementati
 | P5-R2 Evidence Relation Edge | **CLOSED_CANONICAL** | PR #337 / proof `5551261065` |
 | P5-R2 current-view reconciliation | **CLOSED_CANONICAL** | PR #339 / proof `5551404984` |
 | P5 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | PR #340 / proof `5551456429` |
-| P5 bounded R1-R2 engineering scope | **CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Six documentation/evidence paths only |
+| P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | PR #341 / proof `5551577054` |
+| P5 post-closeout reconciliation authorization | **CLOSED_CANONICAL** | PR #342 / proof `5551608905` |
+| P5 post-closeout current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
 | P5-R3+ | **NOT_AUTHORIZED** | No authority by numbering/composition |
 | ProofGraph | **NOT_AUTHORIZED** | Planning direction only |
 | Automatic freshness / dependency invalidation | **NOT_AUTHORIZED** | Separate future authority required |
-| P5 overall | **NOT_CLOSED** | Bounded R1-R2 candidate is not overall closure |
+| P5 overall | **NOT_CLOSED** | Bounded R1-R2 closure is not overall closure |
 | P6-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | Separate future authority required |
 | Project completion | **NOT_ESTABLISHED** | No canonical completion proof exists |
 
@@ -52,7 +54,10 @@ This is a current engineering roadmap view only. It does not create implementati
   -> #339 P5-R2 current-view reconciliation
   -> #339 comment 5551419975 fresh post-R2 analysis / ANALYSIS_ONLY
   -> #340 bounded R1-R2 closeout authorization
-  -> CURRENT: bounded R1-R2 six-path closeout candidate
+  -> #341 bounded R1-R2 engineering closeout
+  -> #341 comment 5551579509 post-closeout reconciliation analysis / ANALYSIS_ONLY
+  -> #342 post-closeout current-view reconciliation authorization
+  -> CURRENT: five-current-view reconciliation candidate
 ```
 
 Canonical merge/proof anchors:
@@ -67,6 +72,8 @@ Canonical merge/proof anchors:
 #338 = de2735ffd7698e13f4adfb4a2c7ef98ee32177d3 / proof 5551292787
 #339 = b5785beb24b0f939fc3d9c51b5292efbe5e0ee82 / proof 5551404984
 #340 = 8eb6dd521e4c5ecc1bd964576bffd4f1e7cfd4fb / proof 5551456429
+#341 = 13ebbbbb3f1a3bb0a32c2873aa9ea6c67c1c8b9a / proof 5551577054
+#342 = 8c4f57ba9245e9911422e3e14864f4258897621a / proof 5551608905
 ```
 
 ---
@@ -122,12 +129,11 @@ AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 
 ---
 
-## Current closeout boundary
+## Current reconciliation boundary
 
-Canonical #340 authorizes exactly:
+Canonical #342 authorizes exactly:
 
 ```text
-docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -135,12 +141,12 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path. The candidate may aggregate already-proven P5 R1-R2 evidence only and cannot certify its own future post-merge proof.
+No sixth path. This candidate may record only already-proven P5 bounded-closeout truth and cannot certify its own future post-merge proof.
 
 Until external proof exists:
 
 ```text
-P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -171,4 +177,4 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-After the closeout candidate is post-merge proven, fresh reconciliation analysis is required before any successor implementation analysis.
+Only after this reconciliation is post-merge proven may fresh successor analysis run. Do not infer P5-R3, ProofGraph, automatic freshness, P6, or any later stage by numbering or composition.

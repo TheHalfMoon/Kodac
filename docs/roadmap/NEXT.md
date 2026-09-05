@@ -54,7 +54,9 @@ P5-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
 P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #339 / proof 5551404984
 P5 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / PR #340 / proof 5551456429
-P5 BOUNDED R1-R2 ENGINEERING SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / PR #341 / proof 5551577054
+P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #342 / proof 5551608905
+P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
@@ -67,12 +69,11 @@ WAIVER = NO
 
 ---
 
-## NOW — authorized P5 bounded R1-R2 closeout candidate
+## NOW — authorized P5 post-closeout five-current-view reconciliation
 
-Canonical PR #340 and post-merge proof `5551456429` authorize exactly these six documentation/evidence paths:
+Canonical PR #342 and post-merge proof `5551608905` authorize exactly these five current-view paths:
 
 ```text
-docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -80,14 +81,14 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path is authorized.
+No sixth path is authorized.
 
-The candidate may aggregate already-proven P5 R1-R2 lineage only. It must not change runtime/schema/tests, dependencies, workflows, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product surfaces, release configuration, or rulesets.
+This candidate may record already-proven P5 R1-R2 closeout truth only. It does not modify runtime/schema/tests, historical authorization/evidence records, dependencies, workflows, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product surfaces, release configuration, or rulesets.
 
-It must not self-certify its own closeout. Until guarded merge and mandatory post-merge proof exist:
+It must not self-certify its own reconciliation. Until guarded merge and mandatory post-merge proof exist:
 
 ```text
-P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -129,6 +130,15 @@ P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED
 
 #340 bounded R1-R2 closeout authorization
   merge 8eb6dd521e4c5ecc1bd964576bffd4f1e7cfd4fb / proof 5551456429
+
+#341 bounded R1-R2 engineering closeout
+  merge 13ebbbbb3f1a3bb0a32c2873aa9ea6c67c1c8b9a / proof 5551577054
+
+#341 comment 5551579509
+  fresh post-closeout reconciliation analysis / ANALYSIS_ONLY
+
+#342 post-closeout current-view reconciliation authorization
+  merge 8c4f57ba9245e9911422e3e14864f4258897621a / proof 5551608905
 ```
 
 ---
@@ -205,20 +215,21 @@ WAIVER = NO
 
 ---
 
-## THEN — post-closeout proof and fresh reconciliation analysis
+## THEN — mandatory proof and fresh successor analysis
 
-Only after this six-path candidate qualifies, merges guarded, and passes complete post-merge proof may external evidence establish:
+Only after this five-path candidate qualifies, merges guarded, and passes complete post-merge proof may external evidence establish:
 
 ```text
-P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CLOSED_CANONICAL
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL
 ```
 
-The current views will then be intentionally stale because they cannot self-certify that proof. Fresh post-closeout analysis must determine the minimum documentation-only reconciliation. No P5-R3 or P6 authority follows by composition.
+Only then run fresh evidence-driven successor analysis. Do not infer P5-R3, ProofGraph, automatic freshness, P6, or later stages by numbering or composition.
 
 ## Navigation
 
 - Working rules: `AGENTS.md`
-- Closeout authorization: `docs/planning/KODAC_P5_BOUNDED_R1_R2_CLOSEOUT_AUTHORIZATION_2026-09-05.md`
-- Closeout evidence candidate: `docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md`
+- P5 closeout authorization: `docs/planning/KODAC_P5_BOUNDED_R1_R2_CLOSEOUT_AUTHORIZATION_2026-09-05.md`
+- P5 closeout evidence: `docs/planning/KODAC_P5_BOUNDED_R1_R2_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md`
+- Post-closeout reconciliation authorization: `docs/planning/KODAC_P5_R1_R2_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
 - Final gap review: `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
