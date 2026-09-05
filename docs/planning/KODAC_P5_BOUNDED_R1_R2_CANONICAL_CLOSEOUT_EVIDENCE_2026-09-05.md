@@ -406,4 +406,10 @@ Only an external mandatory post-merge proof over the future merge may establish:
 P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CLOSED_CANONICAL
 ```
 
-After that proof, the five current views in this candidate will intentionally still describe the closeout itself as a completed candidate whose canonical closure is externally proven, and a fresh post-closeout reconciliation analysis must decide the minimum current-view reconciliation needed. That later analysis creates no successor implementation authority by itself.
+The five current views in this closeout candidate must remain candidate-safe and describe the aggregate closeout as:
+
+```text
+P5_BOUNDED_R1_R2_ENGINEERING_SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+```
+
+After a successful guarded merge and external post-merge proof, that wording will intentionally become stale. Fresh post-closeout reconciliation analysis must then determine the minimum documentation-only current-view reconciliation needed. That later analysis creates no successor implementation authority by itself.
