@@ -23,15 +23,19 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P3 overall | **OPEN** | No overall promotion/default/superiority claim |
 | P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | Aggregate bounded closeout only |
 | P4 overall | **OPEN** | No overall closure |
-| P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | Bounded closeout only |
+| P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | #341 / proof `5551577054` |
 | P5 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | #343 / proof `5551673149` |
 | P5-R3+ | **NOT_AUTHORIZED** | No authority by numbering/composition |
 | P5 overall | **NOT_CLOSED** | Bounded closure is not overall closure |
 | P6-R1 deterministic security finding foundation | **CLOSED_CANONICAL** | #345 / proof `5551884329` |
+| P6 bounded R1 engineering scope | **CLOSED_CANONICAL** | #349 / proof `5552035602` |
 | P6 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | #351 / proof `5552175515` |
 | P6-R2+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
 | P6 overall | **NOT_CLOSED** | Bounded closure is not overall closure |
+| P7-R1 through P7-R3 bounded data contracts | **CLOSED_CANONICAL** | Detailed proof anchors retained below |
+| P7-R4 applied-patch-evidence binding authorization | **CLOSED_CANONICAL** | #364 / proof `5553391471` |
 | P7-R4 applied-patch-evidence binding | **CLOSED_CANONICAL** | #365 / proof `5553509882` |
+| P7-R4 current-view reconciliation authorization | **CLOSED_CANONICAL** | #366 / proof `5553556112` |
 | P7-R4 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #367 / proof `5553600421` |
 | P7-R5 successor analysis | **ANALYSIS_ONLY** | #367 comment `5553695694` |
 | P7-R5 verification-plan-binding authorization | **CLOSED_CANONICAL** | #368 / proof `5553737255` |
@@ -42,6 +46,8 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P7-R5 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
 | P7-R6+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
 | P7 overall | **NOT_CLOSED** | R5 closure is not overall closure |
+| Applied evidence only | **ESTABLISHED_BY_P7_R4_CONTRACT** | No patch application authority |
+| Verification plan bound only | **ESTABLISHED_BY_P7_R5_CONTRACT** | No verification execution authority |
 | Patch application / remediation execution | **NOT_AUTHORIZED** | R5 is data-only |
 | Verification planner invocation | **NOT_AUTHORIZED** | Supplied plan only |
 | Verification execution / report | **NOT_AUTHORIZED** | No execution authority |
@@ -52,14 +58,30 @@ This file is a current milestone ledger only. It does not authorize implementati
 
 ---
 
+## Canonical earlier P7 anchors retained
+
+```text
+P7_R1_AUTHORIZATION = #352 / proof 5552233040
+P7_R1_IMPLEMENTATION = #353 / proof 5552429216
+P7_R1_RECONCILIATION = #355 / proof 5552575380
+P7_R2_AUTHORIZATION = #356 / proof 5552630320
+P7_R2_IMPLEMENTATION = #357 / proof 5552730805
+P7_R2_RECONCILIATION = #359 / proof 5552811852
+P7_R3_AUTHORIZATION = #360 / proof 5552924883
+P7_R3_IMPLEMENTATION = #361 / proof 5553018473
+P7_R3_RECONCILIATION_AUTHORIZATION = #362 / proof 5553049120
+P7_R3_RECONCILIATION = #363 / proof 5553345846
+P7_R4_AUTHORIZATION = #364 / proof 5553391471
+P7_R4_IMPLEMENTATION = #365 / proof 5553509882
+P7_R4_RECONCILIATION_AUTHORIZATION = #366 / proof 5553556112
+P7_R4_RECONCILIATION = #367 / proof 5553600421
+```
+
+---
+
 ## Canonical P7-R5 anchors
 
 ```text
-P7_R4_RECONCILIATION
-  PR = #367
-  PROOF = 5553600421
-  STATE = CLOSED_CANONICAL
-
 P7_R5_SUCCESSOR_ANALYSIS
   PR = #367
   COMMENT = 5553695694
@@ -103,21 +125,22 @@ test = ecd515a58f3cfd4abaa89001f80192c68e39b91b
 
 ---
 
-## Bounded P7-R5 semantics
+## Bounded P7-R4 / P7-R5 semantics
+
+P7-R4 remains a pure/data-only applied-evidence binding. P7-R5 adds one pure/data-only deterministic content-addressed post-apply verification-plan binding.
 
 ```text
-P7-R5
-= pure/data-only deterministic content-addressed post-apply verification-plan binding
-+ exact canonical P7-R4 lineage revalidation
-+ one supplied strictly validated current verification plan
-+ exact planner stable-projection digest recomputation
-+ exact applied changed paths
-+ at least one tests-category command
-+ deterministic content-addressed identity
-+ detached/deeply immutable output
+APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
+APPLIED_EVIDENCE_BINDING != VERIFICATION
+VERIFICATION_PLAN_BOUND != VERIFICATION_PLANNER_EXECUTION
+VERIFICATION_PLAN_BOUND != VERIFICATION_EXECUTION
+VERIFICATION_PLAN_BOUND != VERIFICATION_REPORT
+VERIFICATION_PLAN_BOUND != VERIFIED
+VERIFICATION_PLAN_BOUND != FIXED
+VERIFICATION_PLAN_BOUND != DONE_GATE
 ```
 
-It does not run the planner, execute verification, invoke K2, apply a patch, create a verification result/report, establish verified/fixed state, or advance Done Gate.
+Neither contract invokes K2, applies a patch, runs verification, creates result evidence, or advances lifecycle state.
 
 ---
 

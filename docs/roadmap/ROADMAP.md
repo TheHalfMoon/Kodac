@@ -23,16 +23,28 @@ This is a current engineering roadmap view only. It does not create implementati
 | P3 overall | **OPEN** | No general promotion/default/superiority claim |
 | P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | Aggregate bounded scope only |
 | P4 overall | **OPEN** | No overall closure |
-| P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | Bounded scope only |
+| P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | #341 / proof `5551577054` |
 | P5 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | #343 / proof `5551673149` |
 | P5-R3+ | **NOT_AUTHORIZED** | No authority by numbering/composition |
 | P5 overall | **NOT_CLOSED** | Bounded closure is not overall closure |
 | P6-R1 deterministic security finding foundation | **CLOSED_CANONICAL** | #345 / proof `5551884329` |
+| P6 bounded R1 engineering scope | **CLOSED_CANONICAL** | #349 / proof `5552035602` |
 | P6 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | #351 / proof `5552175515` |
 | P6-R2+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
 | P6 overall | **NOT_CLOSED** | Bounded closure is not overall closure |
-| P7-R1 through P7-R3 bounded data contracts | **CLOSED_CANONICAL** | No side effects implied |
-| P7-R4 applied-patch-evidence binding | **CLOSED_CANONICAL** | #365 / proof `5553509882` |
+| P7-R1 authorization | **CLOSED_CANONICAL** | #352 / proof `5552233040` |
+| P7-R1 immutable patch proposal foundation | **CLOSED_CANONICAL** | #353 / proof `5552429216` |
+| P7-R1 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #355 / proof `5552575380` |
+| P7-R2 patch-application authorization | **CLOSED_CANONICAL** | #356 / proof `5552630320` |
+| P7-R2 patch-application authorization implementation | **CLOSED_CANONICAL** | #357 / proof `5552730805` |
+| P7-R2 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #359 / proof `5552811852` |
+| P7-R3 pre-execution intent-binding authorization | **CLOSED_CANONICAL** | #360 / proof `5552924883` |
+| P7-R3 pre-execution intent-binding implementation | **CLOSED_CANONICAL** | #361 / proof `5553018473` |
+| P7-R3 current-view reconciliation authorization | **CLOSED_CANONICAL** | #362 / proof `5553049120` |
+| P7-R3 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #363 / proof `5553345846` |
+| P7-R4 applied-patch-evidence-binding authorization | **CLOSED_CANONICAL** | #364 / proof `5553391471` |
+| P7-R4 applied-patch-evidence-binding implementation | **CLOSED_CANONICAL** | #365 / proof `5553509882` |
+| P7-R4 current-view reconciliation authorization | **CLOSED_CANONICAL** | #366 / proof `5553556112` |
 | P7-R4 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #367 / proof `5553600421` |
 | P7-R5 successor analysis | **ANALYSIS_ONLY** | #367 comment `5553695694` |
 | P7-R5 verification-plan-binding authorization | **CLOSED_CANONICAL** | #368 / proof `5553737255` |
@@ -42,6 +54,8 @@ This is a current engineering roadmap view only. It does not create implementati
 | P7-R5 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
 | P7-R6+ | **NOT_AUTHORIZED_BY_NUMBERING** | Fresh successor analysis only after reconciliation proof |
 | P7 overall | **NOT_CLOSED** | R5 closure is not overall closure |
+| Applied evidence only | **ESTABLISHED_BY_P7_R4_CONTRACT** | Data contract only |
+| Verification plan bound only | **ESTABLISHED_BY_P7_R5_CONTRACT** | Planning binding only |
 | Patch application / autofix | **NOT_AUTHORIZED** | P7 contracts do not grant execution authority |
 | Filesystem / Git write | **NOT_AUTHORIZED** | No application authority exists |
 | Repository write authority | **NONE** | Current P7 scope is data-only/docs-only |
@@ -58,7 +72,11 @@ This is a current engineering roadmap view only. It does not create implementati
 ## Canonical P7 sequence
 
 ```text
-#367 P7-R4 post-merge current-view reconciliation / proof 5553600421
+#363 P7-R3 post-merge current-view reconciliation / proof 5553345846
+  -> #364 P7-R4 applied-patch-evidence-binding authorization / proof 5553391471
+  -> #365 P7-R4 applied-patch-evidence-binding implementation / proof 5553509882
+  -> #366 P7-R4 current-view reconciliation authorization / proof 5553556112
+  -> #367 P7-R4 post-merge current-view reconciliation / proof 5553600421
   -> #367 comment 5553695694 P7-R5 successor analysis / ANALYSIS_ONLY
   -> #368 P7-R5 verification-plan-binding authorization / proof 5553737255
   -> #369 P7-R5 verification-plan-binding implementation / proof 5553946597
@@ -81,21 +99,22 @@ reconciliation authorization proof = 5553973273
 
 ---
 
-## Bounded P7-R5 semantics
+## Bounded P7-R4 / P7-R5 semantics
 
-P7-R5 is a pure/data-only deterministic content-addressed post-apply verification-plan binding over one exact canonically revalidated P7-R4 applied-evidence lineage and one supplied strictly validated current verification plan.
+P7-R4 remains a pure/data-only immutable applied-patch evidence binding. P7-R5 is a pure/data-only deterministic content-addressed post-apply verification-plan binding over one exact canonically revalidated P7-R4 applied-evidence lineage and one supplied strictly validated current verification plan.
 
 ```text
-VALID EXACT P7-R4 APPLIED EVIDENCE
-+ EXACT PREDECESSOR INPUT REQUIRED FOR CANONICAL R4 REVALIDATION
-+ SUPPLIED STRICTLY VALIDATED kodac.verification-plan
-+ RECOMPUTED CURRENT PLANNER STABLE-PROJECTION DIGEST
-+ EXACT APPLIED CHANGED PATHS
-+ AT LEAST ONE TESTS-CATEGORY COMMAND
--> CONTENT-ADDRESSED VERIFICATION_PLAN_BOUND RECORD
+APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
+APPLIED_EVIDENCE_BINDING != VERIFICATION
+VERIFICATION_PLAN_BOUND != VERIFICATION_PLANNER_EXECUTION
+VERIFICATION_PLAN_BOUND != VERIFICATION_EXECUTION
+VERIFICATION_PLAN_BOUND != VERIFICATION_REPORT
+VERIFICATION_PLAN_BOUND != VERIFIED
+VERIFICATION_PLAN_BOUND != FIXED
+VERIFICATION_PLAN_BOUND != DONE_GATE
 ```
 
-It does not invoke the planner, execute verification, create a verification report, establish `VERIFICATION_FAILED`/`VERIFIED`, invoke K2, apply a patch, advance Done Gate, or perform autofix.
+Neither contract invokes K2, applies a patch, executes verification, creates a verification report, establishes `VERIFICATION_FAILED`/`VERIFIED`, or advances Done Gate.
 
 ---
 

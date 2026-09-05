@@ -41,17 +41,30 @@ P4 OVERALL = OPEN
 
 P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL
 P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
+P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / PR #341 / proof 5551577054
 P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #343 / proof 5551673149
 P5-R3+ = NOT_AUTHORIZED
 P5 OVERALL = NOT_CLOSED
 
 P6-R1 DETERMINISTIC SECURITY FINDING FOUNDATION = CLOSED_CANONICAL / PR #345 / proof 5551884329
+P6 BOUNDED R1 ENGINEERING SCOPE = CLOSED_CANONICAL / PR #349 / proof 5552035602
 P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #351 / proof 5552175515
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
-P7-R1 THROUGH P7-R3 BOUNDED DATA CONTRACTS = CLOSED_CANONICAL
+P7-R1 AUTHORIZATION = CLOSED_CANONICAL / PR #352 / proof 5552233040
+P7-R1 IMMUTABLE PATCH PROPOSAL FOUNDATION = CLOSED_CANONICAL / PR #353 / proof 5552429216
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #355 / proof 5552575380
+P7-R2 PATCH-APPLICATION AUTHORIZATION = CLOSED_CANONICAL / PR #356 / proof 5552630320
+P7-R2 PATCH-APPLICATION AUTHORIZATION IMPLEMENTATION = CLOSED_CANONICAL / PR #357 / proof 5552730805
+P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #359 / proof 5552811852
+P7-R3 PRE-EXECUTION INTENT-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #360 / proof 5552924883
+P7-R3 PRE-EXECUTION INTENT-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #361 / proof 5553018473
+P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #362 / proof 5553049120
+P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #363 / proof 5553345846
+P7-R4 APPLIED PATCH EVIDENCE BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #364 / proof 5553391471
 P7-R4 APPLIED PATCH EVIDENCE BINDING = CLOSED_CANONICAL / PR #365 / proof 5553509882
+P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #366 / proof 5553556112
 P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #367 / proof 5553600421
 P7-R5 SUCCESSOR ANALYSIS = PR #367 / comment 5553695694 / ANALYSIS_ONLY
 P7-R5 POST-APPLY VERIFICATION-PLAN-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #368 / proof 5553737255
@@ -80,7 +93,7 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate may record only already-proven canonical P7-R4/P7-R5 truth. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate records only already-proven canonical P7-R4/P7-R5 truth and preserves prior canonical program facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
 It cannot certify its own closure. Until guarded merge and complete external post-merge proof exist:
 
@@ -130,11 +143,18 @@ test = ecd515a58f3cfd4abaa89001f80192c68e39b91b
 
 ---
 
-## Bounded P7-R5 meaning
-
-P7-R5 is a pure/data-only deterministic content-addressed post-apply verification-plan binding. It revalidates one exact P7-R4 applied-evidence lineage and one supplied current `kodac.verification-plan`, reproduces the current planner stable-projection digest, requires exact applied changed paths and at least one tests-category command, and binds that plan to the applied lineage without executing anything.
+## Bounded P7-R4 / P7-R5 meaning
 
 ```text
+APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
+VERIFICATION_PLAN_BOUND_ONLY = ESTABLISHED_BY_P7_R5_CONTRACT
+```
+
+P7-R4 remains a pure/data-only applied-patch evidence binding. P7-R5 adds one pure/data-only deterministic content-addressed post-apply verification-plan binding. P7-R5 revalidates one exact P7-R4 applied-evidence lineage and one supplied current `kodac.verification-plan`, reproduces the current planner stable-projection digest, requires exact applied changed paths and at least one tests-category command, and binds that plan to the applied lineage without executing anything.
+
+```text
+APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
+APPLIED_EVIDENCE_BINDING != VERIFICATION
 VERIFICATION_PLAN_BOUND != VERIFICATION_PLANNER_EXECUTION
 VERIFICATION_PLAN_BOUND != VERIFICATION_EXECUTION
 VERIFICATION_PLAN_BOUND != VERIFICATION_REPORT

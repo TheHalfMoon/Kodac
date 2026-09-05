@@ -29,16 +29,30 @@ P4 OVERALL = OPEN
 
 P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL
 P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
+P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / #341 / proof 5551577054
 P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #343 / proof 5551673149
 P5-R3+ = NOT_AUTHORIZED
 P5 OVERALL = NOT_CLOSED
 
 P6-R1 DETERMINISTIC SECURITY FINDING FOUNDATION = CLOSED_CANONICAL / #345 / proof 5551884329
+P6 BOUNDED R1 ENGINEERING SCOPE = CLOSED_CANONICAL / #349 / proof 5552035602
 P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #351 / proof 5552175515
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
+P7-R1 AUTHORIZATION = CLOSED_CANONICAL / #352 / proof 5552233040
+P7-R1 IMMUTABLE PATCH PROPOSAL FOUNDATION = CLOSED_CANONICAL / #353 / proof 5552429216
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #355 / proof 5552575380
+P7-R2 PATCH-APPLICATION AUTHORIZATION = CLOSED_CANONICAL / #356 / proof 5552630320
+P7-R2 PATCH-APPLICATION AUTHORIZATION IMPLEMENTATION = CLOSED_CANONICAL / #357 / proof 5552730805
+P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #359 / proof 5552811852
+P7-R3 PRE-EXECUTION INTENT-BINDING AUTHORIZATION = CLOSED_CANONICAL / #360 / proof 5552924883
+P7-R3 PRE-EXECUTION INTENT-BINDING IMPLEMENTATION = CLOSED_CANONICAL / #361 / proof 5553018473
+P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #362 / proof 5553049120
+P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #363 / proof 5553345846
+P7-R4 APPLIED-PATCH-EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / #364 / proof 5553391471
 P7-R4 APPLIED-PATCH-EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / #365 / proof 5553509882
+P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #366 / proof 5553556112
 P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #367 / proof 5553600421
 P7-R5 SUCCESSOR ANALYSIS = #367 / comment 5553695694 / ANALYSIS_ONLY
 P7-R5 POST-APPLY VERIFICATION-PLAN-BINDING AUTHORIZATION = CLOSED_CANONICAL / #368 / proof 5553737255
@@ -57,6 +71,8 @@ REPOSITORY_WRITE_AUTHORITY = NONE
 K2_INVOCATION = NOT_AUTHORIZED
 K2_APPROVAL_CREATION = NOT_AUTHORIZED
 K2_AUTHORITY_EXPANSION = NONE
+APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
+VERIFICATION_PLAN_BOUND_ONLY = ESTABLISHED_BY_P7_R5_CONTRACT
 VERIFICATION_PLANNER_INVOCATION = NOT_AUTHORIZED
 VERIFICATION_EXECUTION = NOT_AUTHORIZED
 VERIFICATION_REPORT_CREATION = NOT_AUTHORIZED
@@ -82,7 +98,11 @@ WAIVER = NO
 ## Canonical P7 sequence
 
 ```text
-#367 P7-R4 post-merge current-view reconciliation / proof 5553600421
+#363 P7-R3 post-merge current-view reconciliation / proof 5553345846
+  -> #364 P7-R4 applied-patch-evidence-binding authorization / proof 5553391471
+  -> #365 P7-R4 applied-patch-evidence-binding implementation / proof 5553509882
+  -> #366 P7-R4 current-view reconciliation authorization / proof 5553556112
+  -> #367 P7-R4 post-merge current-view reconciliation / proof 5553600421
   -> #367 comment 5553695694 successor analysis / ANALYSIS_ONLY
   -> #368 P7-R5 verification-plan-binding authorization / proof 5553737255
   -> #369 P7-R5 verification-plan-binding implementation / proof 5553946597
@@ -106,11 +126,13 @@ P7-R5 reconciliation authorization proof = 5553973273
 
 ---
 
-## Release-independent P7-R5 meaning
+## Release-independent P7-R4 / P7-R5 meaning
 
-P7-R5 is one internal pure/data-only deterministic content-addressed post-apply verification-plan binding. It revalidates one exact P7-R4 applied-evidence lineage, independently validates one supplied current `kodac.verification-plan`, reproduces the current planner stable-projection digest, requires exact applied changed paths and a tests-category command, and binds the validated plan occurrence to the applied lineage without invoking the planner or executing verification.
+P7-R4 remains one internal pure/data-only immutable applied-patch evidence binding. P7-R5 adds one internal pure/data-only deterministic content-addressed post-apply verification-plan binding. P7-R5 revalidates one exact P7-R4 applied-evidence lineage, independently validates one supplied current `kodac.verification-plan`, reproduces the current planner stable-projection digest, requires exact applied changed paths and a tests-category command, and binds the validated plan occurrence to the applied lineage without invoking the planner or executing verification.
 
 ```text
+APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
+APPLIED_EVIDENCE_BINDING != VERIFICATION
 VERIFICATION_PLAN_BOUND != VERIFICATION_EXECUTION
 VERIFICATION_PLAN_BOUND != VERIFICATION_REPORT
 VERIFICATION_PLAN_BOUND != VERIFIED
