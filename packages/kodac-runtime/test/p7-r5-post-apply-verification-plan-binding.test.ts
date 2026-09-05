@@ -244,6 +244,31 @@ test("P7-R5 builds and validates one deterministic VERIFICATION_PLAN_BOUND recor
   assert.deepEqual(validateP7PostApplyVerificationPlanBinding(built, input), built)
 })
 
+test("P7-R5 rejects root-field ordering drift that does not reproduce the claimed serialized preimage", () => {
+  const input = fixtureInput()
+  const built = buildP7PostApplyVerificationPlanBinding(input)
+  const entries = Object.entries(built)
+  const reordered = Object.fromEntries([entries[1]!, entries[0]!, ...entries.slice(2)]) as MutableRecord
+  assert.equal(reordered.bindingIdentity, built.bindingIdentity)
+  assert.notDeepEqual(Object.keys(reordered), Object.keys(built))
+  assert.throws(
+    () => validateP7PostApplyVerificationPlanBinding(reordered, input),
+    /supplied serialized binding preimage/,
+  )
+})
+
+test("P7-R5 rejects nested verificationPlan ordering drift that does not reproduce the claimed serialized preimage", () => {
+  const input = fixtureInput()
+  const built = buildP7PostApplyVerificationPlanBinding(input)
+  const reordered = structuredClone(built) as MutableRecord
+  reordered.verificationPlan = Object.fromEntries(Object.entries(reordered.verificationPlan).reverse())
+  assert.equal(reordered.bindingIdentity, built.bindingIdentity)
+  assert.throws(
+    () => validateP7PostApplyVerificationPlanBinding(reordered, input),
+    /supplied serialized binding preimage/,
+  )
+})
+
 test("P7-R5 identity is deterministic across benign plan key insertion order", () => {
   const input = fixtureInput()
   const first = buildP7PostApplyVerificationPlanBinding(input)
