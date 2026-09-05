@@ -308,6 +308,10 @@ The rerun remained on exact qualified head `0b412e2eea8f392d77ef2b98d6eaa1eb8a4f
 
 Initial head `cc518a31ba1f681c2281657ba13524112b31e1b3` would have allowed the later reconciliation candidate to self-certify closure before merge/post-proof. It was repaired forward-only to `a990f42e58d6eb2d9601a1e85e873cdd21bea952`. Evidence tied to the earlier head is stale.
 
+### Current P5 bounded-closeout evidence semantic repair
+
+Initial closeout-evidence branch head `1efeed662a85767b6f482c13bfcf9d8ff020f945` contained wording that could be read as allowing the five current views to describe canonical closeout after merge even though those files cannot observe their own future post-merge proof. Internal semantic inspection rejected that wording before PR creation. The evidence path was repaired forward-only at `0d25e47ebf25f958ea6633a68cf5182c5cf8c05d` to require explicit `CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL` wording. No qualification evidence from the pre-repair head is reusable.
+
 ---
 
 ## 8. Candidate closeout claim
