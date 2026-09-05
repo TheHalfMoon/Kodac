@@ -25,10 +25,11 @@ This file is a current engineering roadmap view. It does not create implementati
 | Trust and Verification Master Plan v2 amendment | **CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY** | Future dependency map only |
 | P4-R1 | **CLOSED_CANONICAL** | Reviewer Claim Evidence Envelope Foundation |
 | P4-R2 | **CLOSED_CANONICAL** | Structured Critic Disposition |
+| P4 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | PR #328 / proof `5547478904` |
 | P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | PR #329 / `6f65503fa4abdcf5c20c15d2e54265ab01c929d3` / proof `5547554548` |
-| P4 overall | **OPEN** | Bounded R1-R2 closure is not overall closure |
-| P4-R3+ | **NOT_AUTHORIZED** | No authority by numbering |
 | P4 post-closeout current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #330 / `fa74f7653a2105152fc48aacc293e98142fea7fa` / proof `5547581664` |
+| P4 overall | **OPEN** | Bounded R1-R2 closeout is not P4 overall closure |
+| P4-R3+ | **NOT_AUTHORIZED** | No authority by numbering |
 | P5-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | Fresh gap + separate authorization required |
 | Project completion | **NOT_ESTABLISHED** | No project-completion proof exists |
 
@@ -39,35 +40,93 @@ Engineering milestone state is separate from public release status.
 ## Canonical P4 lineage
 
 ```text
-P4-R1 authorization:  #323 / e59e2402333798e12f934f7b25c3cba5224bd651 / proof 5539462647
-P4-R1 implementation: #324 / d166e5305e2b9a400e9240ee7064bdf3c65f54aa / proof 5541190141
-Founder review policy: #325 / 94a62f8d794f7845dd2d999608fbb6fdd77ce7ab / proof 5541068578
-P4-R2 authorization:  #326 / 9443d15c02c143e4c4acc64b79817476b912ba1e / proof 5547225344
-P4-R2 implementation: #327 / 2641eb7493b6b6747f3cb56fa69e853305d54692 / proof 5547377851
-post-R2 analysis:     #327 / comment 5547425939 / ANALYSIS_ONLY
-closeout auth:        #328 / f8641ec272301c991fe47cc879a45f10d48d3587 / proof 5547478904
-bounded closeout:     #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
-post-closeout analysis:#329 / comment 5547558110 / ANALYSIS_ONLY
-reconciliation auth: #330 / fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
+P4-R1 authorization
+  PR #323
+  merge e59e2402333798e12f934f7b25c3cba5224bd651
+  post-merge proof 5539462647
+
+P4-R1 implementation
+  PR #324
+  qualified head 65299351ecaf8523e3da722fe0b691685b60e5ba
+  merge d166e5305e2b9a400e9240ee7064bdf3c65f54aa
+  post-merge proof 5541190141
+
+Founder external-review policy supersession
+  PR #325
+  merge 94a62f8d794f7845dd2d999608fbb6fdd77ce7ab
+  post-merge proof 5541068578
+  REQUIRED_EXTERNAL_SEMANTIC_REVIEW_COUNT = 0
+
+P4-R2 authorization
+  PR #326
+  merge 9443d15c02c143e4c4acc64b79817476b912ba1e
+  post-merge proof 5547225344
+
+P4-R2 implementation
+  PR #327
+  qualified head 1067c65ee6c6eb70b0904390030cbb67cfaa6ac7
+  merge 2641eb7493b6b6747f3cb56fa69e853305d54692
+  post-merge proof 5547377851
+
+Post-P4-R2 successor analysis
+  PR #327 / comment 5547425939
+  analysis-only / no authority created
+
+P4 bounded R1-R2 closeout authorization
+  PR #328
+  merge f8641ec272301c991fe47cc879a45f10d48d3587
+  post-merge proof 5547478904
+
+P4 bounded R1-R2 canonical closeout
+  PR #329
+  merge 6f65503fa4abdcf5c20c15d2e54265ab01c929d3
+  post-merge proof 5547554548
+
+Post-closeout reconciliation analysis
+  PR #329 / comment 5547558110
+  analysis-only / no authority created
+
+P4 post-closeout current-view reconciliation authorization
+  PR #330
+  merge fa74f7653a2105152fc48aacc293e98142fea7fa
+  post-merge proof 5547581664
 ```
 
 ---
 
 ## P4 bounded semantics
 
-P4-R1 is a deterministic pure/data-only evidence envelope over one existing KRI finding:
+### P4-R1 — Reviewer Claim Evidence Envelope Foundation
+
+P4-R1 is a deterministic, pure/data-only sidecar over an existing canonical KRI finding. It binds:
 
 ```text
-EXISTING KRI FINDING
-+ EXPLICIT CALLER-SUPPLIED RISK HYPOTHESIS
-+ EXACT REVIEW / HEAD / SCOPE / FRESHNESS / ADJUDICATION BINDING
-+ EXPLICIT EVIDENCE REFERENCES
-+ BOUNDED VERIFIER PROPOSALS AS PROPOSALS ONLY
-+ CRITIC_STATE = NOT_EVALUATED
--> DETERMINISTIC CONTENT-ADDRESSED DETACHED/FROZEN ENVELOPE
+existing KRI finding identity
++ exact review/head/scope/freshness state
++ explicit caller-owned risk hypothesis
++ explicit evidence references
++ bounded verifier proposals as proposals only
++ critic state NOT_EVALUATED
++ existing adjudication-state snapshot
+-> deterministic content-addressed detached/frozen evidence envelope
 ```
 
-P4-R2 binds one explicit caller-supplied critic disposition to one exact P4-R1 envelope with this closed vocabulary:
+Canonical implementation blobs:
+
+```text
+packages/kodac-runtime/src/reviewer-intelligence/p4-claim-envelope.ts
+  e9a59acf25c05276dddf80e269be4ae03e5e6775
+schema/p4-reviewer-claim-envelope.schema.json
+  121b2b7b0286a4b7dea0e92bb2642218fbb1a50e
+packages/kodac-runtime/test/p4-r1-reviewer-claim-envelope.test.ts
+  93ff960800363e036c25948aa4fa19617540814d
+```
+
+P4-R1 does not execute a reviewer/provider/model/critic/verifier and does not create adjudication authority.
+
+### P4-R2 — Structured Critic Disposition
+
+P4-R2 binds one explicit caller-supplied critic disposition to one exact validated P4-R1 envelope. The closed vocabulary is:
 
 ```text
 SUPPORTED
@@ -76,34 +135,53 @@ UNVERIFIED_CONCERN
 DUPLICATE_OR_SUPERSEDED
 ```
 
-Neither executes a reviewer, critic, verifier, provider, or model. Neither mutates KRI adjudication.
-
-Canonical implementation blobs remain:
+Canonical implementation blobs:
 
 ```text
-P4_R1_SOURCE = e9a59acf25c05276dddf80e269be4ae03e5e6775
-P4_R1_SCHEMA = 121b2b7b0286a4b7dea0e92bb2642218fbb1a50e
-P4_R1_TEST = 93ff960800363e036c25948aa4fa19617540814d
-P4_R2_SOURCE = 11b49b715fa5991deb6d2154d11c3cacbf310f92
-P4_R2_SCHEMA = 796bb3e5cd49994f2f7cfa477812ef5b0d291e99
-P4_R2_TEST = 7877e865b66a99763dab477938dc4e7b8b9d77a8
+packages/kodac-runtime/src/reviewer-intelligence/p4-critic-disposition.ts
+  11b49b715fa5991deb6d2154d11c3cacbf310f92
+schema/p4-critic-disposition.schema.json
+  796bb3e5cd49994f2f7cfa477812ef5b0d291e99
+packages/kodac-runtime/test/p4-r2-critic-disposition.test.ts
+  7877e865b66a99763dab477938dc4e7b8b9d77a8
 ```
+
+P4-R2 does not execute a critic or mutate KRI adjudication.
 
 ---
 
 ## Material P4 repair history preserved
 
-P4-R1 required a forward-only JSON Schema conditional-object parity repair. Later canonical `main` movement caused by the Founder review-policy supersession was reconciled without rebase/force-push and without changing frozen implementation blobs; exact-head qualification was rerun.
+P4-R1 required a forward-only JSON Schema conditional-object parity repair. Later canonical `main` movement caused by the Founder review-policy supersession was reconciled without rebase/force-push and without changing frozen implementation blobs. Final exact-head CI was rerun before merge.
 
-P4-R2 repaired two genuine defects before qualification: hostile Proxy trap exposure before rejection, and UTF-16/code-point length drift against JSON Schema. Prior-head evidence was discarded after every byte movement.
+P4-R2 internal semantic inspection found and repaired two genuine defects before qualification:
 
-These remain historical evidence, not authorization for broader execution.
+1. hostile `Proxy` values could reach reflection traps before rejection;
+2. JavaScript UTF-16 length semantics diverged from JSON Schema Unicode-code-point `maxLength` semantics.
+
+Both were repaired inside the three-path allowlist. Prior-head CI/review evidence was treated as stale after each movement.
+
+---
+
+## Why there is still no automatic P4-R3
+
+Fresh canonical analysis after P4-R2 established:
+
+```text
+GAP-05 reviewer disagreement protocol = addressed by P4-R2
+first-class verifier proposals = already present in P4-R1
+actual verifier execution/results = later P5 planning direction
+additional concrete P4 runtime/schema/test gap = none proven
+P4-R3+ authority by numbering = rejected
+```
+
+The bounded R1-R2 engineering scope is now closed canonical through PR #329. That closure does not create P4-R3 or P5 authority. The minimum current unit is the separately authorized post-closeout five-current-view reconciliation created by PR #330.
 
 ---
 
 ## Current authorized reconciliation
 
-Canonical PR #330 authorizes exactly five paths:
+Canonical PR #330 authorizes exactly:
 
 ```text
 docs/roadmap/NEXT.md
@@ -115,26 +193,37 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-The current reconciliation changes only these current views to record the already-proven bounded P4 closeout. It does not modify the closeout evidence ledger or any implementation/evidence substrate.
+The reconciliation may only replace candidate-time P4 bounded-closeout state with the now-proven canonical state, bind the exact PR #329 closeout anchors needed for current navigation/status, preserve P4 overall as open and every still-effective non-grant, and state that only fresh evidence-driven successor analysis may follow after the reconciliation itself qualifies, merges, and passes mandatory post-merge proof.
 
-After this reconciliation itself qualifies, merges normally with exact expected-head protection, and passes mandatory post-merge proof, fresh evidence-driven successor analysis must re-read the existing K5/KRI/P4/P5 substrate before any later authority is created.
+It may not modify historical closeout evidence, runtime source/tests, schemas, workflows, dependencies/lockfiles, KRI adjudication, benchmark data/results, provider/model configuration, persistence/telemetry/learning, product implementation, release configuration, or rulesets.
 
 ---
 
-## Ordered trust-program direction
+## Ordered improvement and trust program
 
-The Trust and Verification v2 amendment remains planning direction only:
+The Trust and Verification v2 amendment defines dependency direction, not implementation authority:
 
 ```text
-P2  KodacBench 2.0
-P3  Context Engine v2
-P4  Reviewer Intelligence v2
-P5  Proof and Verification Fabric
-P6  Security, Supply-Chain, and Attack Validation
-P7  Bounded Remediation
-P8  Agent Trust Gateway and Developer Distribution
-P9  Continuous Assurance
-R   Advanced Research
+K6 bounded closeout [CLOSED_CANONICAL]
+-> P2 KodacBench 2.0
+   -> bounded R1-R6 mechanisms [CLOSED_CANONICAL]
+   -> P2 overall [OPEN]
+-> P3 Context Engine v2
+   -> bounded R1-R17 mechanisms [CLOSED_CANONICAL]
+   -> bounded engineering closeout [CLOSED_CANONICAL]
+   -> P3 overall [OPEN]
+-> P4 Reviewer Intelligence v2
+   -> R1 Reviewer Claim Evidence Envelope [CLOSED_CANONICAL]
+   -> R2 Structured Critic Disposition [CLOSED_CANONICAL]
+   -> bounded R1-R2 engineering closeout [CLOSED_CANONICAL]
+   -> post-closeout current-view reconciliation [CURRENT]
+   -> P4 overall [OPEN]
+-> P5 Proof and Verification Fabric [PLANNING DIRECTION ONLY]
+-> P6 Security, Supply-Chain, and Attack Validation [PLANNING DIRECTION ONLY]
+-> P7 Bounded Remediation [PLANNING DIRECTION ONLY]
+-> P8 Agent Trust Gateway and Developer Distribution [PLANNING DIRECTION ONLY]
+-> P9 Continuous Assurance [PLANNING DIRECTION ONLY]
+-> R Advanced Research [PLANNING DIRECTION ONLY]
 ```
 
 No later stage becomes authorized by appearing in this map.
@@ -173,4 +262,12 @@ WAIVER = NO
 
 ## Next boundary
 
-Complete exact-head qualification, guarded merge, and post-merge proof for this five-current-view reconciliation. Only then run fresh successor analysis; do not infer P4-R3 or P5 by sequence.
+The immediate task is exact-head qualification, guarded merge, and mandatory post-merge proof of the authorized five-current-view reconciliation.
+
+Only after that proof may fresh evidence-driven successor analysis consider a later bounded unit. Do not infer P4-R3 or P5 by sequence.
+
+```text
+PLANNING DIRECTION != IMPLEMENTATION AUTHORITY
+POST_MERGE PROOF != SUCCESSOR AUTHORITY
+DONE = EVIDENCE_BACKED COMPLETION
+```
