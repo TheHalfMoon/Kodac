@@ -59,12 +59,19 @@ P7-R6 POST-REPAIR CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #378 / pro
 P7-R7 SUCCESSOR ANALYSIS = PR #378 / comment 5554700232 / ANALYSIS_ONLY
 P7-R7 VERIFICATION-FAILURE-DISPOSITION AUTHORIZATION = CLOSED_CANONICAL / PR #379 / proof 5554794663
 P7-R7 VERIFICATION-FAILURE-DISPOSITION IMPLEMENTATION = CLOSED_CANONICAL / PR #380 / proof 5555040304
-P7-R7 STATE MEANING = VERIFICATION_FAILED_ONLY / RECEIPT_BACKED_EXACT_FAILED_PLANNED_COMMAND
+P7-R7 STATE = VERIFICATION_FAILED_ONLY / RECEIPT_BACKED_EXACT_FAILED_PLANNED_COMMAND
 P7-R7 CURRENT-VIEW RECONCILIATION ANALYSIS = PR #380 / comment 5555091086 / ANALYSIS_ONLY
 DURABLE REVIEW ORCHESTRATION + SKILL TRUST PLAN AMENDMENT = CLOSED_CANONICAL / PR #381 / proof 5555071864 / PLANNING_ONLY
 P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #382 / proof 5555110307
-P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-P7-R8+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #383 / proof 5555153084
+P7-R8 SUCCESSOR ANALYSIS = PR #383 / comment 5555171313 / ANALYSIS_ONLY
+P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #384 / proof 5555204137
+P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #385 / proof 5555449960
+P7-R8 STATE = VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
+P7-R8 CURRENT-VIEW RECONCILIATION ANALYSIS = PR #385 / comment 5555454827 / ANALYSIS_ONLY
+P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #386 / proof 5555472241
+P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R9+ = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 PROJECT COMPLETION = NOT_ESTABLISHED
 ```
@@ -73,7 +80,7 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 
 ## NOW — authorized exact five-view reconciliation
 
-Canonical PR #382 and post-merge proof `5555110307` authorize exactly this documentation-only candidate:
+Canonical PR #386 and post-merge proof `5555472241` authorize exactly this documentation-only candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -85,12 +92,12 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate records only already-proven canonical P7-R7 facts plus the canonical planning-only PR #381 amendment. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate records only already-proven R7/R8 facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
 It cannot certify its own closure. Until guarded merge and complete post-merge proof exist:
 
 ```text
-P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -98,35 +105,31 @@ P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSE
 ## Canonical P7 frontier
 
 ```text
-#378
-  P7-R6 post-repair current-view reconciliation
-  proof = 5554468185
+#383
+  P7-R7 post-merge current-view reconciliation
+  proof = 5555153084
 
-#378 comment 5554700232
-  P7-R7 successor analysis / ANALYSIS_ONLY
+#383 comment 5555171313
+  P7-R8 successor analysis / ANALYSIS_ONLY
 
-#379
-  P7-R7 receipt-backed verification-failure disposition authorization
-  proof = 5554794663
+#384
+  P7-R8 verification-command success-evidence-binding authorization
+  proof = 5555204137
 
-#380
-  P7-R7 receipt-backed verification-failure disposition implementation
-  qualified head = 1eb46940cf5833f4edb58de4b0772fac3f8e93f6
-  merge = 531ac2c869bfba418238aeffbabe672d0ad27620
-  proof = 5555040304
-  state = VERIFICATION_FAILED_ONLY / RECEIPT_BACKED_EXACT_FAILED_PLANNED_COMMAND
+#385
+  P7-R8 verification-command success-evidence-binding implementation
+  qualified head = 5dd1b87a2508fe99694d30d22f756449cf947df0
+  merge = 9edd998ccd56e491634adda44e632b91ab6decf4
+  proof = 5555449960
+  state = VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
 
-#380 comment 5555091086
-  P7-R7 current-view reconciliation analysis / ANALYSIS_ONLY
+#385 comment 5555454827
+  P7-R8 current-view reconciliation analysis / ANALYSIS_ONLY
 
-#381
-  durable review orchestration and skill-trust master-plan amendment
-  proof = 5555071864
-  authority = PLANNING_ONLY
-
-#382
-  P7-R7 post-merge current-view reconciliation authorization
-  proof = 5555110307
+#386
+  P7-R8 post-merge current-view reconciliation authorization
+  merge = c9ba53764bee9321424417a498e23b54c21ef90a
+  proof = 5555472241
 
 CURRENT
   exact five-current-view reconciliation candidate
@@ -144,45 +147,55 @@ P7-R6 test = b3675abd40da8e16b2b48f7b2403915b91e1ca18
 P7-R7 source = 71396d3d2890f797370b4185901c2ad079ad049d
 P7-R7 schema = 6f3bd493861f42736cb60026293e3bd7be2d9eec
 P7-R7 test = d00286b780e00808c6c683ef4bc9f223b3ce43e9
+P7-R8 qualified head = 5dd1b87a2508fe99694d30d22f756449cf947df0
+P7-R8 merge = 9edd998ccd56e491634adda44e632b91ab6decf4
+P7-R8 source = dc150e9b3d4ea305445ca59de9ef483a92b9ef8d
+P7-R8 schema = 7b256db53a02ef9d32a133994a8fb0c9582b6981
+P7-R8 test = b25cb1094a75b2eba275c604005ed1facfc1c300
 ```
 
 ---
 
-## Bounded P7-R4 / P7-R5 / P7-R6 / P7-R7 meaning
+## Bounded P7-R4 through P7-R8 meaning
 
 ```text
 APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
 VERIFICATION_PLAN_BOUND_ONLY = ESTABLISHED_BY_P7_R5_CONTRACT
 VERIFICATION_REPORT_BOUND_ONLY = ESTABLISHED_BY_P7_R6_CONTRACT
 VERIFICATION_FAILED = ESTABLISHED_BY_P7_R7_CONTRACT / BOUNDED_RECEIPT_BACKED_ONLY
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R8_CONTRACT
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
 DONE_GATE_PROVEN_READY = NOT_ESTABLISHED
 ```
 
-P7-R4 is a pure/data-only applied-patch evidence binding. P7-R5 is a pure/data-only deterministic content-addressed verification-plan binding. P7-R6 is a pure/data-only deterministic content-addressed verification-report binding over one exact canonically revalidated P7-R5 predecessor and one supplied current verification report. P7-R7 is a pure/data-only deterministic receipt-backed failure-disposition binding over exact revalidated P7-R5/P7-R6 lineage, one exact failed planned command, and one complete matching K2 failure `ExecutionReceipt`. It validates historical evidence; it invokes no execution surface.
+P7-R8 is a pure/data-only deterministic binding that canonically revalidates one passing P7-R6 report and independently binds every exact P7-R5 planned command to one complete matching K2 success receipt plus reconstructed generic-gateway command-intent preimage. It validates historical evidence only and invokes no planner, verification engine, ExecutionGateway, K2, Done Gate, filesystem, Git, process, network, provider/model, persistence, or patch-application surface.
 
 ```text
-FAILED_R6_REPORT_BOOLEAN_ALONE != VERIFICATION_FAILED
-BASE_CHECK_FAILURE_ALONE != VERIFICATION_FAILED
-BARE_RECEIPT_REFERENCE != VERIFICATION_FAILED
-VERIFICATION_FAILED != VERIFICATION_ENGINE_INVOCATION
-VERIFICATION_FAILED != VERIFICATION_EXECUTION_AUTHORITY
-VERIFICATION_FAILED != K2_INVOCATION
-VERIFICATION_FAILED != K2_APPROVAL
-VERIFICATION_FAILED != VERIFIED
-VERIFICATION_FAILED != FIXED
-VERIFICATION_FAILED != REVERIFIED
-VERIFICATION_FAILED != DONE_GATE
-VERIFICATION_FAILED != PROVEN_READY
-VERIFICATION_FAILED != AUTOFIX
-VERIFICATION_FAILED != PATCH_RETRY_AUTHORITY
-VERIFICATION_FAILED != NEW_PATCH_PROPOSAL_AUTHORITY
-P7_R7_CLOSED != P7_R8_PLUS_AUTHORITY
-P7_R7_CLOSED != P7_OVERALL_CLOSED
-P7_R7_CLOSED != P8_AUTHORITY
-P7_R7_CLOSED != PROJECT_COMPLETION
+R6_PASSED_BOOLEAN != VERIFIED
+ALL_COMMAND_CHECKS_PASS_WITHOUT_RECEIPT_REVALIDATION != VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND
+ALL_PLANNED_COMMAND_SUCCESS_RECEIPTS != VERIFIED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != COMPLETE_REPORT_EVIDENCE_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != AGENT_COMPLETION_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != WORKSPACE_INTEGRITY_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != GIT_DIFF_SEMANTIC_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != LEDGER_COMPLETENESS_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFICATION_ENGINE_INVOCATION
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != K2_INVOCATION
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != K2_APPROVAL
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFIED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != FIXED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != REVERIFIED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != DONE_GATE
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != PROVEN_READY
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != AUTOFIX
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
+P7_R8_CLOSED != P7_R9_PLUS_AUTHORITY
+P7_R8_CLOSED != P7_OVERALL_CLOSED
+P7_R8_CLOSED != P8_AUTHORITY
+P7_R8_CLOSED != PROJECT_COMPLETION
 ```
 
 ---
@@ -203,7 +216,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R8+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R9+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -221,9 +234,6 @@ FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
 DONE_GATE_PROVEN_READY = NOT_ESTABLISHED
 DONE_GATE_INVOCATION_OR_MUTATION = NOT_AUTHORIZED
-REVIEWER_CRITIC_VERIFIER_PROVIDER_MODEL_EXECUTION_EXPANSION = NOT_AUTHORIZED
-SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
-SARIF_INGESTION = NOT_AUTHORIZED
 PROVIDER_MODEL_INVOCATION = NOT_AUTHORIZED
 SECRET_ACCESS = NOT_AUTHORIZED
 NETWORK_ACCESS = NOT_AUTHORIZED
@@ -232,11 +242,10 @@ KRI_K5_K2_AUTHORITY_MUTATION = NOT_AUTHORIZED
 NEW_DEPENDENCY_DONOR_ADMISSION = NONE
 PERSISTENCE_DATABASE_TELEMETRY_UPLOAD_LEARNING = NOT_AUTHORIZED
 CLI_API_PACKAGE_ROOT_PRODUCT_INTEGRATION = NOT_AUTHORIZED
-PUBLIC_RELEASE_PACKAGE_PUBLICATION_DEPLOYMENT = NOT_AUTHORIZED
-PUBLIC_SUPERIORITY_BEST_IN_CLASS_CLAIM = NOT_AUTHORIZED
 P8_P9_IMPLEMENTATION = NOT_AUTHORIZED
+PUBLIC_RELEASE_PACKAGE_PUBLICATION_DEPLOYMENT = NOT_AUTHORIZED
 RULESET_CHANGE_BYPASS = NOT_AUTHORIZED
-PROJECT_COMPLETION = NOT_ESTABLISHED
+PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
@@ -246,13 +255,14 @@ The canonical PR #381 durable-orchestration/skill-trust amendment remains planni
 
 ## THEN — proof and fresh successor-authority analysis
 
-Only after this exact five-path reconciliation qualifies, merges guarded, and receives complete post-merge proof may fresh successor-authority analysis run from then-live repository truth.
+Only after this exact five-path reconciliation independently qualifies, merges guarded, and receives complete post-merge proof may fresh successor-authority analysis run from then-live repository truth.
 
-Do not infer P7-R8+, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering, composition, roadmap language, or the planning amendment.
+Do not infer P7-R9+, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering, composition, roadmap language, or planning amendments.
 
 ## Navigation
 
 - Working rules: `AGENTS.md`
-- Current reconciliation authorization: `docs/planning/KODAC_P7_R7_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
+- P7-R8 implementation authorization: `docs/planning/KODAC_P7_R8_VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BINDING_AUTHORIZATION_2026-09-06.md`
+- Current reconciliation authorization: `docs/planning/KODAC_P7_R8_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
 - Durable orchestration / skill trust direction: `docs/planning/KODAC_DURABLE_REVIEW_ORCHESTRATION_AND_SKILL_TRUST_MASTER_PLAN_AMENDMENT_2026-09-06.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
