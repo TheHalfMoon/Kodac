@@ -68,8 +68,12 @@ P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #359 / proo
 P7-R3 PRE-EXECUTION INTENT BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #360 / proof 5552924883
 P7-R3 PRE-EXECUTION INTENT BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #361 / proof 5553018473
 P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #362 / proof 5553049120
-P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-P7-R4+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #363 / proof 5553345846
+P7-R4 APPLIED PATCH EVIDENCE BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #364 / proof 5553391471
+P7-R4 APPLIED PATCH EVIDENCE BINDING = CLOSED_CANONICAL / PR #365 / proof 5553509882
+P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #366 / proof 5553556112
+P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R5+ = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 
 PATCH_APPLICATION = NOT_AUTHORIZED
@@ -77,8 +81,11 @@ AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 FILESYSTEM / GIT WRITE = NOT_AUTHORIZED
 REPOSITORY_WRITE_AUTHORITY = NONE
 K2_INVOCATION = NOT_AUTHORIZED
+K2_APPROVAL_CREATION = NOT_AUTHORIZED
 K2 AUTHORITY EXPANSION = NONE
-APPLIED / VERIFICATION_FAILED / VERIFIED = NOT_ESTABLISHED
+VERIFICATION_EXECUTION = NOT_AUTHORIZED
+APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
+VERIFICATION_FAILED / VERIFIED = NOT_ESTABLISHED
 FIXED / REVERIFIED / DONE_GATE = NOT_ESTABLISHED
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
@@ -97,9 +104,9 @@ WAIVER = NO
 
 ---
 
-## NOW — authorized P7-R3 five-current-view reconciliation
+## NOW — authorized P7-R4 five-current-view reconciliation
 
-Canonical PR #362 and post-merge proof `5553049120` authorize exactly this documentation-only candidate:
+Canonical PR #366 and post-merge proof `5553556112` authorize exactly this documentation-only candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -111,12 +118,12 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate records only already-proven canonical P7-R2/P7-R3 facts and preserves every still-effective non-grant. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate records only already-proven canonical P7-R3/P7-R4 facts and preserves every still-effective non-grant. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
 It cannot certify its own closure. Until guarded merge and complete external post-merge proof exist:
 
 ```text
-P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R4 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -124,26 +131,25 @@ P7-R3 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSE
 ## Canonical P7 lineage
 
 ```text
-#359 P7-R2 post-merge current-view reconciliation
-  merge d74cf1379316ee9d5b121fbb7b536772ec7cea00 / proof 5552811852
+#363 P7-R3 post-merge current-view reconciliation
+  merge 0713d1f17d65f6dd8be0408f017c053021b575f5 / proof 5553345846
 
-#359 comment 5552837458
+#363 comment 5553366154
   fresh successor analysis / ANALYSIS_ONLY
 
-#360 P7-R3 pre-execution intent-binding authorization
-  qualified head b896cf3538196dfe57231983bb8ee86b579027ea
-  merge a2ddc989857294b92913a354a8a129ecf331f2ed / proof 5552924883
+#364 P7-R4 applied-patch-evidence-binding authorization
+  merge 34d975eb752a634c7a6445161972ffb81671a731 / proof 5553391471
 
-#361 P7-R3 pre-execution intent-binding implementation
-  qualified head c79b02be006697bd1dddfe326dfae26e4b3f5c10
-  merge 4f464286443d4298f78b5bcc873aa2c4203054b9 / proof 5553018473
+#365 P7-R4 applied-patch-evidence-binding implementation
+  qualified head f162f9531a33c61bde93f42d3c7307f2c6124e1e
+  merge 6c10d898ea43fda9003de761badd07c5b113043d / proof 5553509882
 
-#361 comment 5553023397
-  post-P7-R3 current-view reconciliation analysis / ANALYSIS_ONLY
+#365 comment 5553524060
+  post-P7-R4 current-view reconciliation analysis / ANALYSIS_ONLY
 
-#362 P7-R3 current-view reconciliation authorization
-  qualified head ef82a7f76380fe03e3f00a457d3a27812322eaa8
-  merge 1acf7f8c920f59bf4187a8e4072c808b7479f51d / proof 5553049120
+#366 P7-R4 current-view reconciliation authorization
+  qualified head fd840fbc5b3d383218d2fbebff6695b1b93180d8
+  merge 378005971f3cd9fe5ddc9efdc237e93c34d63fe3 / proof 5553556112
 
 CURRENT
   exact five-current-view reconciliation candidate
@@ -151,37 +157,39 @@ CURRENT
 
 ---
 
-## Bounded P7-R3 meaning
+## Bounded P7-R4 meaning
 
-P7-R3 is a pure/data-only immutable pre-execution binding. It validates one exact P7-R1 proposal, one exact matching P7-R2 authorization, and exact inert patch text. It binds the authorization identity, proposal identity, repository/base/head, patch digest, exact `repo.apply_patch` intent projection, exact write paths, exact operations, and UTF-8 patch byte length without invoking K2 or applying the patch.
+P7-R4 is a pure/data-only immutable applied-patch evidence binding. It validates one exact P7-R1 proposal, one exact matching P7-R2 authorization, one exact matching P7-R3 pre-execution binding, exact inert patch text, and one supplied strictly validated successful existing K2 `repo.apply_patch` receipt. It binds exact receipt identity, capability, policy decision, paths, affected operation projection, optional validated approval/confinement evidence, timestamps, and post-state digest into one deterministic content-addressed `APPLIED` evidence record without invoking K2 or applying a patch.
 
-Canonical P7-R3 implementation blobs:
+Canonical P7-R4 implementation blobs:
 
 ```text
-source = 53119aded3de7c945967248e5ec19196bf03e2c7
-schema = 74852ac9141f28466c7a3902df7441b876bd919d
-test = 011a7e53f10da80138ac8f4cc06a33c505c38fb0
+source = eb25540f83e4b7a817f190618f9daae5839130f2
+schema = e1b11582559bd574d0159b68e95c1b258bd6e1c5
+test = 391488f1e2ce24ccaa2646ddeb520af4e1c520da
 ```
+
+The P7-R4 tests use fixture receipts as contract-test data only; they are not claims of actual K2 remediation execution.
 
 Required non-equivalences:
 
 ```text
-PRE_EXECUTION_BINDING != PATCH_APPLICATION
-PRE_EXECUTION_BINDING != K2_EXECUTION
-PRE_EXECUTION_BINDING != GENERIC_K2_ONE_SHOT_APPROVAL
-PRE_EXECUTION_BINDING != APPLIED
-PRE_EXECUTION_BINDING != VERIFICATION_FAILED
-PRE_EXECUTION_BINDING != VERIFIED
-PRE_EXECUTION_BINDING != FIXED
-PRE_EXECUTION_BINDING != REVERIFIED
-PRE_EXECUTION_BINDING != DONE_GATE
-PRE_EXECUTION_BINDING != AUTOFIX
-PATCH_DIGEST_MATCH != PATCH_SEMANTIC_CORRECTNESS
-WRITE_ALLOWLIST_MATCH != EXECUTED_WRITE_SET
-P7-R3 CLOSED != P7-R4+ AUTHORITY
-P7-R3 CLOSED != P7 OVERALL CLOSED
-P7-R3 CLOSED != P8 AUTHORITY
-P7-R3 CLOSED != PROJECT COMPLETION
+APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
+APPLIED_EVIDENCE_BINDING != K2_EXECUTION
+APPLIED_EVIDENCE_BINDING != K2_APPROVAL
+APPLIED_EVIDENCE_BINDING != VERIFICATION
+APPLIED_EVIDENCE_BINDING != VERIFICATION_FAILED
+APPLIED_EVIDENCE_BINDING != VERIFIED
+APPLIED_EVIDENCE_BINDING != FIXED
+APPLIED_EVIDENCE_BINDING != REVERIFIED
+APPLIED_EVIDENCE_BINDING != DONE_GATE
+APPLIED_EVIDENCE_BINDING != AUTOFIX
+SUCCESSFUL_EXECUTION_RECEIPT != COMPLETE_CORRECTNESS
+POST_STATE_DIGEST != VERIFIED_REMEDIATION
+P7-R4 CLOSED != P7-R5+ AUTHORITY
+P7-R4 CLOSED != P7 OVERALL CLOSED
+P7-R4 CLOSED != P8 AUTHORITY
+P7-R4 CLOSED != PROJECT COMPLETION
 ```
 
 ---
@@ -202,13 +210,15 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R4+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R5+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
 FILESYSTEM_GIT_WRITE = NOT_AUTHORIZED
 REPOSITORY_WRITE_AUTHORITY = NONE
 K2_INVOCATION = NOT_AUTHORIZED
+K2_APPROVAL_CREATION = NOT_AUTHORIZED
 K2_AUTHORITY_EXPANSION = NONE
+VERIFICATION_EXECUTION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION EXPANSION = NOT_AUTHORIZED
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
@@ -233,7 +243,7 @@ WAIVER = NO
 
 Only after this exact five-path reconciliation qualifies, merges guarded, and passes complete post-merge proof may fresh successor-authority analysis run from live code and canonical planning.
 
-Do not infer P7-R4, patch application, K2 execution, autofix, lifecycle advancement, P8/P9, product/release work, or project completion by numbering or composition.
+Do not infer P7-R5, verification execution, VERIFIED/FIXED/REVERIFIED/Done Gate state, patch application, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering or composition.
 
 ## Navigation
 
@@ -241,6 +251,7 @@ Do not infer P7-R4, patch application, K2 execution, autofix, lifecycle advancem
 - P7-R1 authorization: `docs/planning/KODAC_P7_R1_IMMUTABLE_PATCH_PROPOSAL_AUTHORIZATION_2026-09-05.md`
 - P7-R2 authorization: `docs/planning/KODAC_P7_R2_PATCH_APPLICATION_AUTHORIZATION_2026-09-05.md`
 - P7-R3 authorization: `docs/planning/KODAC_P7_R3_PRE_EXECUTION_INTENT_BINDING_AUTHORIZATION_2026-09-05.md`
-- P7-R3 reconciliation authorization: `docs/planning/KODAC_P7_R3_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
+- P7-R4 authorization: `docs/planning/KODAC_P7_R4_APPLIED_PATCH_EVIDENCE_BINDING_AUTHORIZATION_2026-09-05.md`
+- P7-R4 reconciliation authorization: `docs/planning/KODAC_P7_R4_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
 - Final gap review: `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
