@@ -55,7 +55,7 @@ type ProposalCore = Omit<P7ImmutablePatchProposal, "proposalIdentity">
 const SHA1 = /^[0-9a-f]{40}$/
 const SHA256 = /^[0-9a-f]{64}$/
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/u
-const WINDOWS_DRIVE_PREFIX = /^[A-Za-z]:\//
+const WINDOWS_DRIVE_PREFIX = /^[A-Za-z]:/
 const OPERATIONS = new Set<string>(P7_R1_PATCH_OPERATIONS)
 
 const INPUT_KEYS = [
