@@ -3,7 +3,6 @@ import { types as nodeTypes } from "node:util"
 
 import {
   validateReceiptConfinementBinding,
-  type ApprovalReceiptBinding,
   type ExecutionReceipt,
 } from "../evidence/receipt.ts"
 import {
@@ -90,74 +89,33 @@ type NormalizedReceiptEvidence = {
 const SHA256 = /^[0-9a-f]{64}$/
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/u
+const APPROVAL_VERSION = "kodac-h4-r1-one-shot-approval-v1" as const
 
-const BUILD_KEYS = [
-  "sourceProposal",
-  "sourceAuthorization",
-  "sourceIntentBinding",
-  "exactPatchText",
-  "executionReceipt",
-] as const
+const BUILD_KEYS = ["sourceProposal", "sourceAuthorization", "sourceIntentBinding", "exactPatchText", "executionReceipt"] as const
 const OUTPUT_KEYS = [
-  "version",
-  "appliedEvidenceIdentity",
-  "state",
-  "proposalIdentity",
-  "authorizationIdentity",
-  "intentBindingIdentity",
-  "repositoryIdentity",
-  "canonicalBase",
-  "targetHead",
-  "patchArtifactDigest",
-  "inputDigest",
-  "executionReceiptIdentity",
-  "executionReceiptId",
-  "executionStartedAt",
-  "executionCompletedAt",
-  "capability",
-  "policyDecision",
-  "paths",
-  "operations",
-  "postStateDigest",
-  "approvalEvidenceIdentity",
+  "version", "appliedEvidenceIdentity", "state", "proposalIdentity", "authorizationIdentity",
+  "intentBindingIdentity", "repositoryIdentity", "canonicalBase", "targetHead", "patchArtifactDigest",
+  "inputDigest", "executionReceiptIdentity", "executionReceiptId", "executionStartedAt", "executionCompletedAt",
+  "capability", "policyDecision", "paths", "operations", "postStateDigest", "approvalEvidenceIdentity",
   "confinementBindingIdentity",
 ] as const
 const RECEIPT_ALLOWED_KEYS = [
-  "receiptId",
-  "capability",
-  "inputDigest",
-  "paths",
-  "policy",
-  "approval",
-  "confinement",
-  "startedAt",
-  "completedAt",
-  "result",
+  "receiptId", "capability", "inputDigest", "paths", "policy", "approval", "confinement", "startedAt",
+  "completedAt", "result",
 ] as const
-const RECEIPT_REQUIRED_KEYS = [
-  "receiptId",
-  "capability",
-  "inputDigest",
-  "paths",
-  "policy",
-  "startedAt",
-  "completedAt",
-  "result",
-] as const
+const RECEIPT_REQUIRED_KEYS = ["receiptId", "capability", "inputDigest", "paths", "policy", "startedAt", "completedAt", "result"] as const
 const POLICY_KEYS = ["decision", "reason"] as const
 const RESULT_KEYS = ["status", "affected", "postStateDigest"] as const
 const AFFECTED_KEYS = ["added", "modified", "deleted"] as const
-const APPROVAL_KEYS = [
-  "version",
-  "requestIdentity",
-  "requestInstanceId",
-  "decisionEvidenceIdentity",
-  "outcome",
-] as const
+const APPROVAL_KEYS = ["version", "requestIdentity", "requestInstanceId", "decisionEvidenceIdentity", "outcome"] as const
 const OPERATION_KEYS = ["path", "operation"] as const
 
 function fail(label: string, detail: string): never {
   throw new TypeError(`${label} ${detail}`)
+}
+
+function hashText(value: string): string {
+  return createHash("sha256").update(value, "utf8").digest("hex")
 }
 
 function compareStrings(left: string, right: string): number {
@@ -195,10 +153,10 @@ function ownDataRecord(
   }
   const prototype = Object.getPrototypeOf(value)
   if (prototype !== Object.prototype && prototype !== null) fail(label, "must be a plain object")
+
   const allowed = new Set<string>(allowedKeys)
   const result: UnknownRecord = {}
-  const keys = Reflect.ownKeys(value)
-  for (const key of keys) {
+  for (const key of Reflect.ownKeys(value)) {
     if (typeof key !== "string") fail(label, "must not contain symbol fields")
     if (!allowed.has(key)) fail(label, `contains unknown field: ${key}`)
     const descriptor = Object.getOwnPropertyDescriptor(value, key)
@@ -214,14 +172,15 @@ function ownDataRecord(
 function arrayData(value: unknown, label: string): readonly unknown[] {
   if (!Array.isArray(value) || nodeTypes.isProxy(value)) fail(label, "must be a non-proxy array")
   if (Object.getPrototypeOf(value) !== Array.prototype) fail(label, "must use the ordinary Array prototype")
-  const descriptor = Object.getOwnPropertyDescriptor(value, "length")
-  if (descriptor === undefined || !("value" in descriptor) || !Number.isSafeInteger(descriptor.value)) {
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
+  if (lengthDescriptor === undefined || !("value" in lengthDescriptor) || !Number.isSafeInteger(lengthDescriptor.value)) {
     fail(label, "must expose an ordinary array length")
   }
-  const length = descriptor.value as number
+  const length = lengthDescriptor.value as number
   if (length > P7_R4_APPLIED_PATCH_EVIDENCE_LIMITS.maxPaths) {
     fail(label, `exceeds ${P7_R4_APPLIED_PATCH_EVIDENCE_LIMITS.maxPaths} entries`)
   }
+
   const keys = Reflect.ownKeys(value)
   const expected = new Set<string>(["length"])
   for (let index = 0; index < length; index += 1) expected.add(String(index))
@@ -231,13 +190,14 @@ function arrayData(value: unknown, label: string): readonly unknown[] {
     }
   }
   if (keys.length !== expected.size) fail(label, "must not contain sparse array slots")
+
   const result: unknown[] = []
   for (let index = 0; index < length; index += 1) {
-    const item = Object.getOwnPropertyDescriptor(value, String(index))
-    if (item === undefined || !("value" in item) || item.enumerable !== true) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
+    if (descriptor === undefined || !("value" in descriptor) || descriptor.enumerable !== true) {
       fail(`${label}[${index}]`, "must be an enumerable data property")
     }
-    result.push(item.value)
+    result.push(descriptor.value)
   }
   return result
 }
@@ -261,16 +221,18 @@ function uuidV4(value: unknown, label: string): string {
 }
 
 function isoTimestamp(value: unknown, label: string): string {
-  if (typeof value !== "string") fail(label, "must be an ISO-8601 UTC timestamp")
+  if (typeof value !== "string") fail(label, "must be a canonical ISO-8601 UTC timestamp")
   const parsed = Date.parse(value)
-  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) fail(label, "must be a canonical ISO-8601 UTC timestamp")
+  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) {
+    fail(label, "must be a canonical ISO-8601 UTC timestamp")
+  }
   return value
 }
 
 function canonicalPaths(value: unknown, label: string): readonly string[] {
-  const items = arrayData(value, label)
-  if (items.length < 1) fail(label, "must contain at least one path")
-  const paths = items.map((item, index) => boundedText(
+  const values = arrayData(value, label)
+  if (values.length < 1) fail(label, "must contain at least one path")
+  const paths = values.map((item, index) => boundedText(
     item,
     `${label}[${index}]`,
     P7_R4_APPLIED_PATCH_EVIDENCE_LIMITS.maxPathCodePoints,
@@ -282,49 +244,56 @@ function canonicalPaths(value: unknown, label: string): readonly string[] {
   return Object.freeze(paths)
 }
 
-function normalizedAffectedPaths(value: unknown, label: string): {
+function affectedPaths(value: unknown): {
   readonly added: readonly string[]
   readonly modified: readonly string[]
   readonly deleted: readonly string[]
 } {
-  const record = ownDataRecord(value, AFFECTED_KEYS, AFFECTED_KEYS, label)
-  const normalize = (entry: unknown, childLabel: string): readonly string[] => {
-    const items = arrayData(entry, childLabel)
-    const paths = items.map((item, index) => boundedText(
+  const record = ownDataRecord(value, AFFECTED_KEYS, AFFECTED_KEYS, "executionReceipt.result.affected")
+  const normalize = (entry: unknown, label: string): readonly string[] => {
+    const paths = arrayData(entry, label).map((item, index) => boundedText(
       item,
-      `${childLabel}[${index}]`,
+      `${label}[${index}]`,
       P7_R4_APPLIED_PATCH_EVIDENCE_LIMITS.maxPathCodePoints,
     ))
-    if (new Set(paths).size !== paths.length) fail(childLabel, "must not contain duplicate paths")
+    if (new Set(paths).size !== paths.length) fail(label, "must not contain duplicate paths")
     return Object.freeze([...paths].sort(compareStrings))
   }
-  const added = normalize(record.added, `${label}.added`)
-  const modified = normalize(record.modified, `${label}.modified`)
-  const deleted = normalize(record.deleted, `${label}.deleted`)
+  const added = normalize(record.added, "executionReceipt.result.affected.added")
+  const modified = normalize(record.modified, "executionReceipt.result.affected.modified")
+  const deleted = normalize(record.deleted, "executionReceipt.result.affected.deleted")
   const all = [...added, ...modified, ...deleted]
-  if (new Set(all).size !== all.length) fail(label, "must not classify one path more than once")
+  if (new Set(all).size !== all.length) fail("executionReceipt.result.affected", "must not classify one path more than once")
   return Object.freeze({ added, modified, deleted })
 }
 
-function operationsFromAffected(affected: {
-  readonly added: readonly string[]
-  readonly modified: readonly string[]
-  readonly deleted: readonly string[]
-}): readonly P7AppliedPatchOperation[] {
+function operationsFromAffected(value: ReturnType<typeof affectedPaths>): readonly P7AppliedPatchOperation[] {
   const operations: P7AppliedPatchOperation[] = [
-    ...affected.added.map((path) => ({ path, operation: "ADD" as const })),
-    ...affected.modified.map((path) => ({ path, operation: "MODIFY" as const })),
-    ...affected.deleted.map((path) => ({ path, operation: "DELETE" as const })),
+    ...value.added.map((path) => ({ path, operation: "ADD" as const })),
+    ...value.modified.map((path) => ({ path, operation: "MODIFY" as const })),
+    ...value.deleted.map((path) => ({ path, operation: "DELETE" as const })),
   ]
   operations.sort((left, right) => compareStrings(left.path, right.path))
   return Object.freeze(operations.map((operation) => Object.freeze(operation)))
 }
 
-function normalizedApproval(value: unknown): string | null {
+function approvalRequestIdentity(inputDigest: string, paths: readonly string[]): string {
+  const intent = JSON.stringify({
+    capability: P7_R3_PATCH_EXECUTION_CAPABILITY,
+    paths,
+    inputDigest,
+  })
+  return hashText(`${APPROVAL_VERSION}\n${intent}`)
+}
+
+function normalizedApproval(value: unknown, inputDigest: string, paths: readonly string[]): string | null {
   if (value === undefined) return null
   const record = ownDataRecord(value, APPROVAL_KEYS, APPROVAL_KEYS, "executionReceipt.approval")
-  if (record.version !== "kodac-h4-r1-one-shot-approval-v1") fail("executionReceipt.approval.version", "is unsupported")
-  sha256(record.requestIdentity, "executionReceipt.approval.requestIdentity")
+  if (record.version !== APPROVAL_VERSION) fail("executionReceipt.approval.version", "is unsupported")
+  const requestIdentity = sha256(record.requestIdentity, "executionReceipt.approval.requestIdentity")
+  if (requestIdentity !== approvalRequestIdentity(inputDigest, paths)) {
+    fail("executionReceipt.approval.requestIdentity", "must match the exact receipt execution intent")
+  }
   uuidV4(record.requestInstanceId, "executionReceipt.approval.requestInstanceId")
   const evidenceIdentity = sha256(record.decisionEvidenceIdentity, "executionReceipt.approval.decisionEvidenceIdentity")
   if (record.outcome !== "allowed-once") fail("executionReceipt.approval.outcome", "must equal allowed-once")
@@ -363,13 +332,10 @@ function normalizedReceipt(value: unknown): NormalizedReceiptEvidence {
 
   const result = ownDataRecord(receipt.result, RESULT_KEYS, RESULT_KEYS, "executionReceipt.result")
   if (result.status !== "success") fail("executionReceipt.result.status", "must equal success")
-  const affected = normalizedAffectedPaths(result.affected, "executionReceipt.result.affected")
+  const affected = affectedPaths(result.affected)
   const operations = operationsFromAffected(affected)
   if (operations.length < 1) fail("executionReceipt.result.affected", "must attest at least one affected path")
   const postStateDigest = sha256(result.postStateDigest, "executionReceipt.result.postStateDigest")
-
-  const approvalEvidenceIdentity = normalizedApproval(receipt.approval)
-  const confinementBindingIdentity = normalizedConfinement(receipt.confinement, inputDigest)
 
   return Object.freeze({
     receiptId,
@@ -378,8 +344,8 @@ function normalizedReceipt(value: unknown): NormalizedReceiptEvidence {
     paths,
     policyDecision: P7_R4_POLICY_DECISION,
     policyReason,
-    approvalEvidenceIdentity,
-    confinementBindingIdentity,
+    approvalEvidenceIdentity: normalizedApproval(receipt.approval, inputDigest, paths),
+    confinementBindingIdentity: normalizedConfinement(receipt.confinement, inputDigest),
     startedAt,
     completedAt,
     operations,
@@ -388,7 +354,7 @@ function normalizedReceipt(value: unknown): NormalizedReceiptEvidence {
 }
 
 function receiptEvidenceIdentity(receipt: NormalizedReceiptEvidence): string {
-  return createHash("sha256").update(JSON.stringify(receipt), "utf8").digest("hex")
+  return hashText(JSON.stringify(receipt))
 }
 
 function deepFreeze<T>(value: T): T {
@@ -400,7 +366,7 @@ function deepFreeze<T>(value: T): T {
 }
 
 function appliedEvidenceIdentity(value: AppliedCore): string {
-  return createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")
+  return hashText(JSON.stringify(value))
 }
 
 function coreFromSources(input: P7AppliedPatchEvidenceBindingBuildInput): AppliedCore {
@@ -417,9 +383,7 @@ function coreFromSources(input: P7AppliedPatchEvidenceBindingBuildInput): Applie
   if (receipt.inputDigest !== intentBinding.inputDigest) {
     fail("executionReceipt.inputDigest", "must match the P7-R3 pre-execution inputDigest")
   }
-  if (receipt.paths.length !== intentBinding.paths.length) {
-    fail("executionReceipt.paths", "must exactly match P7-R3 paths")
-  }
+  if (receipt.paths.length !== intentBinding.paths.length) fail("executionReceipt.paths", "must exactly match P7-R3 paths")
   for (let index = 0; index < intentBinding.paths.length; index += 1) {
     if (receipt.paths[index] !== intentBinding.paths[index]) fail("executionReceipt.paths", "must exactly match P7-R3 paths")
   }
@@ -495,25 +459,10 @@ export function validateP7AppliedPatchEvidenceBinding(
   const core = normalizedBuildCore(input)
 
   const scalarKeys = [
-    "version",
-    "state",
-    "proposalIdentity",
-    "authorizationIdentity",
-    "intentBindingIdentity",
-    "repositoryIdentity",
-    "canonicalBase",
-    "targetHead",
-    "patchArtifactDigest",
-    "inputDigest",
-    "executionReceiptIdentity",
-    "executionReceiptId",
-    "executionStartedAt",
-    "executionCompletedAt",
-    "capability",
-    "policyDecision",
-    "postStateDigest",
-    "approvalEvidenceIdentity",
-    "confinementBindingIdentity",
+    "version", "state", "proposalIdentity", "authorizationIdentity", "intentBindingIdentity", "repositoryIdentity",
+    "canonicalBase", "targetHead", "patchArtifactDigest", "inputDigest", "executionReceiptIdentity", "executionReceiptId",
+    "executionStartedAt", "executionCompletedAt", "capability", "policyDecision", "postStateDigest",
+    "approvalEvidenceIdentity", "confinementBindingIdentity",
   ] as const
   for (const key of scalarKeys) {
     if (record[key] !== core[key]) fail(`applied evidence.${key}`, "does not match the canonical source-derived value")
@@ -538,6 +487,5 @@ export function validateP7AppliedPatchEvidenceBinding(
   if (sha256(record.appliedEvidenceIdentity, "applied evidence.appliedEvidenceIdentity") !== expectedIdentity) {
     fail("applied evidence.appliedEvidenceIdentity", "does not match the canonical applied-evidence preimage")
   }
-
   return deepFreeze({ ...core, appliedEvidenceIdentity: expectedIdentity })
 }
