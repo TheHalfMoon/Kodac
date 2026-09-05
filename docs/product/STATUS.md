@@ -42,10 +42,21 @@ P6-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #347 / proof 5
 P6 BOUNDED R1 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / #348 / proof 5551993370
 P6 BOUNDED R1 ENGINEERING SCOPE = CLOSED_CANONICAL / #349 / proof 5552035602
 P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #350 / proof 5552132556
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #351 / proof 5552175515
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
+P7-R1 AUTHORIZATION = CLOSED_CANONICAL / #352 / proof 5552233040
+P7-R1 IMMUTABLE PATCH PROPOSAL FOUNDATION = CLOSED_CANONICAL / #353 / proof 5552429216
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #354 / proof 5552462948
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P7 OVERALL = NOT_CLOSED
+
+PATCH_APPLICATION = NOT_AUTHORIZED
+AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
+REPOSITORY_WRITE_AUTHORITY = NONE
+K2_AUTHORITY_EXPANSION = NONE
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
 PROVIDER_MODEL_INVOCATION = NOT_AUTHORIZED
@@ -54,71 +65,65 @@ NETWORK_ACCESS = NOT_AUTHORIZED
 EXPLOIT_ATTACK_EXECUTION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
-AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
-P7-P9 IMPLEMENTATION = NOT_AUTHORIZED
-PUBLIC RELEASE / PACKAGE PUBLICATION = NOT_AUTHORIZED
+P8-P9 IMPLEMENTATION = NOT_AUTHORIZED
+PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
 ---
 
-## Product-facing P5/P6 meaning
+## Product-facing P5/P6/P7 meaning
 
-P5-R1 and P5-R2 remain internal bounded trust/evidence mechanisms. Their canonical closure does not imply product availability, proof completion, API stability, package publication, provider/model availability, verifier execution, or release authority.
+P5 and P6 bounded closures remain internal trust/evidence/security mechanisms. They do not imply product availability, API stability, package publication, provider/model availability, scanner execution, proof completion, or release authority.
 
-P6-R1 is also internal and bounded. It provides a pure/data-only deterministic security finding contract over a validated canonical P5-R1 provenance binding. It normalizes bounded finding identity metadata only.
+P7-R1 is also internal and bounded. It provides one pure/data-only immutable patch proposal contract over a current KRI-R2 finding and its first `CONFIRM` adjudication. It binds exact canonical-base/target-head identities, an immutable patch-artifact SHA-256 identity, and one bounded canonically ordered declared change set into a deterministic content-addressed detached/frozen `PROPOSED` record.
 
-P6-R1 does **not** execute a scanner/analyzer, ingest SARIF, access secrets, open network connections, execute exploits, establish truth or proof, claim a clean scan or safe repository, mutate K2/K5/Done Gate authority, expose a product/API/CLI surface, or authorize release.
+P7-R1 does **not** fetch, parse, trust, apply, or execute patch bytes; write repository state; invoke K2; mark a finding fixed; establish verified remediation or Done Gate; expose a product/API/CLI surface; or authorize release.
 
-Canonical P6-R1 implementation blobs:
+Canonical P7-R1 implementation blobs:
 
 ```text
-P6-R1 source = 453166c7f8c5e49f9b0f7cc2cd744c7ec54b38d0
-P6-R1 schema = d7586b0d434cca713ea7d112d6d1b0407558cc50
-P6-R1 test = fa489fafd8cb8ecfc3ff684fa08425b1ed48ab67
+P7-R1 source = 1dbf53388e22e0c88c6d90fa07f3f7f02a0b36f7
+P7-R1 schema = 3e9665d2e157ffb69d09f81324abc32c9ae2cb18
+P7-R1 test = 5eeee7b8f9027e759366e697b7c1924e2739d84c
 ```
 
 Required non-equivalences:
 
 ```text
-DETERMINISTIC_SECURITY_FINDING != PROOF / TRUTH / ADJUDICATION
-DETERMINISTIC_SECURITY_FINDING != EXPLOITABILITY_ESTABLISHED
-DETERMINISTIC_SECURITY_FINDING != CLEAN_SCAN_OR SAFE_CLAIM
-DETERMINISTIC_SECURITY_FINDING != REVIEWER_CLAIM
-DETERMINISTIC_SECURITY_FINDING != VERIFIER_OR_SCANNER_EXECUTION
-DETERMINISTIC_SECURITY_FINDING != SARIF_INGESTION
-DETERMINISTIC_SECURITY_FINDING != SECRET_OR NETWORK_ACCESS
-DETERMINISTIC_SECURITY_FINDING != K2_K5_DONE_GATE_AUTHORITY
-P6 BOUNDED R1 CLOSED != P6-R2+ AUTHORITY
-P6 BOUNDED R1 CLOSED != P6 OVERALL CLOSED
-P6 BOUNDED R1 CLOSED != P7 AUTHORITY
-P6 BOUNDED R1 CLOSED != PROJECT COMPLETION
+PATCH_PROPOSAL != AUTHORIZATION_TO_APPLY
+PATCH_PROPOSAL != APPLIED_PATCH
+PATCH_PROPOSAL != VERIFIED_REMEDIATION
+PATCH_PROPOSAL != FIXED_FINDING
+PATCH_PROPOSAL != DONE_GATE
+PATCH_ARTIFACT_DIGEST != PATCH_VALIDATION
+DECLARED_CHANGE_SET != EXECUTED_WRITE_SET
+P7-R1 CLOSED != P7-R2+ AUTHORITY
+P7-R1 CLOSED != P7 OVERALL CLOSED
+P7-R1 CLOSED != P8 AUTHORITY
+P7-R1 CLOSED != PROJECT COMPLETION
 ```
 
 ---
 
-## Canonical P6 proof anchors
+## Canonical P7 proof anchors
 
 ```text
-#344 P6-R1 authorization = 208bfc370c8671bd9b5a71d659355aa08e40d65a / proof 5551754576
-#345 P6-R1 implementation = 0f907b6f6e12a15da753e836b124c586ee9fe285 / proof 5551884329
-#345 final qualified P6-R1 head = 60bc2e3e157b8eacac145ef22fa7cdaae1428baa
-#347 P6-R1 current-view reconciliation = fd2c53682dde47b795740cc706b28852397f3ec6 / proof 5551961606
-#347 post-P6-R1 successor analysis = comment 5551968892 / ANALYSIS_ONLY
-#348 P6 bounded R1 closeout authorization = 82cb0e1b2c4739537a1355ec6e6fdd63759cbc5d / proof 5551993370
-#349 P6 bounded R1 engineering closeout = 206741c67021864ffdaea1f57aa91bf7d1509a48 / proof 5552035602
-#349 post-closeout reconciliation analysis = comment 5552036750 / ANALYSIS_ONLY
-#350 P6 post-closeout reconciliation authorization = 2f2596a6c316863abf6effca46d6e88fbdc314a8 / proof 5552132556
-RULESET = 20707483 / active / no bypass
+#351 P6 post-closeout current-view reconciliation = CLOSED_CANONICAL / proof 5552175515
+#352 P7-R1 authorization = CLOSED_CANONICAL / proof 5552233040
+#353 P7-R1 immutable patch proposal implementation = ce48aa20845874e8b0d9e9e7b250f1499bc4664e / proof 5552429216
+#353 post-merge reconciliation analysis = comment 5552433653 / ANALYSIS_ONLY
+#354 P7-R1 post-merge current-view reconciliation authorization = 352eaa28879275e500026cf8d787bb25322b6ef2 / proof 5552462948
+RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 ```
 
 ---
 
 ## Current authorized unit
 
-Canonical #350 and proof `5552132556` authorize exactly this five-path documentation-only reconciliation candidate:
+Canonical #354 and proof `5552462948` authorize exactly this five-path documentation-only reconciliation candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -130,28 +135,12 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-The candidate records already-proven P6 bounded R1 closeout truth and preserves every still-effective non-grant. It changes no runtime, schema, test, dependency, workflow, historical authorization/evidence, KRI/K5/K2 authority, persistence, product implementation, or release surface.
+The candidate records only already-proven canonical P6/P7-R1 facts and preserves every still-effective non-grant. It changes no runtime, schema, tests, workflows, dependencies, lockfiles, historical authorization/evidence records, KRI/K5/K2 authority, persistence, product implementation, release surface, or repository protection.
 
 The candidate cannot claim its own reconciliation closure before guarded merge and external post-merge proof:
 
 ```text
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-```
-
----
-
-## Why no product-facing P6-R2 is inferred
-
-Fresh post-P6-R1 analysis `#347 / 5551968892` found no additional pure/data-only P6 mechanism proven both non-duplicative and necessary before bounded closeout. The later post-closeout reconciliation analysis `#349 / 5552036750` identified only current-view drift and created no successor authority.
-
-Execution manifests and effective-policy receipts are coupled to real scanner/analyzer invocation and trusted K2 enforcement. Provider artifact lifecycle and SARIF adapters are broader future integration surfaces. Exploit/attack validation is a future side-effectful execution surface. None is currently authorized merely because planning names exist.
-
-```text
-P6_R2_PLUS = NOT_AUTHORIZED_BY_NUMBERING
-SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
-SARIF_INGESTION = NOT_AUTHORIZED
-PROVIDER_MODEL_INVOCATION = NOT_AUTHORIZED
-SECRET_NETWORK_EXPLOIT_ACCESS = NOT_AUTHORIZED
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -180,11 +169,17 @@ P3 OVERALL = OPEN
 P4 OVERALL = OPEN
 P5 OVERALL = NOT_CLOSED
 P6 OVERALL = NOT_CLOSED
+P7 OVERALL = NOT_CLOSED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+PATCH_APPLICATION = NOT_AUTHORIZED
+AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
+REPOSITORY_WRITE_AUTHORITY = NONE
+K2_AUTHORITY_EXPANSION = NONE
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION EXPANSION = NOT_AUTHORIZED
@@ -194,11 +189,10 @@ EXPLOIT_ATTACK_EXECUTION = NOT_AUTHORIZED
 KRI / K5 / K2 AUTHORITY MUTATION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
-AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
 PUBLIC SUPERIORITY / BEST-IN-CLASS CLAIM = NOT_AUTHORIZED
-P7-P9 IMPLEMENTATION = NOT_AUTHORIZED
+P8-P9 IMPLEMENTATION = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
@@ -208,6 +202,6 @@ WAIVER = NO
 
 ## Next product-status boundary
 
-Complete exact-head qualification, guarded merge, and post-merge proof for this exact five-current-view reconciliation. Only then may fresh successor-authority analysis determine whether any additional bounded P6 mechanism is justified or whether canonical P6 scope has converged as far as currently authorized planning permits.
+Complete exact-head qualification, guarded merge, and post-merge proof for this exact five-current-view reconciliation. Only then may fresh successor-authority analysis determine whether any additional bounded P7 mechanism is independently necessary and non-duplicative.
 
-No P6-R2, scanner execution, SARIF, provider/model invocation, secret/network access, exploit validation, dependency admission, P7, product, or release authority follows by numbering or composition.
+No P7-R2, patch application, K2 invocation, autofix, provider/model invocation, product integration, release, or project-completion authority follows by numbering or composition.
