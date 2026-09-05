@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-applied-patch-evidence-binding.schema.json",
+  "title": "Kodac P7-R4 Applied Patch Evidence Binding",
+  "description": "A pure data-only immutable APPLIED evidence record that binds one strictly validated successful existing repo.apply_patch execution receipt to the exact P7-R1/P7-R2/P7-R3 lineage. This schema grants no patch application, K2 invocation or approval, verification execution, VERIFIED/FIXED/REVERIFIED/Done Gate state, autofix, filesystem/Git write, provider/model, network, persistence, product-integration, release, or project-completion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "appliedEvidenceIdentity",
+    "state",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "patchArtifactDigest",
+    "inputDigest",
+    "executionReceiptIdentity",
+    "executionReceiptId",
+    "executionStartedAt",
+    "executionCompletedAt",
+    "capability",
+    "policyDecision",
+    "paths",
+    "operations",
+    "postStateDigest",
+    "approvalEvidenceIdentity",
+    "confinementBindingIdentity"
+  ],
+  "properties": {
+    "version": { "const": "p7-r4-applied-patch-evidence-binding-v1" },
+    "appliedEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "state": { "const": "APPLIED" },
+    "proposalIdentity": { "$ref": "#/$defs/sha256" },
+    "authorizationIdentity": { "$ref": "#/$defs/sha256" },
+    "intentBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "repositoryIdentity": { "$ref": "#/$defs/identityText" },
+    "canonicalBase": { "$ref": "#/$defs/gitCommit" },
+    "targetHead": { "$ref": "#/$defs/gitCommit" },
+    "patchArtifactDigest": { "$ref": "#/$defs/sha256" },
+    "inputDigest": { "$ref": "#/$defs/sha256" },
+    "executionReceiptIdentity": { "$ref": "#/$defs/sha256" },
+    "executionReceiptId": { "$ref": "#/$defs/uuidV4" },
+    "executionStartedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+    "executionCompletedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+    "capability": { "const": "repo.apply_patch" },
+    "policyDecision": { "const": "allow" },
+    "paths": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/repositoryPath" },
+      "description": "Runtime requires exact equality with the canonical P7-R3 paths in canonical ascending order."
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/operation" },
+      "description": "Runtime requires exact equality with the P7-R3 path/operation projection after normalizing the K2 receipt affected sets."
+    },
+    "postStateDigest": { "$ref": "#/$defs/sha256" },
+    "approvalEvidenceIdentity": {
+      "anyOf": [
+        { "$ref": "#/$defs/sha256" },
+        { "type": "null" }
+      ]
+    },
+    "confinementBindingIdentity": {
+      "anyOf": [
+        { "$ref": "#/$defs/sha256" },
+        { "type": "null" }
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "uuidV4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "canonicalTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "unicodeScalarText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:[^\\u0000\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+$"
+    },
+    "identityText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 256 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F])(?=.*\\S).+$" }
+      ]
+    },
+    "repositoryPath": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 1024 },
+        {
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*//)(?!\\.\\.?$)(?!\\.\\.?/)(?!.*\\/\\.\\.?\\/)(?!.*\\/\\.\\.?$)(?!.*[\\u0000-\\u001F\\u007F]).+$"
+        }
+      ]
+    },
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "operation"],
+      "properties": {
+        "path": { "$ref": "#/$defs/repositoryPath" },
+        "operation": { "enum": ["ADD", "MODIFY", "DELETE"] }
+      }
+    }
+  }
+}
