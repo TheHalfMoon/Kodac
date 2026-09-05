@@ -230,6 +230,7 @@ function r5Input(): P7PostApplyVerificationPlanBindingBuildInput {
 }
 
 function failureReport(plan: P7VerificationPlanInput): MutableRecord {
+  void plan
   return {
     protocol: "kodac.verification",
     version: 1,
@@ -525,7 +526,7 @@ test("P7-R7 independently reconstructs the exact generic gateway command intent 
     const intent = structuredClone(input.executionIntentPreimage) as MutableRecord
     mutate(intent)
     assert.throws(
-      () => buildP7VerificationFailureDispositionBinding({ ...input, executionIntentPreimage: intent }),
+      () => buildP7VerificationFailureDispositionBinding({ ...input, executionIntentPreimage: intent as P7VerificationExecutionIntentPreimage }),
       expected,
     )
   }
@@ -540,7 +541,7 @@ test("P7-R7 permits empty optional historical environment values but rejects cus
   const intent = structuredClone(input.executionIntentPreimage) as MutableRecord
   intent.args = new DerivedArray<string>(...intent.args)
   assert.throws(
-    () => buildP7VerificationFailureDispositionBinding({ ...input, executionIntentPreimage: intent }),
+    () => buildP7VerificationFailureDispositionBinding({ ...input, executionIntentPreimage: intent as P7VerificationExecutionIntentPreimage }),
     /ordinary Array prototype/,
   )
 })
@@ -595,7 +596,7 @@ test("P7-R7 rejects hostile Proxy, accessor, symbol, sparse, aliased, and custom
   sparse[0] = "scripts/run-tests.mjs"
   sparseIntent.args = sparse
   assert.throws(
-    () => buildP7VerificationFailureDispositionBinding({ ...input, executionIntentPreimage: sparseIntent }),
+    () => buildP7VerificationFailureDispositionBinding({ ...input, executionIntentPreimage: sparseIntent as P7VerificationExecutionIntentPreimage }),
     /sparse/,
   )
 
@@ -607,7 +608,7 @@ test("P7-R7 rejects hostile Proxy, accessor, symbol, sparse, aliased, and custom
   assert.throws(
     () => buildP7VerificationFailureDispositionBinding({
       ...input,
-      executionIntentPreimage: aliasIntent,
+      executionIntentPreimage: aliasIntent as P7VerificationExecutionIntentPreimage,
       executionReceipt: aliasedReceipt,
     }),
     /aliases/,
@@ -650,7 +651,7 @@ test("P7-R7 identity binds execution evidence and source failure semantics", () 
   changedReceipt.inputDigest = gatewayInputDigest(changedIntent as P7VerificationExecutionIntentPreimage)
   const second = buildP7VerificationFailureDispositionBinding({
     ...input,
-    executionIntentPreimage: changedIntent,
+    executionIntentPreimage: changedIntent as P7VerificationExecutionIntentPreimage,
     executionReceipt: changedReceipt,
   })
   assert.notEqual(second.executionEnvironmentDigest, first.executionEnvironmentDigest)
