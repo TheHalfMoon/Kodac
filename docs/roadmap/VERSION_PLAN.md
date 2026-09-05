@@ -30,19 +30,20 @@ P3-R18+ = NOT_AUTHORIZED
 
 P4-R1 = CLOSED_CANONICAL
 P4-R2 = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
-P4 BOUNDED R1-R2 CLOSEOUT = PR #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
-P4 POST-CLOSEOUT RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #330 / proof 5547581664
-P4 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #331 / proof 5550826662
+P4 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P4 OVERALL = OPEN
 P4-R3+ = NOT_AUTHORIZED
 
-P5-R1 AUTHORIZATION = CLOSED_CANONICAL / PR #332 / proof 5550880869
-P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL / PR #333 / proof 5550968215
-P5-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #334 / proof 5550995814
-P5-R2+ = NOT_AUTHORIZED
+P5-R1 EVIDENCE PROVENANCE BINDING = CLOSED_CANONICAL
+P5-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
+P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
+P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #338 / proof 5551292787
+P5-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P5-R3+ = NOT_AUTHORIZED
+PROOFGRAPH = NOT_AUTHORIZED
 P5 OVERALL = NOT_CLOSED
+
 P6-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
@@ -50,97 +51,61 @@ WAIVER = NO
 
 ---
 
-## Canonical P4 sequence
+## Canonical P5 sequence
 
 ```text
-#323  P4-R1 authorization
-  -> #324  P4-R1 Reviewer Claim Evidence Envelope implementation
-  -> #325  Founder external semantic-review gate supersession
-  -> #326  P4-R2 authorization
-  -> #327  P4-R2 Structured Critic Disposition implementation
-  -> #327 comment 5547425939 fresh analysis: no justified P4-R3 mechanism
-  -> #328  bounded R1-R2 engineering closeout authorization
-  -> #329  bounded R1-R2 canonical closeout
-  -> #329 comment 5547558110 post-closeout reconciliation analysis
-  -> #330  post-closeout five-current-view reconciliation authorization
-  -> #331  post-closeout five-current-view reconciliation
+#331 comment 5550850246
+  fresh post-P4 successor analysis / ANALYSIS_ONLY
+
+-> #332 P5-R1 Evidence Provenance Binding authorization
+   merge 39a732aecee8ebd69c5f294d2aa135288edc6d97
+   proof 5550880869
+
+-> #333 P5-R1 Evidence Provenance Binding implementation
+   initial failed head 35dd6b2434a3586f320f378dd5aa30428fcc3ed2
+   final qualified head 7ccc8516938be0578d7648c4b7f07e89af86b306
+   merge cef7a375e366795913879bed82f3d2bffe7647aa
+   proof 5550968215
+
+-> #334 P5-R1 post-merge reconciliation authorization
+   merge 3ef17af23c686b18aa0f383c681b72c672137d51
+   proof 5550995814
+
+-> #335 P5-R1 post-merge current-view reconciliation
+   merge 64f468a8cee37e07d252e32cd97b1a229856b65b
+   proof 5551095617
+
+-> #335 comment 5551117643
+   fresh successor analysis / ANALYSIS_ONLY
+
+-> #336 P5-R2 Evidence Relation Edge authorization
+   final head d62ef5a15d2ab5e9faa3782d557521a0830af699
+   merge 5c4f4886c734c02f87d1aa611ef0751ab1d995d2
+   proof 5551168295
+
+-> #337 P5-R2 Evidence Relation Edge implementation
+   qualified head 0b412e2eea8f392d77ef2b98d6eaa1eb8a4f530b
+   merge b35b1703579efb77453ca7a24923ecbace9afaac
+   proof 5551261065
+
+-> #337 comment 5551265629
+   post-R2 reconciliation analysis / ANALYSIS_ONLY
+
+-> #338 P5-R2 post-merge current-view reconciliation authorization
+   qualified head a990f42e58d6eb2d9601a1e85e873cdd21bea952
+   merge de2735ffd7698e13f4adfb4a2c7ef98ee32177d3
+   proof 5551292787
+
+-> CURRENT: P5-R2 five-current-view reconciliation candidate
 ```
 
-Canonical merge/proof anchors:
-
-```text
-#323 = e59e2402333798e12f934f7b25c3cba5224bd651 / proof 5539462647
-#324 = d166e5305e2b9a400e9240ee7064bdf3c65f54aa / proof 5541190141
-#325 = 94a62f8d794f7845dd2d999608fbb6fdd77ce7ab / proof 5541068578
-#326 = 9443d15c02c143e4c4acc64b79817476b912ba1e / proof 5547225344
-#327 = 2641eb7493b6b6747f3cb56fa69e853305d54692 / proof 5547377851
-#328 = f8641ec272301c991fe47cc879a45f10d48d3587 / proof 5547478904
-#329 = 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
-#330 = fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
-#331 = af6a225e5151ed5717d112ee9281f440f32d4693 / proof 5550826662
-```
-
----
-
-## P4 R1-R2 release-independent meaning
-
-P4-R1 and P4-R2 are internal bounded deterministic trust/evidence contracts. Their canonical closure does not imply package publication, API stability, product readiness, provider/model availability, or release authority.
-
-P4-R1 provides:
-
-```text
-KRI finding
--> reviewer-claim evidence envelope
--> explicit risk hypothesis
--> evidence refs
--> bounded verifier proposals as proposals only
--> critic state NOT_EVALUATED
--> exact head/scope/freshness/adjudication binding
-```
-
-P4-R2 provides:
-
-```text
-exact P4-R1 envelope
--> explicit critic disposition
--> SUPPORTED | CONTRADICTED | UNVERIFIED_CONCERN | DUPLICATE_OR_SUPERSEDED
--> evidence refs
--> deterministic identity
-```
-
-Neither executes a reviewer, critic, verifier, provider, or model. Neither mutates KRI adjudication.
-
----
-
-## Canonical P5-R1 sequence
-
-```text
-#331 comment 5550850246 fresh successor analysis
-  -> #332 P5-R1 Evidence Provenance Binding authorization
-  -> #333 P5-R1 Evidence Provenance Binding implementation
-     -> initial exact-head TypeScript qualification failure at 35dd6b2434a3586f320f378dd5aa30428fcc3ed2
-     -> forward-only test repair
-     -> final qualified head 7ccc8516938be0578d7648c4b7f07e89af86b306
-  -> #333 comment 5550978486 post-R1 reconciliation analysis
-  -> #334 P5-R1 post-merge current-view reconciliation authorization
-  -> CURRENT: five-current-view reconciliation
-```
-
-Canonical merge/proof anchors:
-
-```text
-#332 = 39a732aecee8ebd69c5f294d2aa135288edc6d97 / proof 5550880869
-#333 = cef7a375e366795913879bed82f3d2bffe7647aa / proof 5550968215
-#334 = 3ef17af23c686b18aa0f383c681b72c672137d51 / proof 5550995814
-```
+No later unit advances by numbering.
 
 ---
 
 ## P5-R1 release-independent meaning
 
-P5-R1 is an internal bounded deterministic provenance contract. Its canonical closure does not imply source-evidence validity, automatic freshness evaluation, proof completion, package publication, API stability, product readiness, provider/model availability, verifier execution, or release authority.
-
-P5-R1 provides:
+P5-R1 is an internal bounded deterministic provenance contract:
 
 ```text
 existing evidence identity / ref / digest
@@ -162,23 +127,72 @@ packages/kodac-runtime/test/p5-r1-evidence-provenance.test.ts
   = 512ab506898d945aed8381352906c4e03bcbd487
 ```
 
+P5-R1 does not imply source-evidence validity, automatic freshness evaluation, proof completion, package publication, API stability, product readiness, verifier execution, or release authority.
+
+---
+
+## P5-R2 release-independent meaning
+
+P5-R2 is an internal bounded deterministic evidence-relation contract:
+
+```text
+exact validated P5-R1 source binding
+-> caller-supplied SUPPORTS | CONTRADICTS | SUPERSEDES
+-> exact validated P5-R1 target binding
+-> exact shared repositoryId / canonicalBase / candidateHead
+-> distinct source / target binding identities
+-> deterministic content-addressed detached/frozen directed relation edge
+```
+
+Canonical implementation blobs:
+
+```text
+packages/kodac-runtime/src/verification/p5-evidence-relation.ts
+  = d33fb119ee8cbeda6e7c8e445cad6cee4b242e86
+schema/p5-evidence-relation.schema.json
+  = cb2574e1c656f7a5537985035ad43bb1637c51a7
+packages/kodac-runtime/test/p5-r2-evidence-relation.test.ts
+  = 1a78da0fbc65c2403134b42555311fe12d3f9355
+```
+
 Required non-equivalences:
 
 ```text
-PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION
-PROVENANCE BINDING != PROOF
-PROVENANCE BINDING != AUTHORITY
-CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
-P5-R1 CLOSED != P5-R2+ AUTHORITY
-P5-R1 CLOSED != P5 OVERALL CLOSED
-P5-R1 CLOSED != PROJECT COMPLETION
+CALLER-SUPPLIED RELATION != TRUTH
+RELATION EDGE != PROOF
+RELATION EDGE != AUTHORITY
+RELATION EDGE != ADJUDICATION
+RELATION EDGE != VERIFICATION RESULT
+RELATION EDGE != VERIFIER EXECUTION
+RELATION EDGE != AUTOMATIC FRESHNESS
+RELATION EDGE != PROOFGRAPH
+RELATION EDGE != GRAPH STORAGE / TRAVERSAL / TRANSITIVE CLOSURE / INVERSE INFERENCE
 ```
+
+---
+
+## Material qualification integrity
+
+P5-R1 preserves its forward-only exact-head TypeScript repair history.
+
+P5-R2 preserves this exact-head CI event:
+
+```text
+FIRST_UBUNTU_ATTEMPT = FAILED_ONE_UNRELATED_PRE_EXISTING_H4_R3G_B_TEST
+P5_R1_P5_R2_TESTS_ON_FIRST_UBUNTU_ATTEMPT = PASS
+CANDIDATE_H4_PATH_CHANGES = NONE
+SAME_EXACT_HEAD_UBUNTU_RERUN = SUCCESS
+FINAL_K2_RUNTIME_GATE = SUCCESS
+HEAD_MOVEMENT_DURING_RERUN = NONE
+```
+
+The rerun remained on exact head `0b412e2eea8f392d77ef2b98d6eaa1eb8a4f530b`.
 
 ---
 
 ## Current reconciliation
 
-Canonical PR #334 authorizes exactly these five current views and no sixth path:
+Canonical PR #338 authorizes exactly these five current views and no sixth path:
 
 ```text
 docs/roadmap/NEXT.md
@@ -188,7 +202,7 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-The reconciliation records already-proven P4/P5-R1 truth. It does not create implementation authority.
+The current candidate records already-proven P5-R1/P5-R2 truth. It does not create implementation authority and may not self-certify its own future closure.
 
 It must still pass exact-head CI, internal substantive semantic inspection, zero actionable findings/threads, active no-bypass ruleset, guarded normal merge with exact `expected_head_sha`, and mandatory post-merge proof.
 
@@ -210,9 +224,7 @@ P9  Continuous Assurance
 R   Advanced Research
 ```
 
-This map does not grant implementation authority.
-
-After this P5-R1 current-view reconciliation is post-merge proven, fresh repository evidence must determine any later minimum bounded unit. No P5-R2 unit advances by numbering.
+This map does not grant implementation authority. After the current P5-R2 reconciliation is post-merge proven, fresh repository evidence must determine any later minimum bounded unit. P5-R3 is not authorized by sequence.
 
 ---
 
@@ -227,13 +239,15 @@ EXTERNAL_REVIEW_AVAILABILITY != MERGE_AUTHORITY
 DONE = EVIDENCE_BACKED_COMPLETION
 ```
 
-All other qualification requirements remain effective: exact-head identity, required CI, internal substantive semantic inspection, zero known actionable defects, zero unresolved actionable threads, active protected-main rules, guarded merge, and mandatory post-merge proof.
+All other gates remain effective.
 
 ---
 
 ## Preserved non-grants
 
 ```text
+K2 SIDE-EFFECT AUTHORITY = UNCHANGED
+K5 / DONE GATE AUTHORITY = UNCHANGED
 P2 OVERALL = OPEN
 P3 OVERALL = OPEN
 P4 OVERALL = OPEN
@@ -243,17 +257,12 @@ REAL BENCHMARK EXECUTION = NOT_AUTHORIZED
 P2-R7+ = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ = NOT_AUTHORIZED
 P4-R3+ = NOT_AUTHORIZED
-P5-R2+ = NOT_AUTHORIZED
+P5-R3+ = NOT_AUTHORIZED
 P6-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
 KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
-PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION
-PROVENANCE BINDING != PROOF
-PROVENANCE BINDING != AUTHORITY
-CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
-VERIFIER PROPOSAL != VERIFICATION RESULT
-CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
-REVIEW AGREEMENT != PROOF
+SOURCE EVIDENCE VALIDATION = NOT_AUTHORIZED BY P5-R1/R2
+AUTOMATIC FRESHNESS COMPUTATION = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 KRI / K5 / K2 AUTHORITY MUTATION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
@@ -262,6 +271,7 @@ TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
 AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
+PUBLIC SUPERIORITY / BEST-IN-CLASS CLAIM = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
@@ -271,4 +281,4 @@ WAIVER = NO
 
 ## Version/release boundary
 
-No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this reconciliation. Version/release work requires its own exact canonical authority.
+No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this reconciliation. Version/release work requires separate canonical authority.
