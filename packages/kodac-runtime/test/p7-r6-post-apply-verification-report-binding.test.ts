@@ -248,7 +248,13 @@ function verificationReport(plan: P7VerificationPlanInput): MutableRecord {
     checks: [
       ...base,
       ...commands,
-      { id: "verification.commands", category: "tests", status: "pass", summary: "All verification commands passed.", evidence: commands.flatMap((command) => command.evidence) },
+      {
+        id: "verification.commands",
+        category: "tests",
+        status: "pass",
+        summary: "All verification commands passed.",
+        evidence: commands.flatMap((command) => command.evidence.map((item) => ({ ...item }))),
+      },
     ],
   }
 }
