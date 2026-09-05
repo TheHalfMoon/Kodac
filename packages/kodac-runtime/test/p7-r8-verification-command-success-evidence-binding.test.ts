@@ -411,6 +411,21 @@ function rebuildR6(
   }
 }
 
+function mutableCommandEvidence(input: P7VerificationCommandSuccessEvidenceBindingBuildInput): MutableRecord[] {
+  return structuredClone(input.commandExecutionEvidence) as unknown as MutableRecord[]
+}
+
+function withCommandEvidence(
+  input: P7VerificationCommandSuccessEvidenceBindingBuildInput,
+  commandExecutionEvidence: MutableRecord[],
+): P7VerificationCommandSuccessEvidenceBindingBuildInput {
+  return {
+    ...input,
+    commandExecutionEvidence:
+      commandExecutionEvidence as unknown as P7VerificationCommandSuccessEvidenceBindingBuildInput["commandExecutionEvidence"],
+  }
+}
+
 const schema = JSON.parse(
   readFileSync(new URL("../../../schema/p7-verification-command-success-evidence-binding.schema.json", import.meta.url), "utf8"),
 ) as UnknownRecord
@@ -438,66 +453,63 @@ test("P7-R8 builds and validates one deterministic command-success evidence reco
 test("P7-R8 canonicalizes caller evidence and environment insertion order to exact R5 plan order", () => {
   const input = fixtureInput()
   const first = buildP7VerificationCommandSuccessEvidenceBinding(input)
-  const reordered = structuredClone(input) as MutableRecord
-  reordered.commandExecutionEvidence.reverse()
-  for (const entry of reordered.commandExecutionEvidence) {
+  const reordered = mutableCommandEvidence(input)
+  reordered.reverse()
+  for (const entry of reordered) {
     entry.executionIntentPreimage.env = Object.fromEntries(Object.entries(entry.executionIntentPreimage.env).reverse())
   }
-  const second = buildP7VerificationCommandSuccessEvidenceBinding(reordered as P7VerificationCommandSuccessEvidenceBindingBuildInput)
+  const second = buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, reordered))
   assert.equal(second.evidenceIdentity, first.evidenceIdentity)
   assert.deepEqual(second.commands, first.commands)
 })
 
 test("P7-R8 rejects failed R6 truth even when command evidence is supplied", () => {
   const input = fixtureInput()
-  const report = structuredClone(input.sourceVerificationReportBindingInput.verificationReport) as MutableRecord
+  const report = structuredClone(input.sourceVerificationReportBindingInput.verificationReport) as unknown as MutableRecord
   report.checks.find((check: MutableRecord) => check.id === `command.${TEST_COMMAND_ID}`).status = "fail"
   report.passed = false
-  const rebuilt = rebuildR6(input, report)
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding(rebuilt),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(rebuildR6(input, report)),
     /must equal true/,
   )
 })
 
 test("P7-R8 rejects missing, extra, duplicate command evidence and duplicate receipt ids", () => {
   const input = fixtureInput()
-
   assert.throws(
     () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: [input.commandExecutionEvidence[0]!] }),
     /exactly one entry for every exact P7-R5 planned command/,
   )
 
-  const extra = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const extra = mutableCommandEvidence(input)
   extra.push({ ...structuredClone(extra[0]), commandId: "unplanned-command" })
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: extra }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, extra)),
     /exactly one entry|outside the exact P7-R5 plan/,
   )
 
-  const duplicateCommand = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const duplicateCommand = mutableCommandEvidence(input)
   duplicateCommand[1]!.commandId = TEST_COMMAND_ID
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: duplicateCommand }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, duplicateCommand)),
     /duplicate command id/,
   )
 
-  const duplicateReceipt = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const duplicateReceipt = mutableCommandEvidence(input)
   duplicateReceipt[1]!.executionReceipt.receiptId = TEST_RECEIPT_ID
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: duplicateReceipt }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, duplicateReceipt)),
     /duplicate receipt id/,
   )
 })
 
 test("P7-R8 rejects command-check linkage drift while preserving a structurally passing R6 report", () => {
   const input = fixtureInput()
-  const report = structuredClone(input.sourceVerificationReportBindingInput.verificationReport) as MutableRecord
+  const report = structuredClone(input.sourceVerificationReportBindingInput.verificationReport) as unknown as MutableRecord
   const check = report.checks.find((candidate: MutableRecord) => candidate.id === `command.${TEST_COMMAND_ID}`)
   check.evidence = [{ kind: "receipt", ref: "other-command-receipt" }]
-  const rebuilt = rebuildR6(input, report)
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding(rebuilt),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(rebuildR6(input, report)),
     /must reference the exact supplied success receipt id exactly once/,
   )
 })
@@ -505,10 +517,10 @@ test("P7-R8 rejects command-check linkage drift while preserving a structurally 
 test("P7-R8 rejects non-success receipt semantics and forbidden receipt authority fields", () => {
   const input = fixtureInput()
   const mutateReceipt = (mutate: (receipt: MutableRecord) => void, expected: RegExp): void => {
-    const evidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+    const evidence = mutableCommandEvidence(input)
     mutate(evidence[0]!.executionReceipt)
     assert.throws(
-      () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: evidence }),
+      () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, evidence)),
       expected,
     )
   }
@@ -536,10 +548,10 @@ test("P7-R8 independently reconstructs exact generic gateway command intent for 
     ["executable", (entry) => { entry.executionIntentPreimage.resolvedExecutable = "/usr/local/bin/python3" }, /node semantic executable/],
   ]
   for (const [_name, mutate, expected] of mutations) {
-    const evidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+    const evidence = mutableCommandEvidence(input)
     mutate(evidence[0]!)
     assert.throws(
-      () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: evidence }),
+      () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, evidence)),
       expected,
     )
   }
@@ -548,25 +560,25 @@ test("P7-R8 independently reconstructs exact generic gateway command intent for 
 test("P7-R8 rejects receipt intervals outside the bound report and invalid output byte bounds", () => {
   const input = fixtureInput()
 
-  const early = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const early = mutableCommandEvidence(input)
   early[0]!.executionReceipt.startedAt = "2026-09-05T12:00:02.999Z"
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: early }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, early)),
     /must not precede the bound verification report/,
   )
 
-  const late = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const late = mutableCommandEvidence(input)
   late[1]!.executionReceipt.completedAt = "2026-09-05T12:00:04.001Z"
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: late }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, late)),
     /must not exceed the bound verification report/,
   )
 
   for (const outputBytes of [-1, P7_R8_VERIFICATION_COMMAND_SUCCESS_LIMITS.maxReceiptOutputBytes + 1]) {
-    const evidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+    const evidence = mutableCommandEvidence(input)
     evidence[0]!.executionReceipt.result.outputBytes = outputBytes
     assert.throws(
-      () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: evidence }),
+      () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, evidence)),
       /outputBytes/,
     )
   }
@@ -574,14 +586,14 @@ test("P7-R8 rejects receipt intervals outside the bound report and invalid outpu
 
 test("P7-R8 revalidates exact R6/R5 predecessor lineage and rejects tampering", () => {
   const input = fixtureInput()
-  const forgedR6 = structuredClone(input.sourceVerificationReportBinding) as MutableRecord
+  const forgedR6 = structuredClone(input.sourceVerificationReportBinding) as unknown as MutableRecord
   forgedR6.verificationReportIdentity = "f".repeat(64)
   assert.throws(
     () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, sourceVerificationReportBinding: forgedR6 as any }),
     /verificationReportIdentity|canonical source-derived|bindingIdentity/,
   )
 
-  const sourceInput = structuredClone(input.sourceVerificationReportBindingInput) as MutableRecord
+  const sourceInput = structuredClone(input.sourceVerificationReportBindingInput) as unknown as MutableRecord
   sourceInput.sourceVerificationPlanBinding.verificationPlanDigest = "e".repeat(64)
   assert.throws(
     () => buildP7VerificationCommandSuccessEvidenceBinding({
@@ -595,49 +607,49 @@ test("P7-R8 revalidates exact R6/R5 predecessor lineage and rejects tampering", 
 test("P7-R8 rejects hostile Proxy, accessor, symbol, sparse, aliased, and custom-prototype inputs", () => {
   const input = fixtureInput()
 
-  const proxyEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const proxyEvidence = mutableCommandEvidence(input)
   proxyEvidence[0]!.executionReceipt = new Proxy(proxyEvidence[0]!.executionReceipt as object, {})
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: proxyEvidence }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, proxyEvidence)),
     /Proxy/,
   )
 
-  const accessorEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const accessorEvidence = mutableCommandEvidence(input)
   Object.defineProperty(accessorEvidence[0]!.executionReceipt, "receiptId", { get: () => TEST_RECEIPT_ID, enumerable: true })
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: accessorEvidence }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, accessorEvidence)),
     /enumerable data property/,
   )
 
-  const symbolEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
-  ;(symbolEvidence[0]!.executionReceipt as any)[Symbol("hidden")] = "x"
+  const symbolEvidence = mutableCommandEvidence(input)
+  ;(symbolEvidence[0]!.executionReceipt as MutableRecord)[Symbol("hidden") as any] = "x"
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: symbolEvidence }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, symbolEvidence)),
     /symbol fields/,
   )
 
-  const sparseEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const sparseEvidence = mutableCommandEvidence(input)
   const sparse = new Array(2)
   sparse[0] = "scripts/run-tests.mjs"
   sparseEvidence[0]!.executionIntentPreimage.args = sparse
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: sparseEvidence }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, sparseEvidence)),
     /sparse/,
   )
 
-  const aliasEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
-  const shared: string[] = []
+  const aliasEvidence = mutableCommandEvidence(input)
+  const shared: unknown[] = []
   aliasEvidence[0]!.executionIntentPreimage.allowedExitCodes = shared
   aliasEvidence[0]!.executionReceipt.paths = shared
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: aliasEvidence }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, aliasEvidence)),
     /aliases/,
   )
 
-  const customEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const customEvidence = mutableCommandEvidence(input)
   Object.setPrototypeOf(customEvidence[0]!.executionReceipt, { marker: true })
   assert.throws(
-    () => buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: customEvidence }),
+    () => buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, customEvidence)),
     /plain object/,
   )
 })
@@ -646,7 +658,7 @@ test("P7-R8 output is detached, deeply immutable, and validator rejects forged s
   const input = fixtureInput()
   const built = buildP7VerificationCommandSuccessEvidenceBinding(input)
   const before = structuredClone(built)
-  ;(input.commandExecutionEvidence[0]!.executionIntentPreimage.env as MutableRecord).PATH = "/tampered"
+  ;(input.commandExecutionEvidence[0]!.executionIntentPreimage.env as unknown as MutableRecord).PATH = "/tampered"
   ;(input.commandExecutionEvidence[0]!.executionReceipt as MutableRecord).result.outputDigest = "f".repeat(64)
   assert.deepEqual(built, before)
   assert.ok(Object.isFrozen(built))
@@ -657,7 +669,7 @@ test("P7-R8 output is detached, deeply immutable, and validator rejects forged s
     for (const evidence of command.checkEvidence) assert.ok(Object.isFrozen(evidence))
   }
 
-  const forged = structuredClone(built) as MutableRecord
+  const forged = structuredClone(built) as unknown as MutableRecord
   forged.commands[0].checkSummary = "forged"
   assert.throws(
     () => validateP7VerificationCommandSuccessEvidenceBinding(forged, fixtureInput()),
@@ -669,23 +681,23 @@ test("P7-R8 identity binds command intent, receipt result, and R6 command-check 
   const input = fixtureInput()
   const first = buildP7VerificationCommandSuccessEvidenceBinding(input)
 
-  const changedIntentEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const changedIntentEvidence = mutableCommandEvidence(input)
   changedIntentEvidence[0]!.executionIntentPreimage.env.PATH = "/different/bin"
   changedIntentEvidence[0]!.executionReceipt.inputDigest = gatewayInputDigest(
     changedIntentEvidence[0]!.executionIntentPreimage as P7VerificationCommandSuccessExecutionIntentPreimage,
   )
-  const second = buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: changedIntentEvidence })
+  const second = buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, changedIntentEvidence))
   assert.notEqual(second.commands[0]!.executionEnvironmentDigest, first.commands[0]!.executionEnvironmentDigest)
   assert.notEqual(second.commands[0]!.executionInputDigest, first.commands[0]!.executionInputDigest)
   assert.notEqual(second.evidenceIdentity, first.evidenceIdentity)
 
-  const outputEvidence = structuredClone(input.commandExecutionEvidence) as MutableRecord[]
+  const outputEvidence = mutableCommandEvidence(input)
   outputEvidence[0]!.executionReceipt.result.outputDigest = "f".repeat(64)
-  const third = buildP7VerificationCommandSuccessEvidenceBinding({ ...input, commandExecutionEvidence: outputEvidence })
+  const third = buildP7VerificationCommandSuccessEvidenceBinding(withCommandEvidence(input, outputEvidence))
   assert.notEqual(third.commands[0]!.executionReceiptIdentity, first.commands[0]!.executionReceiptIdentity)
   assert.notEqual(third.evidenceIdentity, first.evidenceIdentity)
 
-  const report = structuredClone(input.sourceVerificationReportBindingInput.verificationReport) as MutableRecord
+  const report = structuredClone(input.sourceVerificationReportBindingInput.verificationReport) as unknown as MutableRecord
   report.checks.find((check: MutableRecord) => check.id === `command.${TEST_COMMAND_ID}`).summary = "Different passing command summary."
   const fourth = buildP7VerificationCommandSuccessEvidenceBinding(rebuildR6(input, report))
   assert.notEqual(fourth.verificationReportIdentity, first.verificationReportIdentity)
