@@ -267,6 +267,24 @@ test("P7-R5 identity is deterministic across benign plan key insertion order", (
   )
 })
 
+test("P7-R5 reproduces planner digest identity for manual command key insertion order", () => {
+  const input = fixtureInput()
+  const plan = structuredClone(input.verificationPlan) as MutableRecord
+  const command = plan.commands[0]
+  plan.commands[0] = {
+    executable: command.executable,
+    category: command.category,
+    id: command.id,
+    args: command.args,
+    maxOutputBytes: command.maxOutputBytes,
+    timeoutMs: command.timeoutMs,
+  }
+  const rebound = rebindPlanDigest(plan)
+  const built = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebound })
+  assert.equal(built.verificationPlanDigest, rebound.planDigest)
+  assert.deepEqual(Object.keys(built.verificationPlan.commands[0]!), Object.keys(plan.commands[0]))
+})
+
 test("P7-R5 revalidates exact P7-R4 lineage rather than trusting applied identity", () => {
   const input = fixtureInput()
   const forged = structuredClone(input.sourceAppliedEvidence) as MutableRecord
@@ -339,6 +357,9 @@ test("P7-R5 closes command ids executable paths and tests-lane requirements", ()
     ["duplicate", (plan) => { plan.commands[1].id = plan.commands[0].id }, /duplicate command ids/],
     ["executable", (plan) => { plan.commands[0].executable = "bash" }, /executable/],
     ["traversal", (plan) => { plan.commands[0].args = ["../outside.ts"] }, /workspace-relative/],
+    ["dot-parent", (plan) => { plan.commands[0].args = ["./.."] }, /workspace-relative/],
+    ["option-traversal", (plan) => { plan.commands[0].args = ["--config=../outside.ts"] }, /workspace-relative/],
+    ["drive-relative", (plan) => { plan.commands[0].args = ["C:outside.ts"] }, /workspace-relative/],
     ["no-tests", (plan) => { plan.commands = [{ id: "types-only", category: "types", executable: "node", args: ["tsc.js"] }] }, /tests-category/],
   ]
   for (const [_name, mutate, expected] of cases) {
@@ -391,6 +412,20 @@ test("P7-R5 binds workspace and generatedAt occurrence outside planner planDiges
   const timeBound = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(timePlan) })
   assert.equal(timeBound.verificationPlanDigest, original.verificationPlanDigest)
   assert.notEqual(timeBound.bindingIdentity, original.bindingIdentity)
+})
+
+test("P7-R5 runtime timestamp boundary agrees with the published schema", () => {
+  const input = fixtureInput()
+  const extendedYear = structuredClone(input.verificationPlan) as MutableRecord
+  extendedYear.generatedAt = "+010000-01-01T00:00:00.000Z"
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(extendedYear) }),
+    /canonical ISO-8601 UTC timestamp/,
+  )
+  assert.equal(
+    schema.$defs.canonicalTimestamp.pattern,
+    "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$",
+  )
 })
 
 test("P7-R5 fails closed on hostile verification-plan containers", () => {
