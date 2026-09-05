@@ -30,7 +30,6 @@ import {
   buildP7PostApplyVerificationPlanBinding,
   p7PostApplyVerificationPlanBindingIdentity,
   validateP7PostApplyVerificationPlanBinding,
-  type P7PostApplyVerificationPlanBinding,
   type P7PostApplyVerificationPlanBindingBuildInput,
   type P7VerificationPlanInput,
 } from "../src/remediation/p7-post-apply-verification-plan-binding.ts"
@@ -47,8 +46,6 @@ const SHA_B = "2".repeat(64)
 const POST_STATE = "3".repeat(64)
 const RECEIPT_ID = "123e4567-e89b-42d3-a456-426614174000"
 const GENERATED_AT = "2026-09-05T12:00:02.000Z"
-const STARTED_AT = "2026-09-05T12:00:00.000Z"
-const COMPLETED_AT = "2026-09-05T12:00:01.000Z"
 const WORKSPACE = "/workspace/kodac"
 
 const PATCH = [
@@ -71,6 +68,10 @@ const CHANGES: P7ImmutablePatchProposalInput["changes"] = [
 
 function sha256(value: string): string {
   return createHash("sha256").update(value, "utf8").digest("hex")
+}
+
+function asPlan(value: MutableRecord): P7VerificationPlanInput {
+  return value as P7VerificationPlanInput
 }
 
 function claim(): Record<string, unknown> {
@@ -137,25 +138,20 @@ function sourceIntentBinding(
   })
 }
 
-function receipt(overrides: Record<string, unknown> = {}): ExecutionReceipt {
+function receipt(): ExecutionReceipt {
   return {
     receiptId: RECEIPT_ID,
     capability: "repo.apply_patch",
     inputDigest: sha256(PATCH),
     paths: ["src/a.ts", "src/b.ts", "src/c.ts"],
     policy: { decision: "allow", reason: "explicit bounded test policy" },
-    startedAt: STARTED_AT,
-    completedAt: COMPLETED_AT,
+    startedAt: "2026-09-05T12:00:00.000Z",
+    completedAt: "2026-09-05T12:00:01.000Z",
     result: {
       status: "success",
-      affected: {
-        added: ["src/a.ts"],
-        modified: ["src/b.ts"],
-        deleted: ["src/c.ts"],
-      },
+      affected: { added: ["src/a.ts"], modified: ["src/b.ts"], deleted: ["src/c.ts"] },
       postStateDigest: POST_STATE,
     },
-    ...overrides,
   } as ExecutionReceipt
 }
 
@@ -172,16 +168,15 @@ function appliedInput(): P7AppliedPatchEvidenceBindingBuildInput {
 }
 
 function rebindPlanDigest(plan: MutableRecord): P7VerificationPlanInput {
-  const stable = {
+  plan.planDigest = sha256(JSON.stringify({
     risk: plan.risk,
     budget: plan.budget,
     signals: plan.signals,
     changedPaths: plan.changedPaths,
     commands: plan.commands,
     warnings: plan.warnings,
-  }
-  plan.planDigest = sha256(JSON.stringify(stable))
-  return plan as P7VerificationPlanInput
+  }))
+  return asPlan(plan)
 }
 
 function verificationPlan(): P7VerificationPlanInput {
@@ -237,7 +232,6 @@ const sourceText = readFileSync(
 test("P7-R5 builds and validates one deterministic VERIFICATION_PLAN_BOUND record", () => {
   const input = fixtureInput()
   const built = buildP7PostApplyVerificationPlanBinding(input)
-
   assert.equal(built.version, P7_R5_POST_APPLY_VERIFICATION_PLAN_BINDING_VERSION)
   assert.equal(built.state, P7_R5_VERIFICATION_PLAN_BOUND_STATE)
   assert.equal(built.verificationPlan.protocol, P7_R5_VERIFICATION_PLAN_PROTOCOL)
@@ -250,33 +244,36 @@ test("P7-R5 builds and validates one deterministic VERIFICATION_PLAN_BOUND recor
   assert.deepEqual(validateP7PostApplyVerificationPlanBinding(built, input), built)
 })
 
-test("P7-R5 identity is deterministic and insensitive to benign caller key insertion order", () => {
+test("P7-R5 identity is deterministic across benign plan key insertion order", () => {
   const input = fixtureInput()
   const first = buildP7PostApplyVerificationPlanBinding(input)
-  const reorderedPlan = {
-    planDigest: input.verificationPlan.planDigest,
-    warnings: input.verificationPlan.warnings,
-    commands: input.verificationPlan.commands,
-    changedPaths: input.verificationPlan.changedPaths,
-    signals: input.verificationPlan.signals,
-    budget: input.verificationPlan.budget,
-    risk: input.verificationPlan.risk,
-    workspace: input.verificationPlan.workspace,
-    generatedAt: input.verificationPlan.generatedAt,
-    version: input.verificationPlan.version,
-    protocol: input.verificationPlan.protocol,
+  const p = input.verificationPlan
+  const reordered: P7VerificationPlanInput = {
+    planDigest: p.planDigest,
+    warnings: p.warnings,
+    commands: p.commands,
+    changedPaths: p.changedPaths,
+    signals: p.signals,
+    budget: p.budget,
+    risk: p.risk,
+    workspace: p.workspace,
+    generatedAt: p.generatedAt,
+    version: p.version,
+    protocol: p.protocol,
   }
-  const second = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: reorderedPlan })
-  assert.equal(first.bindingIdentity, second.bindingIdentity)
+  assert.equal(
+    first.bindingIdentity,
+    buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: reordered }).bindingIdentity,
+  )
 })
 
-test("P7-R5 revalidates exact P7-R4 lineage instead of trusting a bare applied identity", () => {
+test("P7-R5 revalidates exact P7-R4 lineage rather than trusting applied identity", () => {
   const input = fixtureInput()
   const forged = structuredClone(input.sourceAppliedEvidence) as MutableRecord
   forged.postStateDigest = "4".repeat(64)
   assert.throws(
     () => buildP7PostApplyVerificationPlanBinding({ ...input, sourceAppliedEvidence: forged as any }),
-    /applied evidence\.postStateDigest|canonical source-derived/,
+    /postStateDigest|canonical source-derived/,
   )
 
   const driftedInput = structuredClone(input.sourceAppliedEvidenceInput) as MutableRecord
@@ -287,23 +284,22 @@ test("P7-R5 revalidates exact P7-R4 lineage instead of trusting a bare applied i
   )
 })
 
-test("P7-R5 recomputes the exact current planner stable projection digest", () => {
+test("P7-R5 recomputes planDigest and binds semantic plan changes", () => {
   const input = fixtureInput()
   const tampered = structuredClone(input.verificationPlan) as MutableRecord
   tampered.planDigest = "f".repeat(64)
   assert.throws(
-    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: tampered as P7VerificationPlanInput }),
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(tampered) }),
     /planDigest/,
   )
 
   const semantic = structuredClone(input.verificationPlan) as MutableRecord
   semantic.warnings = ["bounded warning"]
-  rebindPlanDigest(semantic)
-  const changed = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: semantic as P7VerificationPlanInput })
+  const changed = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(semantic) })
   assert.notEqual(changed.bindingIdentity, buildP7PostApplyVerificationPlanBinding(input).bindingIdentity)
 })
 
-test("P7-R5 requires exact applied changed paths with canonical ordering", () => {
+test("P7-R5 requires exact canonical applied changed paths", () => {
   const input = fixtureInput()
   for (const changedPaths of [
     ["src/a.ts", "src/b.ts"],
@@ -312,9 +308,8 @@ test("P7-R5 requires exact applied changed paths with canonical ordering", () =>
   ]) {
     const plan = structuredClone(input.verificationPlan) as MutableRecord
     plan.changedPaths = changedPaths
-    rebindPlanDigest(plan)
     assert.throws(
-      () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: plan as P7VerificationPlanInput }),
+      () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(plan) }),
       /changedPaths/,
     )
   }
@@ -325,108 +320,118 @@ test("P7-R5 rederives risk and exact risk budget from applied paths", () => {
   const wrongRisk = structuredClone(input.verificationPlan) as MutableRecord
   wrongRisk.risk = "low"
   wrongRisk.budget = { maxCommands: 4, maxTotalTimeoutMs: 120_000 }
-  rebindPlanDigest(wrongRisk)
   assert.throws(
-    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: wrongRisk as P7VerificationPlanInput }),
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(wrongRisk) }),
     /risk/,
   )
 
   const wrongBudget = structuredClone(input.verificationPlan) as MutableRecord
   wrongBudget.budget = { maxCommands: 8, maxTotalTimeoutMs: 360_000 }
-  rebindPlanDigest(wrongBudget)
   assert.throws(
-    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: wrongBudget as P7VerificationPlanInput }),
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(wrongBudget) }),
     /budget/,
   )
 })
 
-test("P7-R5 closes command vocabulary, ids, paths, and tests-lane requirements", () => {
+test("P7-R5 closes command ids executable paths and tests-lane requirements", () => {
   const input = fixtureInput()
-
-  const duplicate = structuredClone(input.verificationPlan) as MutableRecord
-  duplicate.commands[1].id = duplicate.commands[0].id
-  rebindPlanDigest(duplicate)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: duplicate }), /duplicate command ids/)
-
-  const executable = structuredClone(input.verificationPlan) as MutableRecord
-  executable.commands[0].executable = "bash"
-  rebindPlanDigest(executable)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: executable }), /executable/)
-
-  const traversal = structuredClone(input.verificationPlan) as MutableRecord
-  traversal.commands[0].args = ["../outside.ts"]
-  rebindPlanDigest(traversal)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: traversal }), /workspace-relative/)
-
-  const noTests = structuredClone(input.verificationPlan) as MutableRecord
-  noTests.commands = [{ id: "types-only", category: "types", executable: "node", args: ["tsc.js"] }]
-  rebindPlanDigest(noTests)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: noTests }), /tests-category/)
+  const cases: Array<[string, (plan: MutableRecord) => void, RegExp]> = [
+    ["duplicate", (plan) => { plan.commands[1].id = plan.commands[0].id }, /duplicate command ids/],
+    ["executable", (plan) => { plan.commands[0].executable = "bash" }, /executable/],
+    ["traversal", (plan) => { plan.commands[0].args = ["../outside.ts"] }, /workspace-relative/],
+    ["no-tests", (plan) => { plan.commands = [{ id: "types-only", category: "types", executable: "node", args: ["tsc.js"] }] }, /tests-category/],
+  ]
+  for (const [_name, mutate, expected] of cases) {
+    const plan = structuredClone(input.verificationPlan) as MutableRecord
+    mutate(plan)
+    assert.throws(
+      () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(plan) }),
+      expected,
+    )
+  }
 })
 
-test("P7-R5 rejects command numeric overflow and unknown authority fields", () => {
+test("P7-R5 rejects command overflow and injected authority fields", () => {
   const input = fixtureInput()
-
   const timeout = structuredClone(input.verificationPlan) as MutableRecord
   timeout.commands[0].timeoutMs = 120_001
-  rebindPlanDigest(timeout)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: timeout }), /timeoutMs/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(timeout) }),
+    /timeoutMs/,
+  )
 
   const commandUnknown = structuredClone(input.verificationPlan) as MutableRecord
   commandUnknown.commands[0].approved = true
-  rebindPlanDigest(commandUnknown)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: commandUnknown }), /unknown field: approved/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(commandUnknown) }),
+    /unknown field: approved/,
+  )
 
   const planUnknown = structuredClone(input.verificationPlan) as MutableRecord
   planUnknown.verified = true
-  rebindPlanDigest(planUnknown)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: planUnknown }), /unknown field: verified/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(planUnknown) }),
+    /unknown field: verified/,
+  )
 })
 
-test("P7-R5 binds plan occurrence workspace and generatedAt without changing planner planDigest", () => {
+test("P7-R5 binds workspace and generatedAt occurrence outside planner planDigest", () => {
   const input = fixtureInput()
   const original = buildP7PostApplyVerificationPlanBinding(input)
 
-  const otherWorkspace = structuredClone(input.verificationPlan) as MutableRecord
-  otherWorkspace.workspace = "/workspace/other"
-  const workspaceBound = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: otherWorkspace })
+  const workspacePlan = structuredClone(input.verificationPlan) as MutableRecord
+  workspacePlan.workspace = "/workspace/other"
+  const workspaceBound = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(workspacePlan) })
   assert.equal(workspaceBound.verificationPlanDigest, original.verificationPlanDigest)
   assert.notEqual(workspaceBound.verificationWorkspaceDigest, original.verificationWorkspaceDigest)
   assert.notEqual(workspaceBound.bindingIdentity, original.bindingIdentity)
 
-  const otherTime = structuredClone(input.verificationPlan) as MutableRecord
-  otherTime.generatedAt = "2026-09-05T12:00:03.000Z"
-  const timeBound = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: otherTime })
+  const timePlan = structuredClone(input.verificationPlan) as MutableRecord
+  timePlan.generatedAt = "2026-09-05T12:00:03.000Z"
+  const timeBound = buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(timePlan) })
   assert.equal(timeBound.verificationPlanDigest, original.verificationPlanDigest)
   assert.notEqual(timeBound.bindingIdentity, original.bindingIdentity)
 })
 
 test("P7-R5 fails closed on hostile verification-plan containers", () => {
   const input = fixtureInput()
-
-  const proxyInput = { ...input, verificationPlan: new Proxy(structuredClone(input.verificationPlan), {}) }
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding(proxyInput as any), /Proxy|non-proxy/)
+  const proxyPlan = new Proxy(structuredClone(input.verificationPlan), {}) as P7VerificationPlanInput
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: proxyPlan }),
+    /Proxy|non-proxy/,
+  )
 
   const accessor = structuredClone(input.verificationPlan) as MutableRecord
   Object.defineProperty(accessor, "risk", { enumerable: true, get() { return "medium" } })
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: accessor }), /data property/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(accessor) }),
+    /data property/,
+  )
 
   const custom = structuredClone(input.verificationPlan) as MutableRecord
   Object.setPrototypeOf(custom.budget, { injected: true })
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: custom }), /plain object/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(custom) }),
+    /plain object/,
+  )
 
   const sparse = structuredClone(input.verificationPlan) as MutableRecord
   sparse.commands = new Array(2)
   sparse.commands[0] = structuredClone(input.verificationPlan.commands[0])
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: sparse }), /sparse|array/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: asPlan(sparse) }),
+    /sparse|array/,
+  )
 })
 
-test("P7-R5 rejects invalid Unicode and aggregate-timeout warning substitution", () => {
+test("P7-R5 rejects invalid Unicode and missing canonical timeout warning", () => {
   const input = fixtureInput()
   const unicode = structuredClone(input.verificationPlan) as MutableRecord
   unicode.signals = ["bad\ud800"]
-  rebindPlanDigest(unicode)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: unicode }), /Unicode/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(unicode) }),
+    /Unicode/,
+  )
 
   const timeout = structuredClone(input.verificationPlan) as MutableRecord
   timeout.commands = [
@@ -435,11 +440,13 @@ test("P7-R5 rejects invalid Unicode and aggregate-timeout warning substitution",
     { id: "test-c", category: "tests", executable: "node", args: ["c.js"], timeoutMs: 120_000 },
   ]
   timeout.warnings = []
-  rebindPlanDigest(timeout)
-  assert.throws(() => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: timeout }), /aggregate-timeout warning/)
+  assert.throws(
+    () => buildP7PostApplyVerificationPlanBinding({ ...input, verificationPlan: rebindPlanDigest(timeout) }),
+    /aggregate-timeout warning/,
+  )
 })
 
-test("P7-R5 output is detached deeply immutable and validation rejects tampering", () => {
+test("P7-R5 output is detached deeply immutable and rejects output tampering", () => {
   const input = fixtureInput()
   const built = buildP7PostApplyVerificationPlanBinding(input)
   assert.ok(Object.isFrozen(built))
