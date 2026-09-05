@@ -123,6 +123,8 @@
     "failedCheckEvidence": {
       "type": "array",
       "maxItems": 256,
+      "minItems": 1,
+      "uniqueItems": true,
       "items": {
         "type": "object",
         "additionalProperties": false,
