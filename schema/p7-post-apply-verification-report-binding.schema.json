@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-post-apply-verification-report-binding.schema.json",
+  "title": "Kodac P7-R6 Post-Apply Verification Report Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "bindingIdentity",
+    "state",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "appliedEvidenceIdentity",
+    "verificationPlanBindingIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "postStateDigest",
+    "verificationPlanDigest",
+    "changedPaths",
+    "verificationReportIdentity",
+    "verificationSessionId",
+    "verificationStartedAt",
+    "verificationCompletedAt",
+    "verificationReportPassed",
+    "verificationReport"
+  ],
+  "properties": {
+    "version": { "const": "p7-r6-post-apply-verification-report-binding-v1" },
+    "bindingIdentity": { "$ref": "#/$defs/sha256" },
+    "state": { "const": "VERIFICATION_REPORT_BOUND" },
+    "proposalIdentity": { "$ref": "#/$defs/sha256" },
+    "authorizationIdentity": { "$ref": "#/$defs/sha256" },
+    "intentBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "appliedEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationPlanBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "repositoryIdentity": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "canonicalBase": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "targetHead": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "postStateDigest": { "$ref": "#/$defs/sha256" },
+    "verificationPlanDigest": { "$ref": "#/$defs/sha256" },
+    "changedPaths": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1024 }
+    },
+    "verificationReportIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationSessionId": { "$ref": "#/$defs/sessionId" },
+    "verificationStartedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+    "verificationCompletedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+    "verificationReportPassed": { "type": "boolean" },
+    "verificationReport": { "$ref": "#/$defs/verificationReport" }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "canonicalTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ref"],
+      "properties": {
+        "kind": { "enum": ["receipt", "artifact", "event", "workspace"] },
+        "ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+        },
+        "digest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "status", "summary", "evidence"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+        },
+        "category": {
+          "enum": ["agent", "workspace", "diff", "receipts", "policy", "syntax", "types", "lint", "tests", "custom"]
+        },
+        "status": { "enum": ["pass", "fail"] },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 256,
+          "items": { "$ref": "#/$defs/evidence" }
+        }
+      }
+    },
+    "verificationReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "version", "sessionId", "startedAt", "completedAt", "passed", "checks"],
+      "properties": {
+        "protocol": { "const": "kodac.verification" },
+        "version": { "const": 1 },
+        "sessionId": { "$ref": "#/$defs/sessionId" },
+        "startedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+        "completedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+        "passed": { "type": "boolean" },
+        "checks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 512,
+          "items": { "$ref": "#/$defs/check" }
+        }
+      }
+    }
+  }
+}
