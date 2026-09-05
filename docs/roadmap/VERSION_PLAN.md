@@ -38,10 +38,11 @@ P5 OVERALL = NOT_CLOSED
 
 P6-R1 AUTHORIZATION = CLOSED_CANONICAL / #344 / proof 5551754576
 P6-R1 DETERMINISTIC SECURITY FINDING FOUNDATION = CLOSED_CANONICAL / #345 / proof 5551884329
-P6-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #346 / proof 5551929413
 P6-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #347 / proof 5551961606
 P6 BOUNDED R1 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / #348 / proof 5551993370
-P6 BOUNDED R1 ENGINEERING SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P6 BOUNDED R1 ENGINEERING SCOPE = CLOSED_CANONICAL / #349 / proof 5552035602
+P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #350 / proof 5552132556
+P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
@@ -63,43 +64,33 @@ WAIVER = NO
 
 ---
 
-## Canonical P5-to-P6 sequence
+## Canonical P6 sequence
 
 ```text
-#332 P5-R1 authorization
-  -> #333 P5-R1 implementation
-  -> #334 P5-R1 reconciliation authorization
-  -> #335 P5-R1 current-view reconciliation
-  -> #336 P5-R2 authorization
-  -> #337 P5-R2 implementation
-  -> #338 P5-R2 reconciliation authorization
-  -> #339 P5-R2 current-view reconciliation
-  -> #340 P5 bounded R1-R2 closeout authorization
-  -> #341 P5 bounded R1-R2 engineering closeout
-  -> #342 P5 post-closeout current-view reconciliation authorization
-  -> #343 P5 post-closeout current-view reconciliation
-  -> #343 comment 5551702980 fresh successor analysis / ANALYSIS_ONLY
-  -> #344 P6-R1 authorization
+#344 P6-R1 authorization
   -> #345 P6-R1 implementation
-  -> #345 comment 5551909496 P6-R1 reconciliation analysis / ANALYSIS_ONLY
   -> #346 P6-R1 current-view reconciliation authorization
   -> #347 P6-R1 current-view reconciliation
   -> #347 comment 5551968892 fresh post-R1 successor analysis / ANALYSIS_ONLY
   -> #348 P6 bounded R1 closeout authorization
-  -> CURRENT: six-path P6 bounded R1 closeout candidate
+  -> #349 P6 bounded R1 engineering closeout
+  -> #349 comment 5552036750 post-closeout reconciliation analysis / ANALYSIS_ONLY
+  -> #350 P6 post-closeout current-view reconciliation authorization
+  -> CURRENT: five-path P6 post-closeout current-view reconciliation candidate
 ```
 
-Canonical P6 anchors:
+Canonical anchors:
 
 ```text
-#343 = 48a4d0944c620a8cca7f25ea7eb24e794be8768f / proof 5551673149
 #344 = 208bfc370c8671bd9b5a71d659355aa08e40d65a / proof 5551754576
 #345 = 0f907b6f6e12a15da753e836b124c586ee9fe285 / proof 5551884329
 #345 final qualified head = 60bc2e3e157b8eacac145ef22fa7cdaae1428baa
-#346 = acce1c1644250cc4afd2008175d41d41ca51de87 / proof 5551929413
 #347 = fd2c53682dde47b795740cc706b28852397f3ec6 / proof 5551961606
 #347 successor analysis = 5551968892 / ANALYSIS_ONLY
 #348 = 82cb0e1b2c4739537a1355ec6e6fdd63759cbc5d / proof 5551993370
+#349 = 206741c67021864ffdaea1f57aa91bf7d1509a48 / proof 5552035602
+#349 post-closeout analysis = 5552036750 / ANALYSIS_ONLY
+#350 = 2f2596a6c316863abf6effca46d6e88fbdc314a8 / proof 5552132556
 ```
 
 ---
@@ -134,12 +125,11 @@ P6 BOUNDED R1 CLOSED != P7 AUTHORITY
 
 ---
 
-## Current bounded-closeout candidate
+## Current reconciliation
 
-Canonical #348 and post-merge proof `5551993370` authorize only:
+Canonical #350 and post-merge proof `5552132556` authorize only:
 
 ```text
-docs/planning/KODAC_P6_BOUNDED_R1_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -147,12 +137,12 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path. This candidate may aggregate already-proven P6-R1 lineage and bounded-closeout evidence but must not self-certify its own closeout. Only future external post-merge proof may establish aggregate bounded closure.
+No sixth path. This candidate may record externally proven P6 bounded R1 closeout state but must not self-certify its own current-view reconciliation.
 
-Until then:
+Until external proof exists:
 
 ```text
-P6 BOUNDED R1 ENGINEERING SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -173,9 +163,9 @@ P9 Continuous Assurance
 R Advanced Research
 ```
 
-P6-R1 is one closed bounded mechanism. Even if the current six-path candidate later closes the bounded R1 engineering scope, that fact will not authorize the next P6 number or any execution/integration stage merely because it appears in the dependency map.
+P6 bounded R1 is now closed canonical. That fact does not authorize the next P6 number or any execution/integration stage merely because it appears in the dependency map.
 
-Fresh analysis `#347 / 5551968892` found no additional numbered P6 mechanism proven necessary before bounded closeout. Execution-coupled analyzer manifests/effective-policy receipts, broader provider artifact lifecycle, SARIF adapters, and exploit/attack validation remain future unauthorized surfaces.
+Fresh analysis `#347 / 5551968892` found no additional numbered P6 mechanism proven necessary before bounded closeout. After this reconciliation becomes canonical, fresh successor-authority analysis must re-evaluate live code and planning rather than inherit that earlier conclusion automatically.
 
 ---
 
@@ -217,6 +207,6 @@ WAIVER = NO
 
 ## Version/release boundary
 
-No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this closeout candidate.
+No version bump, package publication, release tag, deployment, public benchmark claim, or product availability change is authorized by this reconciliation candidate.
 
-Only after the exact six-path P6 bounded R1 closeout is post-merge proven may fresh post-closeout current-view reconciliation analysis run. No P6-R2, scanner execution, SARIF, attack validation, dependency admission, P7, product, or release authority follows by composition.
+Only after the exact five-path P6 post-closeout reconciliation is post-merge proven may fresh successor-authority analysis run. No P6-R2, scanner execution, SARIF, attack validation, dependency admission, P7, product, or release authority follows by composition.
