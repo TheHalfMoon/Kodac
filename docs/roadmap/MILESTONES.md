@@ -41,14 +41,19 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P7-R3 pre-execution intent-binding authorization | **CLOSED_CANONICAL** | #360 / proof `5552924883` |
 | P7-R3 pre-execution intent-binding implementation | **CLOSED_CANONICAL** | #361 / proof `5553018473` |
 | P7-R3 current-view reconciliation authorization | **CLOSED_CANONICAL** | #362 / proof `5553049120` |
-| P7-R3 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
-| P7-R4+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
-| P7 overall | **NOT_CLOSED** | P7-R3 closure is not overall closure |
-| Patch application / remediation execution | **NOT_AUTHORIZED** | Pre-execution binding is data only |
+| P7-R3 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #363 / proof `5553345846` |
+| P7-R4 applied-patch-evidence-binding authorization | **CLOSED_CANONICAL** | #364 / proof `5553391471` |
+| P7-R4 applied-patch-evidence-binding implementation | **CLOSED_CANONICAL** | #365 / proof `5553509882` |
+| P7-R4 current-view reconciliation authorization | **CLOSED_CANONICAL** | #366 / proof `5553556112` |
+| P7-R4 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
+| P7-R5+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
+| P7 overall | **NOT_CLOSED** | P7-R4 closure is not overall closure |
+| Patch application / remediation execution | **NOT_AUTHORIZED** | Applied evidence is data only |
 | Filesystem / Git write | **NOT_AUTHORIZED** | No application authority exists |
 | Repository write authority | **NONE** | No P7 side effects authorized |
 | K2 invocation / authority expansion | **NOT_AUTHORIZED / NONE** | Existing K2 boundary unchanged |
-| Applied / verification failed / verified | **NOT_ESTABLISHED** | No authorized application evidence exists |
+| Applied evidence only | **ESTABLISHED_BY_P7_R4_CONTRACT** | No actual execution claim is created by fixture tests |
+| Verification failed / verified | **NOT_ESTABLISHED** | No separately authorized verification evidence exists |
 | Fixed / reverified / Done Gate | **NOT_ESTABLISHED** | No lifecycle-completion evidence exists |
 | Scanner/analyzer execution | **NOT_AUTHORIZED** | Pure/data-only P6-R1 only |
 | SARIF ingestion | **NOT_AUTHORIZED** | Separate future authority required |
@@ -62,41 +67,40 @@ This file is a current milestone ledger only. It does not authorize implementati
 ## Canonical P7 anchors
 
 ```text
-P7_R2_RECONCILIATION
-  PR = #359
-  MERGE = d74cf1379316ee9d5b121fbb7b536772ec7cea00
-  PROOF = 5552811852
+P7_R3_RECONCILIATION
+  PR = #363
+  MERGE = 0713d1f17d65f6dd8be0408f017c053021b575f5
+  PROOF = 5553345846
   STATE = CLOSED_CANONICAL
 
-P7_R3_SUCCESSOR_ANALYSIS
-  PR = #359
-  COMMENT = 5552837458
+P7_R4_SUCCESSOR_ANALYSIS
+  PR = #363
+  COMMENT = 5553366154
   CLASS = ANALYSIS_ONLY
 
-P7_R3_AUTHORIZATION
-  PR = #360
-  QUALIFIED_HEAD = b896cf3538196dfe57231983bb8ee86b579027ea
-  MERGE = a2ddc989857294b92913a354a8a129ecf331f2ed
-  PROOF = 5552924883
+P7_R4_AUTHORIZATION
+  PR = #364
+  MERGE = 34d975eb752a634c7a6445161972ffb81671a731
+  PROOF = 5553391471
   STATE = CLOSED_CANONICAL
 
-P7_R3_IMPLEMENTATION
-  PR = #361
-  QUALIFIED_HEAD = c79b02be006697bd1dddfe326dfae26e4b3f5c10
-  MERGE = 4f464286443d4298f78b5bcc873aa2c4203054b9
-  PROOF = 5553018473
+P7_R4_IMPLEMENTATION
+  PR = #365
+  QUALIFIED_HEAD = f162f9531a33c61bde93f42d3c7307f2c6124e1e
+  MERGE = 6c10d898ea43fda9003de761badd07c5b113043d
+  PROOF = 5553509882
   STATE = CLOSED_CANONICAL
 
-P7_R3_RECONCILIATION_ANALYSIS
-  PR = #361
-  COMMENT = 5553023397
+P7_R4_RECONCILIATION_ANALYSIS
+  PR = #365
+  COMMENT = 5553524060
   CLASS = ANALYSIS_ONLY
 
-P7_R3_RECONCILIATION_AUTHORIZATION
-  PR = #362
-  QUALIFIED_HEAD = ef82a7f76380fe03e3f00a457d3a27812322eaa8
-  MERGE = 1acf7f8c920f59bf4187a8e4072c808b7479f51d
-  PROOF = 5553049120
+P7_R4_RECONCILIATION_AUTHORIZATION
+  PR = #366
+  QUALIFIED_HEAD = fd840fbc5b3d383218d2fbebff6695b1b93180d8
+  MERGE = 378005971f3cd9fe5ddc9efdc237e93c34d63fe3
+  PROOF = 5553556112
   STATE = CLOSED_CANONICAL
 
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
@@ -105,55 +109,59 @@ WAIVER = NO
 
 ---
 
-## Canonical P7-R3 implementation identities
+## Canonical P7-R4 implementation identities
 
 ```text
-P7-R3 source = 53119aded3de7c945967248e5ec19196bf03e2c7
-P7-R3 schema = 74852ac9141f28466c7a3902df7441b876bd919d
-P7-R3 test = 011a7e53f10da80138ac8f4cc06a33c505c38fb0
+P7-R4 source = eb25540f83e4b7a817f190618f9daae5839130f2
+P7-R4 schema = e1b11582559bd574d0159b68e95c1b258bd6e1c5
+P7-R4 test = 391488f1e2ce24ccaa2646ddeb520af4e1c520da
 ```
 
 The current reconciliation may not modify those bytes.
 
 ---
 
-## Bounded P7-R3 semantics
+## Bounded P7-R4 semantics
 
 ```text
-P7-R3
-= pure/data-only immutable pre-execution binding
+P7-R4
+= pure/data-only immutable applied-patch evidence binding
 + one exact valid P7-R1 proposal
 + one exact valid matching P7-R2 authorization
-+ exact inert patch bytes within 1_048_576 UTF-8 bytes
-+ exact SHA-256 patch-artifact equality
-+ canonical pure patch parsing
-+ no move semantics
-+ exact path/operation equality
++ one exact valid matching P7-R3 pre-execution binding
++ exact inert patch text
++ one supplied strictly validated successful existing repo.apply_patch receipt
++ exact receipt digest/path/affected-operation equality
++ allow policy
++ canonical receipt identity/timestamps/post-state digest
++ validated optional approval/confinement evidence when present
 + deterministic content-addressed identity
 + detached/deeply immutable output
 ```
 
-It does not apply the patch or advance any lifecycle state.
+It does not apply the patch, invoke K2, run verification, or advance beyond the contract state `APPLIED`.
+
+P7-R4 tests use fixture receipts as contract-test data only and do not prove actual remediation execution.
 
 Required non-equivalences:
 
 ```text
-PRE_EXECUTION_BINDING != PATCH_APPLICATION
-PRE_EXECUTION_BINDING != K2_EXECUTION
-PRE_EXECUTION_BINDING != GENERIC_K2_ONE_SHOT_APPROVAL
-PRE_EXECUTION_BINDING != APPLIED
-PRE_EXECUTION_BINDING != VERIFICATION_FAILED
-PRE_EXECUTION_BINDING != VERIFIED
-PRE_EXECUTION_BINDING != FIXED
-PRE_EXECUTION_BINDING != REVERIFIED
-PRE_EXECUTION_BINDING != DONE_GATE
-PRE_EXECUTION_BINDING != AUTOFIX
-PATCH_DIGEST_MATCH != PATCH_SEMANTIC_CORRECTNESS
-WRITE_ALLOWLIST_MATCH != EXECUTED_WRITE_SET
-P7-R3 CLOSED != P7-R4+ AUTHORITY
-P7-R3 CLOSED != P7 OVERALL CLOSED
-P7-R3 CLOSED != P8 AUTHORITY
-P7-R3 CLOSED != PROJECT COMPLETION
+APPLIED_EVIDENCE_BINDING != PATCH_APPLICATION
+APPLIED_EVIDENCE_BINDING != K2_EXECUTION
+APPLIED_EVIDENCE_BINDING != K2_APPROVAL
+APPLIED_EVIDENCE_BINDING != VERIFICATION
+APPLIED_EVIDENCE_BINDING != VERIFICATION_FAILED
+APPLIED_EVIDENCE_BINDING != VERIFIED
+APPLIED_EVIDENCE_BINDING != FIXED
+APPLIED_EVIDENCE_BINDING != REVERIFIED
+APPLIED_EVIDENCE_BINDING != DONE_GATE
+APPLIED_EVIDENCE_BINDING != AUTOFIX
+SUCCESSFUL_EXECUTION_RECEIPT != COMPLETE_CORRECTNESS
+POST_STATE_DIGEST != VERIFIED_REMEDIATION
+P7-R4 CLOSED != P7-R5+ AUTHORITY
+P7-R4 CLOSED != P7 OVERALL CLOSED
+P7-R4 CLOSED != P8 AUTHORITY
+P7-R4 CLOSED != PROJECT COMPLETION
 ```
 
 ---
@@ -174,13 +182,15 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R4+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R5+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
 FILESYSTEM_GIT_WRITE = NOT_AUTHORIZED
 REPOSITORY_WRITE_AUTHORITY = NONE
 K2_INVOCATION = NOT_AUTHORIZED
+K2_APPROVAL_CREATION = NOT_AUTHORIZED
 K2_AUTHORITY_EXPANSION = NONE
+VERIFICATION_EXECUTION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION EXPANSION = NOT_AUTHORIZED
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
@@ -203,6 +213,6 @@ WAIVER = NO
 
 ## Current candidate gate
 
-Canonical #362 / proof `5553049120` authorizes exactly the five current-view paths and no sixth path. This candidate cannot self-certify its own closure.
+Canonical #366 / proof `5553556112` authorizes exactly the five current-view paths and no sixth path. This candidate cannot self-certify its own closure.
 
-After guarded merge and complete post-merge proof, run fresh successor-authority analysis. Do not infer P7-R4, patch execution, K2 invocation, lifecycle advancement, P8/P9, release, or project completion.
+After guarded merge and complete post-merge proof, run fresh successor-authority analysis. Do not infer P7-R5, verification execution, VERIFIED/FIXED/REVERIFIED/Done Gate state, patch execution, K2 invocation, autofix, P8/P9, release, or project completion.
