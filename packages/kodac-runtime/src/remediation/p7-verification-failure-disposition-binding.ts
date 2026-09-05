@@ -22,14 +22,14 @@ export const P7_R7_VERIFICATION_FAILURE_LIMITS = Object.freeze({
   maxExecutableCodePoints: 4_096,
   maxArgCodePoints: 4_096,
   maxArgs: 64,
-  maxEnvironmentEntries: 13,
+  maxEnvironmentEntries: 12,
   maxEnvironmentValueCodePoints: 8_192,
   maxPolicyReasonCodePoints: 4_096,
   maxFailureErrorCodePoints: 8_192,
   maxSummaryCodePoints: 4_096,
   maxEvidence: 256,
   maxEvidenceRefCodePoints: 1_024,
-  maxJsonNodes: 16_384,
+  maxJsonNodes: 32_768,
   maxJsonDepth: 24,
 } as const)
 
@@ -46,7 +46,7 @@ export interface P7VerificationFailureDispositionBindingBuildInput {
   readonly sourceVerificationReportBinding: P7PostApplyVerificationReportBinding
   readonly sourceVerificationReportBindingInput: P7PostApplyVerificationReportBindingBuildInput
   readonly failedCommandId: string
-  readonly executionIntentPreimage: unknown
+  readonly executionIntentPreimage: P7VerificationExecutionIntentPreimage
   readonly executionReceipt: unknown
 }
 
@@ -102,18 +102,17 @@ type NormalizedReceipt = {
   readonly capability: string
   readonly inputDigest: string
   readonly paths: readonly []
-  readonly policy: Readonly<{ decision: "allow"; reason: string }>
+  readonly policy: Readonly<{ readonly decision: "allow"; readonly reason: string }>
   readonly startedAt: string
   readonly completedAt: string
-  readonly result: Readonly<{ status: "failure"; error: string }>
+  readonly result: Readonly<{ readonly status: "failure"; readonly error: string }>
 }
 
 const SHA256 = /^[0-9a-f]{64}$/
-const GIT_SHA1 = /^[0-9a-f]{40}$/
+const GIT_OBJECT = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 const CANONICAL_TIMESTAMP = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/
 const COMMAND_ID = /^[a-z0-9][a-z0-9._-]{0,63}$/i
-const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/u
 const WINDOWS_ABSOLUTE = /^[A-Za-z]:[\\/]/
 
 const BUILD_KEYS = [
@@ -127,6 +126,8 @@ const INTENT_KEYS = ["resolvedExecutable", "args", "allowedExitCodes", "maxOutpu
 const RECEIPT_KEYS = ["receiptId", "capability", "inputDigest", "paths", "policy", "startedAt", "completedAt", "result"] as const
 const POLICY_KEYS = ["decision", "reason"] as const
 const RESULT_KEYS = ["status", "error"] as const
+const EVIDENCE_ALLOWED_KEYS = ["kind", "ref", "digest"] as const
+const EVIDENCE_REQUIRED_KEYS = ["kind", "ref"] as const
 const OUTPUT_KEYS = [
   "version", "dispositionIdentity", "state", "sourceVerificationReportBindingIdentity", "proposalIdentity",
   "authorizationIdentity", "intentBindingIdentity", "appliedEvidenceIdentity", "verificationPlanBindingIdentity",
@@ -136,13 +137,13 @@ const OUTPUT_KEYS = [
   "executionInputDigest", "executionResolvedExecutable", "executionEnvironmentDigest", "executionTimeoutMs",
   "executionMaxOutputBytes", "executionStartedAt", "executionCompletedAt", "executionFailureError",
 ] as const
-const EVIDENCE_KEYS = ["kind", "ref", "digest"] as const
+
 const ENV_KEYS = Object.freeze([
   "NODE_ENV", "KODAC_VERIFICATION", "NO_COLOR", "PATH", "Path", "SYSTEMROOT", "SystemRoot",
   "HOME", "USERPROFILE", "TMP", "TEMP", "TMPDIR",
 ] as const)
-const ENV_KEY_SET = new Set<string>(ENV_KEYS)
 const FIXED_ENV = Object.freeze({ NODE_ENV: "test", KODAC_VERIFICATION: "1", NO_COLOR: "1" } as const)
+const EVIDENCE_KINDS = new Set<string>(["receipt", "artifact", "event", "workspace"])
 
 function fail(label: string, detail: string): never {
   throw new TypeError(`${label} ${detail}`)
@@ -176,19 +177,17 @@ function assertUnicodeScalars(value: string, label: string): void {
   }
 }
 
-function boundedUnicodeText(value: unknown, label: string, maxCodePoints: number): string {
+function unicodeText(
+  value: unknown,
+  label: string,
+  maxCodePoints: number,
+  options: { readonly allowEmpty?: boolean } = {},
+): string {
   if (typeof value !== "string") fail(label, "must be a string")
   assertUnicodeScalars(value, label)
-  if (codePointLength(value) < 1 || codePointLength(value) > maxCodePoints) {
-    fail(label, `must contain between 1 and ${maxCodePoints} code points`)
-  }
+  if (!options.allowEmpty && value.length === 0) fail(label, "must not be empty")
+  if (codePointLength(value) > maxCodePoints) fail(label, `exceeds ${maxCodePoints} Unicode code points`)
   return value
-}
-
-function boundedInertText(value: unknown, label: string, maxCodePoints: number): string {
-  const text = boundedUnicodeText(value, label, maxCodePoints)
-  if (CONTROL_CHARACTERS.test(text)) fail(label, "must not contain control characters")
-  return text
 }
 
 function ownDataRecord(
@@ -221,27 +220,48 @@ function ownDataRecord(
 
 function denseArray(value: unknown, label: string, maxItems: number): readonly unknown[] {
   if (!Array.isArray(value) || nodeTypes.isProxy(value)) fail(label, "must be a non-proxy array")
-  if (value.length > maxItems) fail(label, `must contain no more than ${maxItems} items`)
+  if (Object.getPrototypeOf(value) !== Array.prototype) fail(label, "must use the ordinary Array prototype")
+  const lengthDescriptor = Object.getOwnPropertyDescriptor(value, "length")
+  if (
+    lengthDescriptor === undefined ||
+    !("value" in lengthDescriptor) ||
+    typeof lengthDescriptor.value !== "number" ||
+    !Number.isSafeInteger(lengthDescriptor.value) ||
+    lengthDescriptor.value < 0 ||
+    lengthDescriptor.value > maxItems
+  ) {
+    fail(label, `must expose an ordinary length from 0 through ${maxItems}`)
+  }
+  const length = lengthDescriptor.value
+  const expected = new Set<string>(["length"])
+  for (let index = 0; index < length; index += 1) expected.add(String(index))
   const keys = Reflect.ownKeys(value)
+  if (keys.length !== expected.size) fail(label, "must not contain sparse or extra array properties")
   for (const key of keys) {
-    if (typeof key === "symbol") fail(label, "must not contain symbol fields")
+    if (typeof key !== "string" || !expected.has(key)) {
+      fail(label, "must not contain symbol, sparse, or extra array properties")
+    }
     if (key === "length") continue
-    if (!/^(0|[1-9][0-9]*)$/.test(key)) fail(label, `contains non-index field: ${key}`)
-    const index = Number(key)
-    if (!Number.isSafeInteger(index) || index < 0 || index >= value.length) fail(label, "contains an invalid array index")
     const descriptor = Object.getOwnPropertyDescriptor(value, key)
     if (descriptor === undefined || !("value" in descriptor) || descriptor.enumerable !== true) {
       fail(`${label}[${key}]`, "must be an enumerable data property")
     }
   }
-  for (let index = 0; index < value.length; index += 1) {
-    if (!Object.hasOwn(value, index)) fail(label, "must not contain sparse entries")
+  const result: unknown[] = []
+  for (let index = 0; index < length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
+    if (descriptor === undefined || !("value" in descriptor) || descriptor.enumerable !== true) {
+      fail(`${label}[${index}]`, "must be a dense enumerable data property")
+    }
+    result.push(descriptor.value)
   }
-  return value
+  return result
 }
 
 function assertSafeJsonGraph(value: unknown, label: string): void {
-  const stack: { value: unknown; depth: number; label: string }[] = [{ value, depth: 0, label }]
+  const stack: Array<{ readonly value: unknown; readonly depth: number; readonly label: string }> = [
+    { value, depth: 0, label },
+  ]
   const seen = new Set<object>()
   let nodes = 0
   while (stack.length > 0) {
@@ -249,6 +269,7 @@ function assertSafeJsonGraph(value: unknown, label: string): void {
     nodes += 1
     if (nodes > P7_R7_VERIFICATION_FAILURE_LIMITS.maxJsonNodes) fail(label, "exceeds the JSON node budget")
     if (current.depth > P7_R7_VERIFICATION_FAILURE_LIMITS.maxJsonDepth) fail(label, "exceeds the JSON depth budget")
+
     const item = current.value
     if (item === null || typeof item === "boolean") continue
     if (typeof item === "string") {
@@ -256,13 +277,16 @@ function assertSafeJsonGraph(value: unknown, label: string): void {
       continue
     }
     if (typeof item === "number") {
-      if (!Number.isFinite(item) || !Number.isSafeInteger(item)) fail(current.label, "must contain only safe finite integers")
+      if (!Number.isSafeInteger(item) || !Number.isFinite(item) || Object.is(item, -0)) {
+        fail(current.label, "must contain only finite safe integers other than negative zero")
+      }
       continue
     }
     if (typeof item !== "object") fail(current.label, "must contain only JSON-compatible values")
     if (nodeTypes.isProxy(item)) fail(current.label, "must not contain Proxy objects")
     if (seen.has(item)) fail(current.label, "must not contain cycles or aliases")
     seen.add(item)
+
     if (Array.isArray(item)) {
       const values = denseArray(item, current.label, P7_R7_VERIFICATION_FAILURE_LIMITS.maxJsonNodes)
       for (let index = values.length - 1; index >= 0; index -= 1) {
@@ -270,6 +294,7 @@ function assertSafeJsonGraph(value: unknown, label: string): void {
       }
       continue
     }
+
     const prototype = Object.getPrototypeOf(item)
     if (prototype !== Object.prototype && prototype !== null) fail(current.label, "must contain only plain objects")
     for (const key of Reflect.ownKeys(item)) {
@@ -285,19 +310,23 @@ function assertSafeJsonGraph(value: unknown, label: string): void {
 }
 
 function canonicalTimestamp(value: unknown, label: string): string {
-  if (typeof value !== "string" || !CANONICAL_TIMESTAMP.test(value)) fail(label, "must be a canonical UTC timestamp")
+  if (typeof value !== "string" || !CANONICAL_TIMESTAMP.test(value)) {
+    fail(label, "must be a canonical ISO-8601 UTC timestamp")
+  }
   const parsed = Date.parse(value)
-  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) fail(label, "must be a valid canonical UTC timestamp")
+  if (!Number.isFinite(parsed) || new Date(parsed).toISOString() !== value) {
+    fail(label, "must be a valid canonical ISO-8601 UTC timestamp")
+  }
   return value
 }
 
 function sha256(value: unknown, label: string): string {
-  if (typeof value !== "string" || !SHA256.test(value)) fail(label, "must be a lowercase SHA-256 digest")
+  if (typeof value !== "string" || !SHA256.test(value)) fail(label, "must be 64 lowercase hexadecimal characters")
   return value
 }
 
-function gitSha1(value: unknown, label: string): string {
-  if (typeof value !== "string" || !GIT_SHA1.test(value)) fail(label, "must be a lowercase 40-hex Git identity")
+function gitObject(value: unknown, label: string): string {
+  if (typeof value !== "string" || !GIT_OBJECT.test(value)) fail(label, "must be a full lowercase Git object id")
   return value
 }
 
@@ -307,7 +336,7 @@ function uuidV4(value: unknown, label: string): string {
 }
 
 function positiveInteger(value: unknown, label: string, max: number): number {
-  if (!Number.isSafeInteger(value) || typeof value !== "number" || value <= 0 || value > max) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || Object.is(value, -0) || value <= 0 || value > max) {
     fail(label, `must be a positive safe integer no greater than ${max}`)
   }
   return value
@@ -333,18 +362,17 @@ function deepFreeze<T>(value: T): T {
   return value
 }
 
-function portableSegments(value: string): readonly string[] {
-  return value.replaceAll("\\", "/").split("/")
-}
-
 function compatibleExecutable(value: unknown, command: P7VerificationCommand): string {
-  const executable = boundedInertText(value, "executionIntentPreimage.resolvedExecutable", P7_R7_VERIFICATION_FAILURE_LIMITS.maxExecutableCodePoints)
-  const lower = executable.toLowerCase()
+  const executable = unicodeText(
+    value,
+    "executionIntentPreimage.resolvedExecutable",
+    P7_R7_VERIFICATION_FAILURE_LIMITS.maxExecutableCodePoints,
+  )
   if (command.executable === "node") {
     if (!executable.startsWith("/") && !WINDOWS_ABSOLUTE.test(executable)) {
       fail("executionIntentPreimage.resolvedExecutable", "must be an absolute node executable path")
     }
-    const segments = portableSegments(executable)
+    const segments = executable.replaceAll("\\", "/").split("/")
     if (segments.some((segment) => segment === "." || segment === "..")) {
       fail("executionIntentPreimage.resolvedExecutable", "must not contain dot traversal segments")
     }
@@ -355,12 +383,20 @@ function compatibleExecutable(value: unknown, command: P7VerificationCommand): s
     return executable
   }
   const expected = command.executable === "python"
-    ? new Set(["python3", "python.exe"])
+    ? (processPlatformExecutable("python"))
     : command.executable === "cargo"
-      ? new Set(["cargo", "cargo.exe"])
-      : new Set(["go", "go.exe"])
-  if (!expected.has(lower)) fail("executionIntentPreimage.resolvedExecutable", `must resolve the ${command.executable} semantic executable`)
+      ? processPlatformExecutable("cargo")
+      : processPlatformExecutable("go")
+  if (!expected.has(executable)) {
+    fail("executionIntentPreimage.resolvedExecutable", `must be a current ${command.executable} resolver value`)
+  }
   return executable
+}
+
+function processPlatformExecutable(kind: "python" | "cargo" | "go"): ReadonlySet<string> {
+  if (kind === "python") return new Set<string>(["python3", "python.exe"])
+  if (kind === "cargo") return new Set<string>(["cargo", "cargo.exe"])
+  return new Set<string>(["go", "go.exe"])
 }
 
 function canonicalEnvironment(value: unknown): Readonly<Record<string, string>> {
@@ -368,18 +404,16 @@ function canonicalEnvironment(value: unknown): Readonly<Record<string, string>> 
   if (Object.keys(record).length > P7_R7_VERIFICATION_FAILURE_LIMITS.maxEnvironmentEntries) {
     fail("executionIntentPreimage.env", "exceeds the environment entry budget")
   }
-  for (const key of Object.keys(record)) {
-    if (!ENV_KEY_SET.has(key)) fail("executionIntentPreimage.env", `contains unsupported key: ${key}`)
-  }
   for (const [key, expected] of Object.entries(FIXED_ENV)) {
     if (record[key] !== expected) fail(`executionIntentPreimage.env.${key}`, `must equal ${expected}`)
   }
   const normalized: Record<string, string> = {}
   for (const key of Object.keys(record).sort(compareStrings)) {
-    normalized[key] = boundedUnicodeText(
+    normalized[key] = unicodeText(
       record[key],
       `executionIntentPreimage.env.${key}`,
       P7_R7_VERIFICATION_FAILURE_LIMITS.maxEnvironmentValueCodePoints,
+      { allowEmpty: true },
     )
   }
   return Object.freeze(normalized)
@@ -388,10 +422,11 @@ function canonicalEnvironment(value: unknown): Readonly<Record<string, string>> 
 function exactStringArray(value: unknown, label: string, expected: readonly string[]): readonly string[] {
   const values = denseArray(value, label, P7_R7_VERIFICATION_FAILURE_LIMITS.maxArgs)
   if (values.length !== expected.length) fail(label, "must exactly match the planned command args")
-  const normalized = values.map((entry, index) => boundedUnicodeText(
+  const normalized = values.map((entry, index) => unicodeText(
     entry,
     `${label}[${index}]`,
     P7_R7_VERIFICATION_FAILURE_LIMITS.maxArgCodePoints,
+    { allowEmpty: true },
   ))
   for (let index = 0; index < expected.length; index += 1) {
     if (normalized[index] !== expected[index]) fail(label, "must exactly match the planned command args")
@@ -411,8 +446,12 @@ function normalizedIntent(value: unknown, command: P7VerificationCommand): Norma
   const expectedMaxOutputBytes = command.maxOutputBytes ?? 512 * 1024
   const timeoutMs = positiveInteger(record.timeoutMs, "executionIntentPreimage.timeoutMs", 120_000)
   const maxOutputBytes = positiveInteger(record.maxOutputBytes, "executionIntentPreimage.maxOutputBytes", 1_048_576)
-  if (timeoutMs !== expectedTimeoutMs) fail("executionIntentPreimage.timeoutMs", "must match the exact verification-engine materialization")
-  if (maxOutputBytes !== expectedMaxOutputBytes) fail("executionIntentPreimage.maxOutputBytes", "must match the exact verification-engine materialization")
+  if (timeoutMs !== expectedTimeoutMs) {
+    fail("executionIntentPreimage.timeoutMs", "must match the exact verification-engine materialization")
+  }
+  if (maxOutputBytes !== expectedMaxOutputBytes) {
+    fail("executionIntentPreimage.maxOutputBytes", "must match the exact verification-engine materialization")
+  }
   const env = canonicalEnvironment(record.env)
   const gatewayPreimage = {
     executable: resolvedExecutable,
@@ -437,30 +476,36 @@ function normalizedIntent(value: unknown, command: P7VerificationCommand): Norma
 function normalizedReceipt(value: unknown, failedCommandId: string, intent: NormalizedIntent): NormalizedReceipt {
   const record = ownDataRecord(value, RECEIPT_KEYS, RECEIPT_KEYS, "executionReceipt")
   const receiptId = uuidV4(record.receiptId, "executionReceipt.receiptId")
-  const capability = boundedInertText(record.capability, "executionReceipt.capability", 256)
+  const capability = unicodeText(record.capability, "executionReceipt.capability", 256)
   if (capability !== `verification.command.${failedCommandId}`) {
     fail("executionReceipt.capability", "must match the exact failed planned verification command")
   }
   const inputDigest = sha256(record.inputDigest, "executionReceipt.inputDigest")
-  if (inputDigest !== intent.inputDigest) fail("executionReceipt.inputDigest", "must match the reconstructed gateway command intent")
+  if (inputDigest !== intent.inputDigest) {
+    fail("executionReceipt.inputDigest", "must match the reconstructed gateway command intent")
+  }
   const paths = denseArray(record.paths, "executionReceipt.paths", 0)
   if (paths.length !== 0) fail("executionReceipt.paths", "must equal []")
   const policy = ownDataRecord(record.policy, POLICY_KEYS, POLICY_KEYS, "executionReceipt.policy")
   if (policy.decision !== "allow") fail("executionReceipt.policy.decision", "must equal allow")
-  const policyReason = boundedUnicodeText(
+  const policyReason = unicodeText(
     policy.reason,
     "executionReceipt.policy.reason",
     P7_R7_VERIFICATION_FAILURE_LIMITS.maxPolicyReasonCodePoints,
+    { allowEmpty: true },
   )
   const startedAt = canonicalTimestamp(record.startedAt, "executionReceipt.startedAt")
   const completedAt = canonicalTimestamp(record.completedAt, "executionReceipt.completedAt")
-  if (Date.parse(completedAt) < Date.parse(startedAt)) fail("executionReceipt.completedAt", "must not precede startedAt")
+  if (Date.parse(completedAt) < Date.parse(startedAt)) {
+    fail("executionReceipt.completedAt", "must not precede startedAt")
+  }
   const result = ownDataRecord(record.result, RESULT_KEYS, RESULT_KEYS, "executionReceipt.result")
   if (result.status !== "failure") fail("executionReceipt.result.status", "must equal failure")
-  const error = boundedUnicodeText(
+  const error = unicodeText(
     result.error,
     "executionReceipt.result.error",
     P7_R7_VERIFICATION_FAILURE_LIMITS.maxFailureErrorCodePoints,
+    { allowEmpty: true },
   )
   return deepFreeze({
     receiptId,
@@ -475,24 +520,32 @@ function normalizedReceipt(value: unknown, failedCommandId: string, intent: Norm
 }
 
 function normalizedEvidence(value: readonly P7VerificationReportEvidence[]): readonly P7VerificationReportEvidence[] {
-  if (value.length > P7_R7_VERIFICATION_FAILURE_LIMITS.maxEvidence) fail("failedCheckEvidence", "exceeds the evidence budget")
+  if (value.length > P7_R7_VERIFICATION_FAILURE_LIMITS.maxEvidence) {
+    fail("failedCheckEvidence", "exceeds the evidence budget")
+  }
   const output = value.map((item, index) => {
-    const record = ownDataRecord(item, EVIDENCE_KEYS, ["kind", "ref"], `failedCheckEvidence[${index}]`)
-    const kind = boundedInertText(record.kind, `failedCheckEvidence[${index}].kind`, 32)
-    if (kind !== "receipt" && kind !== "artifact" && kind !== "event" && kind !== "workspace") {
+    const record = ownDataRecord(item, EVIDENCE_ALLOWED_KEYS, EVIDENCE_REQUIRED_KEYS, `failedCheckEvidence[${index}]`)
+    if (typeof record.kind !== "string" || !EVIDENCE_KINDS.has(record.kind)) {
       fail(`failedCheckEvidence[${index}].kind`, "is unsupported")
     }
     const evidence: { kind: P7VerificationReportEvidence["kind"]; ref: string; digest?: string } = {
-      kind,
-      ref: boundedInertText(
+      kind: record.kind as P7VerificationReportEvidence["kind"],
+      ref: unicodeText(
         record.ref,
         `failedCheckEvidence[${index}].ref`,
         P7_R7_VERIFICATION_FAILURE_LIMITS.maxEvidenceRefCodePoints,
       ),
     }
-    if (Object.hasOwn(record, "digest")) evidence.digest = sha256(record.digest, `failedCheckEvidence[${index}].digest`)
+    if (Object.hasOwn(record, "digest")) {
+      evidence.digest = sha256(record.digest, `failedCheckEvidence[${index}].digest`)
+    }
     return Object.freeze(evidence)
   })
+  output.sort((left, right) =>
+    compareStrings(left.kind, right.kind) ||
+    compareStrings(left.ref, right.ref) ||
+    compareStrings(left.digest ?? "", right.digest ?? ""),
+  )
   return Object.freeze(output)
 }
 
@@ -513,19 +566,32 @@ function normalizedBuildCore(value: unknown): DispositionCore {
     sourceInput.sourceVerificationPlanBinding,
     sourceInput.sourceVerificationPlanBindingInput as P7PostApplyVerificationPlanBindingBuildInput,
   )
-  const failedCommandId = boundedInertText(input.failedCommandId, "failedCommandId", 64)
+  const failedCommandId = unicodeText(input.failedCommandId, "failedCommandId", 64)
   if (!COMMAND_ID.test(failedCommandId)) fail("failedCommandId", "must match the P7 command id grammar")
-  const command = sourcePlan.verificationPlan.commands.find((candidate) => candidate.id === failedCommandId)
-  if (!command) fail("failedCommandId", "must identify an exact command in the P7-R5 plan")
-  const check = source.verificationReport.checks.find((candidate) => candidate.id === `command.${failedCommandId}`)
-  if (!check) fail("sourceVerificationReportBinding.verificationReport", "is missing the selected planned command check")
-  if (check.category !== command.category) fail("selected failed command check.category", "must match the exact P7-R5 command category")
+  const commands = sourcePlan.verificationPlan.commands.filter((candidate) => candidate.id === failedCommandId)
+  if (commands.length !== 1) fail("failedCommandId", "must identify exactly one command in the P7-R5 plan")
+  const command = commands[0]!
+  const checks = source.verificationReport.checks.filter((candidate) => candidate.id === `command.${failedCommandId}`)
+  if (checks.length !== 1) {
+    fail("sourceVerificationReportBinding.verificationReport", "must contain exactly one selected planned command check")
+  }
+  const check = checks[0]!
+  if (check.category !== command.category) {
+    fail("selected failed command check.category", "must match the exact P7-R5 command category")
+  }
   if (check.status !== "fail") fail("selected failed command check.status", "must equal fail")
 
   const intent = normalizedIntent(input.executionIntentPreimage, command)
   const receipt = normalizedReceipt(input.executionReceipt, failedCommandId, intent)
-  if (!check.evidence.some((item) => item.kind === "receipt" && item.ref === receipt.receiptId)) {
-    fail("selected failed command check.evidence", "must reference the exact supplied failure receipt id")
+  const receiptRefs = check.evidence.filter((item) => item.kind === "receipt" && item.ref === receipt.receiptId)
+  if (receiptRefs.length !== 1) {
+    fail("selected failed command check.evidence", "must reference the exact supplied failure receipt id exactly once")
+  }
+  if (Date.parse(receipt.startedAt) < Date.parse(source.verificationStartedAt)) {
+    fail("executionReceipt.startedAt", "must not precede the bound verification report")
+  }
+  if (Date.parse(receipt.completedAt) > Date.parse(source.verificationCompletedAt)) {
+    fail("executionReceipt.completedAt", "must not exceed the bound verification report")
   }
 
   const failedCheckEvidence = normalizedEvidence(check.evidence)
@@ -540,16 +606,20 @@ function normalizedBuildCore(value: unknown): DispositionCore {
     intentBindingIdentity: source.intentBindingIdentity,
     appliedEvidenceIdentity: source.appliedEvidenceIdentity,
     verificationPlanBindingIdentity: source.verificationPlanBindingIdentity,
-    repositoryIdentity: boundedInertText(source.repositoryIdentity, "source.repositoryIdentity", 1_024),
-    canonicalBase: gitSha1(source.canonicalBase, "source.canonicalBase"),
-    targetHead: gitSha1(source.targetHead, "source.targetHead"),
+    repositoryIdentity: unicodeText(source.repositoryIdentity, "source.repositoryIdentity", 1_024),
+    canonicalBase: gitObject(source.canonicalBase, "source.canonicalBase"),
+    targetHead: gitObject(source.targetHead, "source.targetHead"),
     postStateDigest: sha256(source.postStateDigest, "source.postStateDigest"),
     verificationPlanDigest: sha256(source.verificationPlanDigest, "source.verificationPlanDigest"),
     verificationReportIdentity: sha256(source.verificationReportIdentity, "source.verificationReportIdentity"),
-    verificationSessionId: boundedInertText(source.verificationSessionId, "source.verificationSessionId", 256),
+    verificationSessionId: unicodeText(source.verificationSessionId, "source.verificationSessionId", 256),
     failedCommandId,
     failedCommandCategory: command.category,
-    failedCheckSummary: boundedInertText(check.summary, "selected failed command check.summary", P7_R7_VERIFICATION_FAILURE_LIMITS.maxSummaryCodePoints),
+    failedCheckSummary: unicodeText(
+      check.summary,
+      "selected failed command check.summary",
+      P7_R7_VERIFICATION_FAILURE_LIMITS.maxSummaryCodePoints,
+    ),
     failedCheckEvidence,
     executionReceiptIdentity: receiptIdentity,
     executionReceiptId: receipt.receiptId,
@@ -588,6 +658,7 @@ export function validateP7VerificationFailureDispositionBinding(
   if (claimedIdentity !== expected.dispositionIdentity) {
     fail("verification-failure disposition.dispositionIdentity", "does not match the canonical source-derived preimage")
   }
+
   const withoutIdentity: UnknownRecord = {}
   const expectedWithoutIdentity: UnknownRecord = {}
   for (const key of OUTPUT_KEYS) {
