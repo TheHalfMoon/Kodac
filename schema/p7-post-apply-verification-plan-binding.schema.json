@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-post-apply-verification-plan-binding.schema.json",
+  "title": "Kodac P7-R5 Post-Apply Verification Plan Binding",
+  "description": "A pure data-only immutable VERIFICATION_PLAN_BOUND record that binds exact canonically revalidated P7-R4 applied evidence to one strictly validated supplied verification plan. This schema grants no planner invocation, verification execution, K2 invocation or approval, VERIFIED/FIXED/REVERIFIED/Done Gate state, autofix, filesystem/Git write, provider/model, network, persistence, product integration, release, or project-completion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "bindingIdentity",
+    "state",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "appliedEvidenceIdentity",
+    "executionReceiptIdentity",
+    "executionReceiptId",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "patchArtifactDigest",
+    "inputDigest",
+    "postStateDigest",
+    "verificationPlanDigest",
+    "verificationPlanGeneratedAt",
+    "verificationWorkspaceDigest",
+    "verificationPlan"
+  ],
+  "properties": {
+    "version": { "const": "p7-r5-post-apply-verification-plan-binding-v1" },
+    "bindingIdentity": { "$ref": "#/$defs/sha256" },
+    "state": { "const": "VERIFICATION_PLAN_BOUND" },
+    "proposalIdentity": { "$ref": "#/$defs/sha256" },
+    "authorizationIdentity": { "$ref": "#/$defs/sha256" },
+    "intentBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "appliedEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "executionReceiptIdentity": { "$ref": "#/$defs/sha256" },
+    "executionReceiptId": { "$ref": "#/$defs/uuidV4" },
+    "repositoryIdentity": { "$ref": "#/$defs/identityText" },
+    "canonicalBase": { "$ref": "#/$defs/gitCommit" },
+    "targetHead": { "$ref": "#/$defs/gitCommit" },
+    "patchArtifactDigest": { "$ref": "#/$defs/sha256" },
+    "inputDigest": { "$ref": "#/$defs/sha256" },
+    "postStateDigest": { "$ref": "#/$defs/sha256" },
+    "verificationPlanDigest": { "$ref": "#/$defs/sha256" },
+    "verificationPlanGeneratedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+    "verificationWorkspaceDigest": { "$ref": "#/$defs/sha256" },
+    "verificationPlan": { "$ref": "#/$defs/verificationPlanProjection" }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "uuidV4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "canonicalTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "unicodeScalarText": {
+      "type": "string",
+      "pattern": "^(?:[^\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])*$"
+    },
+    "identityText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "minLength": 1 },
+        { "maxLength": 256 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F]).+$" }
+      ]
+    },
+    "boundedText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "minLength": 1 },
+        { "maxLength": 8192 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F]).+$" }
+      ]
+    },
+    "pathText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "minLength": 1 },
+        { "maxLength": 1024 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F]).+$" }
+      ]
+    },
+    "commandArg": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 4096 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F]).*$" }
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxCommands", "maxTotalTimeoutMs"],
+      "properties": {
+        "maxCommands": { "type": "integer", "minimum": 1, "maximum": 8 },
+        "maxTotalTimeoutMs": { "type": "integer", "minimum": 1, "maximum": 360000 }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "executable", "args"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+        },
+        "category": { "enum": ["syntax", "types", "lint", "tests", "custom"] },
+        "executable": { "enum": ["node", "python", "cargo", "go"] },
+        "args": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/commandArg" }
+        },
+        "timeoutMs": { "type": "integer", "minimum": 1, "maximum": 120000 },
+        "maxOutputBytes": { "type": "integer", "minimum": 1, "maximum": 1048576 }
+      }
+    },
+    "verificationPlanProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "protocol",
+        "version",
+        "risk",
+        "budget",
+        "signals",
+        "changedPaths",
+        "commands",
+        "warnings",
+        "planDigest"
+      ],
+      "properties": {
+        "protocol": { "const": "kodac.verification-plan" },
+        "version": { "const": 1 },
+        "risk": { "enum": ["low", "medium", "high"] },
+        "budget": { "$ref": "#/$defs/budget" },
+        "signals": {
+          "type": "array",
+          "maxItems": 700,
+          "uniqueItems": true,
+          "items": {
+            "allOf": [
+              { "$ref": "#/$defs/unicodeScalarText" },
+              { "minLength": 1 },
+              { "maxLength": 4096 },
+              { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F]).+$" }
+            ]
+          },
+          "description": "Runtime additionally requires canonical ascending order."
+        },
+        "changedPaths": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pathText" },
+          "description": "Runtime requires exact equality with the canonically validated P7-R4 applied path projection in canonical ascending order."
+        },
+        "commands": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": { "$ref": "#/$defs/command" },
+          "description": "Runtime requires unique command ids, exact risk-budget limits, workspace-relative args, and at least one tests-category command."
+        },
+        "warnings": {
+          "type": "array",
+          "maxItems": 700,
+          "items": { "$ref": "#/$defs/boundedText" }
+        },
+        "planDigest": { "$ref": "#/$defs/sha256" }
+      },
+      "description": "Runtime recomputes the exact current VerificationPlanner stable projection digest. Generated time and workspace are separately bound by the outer R5 identity as observation metadata and grant no execution authority."
+    }
+  }
+}
