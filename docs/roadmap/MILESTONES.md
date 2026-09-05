@@ -33,9 +33,15 @@ This file is a current milestone ledger. It does not authorize implementation, e
 | P4 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | PR #328 / `f8641ec272301c991fe47cc879a45f10d48d3587` / proof `5547478904` |
 | P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | PR #329 / `6f65503fa4abdcf5c20c15d2e54265ab01c929d3` / proof `5547554548` |
 | P4 post-closeout current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #330 / `fa74f7653a2105152fc48aacc293e98142fea7fa` / proof `5547581664` |
+| P4 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | PR #331 / `af6a225e5151ed5717d112ee9281f440f32d4693` / proof `5550826662` |
 | P4 overall | **OPEN** | Bounded R1-R2 closeout is not overall closure |
 | P4-R3+ | **NOT_AUTHORIZED** | Fresh concrete gap + separate authority required |
-| P5-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | No implementation authority by sequence |
+| P5-R1 authorization | **CLOSED_CANONICAL** | PR #332 / `39a732aecee8ebd69c5f294d2aa135288edc6d97` / proof `5550880869` |
+| P5-R1 Evidence Provenance Binding | **CLOSED_CANONICAL** | PR #333 / `cef7a375e366795913879bed82f3d2bffe7647aa` / proof `5550968215` |
+| P5-R1 post-merge current-view reconciliation authorization | **CLOSED_CANONICAL** | PR #334 / `3ef17af23c686b18aa0f383c681b72c672137d51` / proof `5550995814` |
+| P5-R2+ | **NOT_AUTHORIZED** | Fresh non-duplicative gap + separate authority required |
+| P5 overall | **NOT_CLOSED** | P5-R1 bounded closure is not P5 overall closure |
+| P6-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | No implementation authority by sequence |
 | Project completion | **NOT_ESTABLISHED** | No canonical completion proof exists |
 
 Engineering milestone state is separate from public release status.
@@ -55,6 +61,7 @@ P4_R1_R2_CLOSEOUT_AUTHORIZATION = #328 / f8641ec272301c991fe47cc879a45f10d48d358
 P4_R1_R2_CLOSEOUT = #329 / 6f65503fa4abdcf5c20c15d2e54265ab01c929d3 / proof 5547554548
 P4_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #329 / comment 5547558110 / ANALYSIS_ONLY
 P4_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = #330 / fa74f7653a2105152fc48aacc293e98142fea7fa / proof 5547581664
+P4_POST_CLOSEOUT_RECONCILIATION = #331 / af6a225e5151ed5717d112ee9281f440f32d4693 / proof 5550826662
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
@@ -116,13 +123,13 @@ CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
 REVIEW AGREEMENT != PROOF
 P4 R1-R2 CLOSED != P4 OVERALL CLOSED
 P4 R1-R2 CLOSED != P4-R3+ AUTHORITY
-P4 R1-R2 CLOSED != P5 AUTHORITY
+P4 R1-R2 CLOSED != P5 SUCCESSOR AUTHORITY
 P4 R1-R2 CLOSED != PROJECT COMPLETION
 ```
 
 ---
 
-## Material qualification history
+## Material P4 qualification history
 
 P4-R1 required a forward-only JSON Schema conditional-object parity repair. Later Founder-governance movement of canonical `main` was reconciled forward-only without rebase/force-push and without changing frozen implementation blobs. Exact-head qualification was rerun.
 
@@ -132,9 +139,75 @@ These repairs are canonical history and must not be rewritten as first-attempt s
 
 ---
 
+## Canonical P5-R1 anchors
+
+```text
+P5_R1_AUTHORIZATION = #332 / 39a732aecee8ebd69c5f294d2aa135288edc6d97 / proof 5550880869
+P5_R1_IMPLEMENTATION = #333 / cef7a375e366795913879bed82f3d2bffe7647aa / proof 5550968215
+P5_R1_QUALIFIED_HEAD = 7ccc8516938be0578d7648c4b7f07e89af86b306
+P5_R1_POST_MERGE_RECONCILIATION_ANALYSIS = #333 / comment 5550978486 / ANALYSIS_ONLY
+P5_R1_POST_MERGE_RECONCILIATION_AUTHORIZATION = #334 / 3ef17af23c686b18aa0f383c681b72c672137d51 / proof 5550995814
+```
+
+---
+
+## Canonical P5-R1 implementation identities
+
+```text
+packages/kodac-runtime/src/verification/p5-evidence-provenance.ts
+  = 4c8d708070e950d2902308ca1977ce5267acec29
+schema/p5-evidence-provenance.schema.json
+  = b7c1d2573a1dbe3b34c5a1e5dc0a5c2fceb1418e
+packages/kodac-runtime/test/p5-r1-evidence-provenance.test.ts
+  = 512ab506898d945aed8381352906c4e03bcbd487
+```
+
+The current reconciliation may not modify those bytes.
+
+---
+
+## Bounded P5-R1 meaning
+
+```text
+P5-R1
+= deterministic provider-neutral provenance sidecar over already-existing evidence identity/ref/digest
++ exact repository base/head + repository identity
++ producer id/version/configuration identity
++ policy/scope/input/environment identities
++ caller-supplied CURRENT | STALE freshness + basis identity
++ content-addressed detached/frozen result
++ no source-evidence validation
++ no automatic freshness computation
++ no verifier execution
++ no ProofGraph
++ no KRI/K5/K2 authority mutation
+```
+
+Required non-equivalences:
+
+```text
+PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION
+PROVENANCE BINDING != PROOF
+PROVENANCE BINDING != AUTHORITY
+CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
+P5-R1 CLOSED != P5-R2+ AUTHORITY
+P5-R1 CLOSED != P5 OVERALL CLOSED
+P5-R1 CLOSED != PROJECT COMPLETION
+```
+
+---
+
+## Material P5-R1 qualification history
+
+The first P5-R1 implementation PR head `35dd6b2434a3586f320f378dd5aa30428fcc3ed2` failed exact-head TypeScript qualification with TS2352 errors in the authorized test file. The branch was repaired forward-only at `7ccc8516938be0578d7648c4b7f07e89af86b306` without force-push or rebase. The full required exact-head matrix then passed before guarded merge.
+
+This repair is canonical history and must not be rewritten as first-attempt success.
+
+---
+
 ## Current reconciliation gate
 
-Canonical PR #330 authorizes exactly five paths:
+Canonical PR #334 authorizes exactly five paths:
 
 ```text
 docs/roadmap/NEXT.md
@@ -146,7 +219,7 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-The reconciliation only updates current navigation/status to the already-proven P4 bounded-closeout truth. It does not change historical evidence or implementation.
+The reconciliation only updates current navigation/status to already-proven P4/P5-R1 canonical truth. It does not change historical evidence or implementation.
 
 It must still prove on one frozen exact head:
 
@@ -173,17 +246,25 @@ WAIVER = NO
 P2 OVERALL = OPEN
 P3 OVERALL = OPEN
 P4 OVERALL = OPEN
+P5 OVERALL = NOT_CLOSED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 REAL BENCHMARK EXECUTION = NOT_AUTHORIZED
 P2-R7+ = NOT_AUTHORIZED BY NUMBERING
 P3-R18+ = NOT_AUTHORIZED
 P4-R3+ = NOT_AUTHORIZED
-P5-P9 IMPLEMENTATION = NOT_AUTHORIZED
+P5-R2+ = NOT_AUTHORIZED
+P6-P9 IMPLEMENTATION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION = NOT_AUTHORIZED
 KRI ADJUDICATION MUTATION = NOT_AUTHORIZED
+PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION
+PROVENANCE BINDING != PROOF
+PROVENANCE BINDING != AUTHORITY
+CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
 VERIFIER PROPOSAL != VERIFICATION RESULT
 CRITIC DISPOSITION != KRI ADJUDICATION AUTHORITY
 REVIEW AGREEMENT != PROOF
+PROOFGRAPH = NOT_AUTHORIZED
+KRI / K5 / K2 AUTHORITY MUTATION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 TRAINING / FINE-TUNING / ONLINE LEARNING = NOT_AUTHORIZED
@@ -199,4 +280,4 @@ WAIVER = NO
 
 ## Next boundary
 
-After this five-current-view reconciliation itself is post-merge proven, run fresh evidence-driven successor analysis. Do not infer P4-R3 or P5 by numbering or planning order.
+After this five-current-view reconciliation itself is post-merge proven, run fresh evidence-driven successor analysis. Do not infer P5-R2 by numbering or planning order.
