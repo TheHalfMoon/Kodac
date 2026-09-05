@@ -23,22 +23,19 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P3 overall | **OPEN** | No overall promotion/default/superiority claim |
 | P4 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | Aggregate bounded closeout only |
 | P4 overall | **OPEN** | No overall closure |
-| P5-R1 Evidence Provenance Binding | **CLOSED_CANONICAL** | #333 / proof `5550968215` |
-| P5-R1 current-view reconciliation | **CLOSED_CANONICAL** | #335 / proof `5551095617` |
-| P5-R2 Evidence Relation Edge | **CLOSED_CANONICAL** | #337 / proof `5551261065` |
-| P5-R2 current-view reconciliation | **CLOSED_CANONICAL** | #339 / proof `5551404984` |
 | P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | #341 / proof `5551577054` |
 | P5 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | #343 / proof `5551673149` |
 | P5-R3+ | **NOT_AUTHORIZED** | No authority by numbering/composition |
 | P5 overall | **NOT_CLOSED** | Bounded closure is not overall closure |
 | P6-R1 authorization | **CLOSED_CANONICAL** | #344 / proof `5551754576` |
 | P6-R1 Deterministic Security Finding Foundation | **CLOSED_CANONICAL** | #345 / proof `5551884329` |
-| P6-R1 current-view reconciliation authorization | **CLOSED_CANONICAL** | #346 / proof `5551929413` |
 | P6-R1 current-view reconciliation | **CLOSED_CANONICAL** | #347 / proof `5551961606` |
 | P6 bounded R1 closeout authorization | **CLOSED_CANONICAL** | #348 / proof `5551993370` |
-| P6 bounded R1 engineering scope | **CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly six evidence/current-view paths |
+| P6 bounded R1 engineering scope | **CLOSED_CANONICAL** | #349 / proof `5552035602` |
+| P6 post-closeout reconciliation authorization | **CLOSED_CANONICAL** | #350 / proof `5552132556` |
+| P6 post-closeout current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
 | P6-R2+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
-| P6 overall | **NOT_CLOSED** | Bounded R1 closeout is not overall closure |
+| P6 overall | **NOT_CLOSED** | Bounded R1 closure is not overall closure |
 | Scanner/analyzer execution | **NOT_AUTHORIZED** | Pure/data-only P6-R1 only |
 | SARIF ingestion | **NOT_AUTHORIZED** | Separate future authority required |
 | Secret/network/exploit access | **NOT_AUTHORIZED** | No side-effect authority |
@@ -48,19 +45,11 @@ This file is a current milestone ledger only. It does not authorize implementati
 
 ---
 
-## Canonical P5/P6 anchors
+## Canonical P6 anchors
 
 ```text
-P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION
-  PR = #343
-  QUALIFIED_HEAD = 6f04eff294b23bfefb04dea1b4fc7c4cca738ee1
-  MERGE = 48a4d0944c620a8cca7f25ea7eb24e794be8768f
-  PROOF = 5551673149
-  STATE = CLOSED_CANONICAL
-
 P6_R1_AUTHORIZATION
   PR = #344
-  QUALIFIED_HEAD = 1cd3942b54a59876ee1ac94ae4de895e84f5a80a
   MERGE = 208bfc370c8671bd9b5a71d659355aa08e40d65a
   PROOF = 5551754576
   STATE = CLOSED_CANONICAL
@@ -73,22 +62,8 @@ P6_R1_IMPLEMENTATION
   PROOF = 5551884329
   STATE = CLOSED_CANONICAL
 
-P6_R1_RECONCILIATION_ANALYSIS
-  PR = #345
-  COMMENT = 5551909496
-  CLASS = ANALYSIS_ONLY
-  AUTHORITY_CREATED = NO
-
-P6_R1_RECONCILIATION_AUTHORIZATION
-  PR = #346
-  QUALIFIED_HEAD = 00b3103aedf5e824b949472bc09422eb3095785f
-  MERGE = acce1c1644250cc4afd2008175d41d41ca51de87
-  PROOF = 5551929413
-  STATE = CLOSED_CANONICAL
-
 P6_R1_CURRENT_VIEW_RECONCILIATION
   PR = #347
-  QUALIFIED_HEAD = c0e4492bc088ac3554fd49da49c1125fcc9a539a
   MERGE = fd2c53682dde47b795740cc706b28852397f3ec6
   PROOF = 5551961606
   STATE = CLOSED_CANONICAL
@@ -97,14 +72,31 @@ P6_POST_R1_SUCCESSOR_ANALYSIS
   PR = #347
   COMMENT = 5551968892
   CLASS = ANALYSIS_ONLY
-  AUTHORITY_CREATED = NO
   CONCLUSION = NO ADDITIONAL NUMBERED P6 MECHANISM PROVEN NECESSARY BEFORE BOUNDED CLOSEOUT
 
 P6_BOUNDED_R1_CLOSEOUT_AUTHORIZATION
   PR = #348
-  QUALIFIED_HEAD = bd1526faed6c65d5b86aaeed0e6f96f12ee73013
   MERGE = 82cb0e1b2c4739537a1355ec6e6fdd63759cbc5d
   PROOF = 5551993370
+  STATE = CLOSED_CANONICAL
+
+P6_BOUNDED_R1_CLOSEOUT
+  PR = #349
+  QUALIFIED_HEAD = bb3de55c08289727034e9ed62d96863f336ee3f6
+  MERGE = 206741c67021864ffdaea1f57aa91bf7d1509a48
+  PROOF = 5552035602
+  STATE = CLOSED_CANONICAL
+
+P6_POST_CLOSEOUT_RECONCILIATION_ANALYSIS
+  PR = #349
+  COMMENT = 5552036750
+  CLASS = ANALYSIS_ONLY
+
+P6_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION
+  PR = #350
+  QUALIFIED_HEAD = 6c21903e9e66bb52db34c8b724e8e25ee2de08bc
+  MERGE = 2f2596a6c316863abf6effca46d6e88fbdc314a8
+  PROOF = 5552132556
   STATE = CLOSED_CANONICAL
 
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
@@ -121,7 +113,7 @@ P6-R1 schema = d7586b0d434cca713ea7d112d6d1b0407558cc50
 P6-R1 test = fa489fafd8cb8ecfc3ff684fa08425b1ed48ab67
 ```
 
-The current closeout candidate may not modify those bytes.
+The current reconciliation may not modify those bytes.
 
 ---
 
@@ -158,20 +150,11 @@ P6 BOUNDED R1 CLOSED != P6 OVERALL CLOSED
 
 ---
 
-## Material qualification history
+## Current reconciliation gate
 
-P5 qualification history remains unchanged: P5-R1 required a forward-only test repair; P5-R2 preserved a same-head rerun after an unrelated pre-existing Ubuntu failure; #338 required a forward-only semantic repair to prevent self-certification; #341 preserved its own wording repair before final qualification.
-
-P6-R1 first failed exact-head TypeScript qualification at `4953d0f3a1fa2f639e494ef74aedc4fb5c83bdea` because of test-only readonly-array mutation-fixture typing. That head's evidence was discarded. The authorized forward-only test repair produced `60bc2e3e157b8eacac145ef22fa7cdaae1428baa`, which was requalified from scratch. Source and schema blobs remained unchanged.
-
----
-
-## Current bounded-closeout gate
-
-Canonical #348 and proof `5551993370` authorize exactly six paths:
+Canonical #350 and proof `5552132556` authorize exactly five paths:
 
 ```text
-docs/planning/KODAC_P6_BOUNDED_R1_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md
 docs/roadmap/NEXT.md
 docs/roadmap/ROADMAP.md
 docs/roadmap/MILESTONES.md
@@ -179,15 +162,14 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No seventh path. This candidate may aggregate already-proven P6-R1 lineage and bounded-closeout evidence only and cannot certify its own future merge/post-merge proof.
+No sixth path. This candidate may record already-proven P6 bounded closeout truth only and cannot certify its own future merge/post-merge proof.
 
-It must still prove on one frozen exact head:
+It must prove on one frozen exact head:
 
 ```text
 BEHIND_BY = 0
-CHANGED_PATHS = EXACTLY 6
-SIX BLOBS = FROZEN
-P6-R1 IMPLEMENTATION BLOBS = UNCHANGED
+CHANGED_PATHS = EXACTLY 5
+FIVE BLOBS = FROZEN
 REQUIRED CI = TERMINAL SUCCESS OR PROVEN NON_APPLICABLE
 INTERNAL SUBSTANTIVE SEMANTIC SECURITY INSPECTION = CLEAN
 KNOWN ACTIONABLE DEFECTS = 0
@@ -202,7 +184,7 @@ WAIVER = NO
 Until external proof exists:
 
 ```text
-P6 BOUNDED R1 ENGINEERING SCOPE = CURRENT_CLOSEOUT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -240,4 +222,4 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-Only after this closeout itself is post-merge proven may fresh post-closeout current-view reconciliation analysis begin. No P6-R2, scanner execution, SARIF, attack validation, dependency admission, P7, or later implementation follows by numbering or composition.
+Only after this reconciliation is post-merge proven may fresh successor-authority analysis begin. No P6-R2, scanner execution, SARIF, attack validation, dependency admission, P7, or later implementation follows by numbering or composition.
