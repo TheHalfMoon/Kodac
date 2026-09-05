@@ -229,7 +229,7 @@ The implementation may expose pure builder/validator/identity helpers only insid
 
 P5-R2 must not duplicate P5-R1 producer/configuration/policy/scope/input/environment/freshness fields inside the edge.
 
-A P5-R2 relation edge is itself an inert content-addressed artifact. If a later caller needs provenance for the relation assertion itself, that edge may be treated as already-existing evidence and separately provenance-bound through P5-R1 using its `relationIdentity` as the evidence identity/digest according to a separately valid caller construction.
+A P5-R2 relation edge is itself an inert content-addressed artifact. If a later caller needs provenance for the relation assertion itself, the edge may be treated as already-existing evidence and separately provenance-bound through P5-R1 using `relationIdentity` as the evidence identity while supplying an independently computed `sourceDigest` for the exact chosen source representation. P5-R2 does not define that representation, compute that digest, or imply that `sourceDigest == relationIdentity`.
 
 This composition does not make the relation true and does not create graph, proof, adjudication, or authority semantics.
 
@@ -254,6 +254,7 @@ RELATION EDGE != INVERSE-EDGE INFERENCE
 RELATION EDGE != K5 PROOF PACKAGE
 RELATION EDGE != K3 REPOSITORY RELATION GRAPH
 PROVENANCE OF RELATION != VALIDITY OF RELATION
+RELATION IDENTITY != SOURCE SERIALIZATION DIGEST BY IMPLICATION
 ```
 
 Also not authorized:
@@ -296,7 +297,8 @@ The later three-path implementation candidate must include focused tests proving
 11. proxies, revoked proxies, accessors, symbol fields, hostile prototypes, cycles or hostile structured inputs fail closed without invoking caller-owned traps/getters where platform primitives permit fail-closed pre-detection;
 12. output is detached/frozen and caller mutation cannot alter it;
 13. runtime validation and JSON Schema accept/reject the same canonical positive/negative boundary fixtures;
-14. canonical predecessor blobs named in section 3 remain unchanged, including the P5-R1 source blob.
+14. canonical predecessor blobs named in section 3 remain unchanged, including the P5-R1 source blob;
+15. no test or helper equates `relationIdentity` with an independently supplied source serialization digest by implication.
 
 Focused tests are not merge authority. The exact implementation head must also pass all repository-required CI applicable to that head.
 
