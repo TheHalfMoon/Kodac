@@ -710,6 +710,8 @@ test("P7-R7 schema mirrors the runtime output boundary", () => {
     assert.ok(required.has(field), `schema must require ${field}`)
   }
   assert.deepEqual(schema.properties.failedCommandCategory.enum, ["syntax", "types", "lint", "tests", "custom"])
+  assert.equal(schema.properties.failedCheckEvidence.minItems, 1)
+  assert.equal(schema.properties.failedCheckEvidence.uniqueItems, true)
   assert.equal(schema.properties.executionTimeoutMs.maximum, 120_000)
   assert.equal(schema.properties.executionMaxOutputBytes.maximum, 1_048_576)
 })
