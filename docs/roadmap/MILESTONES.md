@@ -34,13 +34,18 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P6 overall | **NOT_CLOSED** | Bounded R1 closure is not overall closure |
 | P7-R1 authorization | **CLOSED_CANONICAL** | #352 / proof `5552233040` |
 | P7-R1 Immutable Patch Proposal Foundation | **CLOSED_CANONICAL** | #353 / proof `5552429216` |
-| P7-R1 current-view reconciliation authorization | **CLOSED_CANONICAL** | #354 / proof `5552462948` |
-| P7-R1 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
-| P7-R2+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
-| P7 overall | **NOT_CLOSED** | P7-R1 closure is not overall closure |
-| Patch application / remediation execution | **NOT_AUTHORIZED** | Proposal data only |
-| Repository write authority | **NONE** | No P7-R1 side effects |
-| K2 authority expansion | **NONE** | Existing K2 boundary unchanged |
+| P7-R1 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #355 / proof `5552575380` |
+| P7-R2 patch-application authorization | **CLOSED_CANONICAL** | #356 / proof `5552630320` |
+| P7-R2 patch-application authorization implementation | **CLOSED_CANONICAL** | #357 / proof `5552730805` |
+| P7-R2 current-view reconciliation authorization | **CLOSED_CANONICAL** | #358 / proof `5552762029` |
+| P7-R2 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
+| P7-R3+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
+| P7 overall | **NOT_CLOSED** | P7-R2 closure is not overall closure |
+| Patch application / remediation execution | **NOT_AUTHORIZED** | Authorization record is data only |
+| Filesystem / Git write | **NOT_AUTHORIZED** | No application authority exists |
+| Repository write authority | **NONE** | No P7 side effects authorized |
+| K2 invocation / authority expansion | **NOT_AUTHORIZED / NONE** | Existing K2 boundary unchanged |
+| Applied / verified / fixed / Done Gate | **NOT_ESTABLISHED** | No execution evidence exists |
 | Scanner/analyzer execution | **NOT_AUTHORIZED** | Pure/data-only P6-R1 only |
 | SARIF ingestion | **NOT_AUTHORIZED** | Separate future authority required |
 | Secret/network/exploit access | **NOT_AUTHORIZED** | No side-effect authority |
@@ -50,49 +55,43 @@ This file is a current milestone ledger only. It does not authorize implementati
 
 ---
 
-## Canonical P6/P7 anchors
+## Canonical P7 anchors
 
 ```text
-P6_BOUNDED_R1_CLOSEOUT
-  PR = #349
-  MERGE = 206741c67021864ffdaea1f57aa91bf7d1509a48
-  PROOF = 5552035602
+P7_R1_RECONCILIATION
+  PR = #355
+  MERGE = 8bf95e90e42a1c27193942b336a3bc744b7cd7d8
+  PROOF = 5552575380
   STATE = CLOSED_CANONICAL
 
-P6_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION
-  PR = #351
-  MERGE = 076bd55d30a6d49409e1d4598ad81f1b643bef44
-  PROOF = 5552175515
-  STATE = CLOSED_CANONICAL
-
-P7_SUCCESSOR_ANALYSIS
-  PR = #351
-  COMMENT = 5552199411
+P7_R2_SUCCESSOR_ANALYSIS
+  PR = #355
+  COMMENT = 5552596379
   CLASS = ANALYSIS_ONLY
 
-P7_R1_AUTHORIZATION
-  PR = #352
-  MERGE = 96c0febcfa37b1bd98eded85b38867de84bb0d31
-  PROOF = 5552233040
+P7_R2_AUTHORIZATION
+  PR = #356
+  MERGE = 0bd5aa263df07057b99bdf408a4b0cdab2636063
+  PROOF = 5552630320
   STATE = CLOSED_CANONICAL
 
-P7_R1_IMPLEMENTATION
-  PR = #353
-  QUALIFIED_HEAD = e1bb7d9d006ff96cdf276c79c4704001bffa74e3
-  MERGE = ce48aa20845874e8b0d9e9e7b250f1499bc4664e
-  PROOF = 5552429216
+P7_R2_IMPLEMENTATION
+  PR = #357
+  QUALIFIED_HEAD = 39497ed25fac7ae7870b10c5b8f87eac73a6eb4d
+  MERGE = 7bf6af800c0fa2b6413d3284a4f97db2b8683547
+  PROOF = 5552730805
   STATE = CLOSED_CANONICAL
 
-P7_R1_RECONCILIATION_ANALYSIS
-  PR = #353
-  COMMENT = 5552433653
+P7_R2_RECONCILIATION_ANALYSIS
+  PR = #357
+  COMMENT = 5552739213
   CLASS = ANALYSIS_ONLY
 
-P7_R1_RECONCILIATION_AUTHORIZATION
-  PR = #354
-  QUALIFIED_HEAD = 143cbc44aa4ed1ba3c80ac471d3b43211dc85a63
-  MERGE = 352eaa28879275e500026cf8d787bb25322b6ef2
-  PROOF = 5552462948
+P7_R2_RECONCILIATION_AUTHORIZATION
+  PR = #358
+  QUALIFIED_HEAD = 3cb314d513c2c41baad9f9d654e4961a3507d8bb
+  MERGE = 91f442a889ac825bca6a944830e64995be931da8
+  PROOF = 5552762029
   STATE = CLOSED_CANONICAL
 
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
@@ -101,28 +100,28 @@ WAIVER = NO
 
 ---
 
-## Canonical P7-R1 implementation identities
+## Canonical P7-R2 implementation identities
 
 ```text
-P7-R1 source = 1dbf53388e22e0c88c6d90fa07f3f7f02a0b36f7
-P7-R1 schema = 3e9665d2e157ffb69d09f81324abc32c9ae2cb18
-P7-R1 test = 5eeee7b8f9027e759366e697b7c1924e2739d84c
+P7-R2 source = a8740b04e650c3317b65584ecdac6c8a4b764d10
+P7-R2 schema = fec866d048a1d4fc93d712fbd676030bbd93d24f
+P7-R2 test = 6764094e259ef5b22d5899ab5104f969e9f27fd2
 ```
 
 The current reconciliation may not modify those bytes.
 
 ---
 
-## Bounded P7-R1 semantics
+## Bounded P7-R2 semantics
 
 ```text
-P7-R1
-= pure/data-only immutable patch proposal record
-+ one current KRI-R2 finding
-+ first CONFIRM adjudication for the same finding
-+ exact canonicalBase and targetHead identities
-+ immutable patch artifact SHA-256 identity
-+ bounded unique canonically ordered declared change set
+P7-R2
+= pure/data-only immutable AUTHORIZED_TO_APPLY record
++ one exact valid P7-R1 source proposal
++ exact source-bound repository/canonicalBase/targetHead/patch digest
++ fixed ACCEPT_RISK disposition
++ bounded authorizer/rationale/evidence references
++ exact write allowlist derived only from source proposal change paths
 + deterministic content addressing
 + detached/deeply immutable return value
 ```
@@ -131,23 +130,25 @@ Required non-equivalences:
 
 ```text
 PATCH_PROPOSAL != AUTHORIZATION_TO_APPLY
-PATCH_PROPOSAL != APPLIED_PATCH
-PATCH_PROPOSAL != VERIFIED_REMEDIATION
-PATCH_PROPOSAL != FIXED_FINDING
-PATCH_PROPOSAL != DONE_GATE
-PATCH_ARTIFACT_DIGEST != PATCH_VALIDATION
-DECLARED_CHANGE_SET != EXECUTED_WRITE_SET
-P7-R1 CLOSED != P7-R2+ AUTHORITY
-P7-R1 CLOSED != P7 OVERALL CLOSED
-P7-R1 CLOSED != P8 AUTHORITY
-P7-R1 CLOSED != PROJECT COMPLETION
+AUTHORIZED_TO_APPLY != PATCH_APPLICATION
+AUTHORIZED_TO_APPLY != K2_EXECUTION
+AUTHORIZED_TO_APPLY != GENERIC_K2_ONE_SHOT_APPROVAL
+AUTHORIZED_TO_APPLY != APPLIED_PATCH
+AUTHORIZED_TO_APPLY != VERIFIED_REMEDIATION
+AUTHORIZED_TO_APPLY != FIXED_FINDING
+AUTHORIZED_TO_APPLY != DONE_GATE
+WRITE_ALLOWLIST != EXECUTED_WRITE_SET
+P7-R2 CLOSED != P7-R3+ AUTHORITY
+P7-R2 CLOSED != P7 OVERALL CLOSED
+P7-R2 CLOSED != P8 AUTHORITY
+P7-R2 CLOSED != PROJECT COMPLETION
 ```
 
 ---
 
 ## Current reconciliation gate
 
-Canonical #354 and proof `5552462948` authorize exactly five paths:
+Canonical #358 and proof `5552762029` authorize exactly five paths:
 
 ```text
 docs/roadmap/NEXT.md
@@ -157,7 +158,7 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No sixth path. This candidate may record already-proven P6/P7-R1 truth only and cannot certify its own future merge/post-merge proof.
+No sixth path. This candidate may record already-proven P7-R1/P7-R2 truth only and cannot certify its own future merge/post-merge proof.
 
 It must prove on one frozen exact head:
 
@@ -179,7 +180,7 @@ WAIVER = NO
 Until external proof exists:
 
 ```text
-P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R2 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -198,10 +199,12 @@ P7 OVERALL = NOT_CLOSED
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P5-R3+ = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R3+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
+FILESYSTEM_GIT_WRITE = NOT_AUTHORIZED
 REPOSITORY_WRITE_AUTHORITY = NONE
+K2_INVOCATION = NOT_AUTHORIZED
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
 PROVIDER_MODEL_INVOCATION = NOT_AUTHORIZED
@@ -218,4 +221,4 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-Only after this reconciliation is post-merge proven may fresh successor-authority analysis begin. No P7-R2, patch execution, K2 invocation, autofix, P8/P9, product/release work, or project completion follows by numbering or composition.
+Only after this reconciliation is post-merge proven may fresh successor-authority analysis begin. No P7-R3, patch execution, K2 invocation, autofix, P8/P9, product/release work, or project completion follows by numbering or composition.
