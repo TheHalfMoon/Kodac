@@ -32,9 +32,8 @@ K6 BOUNDED CLOSEOUT = CLOSED_CANONICAL
 P2-R1 THROUGH P2-R6 = CLOSED_CANONICAL
 P2 OVERALL = OPEN
 GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-P2-R7+ = NOT_AUTHORIZED BY NUMBERING
+P2-R7+ = NOT_AUTHORIZED_BY_NUMBERING
 
-P3-R1 THROUGH P3-R17 = CLOSED_CANONICAL INDIVIDUALLY
 P3 BOUNDED R1-R17 ENGINEERING SCOPE = CLOSED_CANONICAL
 P3 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P3 OVERALL = OPEN
@@ -42,8 +41,6 @@ P3-R18+ = NOT_AUTHORIZED
 
 TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT = CLOSED_CANONICAL / PLANNING_DIRECTION_ONLY
 
-P4-R1 = CLOSED_CANONICAL
-P4-R2 = CLOSED_CANONICAL
 P4 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL
 P4 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
 P4 OVERALL = OPEN
@@ -54,21 +51,25 @@ P5-R2 EVIDENCE RELATION EDGE = CLOSED_CANONICAL
 P5 BOUNDED R1-R2 ENGINEERING SCOPE = CLOSED_CANONICAL / PR #341 / proof 5551577054
 P5 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #343 / proof 5551673149
 P5-R3+ = NOT_AUTHORIZED
-PROOFGRAPH = NOT_AUTHORIZED
-AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P5 OVERALL = NOT_CLOSED
 
-P6-R1 AUTHORIZATION = CLOSED_CANONICAL / PR #344 / proof 5551754576
 P6-R1 DETERMINISTIC SECURITY FINDING FOUNDATION = CLOSED_CANONICAL / PR #345 / proof 5551884329
-P6-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #346 / proof 5551929413
-P6-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #347 / proof 5551961606
-P6 BOUNDED R1 CLOSEOUT AUTHORIZATION = CLOSED_CANONICAL / PR #348 / proof 5551993370
 P6 BOUNDED R1 ENGINEERING SCOPE = CLOSED_CANONICAL / PR #349 / proof 5552035602
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #350 / proof 5552132556
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #351 / proof 5552175515
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
 P6 OVERALL = NOT_CLOSED
 
+P7-R1 AUTHORIZATION = CLOSED_CANONICAL / PR #352 / proof 5552233040
+P7-R1 IMMUTABLE PATCH PROPOSAL FOUNDATION = CLOSED_CANONICAL / PR #353 / proof 5552429216
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #354 / proof 5552462948
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P7 OVERALL = NOT_CLOSED
+
+PATCH_APPLICATION = NOT_AUTHORIZED
+AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
+REPOSITORY_WRITE_AUTHORITY = NONE
+K2 AUTHORITY EXPANSION = NONE
 SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
 SARIF_INGESTION = NOT_AUTHORIZED
 PROVIDER_MODEL_INVOCATION = NOT_AUTHORIZED
@@ -77,19 +78,18 @@ NETWORK_ACCESS = NOT_AUTHORIZED
 EXPLOIT_ATTACK_EXECUTION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
-AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
 CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
-P7-P9 IMPLEMENTATION = NOT_AUTHORIZED
+P8-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
 ---
 
-## NOW — authorized P6 post-closeout five-current-view reconciliation
+## NOW — authorized P7-R1 five-current-view reconciliation
 
-Canonical PR #350 and post-merge proof `5552132556` authorize exactly:
+Canonical PR #354 and post-merge proof `5552462948` authorize exactly this documentation-only candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -101,49 +101,44 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate may record only already-proven P6 bounded R1 closeout truth and current navigation/status implications. It changes no runtime, schema, tests, historical authorization/evidence, dependency, workflow, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate may record only already-proven canonical P6/P7-R1 truth. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
-It must not self-certify its own reconciliation. Until guarded merge and mandatory post-merge proof exist:
+It cannot certify its own closure. Until guarded merge and complete external post-merge proof exist:
 
 ```text
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R1 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
 
-## Canonical P6 lineage
+## Canonical P6/P7 lineage
 
 ```text
-#344 P6-R1 authorization
-  merge 208bfc370c8671bd9b5a71d659355aa08e40d65a / proof 5551754576
-
-#345 P6-R1 implementation
-  final qualified head 60bc2e3e157b8eacac145ef22fa7cdaae1428baa
-  merge 0f907b6f6e12a15da753e836b124c586ee9fe285 / proof 5551884329
-
-#346 P6-R1 current-view reconciliation authorization
-  merge acce1c1644250cc4afd2008175d41d41ca51de87 / proof 5551929413
-
-#347 P6-R1 current-view reconciliation
-  merge fd2c53682dde47b795740cc706b28852397f3ec6 / proof 5551961606
-
-#347 comment 5551968892
-  fresh post-P6-R1 successor analysis / ANALYSIS_ONLY
-  no additional numbered P6 mechanism proven necessary before bounded closeout
-
-#348 P6 bounded R1 closeout authorization
-  merge 82cb0e1b2c4739537a1355ec6e6fdd63759cbc5d / proof 5551993370
-
 #349 P6 bounded R1 engineering closeout
-  qualified head bb3de55c08289727034e9ed62d96863f336ee3f6
   merge 206741c67021864ffdaea1f57aa91bf7d1509a48 / proof 5552035602
 
-#349 comment 5552036750
-  fresh post-closeout current-view reconciliation analysis / ANALYSIS_ONLY
-
-#350 P6 post-closeout current-view reconciliation authorization
-  qualified head 6c21903e9e66bb52db34c8b724e8e25ee2de08bc
+#350 P6 post-closeout reconciliation authorization
   merge 2f2596a6c316863abf6effca46d6e88fbdc314a8 / proof 5552132556
+
+#351 P6 post-closeout current-view reconciliation
+  merge 076bd55d30a6d49409e1d4598ad81f1b643bef44 / proof 5552175515
+
+#351 comment 5552199411
+  fresh successor analysis / ANALYSIS_ONLY
+
+#352 P7-R1 immutable patch proposal authorization
+  merge 96c0febcfa37b1bd98eded85b38867de84bb0d31 / proof 5552233040
+
+#353 P7-R1 immutable patch proposal foundation
+  qualified head e1bb7d9d006ff96cdf276c79c4704001bffa74e3
+  merge ce48aa20845874e8b0d9e9e7b250f1499bc4664e / proof 5552429216
+
+#353 comment 5552433653
+  post-P7-R1 current-view reconciliation analysis / ANALYSIS_ONLY
+
+#354 P7-R1 current-view reconciliation authorization
+  qualified head 143cbc44aa4ed1ba3c80ac471d3b43211dc85a63
+  merge 352eaa28879275e500026cf8d787bb25322b6ef2 / proof 5552462948
 
 CURRENT
   exact five-current-view reconciliation candidate
@@ -151,103 +146,56 @@ CURRENT
 
 ---
 
-## Canonical P6-R1 implementation identities
+## Bounded P7-R1 meaning
 
 ```text
-packages/kodac-runtime/src/security/p6-deterministic-security-finding.ts
-  = 453166c7f8c5e49f9b0f7cc2cd744c7ec54b38d0
-schema/p6-deterministic-security-finding.schema.json
-  = d7586b0d434cca713ea7d112d6d1b0407558cc50
-packages/kodac-runtime/test/p6-r1-deterministic-security-finding.test.ts
-  = fa489fafd8cb8ecfc3ff684fa08425b1ed48ab67
+ONE CURRENT KRI-R2 FINDING
++ FIRST CONFIRM ADJUDICATION FOR THAT SAME FINDING
++ EXACT CANONICAL BASE / TARGET HEAD
++ IMMUTABLE PATCH ARTIFACT SHA-256 IDENTITY
++ EXACT BOUNDED UNIQUE CANONICALLY ORDERED DECLARED CHANGE SET
+-> DETERMINISTIC CONTENT-ADDRESSED DETACHED/FROZEN PROPOSED RECORD
 ```
 
-P6-R1 directly reuses canonical P5-R1 provenance validation and remains pure/data-only.
-
----
-
-## Bounded P6-R1 meaning and non-equivalences
+Canonical implementation blobs:
 
 ```text
-PURE / DATA-ONLY PROVIDER-NEUTRAL DETERMINISTIC SECURITY FINDING CONTRACT
-+ VALIDATED CANONICAL P5-R1 PROVENANCE BINDING
-+ CLOSED SECURITY LANE / SEVERITY VOCABULARIES
-+ INERT BOUNDED RULE AND LOGICAL LOCATION METADATA
-+ SHA-256 NATIVE-RECORD DIGEST / FINGERPRINT IDENTITIES
-+ BOUNDED UNIQUE CANONICALLY SORTED REFERENCE IDENTITIES
--> DETERMINISTIC CONTENT-ADDRESSED DETACHED/FROZEN FINDING RECORD
+packages/kodac-runtime/src/remediation/p7-immutable-patch-proposal.ts
+  = 1dbf53388e22e0c88c6d90fa07f3f7f02a0b36f7
+schema/p7-immutable-patch-proposal.schema.json
+  = 3e9665d2e157ffb69d09f81324abc32c9ae2cb18
+packages/kodac-runtime/test/p7-r1-immutable-patch-proposal.test.ts
+  = 5eeee7b8f9027e759366e697b7c1924e2739d84c
 ```
 
-Required boundaries:
+Required non-equivalences:
 
 ```text
-DETERMINISTIC_SECURITY_FINDING != PROOF / TRUTH / ADJUDICATION
-DETERMINISTIC_SECURITY_FINDING != EXPLOITABILITY_ESTABLISHED
-DETERMINISTIC_SECURITY_FINDING != CLEAN_SCAN_OR SAFE_REPOSITORY CLAIM
-DETERMINISTIC_SECURITY_FINDING != REVIEWER_CLAIM
-DETERMINISTIC_SECURITY_FINDING != VERIFIER_EXECUTION
-DETERMINISTIC_SECURITY_FINDING != SCANNER_ANALYZER_EXECUTION
-DETERMINISTIC_SECURITY_FINDING != SARIF_INGESTION
-DETERMINISTIC_SECURITY_FINDING != SECRET_ACCESS
-DETERMINISTIC_SECURITY_FINDING != NETWORK_ACCESS
-DETERMINISTIC_SECURITY_FINDING != K2_K5_DONE_GATE_AUTHORITY
-P6 BOUNDED R1 CLOSED != P6-R2+ AUTHORITY
-P6 BOUNDED R1 CLOSED != P6 OVERALL CLOSED
-P6 BOUNDED R1 CLOSED != P7 AUTHORITY
-P6 BOUNDED R1 CLOSED != PROJECT COMPLETION
+PATCH_PROPOSAL != AUTHORIZATION_TO_APPLY
+PATCH_PROPOSAL != APPLIED_PATCH
+PATCH_PROPOSAL != VERIFIED_REMEDIATION
+PATCH_PROPOSAL != FIXED_FINDING
+PATCH_PROPOSAL != DONE_GATE
+PATCH_ARTIFACT_DIGEST != PATCH_VALIDATION
+DECLARED_CHANGE_SET != EXECUTED_WRITE_SET
+P7-R1 CLOSED != P7-R2+ AUTHORITY
+P7-R1 CLOSED != P7 OVERALL CLOSED
+P7-R1 CLOSED != P8 AUTHORITY
+P7-R1 CLOSED != PROJECT COMPLETION
 ```
 
 ---
 
-## Preserved authority boundaries
+## THEN — proof and fresh successor-authority analysis
 
-```text
-K2 SIDE-EFFECT AUTHORITY = UNCHANGED
-K5 / DONE GATE AUTHORITY = UNCHANGED
-P2 OVERALL = OPEN
-P3 OVERALL = OPEN
-P4 OVERALL = OPEN
-P5 OVERALL = NOT_CLOSED
-P6 OVERALL = NOT_CLOSED
-GENERAL / PUBLIC KODACBENCH = NOT CLOSED
-P5-R3+ = NOT_AUTHORIZED
-PROOFGRAPH = NOT_AUTHORIZED
-AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
-P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
-SARIF_INGESTION = NOT_AUTHORIZED
-REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION EXPANSION = NOT_AUTHORIZED
-SECRET_ACCESS = NOT_AUTHORIZED
-NETWORK_ACCESS = NOT_AUTHORIZED
-EXPLOIT_ATTACK_EXECUTION = NOT_AUTHORIZED
-KRI / K5 / K2 AUTHORITY MUTATION = NOT_AUTHORIZED
-NEW DEPENDENCY / DONOR ADMISSION = NONE
-PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
-AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
-CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
-PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
-P7-P9 IMPLEMENTATION = NOT_AUTHORIZED
-RULESET CHANGE / BYPASS = NOT_AUTHORIZED
-PROJECT COMPLETION = NOT_ESTABLISHED
-WAIVER = NO
-```
+Only after this exact five-path reconciliation qualifies, merges guarded, and passes complete post-merge proof may external evidence establish its canonical closure.
 
----
-
-## THEN — mandatory proof and fresh successor-authority analysis
-
-Only after this exact five-path candidate qualifies, merges guarded, and passes complete post-merge proof may external evidence establish:
-
-```text
-P6 POST-CLOSEOUT CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL
-```
-
-Only then perform fresh successor-authority analysis from canonical planning plus live code. Do not infer P6-R2, scanner/analyzer execution, SARIF ingestion, provider/model invocation, secret/network access, attack validation, dependency admission, P7, or any later mechanism by numbering or composition.
+Only then perform fresh successor-authority analysis from live code and canonical planning. Do not infer P7-R2, patch application, K2 execution, autofix, P8/P9, product/release work, or project completion by numbering or composition.
 
 ## Navigation
 
 - Working rules: `AGENTS.md`
-- P6 bounded closeout evidence: `docs/planning/KODAC_P6_BOUNDED_R1_CANONICAL_CLOSEOUT_EVIDENCE_2026-09-05.md`
-- P6 post-closeout reconciliation authorization: `docs/planning/KODAC_P6_R1_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
+- P7-R1 authorization: `docs/planning/KODAC_P7_R1_IMMUTABLE_PATCH_PROPOSAL_AUTHORIZATION_2026-09-05.md`
+- P7-R1 reconciliation authorization: `docs/planning/KODAC_P7_R1_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-05.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
 - Final gap review: `docs/research/KODAC_FINAL_GAP_AND_IMPROVEMENT_REVIEW_2026-08-26.md`
