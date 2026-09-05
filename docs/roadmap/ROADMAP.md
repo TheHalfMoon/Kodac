@@ -271,5 +271,5 @@ Only after that proof may fresh evidence-driven successor analysis consider a la
 ```text
 PLANNING DIRECTION != IMPLEMENTATION AUTHORITY
 POST_MERGE PROOF != SUCCESSOR AUTHORITY
-DONE = EVIDENCE_BACKED_COMPLETION
+DONE = EVIDENCE_BACKED COMPLETION
 ```
