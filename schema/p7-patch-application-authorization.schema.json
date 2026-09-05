@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-patch-application-authorization.schema.json",
+  "title": "Kodac P7-R2 Patch Application Authorization",
+  "description": "A pure data-only immutable AUTHORIZED_TO_APPLY record derived from one exact valid P7-R1 proposal. Runtime validation requires exact source-proposal linkage and exact write-allowlist equality. This schema grants no patch application, K2 invocation, filesystem/Git write, autofix, verification, Done Gate, provider/model, network, persistence, product-integration, or release authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "authorizationIdentity",
+    "state",
+    "proposalIdentity",
+    "proposalVersion",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "patchArtifactDigest",
+    "authorizerIdentity",
+    "riskDisposition",
+    "rationale",
+    "evidenceRefs",
+    "writeAllowlist"
+  ],
+  "properties": {
+    "version": { "const": "p7-r2-patch-application-authorization-v1" },
+    "authorizationIdentity": { "$ref": "#/$defs/sha256" },
+    "state": { "const": "AUTHORIZED_TO_APPLY" },
+    "proposalIdentity": { "$ref": "#/$defs/sha256" },
+    "proposalVersion": { "const": "p7-r1-immutable-patch-proposal-v1" },
+    "repositoryIdentity": { "$ref": "#/$defs/identityText" },
+    "canonicalBase": { "$ref": "#/$defs/gitCommit" },
+    "targetHead": { "$ref": "#/$defs/gitCommit" },
+    "patchArtifactDigest": { "$ref": "#/$defs/sha256" },
+    "authorizerIdentity": { "$ref": "#/$defs/identityText" },
+    "riskDisposition": { "const": "ACCEPT_RISK" },
+    "rationale": { "$ref": "#/$defs/rationaleText" },
+    "evidenceRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/evidenceRef" },
+      "description": "Runtime additionally requires strict canonical ascending order."
+    },
+    "writeAllowlist": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/repositoryPath" },
+      "description": "Runtime requires this array to exactly equal the validated source P7-R1 proposal change paths in canonical order; callers cannot expand, reduce, or independently supply write authority."
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "unicodeScalarText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:[^\\u0000\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+$"
+    },
+    "identityText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 256 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F])(?=.*\\S).+$" }
+      ]
+    },
+    "rationaleText": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 4096 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F])(?=.*\\S).+$" }
+      ]
+    },
+    "evidenceRef": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 1024 },
+        { "pattern": "^(?!.*[\\u0000-\\u001F\\u007F])(?=.*\\S).+$" }
+      ]
+    },
+    "repositoryPath": {
+      "allOf": [
+        { "$ref": "#/$defs/unicodeScalarText" },
+        { "maxLength": 1024 },
+        {
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*//)(?!\\.\\.?$)(?!\\.\\.?/)(?!.*\\/\\.\\.?\\/)(?!.*\\/\\.\\.?$)(?!.*[\\u0000-\\u001F\\u007F]).+$"
+        }
+      ]
+    }
+  }
+}
