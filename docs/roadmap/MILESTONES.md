@@ -27,103 +27,125 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P5-R1 current-view reconciliation | **CLOSED_CANONICAL** | #335 / proof `5551095617` |
 | P5-R2 Evidence Relation Edge | **CLOSED_CANONICAL** | #337 / proof `5551261065` |
 | P5-R2 current-view reconciliation | **CLOSED_CANONICAL** | #339 / proof `5551404984` |
-| P5 bounded R1-R2 closeout authorization | **CLOSED_CANONICAL** | #340 / proof `5551456429` |
 | P5 bounded R1-R2 engineering scope | **CLOSED_CANONICAL** | #341 / proof `5551577054` |
-| P5 post-closeout reconciliation authorization | **CLOSED_CANONICAL** | #342 / proof `5551608905` |
-| P5 post-closeout current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
+| P5 post-closeout current-view reconciliation | **CLOSED_CANONICAL** | #343 / proof `5551673149` |
 | P5-R3+ | **NOT_AUTHORIZED** | No authority by numbering/composition |
-| ProofGraph | **NOT_AUTHORIZED** | Separate future authority required |
-| Automatic freshness / dependency invalidation | **NOT_AUTHORIZED** | Separate future authority required |
-| P5 overall | **NOT_CLOSED** | Bounded R1-R2 closure is not overall closure |
-| P6-P9 | **PLANNING DIRECTION ONLY / IMPLEMENTATION NOT_AUTHORIZED** | Separate future authority required |
+| P5 overall | **NOT_CLOSED** | Bounded closure is not overall closure |
+| P6-R1 authorization | **CLOSED_CANONICAL** | #344 / proof `5551754576` |
+| P6-R1 Deterministic Security Finding Foundation | **CLOSED_CANONICAL** | #345 / proof `5551884329` |
+| P6-R1 current-view reconciliation authorization | **CLOSED_CANONICAL** | #346 / proof `5551929413` |
+| P6-R1 current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
+| P6-R2+ | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence |
+| P6 overall | **NOT_CLOSED** | P6-R1 is one bounded mechanism |
+| Scanner/analyzer execution | **NOT_AUTHORIZED** | Pure/data-only P6-R1 only |
+| SARIF ingestion | **NOT_AUTHORIZED** | Separate future authority required |
+| Secret/network/exploit access | **NOT_AUTHORIZED** | No side-effect authority |
+| New dependency/donor admission | **NONE** | Separate future authority required |
+| P7-P9 | **IMPLEMENTATION NOT_AUTHORIZED** | Planning direction only |
 | Project completion | **NOT_ESTABLISHED** | No canonical completion proof exists |
 
 ---
 
-## Canonical P5 anchors
+## Canonical P5/P6 anchors
 
 ```text
-P5_R1_AUTHORIZATION = #332 / 39a732aecee8ebd69c5f294d2aa135288edc6d97 / proof 5550880869
-P5_R1_IMPLEMENTATION = #333 / cef7a375e366795913879bed82f3d2bffe7647aa / proof 5550968215
-P5_R1_QUALIFIED_HEAD = 7ccc8516938be0578d7648c4b7f07e89af86b306
-P5_R1_RECONCILIATION_AUTHORIZATION = #334 / 3ef17af23c686b18aa0f383c681b72c672137d51 / proof 5550995814
-P5_R1_RECONCILIATION = #335 / 64f468a8cee37e07d252e32cd97b1a229856b65b / proof 5551095617
-P5_POST_R1_SUCCESSOR_ANALYSIS = #335 / comment 5551117643 / ANALYSIS_ONLY
-P5_R2_AUTHORIZATION = #336 / 5c4f4886c734c02f87d1aa611ef0751ab1d995d2 / proof 5551168295
-P5_R2_IMPLEMENTATION = #337 / b35b1703579efb77453ca7a24923ecbace9afaac / proof 5551261065
-P5_R2_QUALIFIED_HEAD = 0b412e2eea8f392d77ef2b98d6eaa1eb8a4f530b
-P5_R2_RECONCILIATION_AUTHORIZATION = #338 / de2735ffd7698e13f4adfb4a2c7ef98ee32177d3 / proof 5551292787
-P5_R2_RECONCILIATION = #339 / b5785beb24b0f939fc3d9c51b5292efbe5e0ee82 / proof 5551404984
-P5_POST_R2_SUCCESSOR_ANALYSIS = #339 / comment 5551419975 / ANALYSIS_ONLY
-P5_BOUNDED_R1_R2_CLOSEOUT_AUTHORIZATION = #340 / 8eb6dd521e4c5ecc1bd964576bffd4f1e7cfd4fb / proof 5551456429
-P5_BOUNDED_R1_R2_CLOSEOUT = #341 / 13ebbbbb3f1a3bb0a32c2873aa9ea6c67c1c8b9a / proof 5551577054
-P5_POST_CLOSEOUT_RECONCILIATION_ANALYSIS = #341 / comment 5551579509 / ANALYSIS_ONLY
-P5_POST_CLOSEOUT_RECONCILIATION_AUTHORIZATION = #342 / 8c4f57ba9245e9911422e3e14864f4258897621a / proof 5551608905
+P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION
+  PR = #343
+  QUALIFIED_HEAD = 6f04eff294b23bfefb04dea1b4fc7c4cca738ee1
+  MERGE = 48a4d0944c620a8cca7f25ea7eb24e794be8768f
+  PROOF = 5551673149
+  STATE = CLOSED_CANONICAL
+
+P6_R1_AUTHORIZATION
+  PR = #344
+  QUALIFIED_HEAD = 1cd3942b54a59876ee1ac94ae4de895e84f5a80a
+  MERGE = 208bfc370c8671bd9b5a71d659355aa08e40d65a
+  PROOF = 5551754576
+  STATE = CLOSED_CANONICAL
+
+P6_R1_IMPLEMENTATION
+  PR = #345
+  INITIAL_FAILED_HEAD = 4953d0f3a1fa2f639e494ef74aedc4fb5c83bdea
+  FINAL_QUALIFIED_HEAD = 60bc2e3e157b8eacac145ef22fa7cdaae1428baa
+  MERGE = 0f907b6f6e12a15da753e836b124c586ee9fe285
+  PROOF = 5551884329
+  STATE = CLOSED_CANONICAL
+
+P6_R1_RECONCILIATION_ANALYSIS
+  PR = #345
+  COMMENT = 5551909496
+  CLASS = ANALYSIS_ONLY
+  AUTHORITY_CREATED = NO
+
+P6_R1_RECONCILIATION_AUTHORIZATION
+  PR = #346
+  QUALIFIED_HEAD = 00b3103aedf5e824b949472bc09422eb3095785f
+  MERGE = acce1c1644250cc4afd2008175d41d41ca51de87
+  PROOF = 5551929413
+  STATE = CLOSED_CANONICAL
+
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
 ```
 
 ---
 
-## Canonical P5 implementation identities
+## Canonical P6-R1 implementation identities
 
 ```text
-P5-R1 source = 4c8d708070e950d2902308ca1977ce5267acec29
-P5-R1 schema = b7c1d2573a1dbe3b34c5a1e5dc0a5c2fceb1418e
-P5-R1 test = 512ab506898d945aed8381352906c4e03bcbd487
-
-P5-R2 source = d33fb119ee8cbeda6e7c8e445cad6cee4b242e86
-P5-R2 schema = cb2574e1c656f7a5537985035ad43bb1637c51a7
-P5-R2 test = 1a78da0fbc65c2403134b42555311fe12d3f9355
+P6-R1 source = 453166c7f8c5e49f9b0f7cc2cd744c7ec54b38d0
+P6-R1 schema = d7586b0d434cca713ea7d112d6d1b0407558cc50
+P6-R1 test = fa489fafd8cb8ecfc3ff684fa08425b1ed48ab67
 ```
 
 The current reconciliation may not modify those bytes.
 
 ---
 
-## Bounded P5 semantics
+## Bounded P6-R1 semantics
 
 ```text
-P5-R1
-= deterministic provider-neutral provenance binding over already-existing evidence
-+ exact repository revision and producer/configuration/policy/scope/input/environment identities
-+ caller-supplied CURRENT | STALE freshness + basis identity
-
-P5-R2
-= deterministic directed evidence edge over two exact validated P5-R1 bindings
-+ caller-supplied SUPPORTS | CONTRADICTS | SUPERSEDES
-+ exact shared repositoryId / canonicalBase / candidateHead
-+ distinct source/target binding identities
+P6-R1
+= pure/data-only provider-neutral deterministic security finding record
++ exact validated canonical P5-R1 provenance binding
++ fixed DETERMINISTIC_ANALYZER origin
++ closed security lane and severity vocabularies
++ bounded inert rule/location/reference metadata
++ lowercase SHA-256 native digest and fingerprint identities
++ deterministic content addressing
++ detached/deeply immutable return value
 ```
 
 Required non-equivalences:
 
 ```text
-PROVENANCE BINDING != SOURCE EVIDENCE VALIDATION / PROOF / AUTHORITY
-CALLER-SUPPLIED FRESHNESS != AUTOMATIC FRESHNESS DETERMINATION
-CALLER-SUPPLIED RELATION != TRUTH
-RELATION EDGE != PROOF / AUTHORITY / ADJUDICATION / VERIFICATION RESULT
-RELATION EDGE != VERIFIER EXECUTION
-RELATION EDGE != PROOFGRAPH / GRAPH STORAGE / TRAVERSAL / INFERENCE
+DETERMINISTIC_SECURITY_FINDING != PROOF / TRUTH / ADJUDICATION
+DETERMINISTIC_SECURITY_FINDING != EXPLOITABILITY_ESTABLISHED
+DETERMINISTIC_SECURITY_FINDING != CLEAN_SCAN_OR_SAFE_CLAIM
+DETERMINISTIC_SECURITY_FINDING != REVIEWER_CLAIM
+DETERMINISTIC_SECURITY_FINDING != VERIFIER_EXECUTION
+DETERMINISTIC_SECURITY_FINDING != SCANNER_ANALYZER_EXECUTION
+DETERMINISTIC_SECURITY_FINDING != SARIF_INGESTION
+DETERMINISTIC_SECURITY_FINDING != SECRET_ACCESS
+DETERMINISTIC_SECURITY_FINDING != NETWORK_ACCESS
+DETERMINISTIC_SECURITY_FINDING != K2_K5_DONE_GATE_AUTHORITY
+P6-R1 CLOSED != P6-R2+ AUTHORITY
+P6-R1 CLOSED != P6 OVERALL CLOSED
 ```
 
 ---
 
 ## Material qualification history
 
-P5-R1 first failed exact-head TypeScript qualification at `35dd6b2434a3586f320f378dd5aa30428fcc3ed2`; the authorized test repair was forward-only and final head `7ccc8516938be0578d7648c4b7f07e89af86b306` was requalified from scratch.
+P5 qualification history remains unchanged: P5-R1 required a forward-only test repair; P5-R2 preserved a same-head rerun after an unrelated pre-existing Ubuntu failure; #338 required a forward-only semantic repair to prevent self-certification; #341 preserved its own wording repair before final qualification.
 
-P5-R2 preserved an unrelated pre-existing H4-R3G-B Ubuntu test failure on its first exact-head attempt. All P5 tests passed, the candidate head did not move, the same Ubuntu job rerun succeeded, and final K2 gate passed.
-
-The #338 authorization candidate also required a forward-only semantic repair from `cc518a31ba1f681c2281657ba13524112b31e1b3` to `a990f42e58d6eb2d9601a1e85e873cdd21bea952` to prevent self-certification.
-
-The #341 closeout evidence preserved its own forward-only wording repair before final qualification; pre-repair evidence is stale.
+P6-R1 first failed exact-head TypeScript qualification at `4953d0f3a1fa2f639e494ef74aedc4fb5c83bdea` because of test-only readonly-array mutation-fixture typing. That head's evidence was discarded. The authorized forward-only test repair produced `60bc2e3e157b8eacac145ef22fa7cdaae1428baa`, which was requalified from scratch. Source and schema blobs remained unchanged.
 
 ---
 
 ## Current reconciliation gate
 
-Canonical #342 authorizes exactly five paths:
+Canonical #346 and proof `5551929413` authorize exactly five paths:
 
 ```text
 docs/roadmap/NEXT.md
@@ -133,7 +155,7 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-No sixth path. This candidate may record already-proven P5 bounded-closeout truth only and cannot certify its own future merge/post-merge proof.
+No sixth path. This candidate may record already-proven P5 and P6-R1 truth only and cannot certify its own future merge/post-merge proof.
 
 It must still prove on one frozen exact head:
 
@@ -142,7 +164,7 @@ BEHIND_BY = 0
 CHANGED_PATHS = EXACTLY 5
 FIVE BLOBS = FROZEN
 REQUIRED CI = TERMINAL SUCCESS OR PROVEN NON_APPLICABLE
-INTERNAL SUBSTANTIVE SEMANTIC INSPECTION = CLEAN
+INTERNAL SUBSTANTIVE SEMANTIC SECURITY INSPECTION = CLEAN
 KNOWN ACTIONABLE DEFECTS = 0
 UNRESOLVED ACTIONABLE REVIEW THREADS = 0
 REQUIRED_EXTERNAL_SEMANTIC_REVIEW_COUNT = 0
@@ -155,7 +177,7 @@ WAIVER = NO
 Until external proof exists:
 
 ```text
-P5_POST_CLOSEOUT_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P6_R1_POST_MERGE_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
 ---
@@ -173,17 +195,24 @@ GENERAL / PUBLIC KODACBENCH = NOT CLOSED
 P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
-P6-P9 IMPLEMENTATION = NOT_AUTHORIZED
+P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
+P6 OVERALL = NOT_CLOSED
+SCANNER_ANALYZER_EXECUTION = NOT_AUTHORIZED
+SARIF_INGESTION = NOT_AUTHORIZED
 REVIEWER / CRITIC / VERIFIER / PROVIDER / MODEL EXECUTION EXPANSION = NOT_AUTHORIZED
+SECRET_ACCESS = NOT_AUTHORIZED
+NETWORK_ACCESS = NOT_AUTHORIZED
+EXPLOIT_ATTACK_EXECUTION = NOT_AUTHORIZED
 KRI / K5 / K2 AUTHORITY MUTATION = NOT_AUTHORIZED
 NEW DEPENDENCY / DONOR ADMISSION = NONE
 PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 AUTOFIX / REMEDIATION EXECUTION = NOT_AUTHORIZED
-CLI / API / PRODUCT INTEGRATION = NOT_AUTHORIZED
+CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
+P7-P9 IMPLEMENTATION = NOT_AUTHORIZED
 RULESET CHANGE / BYPASS = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-Only after this reconciliation itself is post-merge proven may fresh successor analysis begin. Do not infer P5-R3, ProofGraph, automatic freshness, P6, or later implementation by numbering or composition.
+Only after this reconciliation itself is post-merge proven may fresh P6 successor analysis begin. No P6-R2, scanner execution, SARIF, attack validation, dependency admission, P7, or later implementation follows by numbering or composition.
