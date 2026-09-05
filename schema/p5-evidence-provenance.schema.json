@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p5-evidence-provenance.schema.json",
+  "title": "Kodac P5-R1 Evidence Provenance Binding",
+  "description": "A pure provider-neutral provenance sidecar binding one already-existing evidence identity/ref/digest to exact revision, producer, configuration, policy, scope, input, environment, and caller-supplied freshness-basis identities. Runtime validation additionally enforces the content-derived bindingIdentity; this schema does not validate source evidence, compute freshness, grant authority, or execute a verifier.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "bindingIdentity",
+    "source",
+    "revision",
+    "producer",
+    "policyIdentity",
+    "scopeIdentity",
+    "inputIdentity",
+    "environmentIdentity",
+    "freshness"
+  ],
+  "properties": {
+    "version": {
+      "const": "p5-r1-evidence-provenance-v1"
+    },
+    "bindingIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "source": {
+      "$ref": "#/$defs/source"
+    },
+    "revision": {
+      "$ref": "#/$defs/revision"
+    },
+    "producer": {
+      "$ref": "#/$defs/producer"
+    },
+    "policyIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "scopeIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "inputIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "environmentIdentity": {
+      "$ref": "#/$defs/sha256"
+    },
+    "freshness": {
+      "$ref": "#/$defs/freshness"
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "unicodeScalarText": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?:[^\\u0000\\uD800-\\uDFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF])+$"
+    },
+    "sourceKind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "sourceRef": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 1024
+        }
+      ]
+    },
+    "repositoryId": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 512
+        }
+      ]
+    },
+    "producerId": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 512
+        }
+      ]
+    },
+    "producerVersion": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/unicodeScalarText"
+        },
+        {
+          "maxLength": 128
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceKind",
+        "evidenceIdentity",
+        "sourceRef",
+        "sourceDigest"
+      ],
+      "properties": {
+        "sourceKind": {
+          "$ref": "#/$defs/sourceKind"
+        },
+        "evidenceIdentity": {
+          "$ref": "#/$defs/sha256"
+        },
+        "sourceRef": {
+          "$ref": "#/$defs/sourceRef"
+        },
+        "sourceDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "revision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repositoryId",
+        "canonicalBase",
+        "candidateHead"
+      ],
+      "properties": {
+        "repositoryId": {
+          "$ref": "#/$defs/repositoryId"
+        },
+        "canonicalBase": {
+          "$ref": "#/$defs/gitCommit"
+        },
+        "candidateHead": {
+          "$ref": "#/$defs/gitCommit"
+        }
+      }
+    },
+    "producer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "producerId",
+        "producerVersion",
+        "configurationIdentity"
+      ],
+      "properties": {
+        "producerId": {
+          "$ref": "#/$defs/producerId"
+        },
+        "producerVersion": {
+          "$ref": "#/$defs/producerVersion"
+        },
+        "configurationIdentity": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    },
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "basisIdentity"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "CURRENT",
+            "STALE"
+          ]
+        },
+        "basisIdentity": {
+          "$ref": "#/$defs/sha256"
+        }
+      }
+    }
+  }
+}
