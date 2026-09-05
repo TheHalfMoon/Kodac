@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-verification-command-success-evidence-binding.schema.json",
+  "title": "Kodac P7-R8 Verification Command Success Evidence Binding",
+  "description": "Pure data-only binding that independently revalidates one complete K2 success receipt and exact command-intent preimage for every exact planned verification command in one passing P7-R6 report. It does not establish VERIFIED, Done Gate, or execution authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "evidenceIdentity",
+    "state",
+    "sourceVerificationReportBindingIdentity",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "appliedEvidenceIdentity",
+    "verificationPlanBindingIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "postStateDigest",
+    "verificationPlanDigest",
+    "verificationReportIdentity",
+    "verificationSessionId",
+    "verificationStartedAt",
+    "verificationCompletedAt",
+    "commandCount",
+    "testCommandCount",
+    "commands"
+  ],
+  "properties": {
+    "version": {
+      "const": "p7-r8-verification-command-success-evidence-binding-v1"
+    },
+    "evidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "const": "VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND"
+    },
+    "sourceVerificationReportBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "proposalIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "authorizationIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "intentBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "appliedEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationPlanBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repositoryIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "canonicalBase": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "targetHead": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "postStateDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationPlanDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationReportIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "verificationStartedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "verificationCompletedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "commandCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "testCommandCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 8
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "commandId",
+          "commandCategory",
+          "checkSummary",
+          "checkEvidence",
+          "executionReceiptIdentity",
+          "executionReceiptId",
+          "executionInputDigest",
+          "executionResolvedExecutable",
+          "executionEnvironmentDigest",
+          "executionTimeoutMs",
+          "executionMaxOutputBytes",
+          "executionStartedAt",
+          "executionCompletedAt",
+          "executionOutputDigest",
+          "executionOutputBytes",
+          "executionExitCode"
+        ],
+        "properties": {
+          "commandId": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "commandCategory": {
+            "enum": [
+              "syntax",
+              "types",
+              "lint",
+              "tests",
+              "custom"
+            ]
+          },
+          "checkSummary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "checkEvidence": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 256,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "ref"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "receipt",
+                    "artifact",
+                    "event",
+                    "workspace"
+                  ]
+                },
+                "ref": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1024
+                },
+                "digest": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}$"
+                }
+              }
+            }
+          },
+          "executionReceiptIdentity": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "executionReceiptId": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+          },
+          "executionInputDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "executionResolvedExecutable": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096
+          },
+          "executionEnvironmentDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "executionTimeoutMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 120000
+          },
+          "executionMaxOutputBytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1048576
+          },
+          "executionStartedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+          },
+          "executionCompletedAt": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+          },
+          "executionOutputDigest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "executionOutputBytes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2097153
+          },
+          "executionExitCode": {
+            "const": 0
+          }
+        }
+      }
+    }
+  }
+}
