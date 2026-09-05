@@ -584,6 +584,15 @@ export function validateP7PostApplyVerificationPlanBinding(
     fail("verification-plan binding.bindingIdentity", "does not match the canonical binding preimage")
   }
 
+  const suppliedCore: UnknownRecord = {}
+  for (const key of Object.keys(record)) {
+    if (key === "bindingIdentity") continue
+    suppliedCore[key] = record[key]
+  }
+  if (hashText(JSON.stringify(suppliedCore)) !== claimedIdentity) {
+    fail("verification-plan binding.bindingIdentity", "does not match the supplied serialized binding preimage")
+  }
+
   const withoutIdentity: UnknownRecord = {}
   const expectedWithoutIdentity: UnknownRecord = {}
   for (const key of OUTPUT_KEYS) {
