@@ -44,21 +44,22 @@ P7-R5 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #371 / proof 5
 P7-R6 VERIFICATION-REPORT-BINDING = CLOSED_CANONICAL / #373 / proof 5554262587 / VERIFICATION_REPORT_BOUND_ONLY
 P7-R5 SERIALIZED-PREIMAGE REPAIR = CLOSED_CANONICAL / #375 / proof 5554351748
 P7-R6 POST-REPAIR CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #378 / proof 5554468185
-P7-R7 SUCCESSOR ANALYSIS = #378 / comment 5554700232 / ANALYSIS_ONLY
-P7-R7 VERIFICATION-FAILURE-DISPOSITION AUTHORIZATION = CLOSED_CANONICAL / #379 / proof 5554794663
-P7-R7 VERIFICATION-FAILURE-DISPOSITION IMPLEMENTATION = CLOSED_CANONICAL / #380 / proof 5555040304
-P7-R7 STATE = VERIFICATION_FAILED_ONLY / RECEIPT_BACKED_EXACT_FAILED_PLANNED_COMMAND
-P7-R7 CURRENT-VIEW RECONCILIATION ANALYSIS = #380 / comment 5555091086 / ANALYSIS_ONLY
-DURABLE REVIEW ORCHESTRATION + SKILL TRUST PLAN AMENDMENT = CLOSED_CANONICAL / #381 / proof 5555071864 / PLANNING_ONLY
-P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #382 / proof 5555110307
-P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-P7-R8+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R7 VERIFICATION-FAILURE-DISPOSITION IMPLEMENTATION = CLOSED_CANONICAL / #380 / proof 5555040304 / VERIFICATION_FAILED_BOUNDED_ONLY
+P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #383 / proof 5555153084
+P7-R8 SUCCESSOR ANALYSIS = #383 / comment 5555171313 / ANALYSIS_ONLY
+P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE AUTHORIZATION = CLOSED_CANONICAL / #384 / proof 5555204137
+P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE IMPLEMENTATION = CLOSED_CANONICAL / #385 / proof 5555449960 / VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
+P7-R8 CURRENT-VIEW RECONCILIATION ANALYSIS = #385 / comment 5555454827 / ANALYSIS_ONLY
+P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #386 / proof 5555472241
+P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R9+ = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 
 APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
 VERIFICATION_PLAN_BOUND_ONLY = ESTABLISHED_BY_P7_R5_CONTRACT
 VERIFICATION_REPORT_BOUND_ONLY = ESTABLISHED_BY_P7_R6_CONTRACT
 VERIFICATION_FAILED = ESTABLISHED_BY_P7_R7_CONTRACT / BOUNDED_RECEIPT_BACKED_ONLY
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R8_CONTRACT
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
@@ -107,10 +108,15 @@ WAIVER = NO
   -> #378 comment 5554700232 P7-R7 successor analysis / ANALYSIS_ONLY
   -> #379 P7-R7 verification-failure-disposition authorization / proof 5554794663
   -> #380 P7-R7 verification-failure-disposition implementation / proof 5555040304
-  -> #380 comment 5555091086 P7-R7 reconciliation analysis / ANALYSIS_ONLY
   -> #381 durable review orchestration + skill trust amendment / proof 5555071864 / PLANNING_ONLY
   -> #382 P7-R7 current-view reconciliation authorization / proof 5555110307
-  -> CURRENT: exact five-path P7-R7 current-view reconciliation candidate
+  -> #383 P7-R7 current-view reconciliation / proof 5555153084
+  -> #383 comment 5555171313 P7-R8 successor analysis / ANALYSIS_ONLY
+  -> #384 P7-R8 verification-command success-evidence authorization / proof 5555204137
+  -> #385 P7-R8 verification-command success-evidence implementation / proof 5555449960
+  -> #385 comment 5555454827 P7-R8 current-view reconciliation analysis / ANALYSIS_ONLY
+  -> #386 P7-R8 current-view reconciliation authorization / proof 5555472241
+  -> CURRENT: exact five-path P7-R8 current-view reconciliation candidate
 ```
 
 Canonical anchors:
@@ -122,39 +128,45 @@ P7-R5 test = a920f774e8e99b8b63e222cac03171a4c8c0f64b
 P7-R6 source = 3ec02f33eec231e0f90a0a1da069c620db9b379c
 P7-R6 schema = 304db4fa8287c28a35a1ce4a7f8c8a79a9888fe1
 P7-R6 test = b3675abd40da8e16b2b48f7b2403915b91e1ca18
-P7-R7 qualified head = 1eb46940cf5833f4edb58de4b0772fac3f8e93f6
-P7-R7 merge = 531ac2c869bfba418238aeffbabe672d0ad27620
 P7-R7 source = 71396d3d2890f797370b4185901c2ad079ad049d
 P7-R7 schema = 6f3bd493861f42736cb60026293e3bd7be2d9eec
 P7-R7 test = d00286b780e00808c6c683ef4bc9f223b3ce43e9
+P7-R8 qualified head = 5dd1b87a2508fe99694d30d22f756449cf947df0
+P7-R8 merge = 9edd998ccd56e491634adda44e632b91ab6decf4
+P7-R8 source = dc150e9b3d4ea305445ca59de9ef483a92b9ef8d
+P7-R8 schema = 7b256db53a02ef9d32a133994a8fb0c9582b6981
+P7-R8 test = b25cb1094a75b2eba275c604005ed1facfc1c300
 ```
 
 ---
 
 ## Release-independent P7 meaning
 
-P7-R4 is an internal pure/data-only immutable applied-patch evidence binding. P7-R5 is an internal pure/data-only deterministic content-addressed verification-plan binding. P7-R6 is an internal pure/data-only deterministic content-addressed verification-report binding. P7-R7 is an internal pure/data-only deterministic receipt-backed failure disposition over exact P7-R5/P7-R6 lineage, one exact failed planned verification command, and one complete matching K2 failure receipt.
+P7-R4 is an internal pure/data-only immutable applied-patch evidence binding. P7-R5 is an internal pure/data-only deterministic content-addressed verification-plan binding. P7-R6 is an internal pure/data-only deterministic verification-report binding. P7-R7 is an internal pure/data-only receipt-backed failure disposition for one exact failed planned command. P7-R8 is an internal pure/data-only deterministic planned-command success-evidence binding: one exact passing R6 report plus every exact P7-R5 command independently linked to one complete matching K2 success receipt and reconstructed generic-gateway intent preimage.
 
 ```text
-FAILED_R6_REPORT_BOOLEAN_ALONE != VERIFICATION_FAILED
-BASE_CHECK_FAILURE_ALONE != VERIFICATION_FAILED
-BARE_RECEIPT_REFERENCE != VERIFICATION_FAILED
-VERIFICATION_FAILED != VERIFICATION_ENGINE_INVOCATION
-VERIFICATION_FAILED != VERIFICATION_EXECUTION_AUTHORITY
-VERIFICATION_FAILED != K2_INVOCATION
-VERIFICATION_FAILED != K2_APPROVAL
-VERIFICATION_FAILED != VERIFIED
-VERIFICATION_FAILED != FIXED
-VERIFICATION_FAILED != REVERIFIED
-VERIFICATION_FAILED != DONE_GATE
-VERIFICATION_FAILED != PROVEN_READY
-VERIFICATION_FAILED != AUTOFIX
-VERIFICATION_FAILED != PATCH_RETRY_AUTHORITY
-VERIFICATION_FAILED != NEW_PATCH_PROPOSAL_AUTHORITY
-P7_R7_CLOSED != P7_R8_PLUS_AUTHORITY
-P7_R7_CLOSED != P7_OVERALL_CLOSED
-P7_R7_CLOSED != P8_AUTHORITY
-P7_R7_CLOSED != PROJECT_COMPLETION
+R6_PASSED_BOOLEAN != VERIFIED
+ALL_PLANNED_COMMAND_SUCCESS_RECEIPTS != VERIFIED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != COMPLETE_REPORT_EVIDENCE_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != AGENT_COMPLETION_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != WORKSPACE_INTEGRITY_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != GIT_DIFF_SEMANTIC_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != LEDGER_COMPLETENESS_PROOF
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFICATION_ENGINE_INVOCATION
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != K2_INVOCATION
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != K2_APPROVAL
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFIED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != FIXED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != REVERIFIED
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != DONE_GATE
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != PROVEN_READY
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != AUTOFIX
+VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
+P7_R8_CLOSED != P7_R9_PLUS_AUTHORITY
+P7_R8_CLOSED != P7_OVERALL_CLOSED
+P7_R8_CLOSED != P8_AUTHORITY
+P7_R8_CLOSED != PROJECT_COMPLETION
 ```
 
 ---
@@ -175,7 +187,7 @@ P9 Continuous Assurance
 R Advanced Research
 ```
 
-P7-R7 closure does not authorize P7-R8+, `VERIFIED`, verification execution, K2-mediated remediation execution, retry/autofix, P8/P9 implementation, product integration, or release by numbering or composition.
+P7-R8 closure does not authorize P7-R9+, `VERIFIED`, complete verification-report evidence provenance, verification execution, K2-mediated remediation execution, retry/autofix, P8/P9 implementation, product integration, or release by numbering or composition.
 
 ---
 
@@ -195,7 +207,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R8+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R9+ = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -235,6 +247,6 @@ No version bump, package publication, release tag, deployment, public benchmark 
 
 ## Current sequencing boundary
 
-Canonical #382 / proof `5555110307` authorizes only the exact five current-view paths. This candidate remains non-canonical until guarded merge and complete post-merge proof.
+Canonical #386 / proof `5555472241` authorizes only the exact five current-view paths. This candidate remains non-canonical until guarded merge and complete post-merge proof.
 
-After proof, perform fresh successor-authority analysis. No P7-R8+, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch execution/retry, K2 invocation, P8/P9, release, or project completion follows by numbering or composition.
+After proof, perform fresh successor-authority analysis. No P7-R9+, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch execution/retry, K2 invocation, P8/P9, release, or project completion follows by numbering or composition.
