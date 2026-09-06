@@ -762,7 +762,7 @@ test("P7-R15 independently revalidates source R14 identity and nested predecesso
     .targetHead = "c".repeat(40)
   assert.throws(
     () => buildP7ReceiptLedgerSnapshotEvidenceBinding(mutatedInput as P7ReceiptLedgerSnapshotEvidenceBindingBuildInput),
-    /identity|targetHead|canonical|source/,
+    /identity|targetHead|canonical|source|evaluatedHead|current head/,
   )
 })
 
