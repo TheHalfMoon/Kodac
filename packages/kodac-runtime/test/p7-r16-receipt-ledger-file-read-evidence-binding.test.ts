@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { Buffer } from "node:buffer"
 import { createHash } from "node:crypto"
-import { link, mkdtemp, mkdir, rm, symlink, writeFile } from "node:fs/promises"
+import { link, mkdtemp, mkdir, open, rename, rm, symlink, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { readFileSync } from "node:fs"
@@ -538,8 +538,12 @@ function r15Input(records = canonicalReceiptRecords()): P7ReceiptLedgerSnapshotE
   }
 }
 
-async function fixtureInput(root: string, fileName = "receipts.jsonl"): Promise<P7ReceiptLedgerFileReadEvidenceBindingBuildInput> {
-  const sourceReceiptLedgerSnapshotEvidenceBindingInput = r15Input()
+async function fixtureInput(
+  root: string,
+  fileName = "receipts.jsonl",
+  records = canonicalReceiptRecords(),
+): Promise<P7ReceiptLedgerFileReadEvidenceBindingBuildInput> {
+  const sourceReceiptLedgerSnapshotEvidenceBindingInput = r15Input(records)
   const receiptLedgerPath = join(root, fileName)
   await writeFile(receiptLedgerPath, sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot, "utf8")
   return {
@@ -607,6 +611,15 @@ async function withTemp<T>(run: (root: string) => Promise<T>): Promise<T> {
   }
 }
 
+async function fileHandlePrototype(path: string): Promise<MutableRecord> {
+  const probe = await open(path, "r")
+  try {
+    return Object.getPrototypeOf(probe) as MutableRecord
+  } finally {
+    await probe.close()
+  }
+}
+
 test("P7-R16 builds and validates one exact stable local ledger read", async () => {
   await withTemp(async (root) => {
     const input = await fixtureInput(root)
@@ -643,13 +656,73 @@ test("P7-R16 is deterministic for an unchanged same path and makes path identity
   })
 })
 
+test("P7-R16 rejects same-descriptor metadata drift after the exact read", async () => {
+  await withTemp(async (root) => {
+    const input = await fixtureInput(root)
+    const prototype = await fileHandlePrototype(input.receiptLedgerPath)
+    const originalRead = prototype.read as (...args: any[]) => Promise<any>
+    let mutated = false
+    prototype.read = async function (...args: any[]): Promise<any> {
+      const result = await originalRead.apply(this, args)
+      if (!mutated && args[3] === 0) {
+        mutated = true
+        const changedAt = new Date("2035-01-02T03:04:05.000Z")
+        await (this as { utimes(atime: Date, mtime: Date): Promise<void> }).utimes(changedAt, changedAt)
+      }
+      return result
+    }
+    try {
+      await assert.rejects(
+        () => buildP7ReceiptLedgerFileReadEvidenceBinding(input),
+        /metadata changed during same-descriptor read/,
+      )
+      assert.equal(mutated, true)
+    } finally {
+      prototype.read = originalRead
+    }
+  })
+})
+
+test("P7-R16 rejects post-read path identity replacement", { skip: process.platform === "win32" }, async () => {
+  await withTemp(async (root) => {
+    const input = await fixtureInput(root)
+    const prototype = await fileHandlePrototype(input.receiptLedgerPath)
+    const originalStat = prototype.stat as (...args: any[]) => Promise<any>
+    let statCalls = 0
+    let replaced = false
+    prototype.stat = async function (...args: any[]): Promise<any> {
+      const result = await originalStat.apply(this, args)
+      statCalls += 1
+      if (statCalls === 2) {
+        await rename(input.receiptLedgerPath, join(root, "receipts-original.jsonl"))
+        await writeFile(
+          input.receiptLedgerPath,
+          input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot,
+          "utf8",
+        )
+        replaced = true
+      }
+      return result
+    }
+    try {
+      await assert.rejects(
+        () => buildP7ReceiptLedgerFileReadEvidenceBinding(input),
+        /path identity changed during read/,
+      )
+      assert.equal(replaced, true)
+    } finally {
+      prototype.stat = originalStat
+    }
+  })
+})
+
 test("P7-R16 rejects content substitution and predecessor lineage mutation", async () => {
   await withTemp(async (root) => {
     const input = await fixtureInput(root)
     const built = await buildP7ReceiptLedgerFileReadEvidenceBinding(input)
 
     await writeFile(input.receiptLedgerPath, `${input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot} `, "utf8")
-    await assert.rejects(() => validateP7ReceiptLedgerFileReadEvidenceBinding(built, input), /byte count|SHA-256|source P7-R15|snapshot/)
+    await assert.rejects(() => validateP7ReceiptLedgerFileReadEvidenceBinding(built, input), /source P7-R15|snapshot|canonical/)
 
     await writeFile(input.receiptLedgerPath, input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot, "utf8")
     const mutated = structuredClone(input) as MutableRecord
@@ -660,6 +733,35 @@ test("P7-R16 rejects content substitution and predecessor lineage mutation", asy
     await assert.rejects(
       () => buildP7ReceiptLedgerFileReadEvidenceBinding(mutated as P7ReceiptLedgerFileReadEvidenceBindingBuildInput),
       /identity|targetHead|canonical|source|evaluatedHead|current head/,
+    )
+  })
+})
+
+test("P7-R16 rejects line-order drift unless the exact source R15 identity changes consistently", async () => {
+  await withTemp(async (root) => {
+    const original = await fixtureInput(root, "original.jsonl")
+    const originalBuilt = await buildP7ReceiptLedgerFileReadEvidenceBinding(original)
+
+    const reversedRecords = [...canonicalReceiptRecords()].reverse()
+    const consistent = await fixtureInput(root, "reversed.jsonl", reversedRecords)
+    const consistentBuilt = await buildP7ReceiptLedgerFileReadEvidenceBinding(consistent)
+
+    assert.notEqual(
+      consistent.sourceReceiptLedgerSnapshotEvidenceBinding.evidenceIdentity,
+      original.sourceReceiptLedgerSnapshotEvidenceBinding.evidenceIdentity,
+    )
+    assert.notEqual(consistentBuilt.receiptLedgerReadSha256, originalBuilt.receiptLedgerReadSha256)
+    assert.notEqual(consistentBuilt.receiptLedgerReadIdentity, originalBuilt.receiptLedgerReadIdentity)
+    assert.notEqual(consistentBuilt.evidenceIdentity, originalBuilt.evidenceIdentity)
+
+    await writeFile(
+      original.receiptLedgerPath,
+      consistent.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot,
+      "utf8",
+    )
+    await assert.rejects(
+      () => buildP7ReceiptLedgerFileReadEvidenceBinding(original),
+      /receipt ledger snapshot evidence binding|canonical source-derived semantics|source P7-R15|snapshot/,
     )
   })
 })
@@ -748,16 +850,22 @@ test("P7-R16 rejects hard-link and symlink ambiguity without mutating the ledger
 test("P7-R16 rejects snapshot grammar changes through exact canonical R15 revalidation", async () => {
   await withTemp(async (root) => {
     const input = await fixtureInput(root)
-    const variants = [
-      input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot.replace("\n", "\r\n"),
-      input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot.replace("\n", "\n\n"),
-      input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot.slice(0, -1),
+    const valid = input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot
+    const firstNewline = valid.indexOf("\n")
+    const firstLine = valid.slice(0, firstNewline)
+    const nonCanonicalLine = firstLine.replace('"receiptId":', '"receiptId" :')
+    const nonCanonical = `${nonCanonicalLine}${valid.slice(firstNewline)}`
+    const variants: Array<[string, RegExp]> = [
+      [valid.replace("\n", "\r\n"), /CR characters/],
+      [valid.replace("\n", "\n\n"), /non-empty JSONL lines/],
+      [valid.slice(0, -1), /exactly one LF/],
+      [nonCanonical, /JSON\.stringify/],
     ]
-    for (const snapshot of variants) {
+    for (const [snapshot, expected] of variants) {
       await writeFile(input.receiptLedgerPath, snapshot, "utf8")
       await assert.rejects(
         () => buildP7ReceiptLedgerFileReadEvidenceBinding(input),
-        /byte count|SHA-256|CR|JSONL|LF|source P7-R15|snapshot/,
+        expected,
       )
     }
   })
