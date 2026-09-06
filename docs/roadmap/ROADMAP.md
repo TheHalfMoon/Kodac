@@ -55,9 +55,15 @@ This is a current engineering roadmap view only. It does not create implementati
 | P7-R14 receipt-record-set evidence-binding implementation | **CLOSED_CANONICAL / RECEIPT_RECORD_SET_EVIDENCE_BOUND** | #409 / proof `5561374059` |
 | P7-R14 current-view drift analysis | **ANALYSIS_ONLY** | #409 comment `5561389069` |
 | P7-R14 post-merge current-view reconciliation authorization | **CLOSED_CANONICAL** | #410 / proof `5561420176` |
-| P7-R14 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
-| Post-R14 successor implementation | **NOT_AUTHORIZED_BY_NUMBERING** | Fresh analysis only after reconciliation proof |
-| P7 overall | **NOT_CLOSED** | R14 bounded closure is not overall closure |
+| P7-R14 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #411 / proof `5561648434` |
+| Post-R14 successor analysis | **ANALYSIS_ONLY** | #411 comment `5561670071` |
+| P7-R15 receipt-ledger-snapshot evidence-binding authorization | **CLOSED_CANONICAL** | #412 / proof `5561868919` |
+| P7-R15 receipt-ledger-snapshot evidence-binding implementation | **CLOSED_CANONICAL / RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY** | #413 / proof `5561974214` |
+| P7-R15 current-view drift analysis | **ANALYSIS_ONLY** | #413 comment `5561982767` |
+| P7-R15 post-merge current-view reconciliation authorization | **CLOSED_CANONICAL** | #414 / proof `5562020658` |
+| P7-R15 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
+| Post-R15 successor implementation | **NOT_AUTHORIZED_BY_NUMBERING** | Fresh analysis only after reconciliation proof |
+| P7 overall | **NOT_CLOSED** | R15 bounded closure is not overall closure |
 | P8-P9 | **IMPLEMENTATION NOT_AUTHORIZED** | Planning direction only |
 | Project completion | **NOT_ESTABLISHED** | No canonical completion proof exists |
 
@@ -65,7 +71,7 @@ This is a current engineering roadmap view only. It does not create implementati
 
 ## Exact active reconciliation allowlist
 
-Canonical PR #410 / proof `5561420176` permits one documentation-only candidate over exactly:
+Canonical PR #414 / proof `5562020658` permits one documentation-only candidate over exactly:
 
 ```text
 docs/roadmap/NEXT.md
@@ -82,30 +88,24 @@ No sixth path is authorized. The candidate may record already-proven facts only 
 ## Canonical P7 sequence at the current frontier
 
 ```text
-#403 P7-R12 post-merge current-view reconciliation / proof 5560512547
-#403 comment 5560530226 post-R12 successor analysis / ANALYSIS_ONLY
-#404 P7-R13 policy-report evidence-binding authorization / proof 5560568777
-#405 P7-R13 policy-report evidence-binding implementation / proof 5560655007
-#405 comment 5560661273 P7-R13 current-view drift analysis / ANALYSIS_ONLY
-#406 P7-R13 post-merge current-view reconciliation authorization / proof 5560697815
-#407 P7-R13 post-merge current-view reconciliation / proof 5560768667
-#407 comment 5560808910 post-R13 successor analysis / ANALYSIS_ONLY
-#408 P7-R14 receipt-record-set evidence-binding authorization / proof 5560926017
-#409 P7-R14 receipt-record-set evidence-binding implementation / proof 5561374059
-#409 comment 5561389069 P7-R14 current-view drift analysis / ANALYSIS_ONLY
-#410 P7-R14 post-merge current-view reconciliation authorization / proof 5561420176
-CURRENT exact five-current-view R14 reconciliation candidate
+#411 P7-R14 post-merge current-view reconciliation / proof 5561648434
+#411 comment 5561670071 post-R14 successor analysis / ANALYSIS_ONLY
+#412 P7-R15 receipt-ledger-snapshot evidence-binding authorization / proof 5561868919
+#413 P7-R15 receipt-ledger-snapshot evidence-binding implementation / proof 5561974214
+#413 comment 5561982767 P7-R15 current-view drift analysis / ANALYSIS_ONLY
+#414 P7-R15 post-merge current-view reconciliation authorization / proof 5562020658
+CURRENT exact five-current-view R15 reconciliation candidate
 ```
 
-Canonical R14 identities:
+Canonical R15 identities:
 
 ```text
-P7-R14 qualified head = 05bb097bb252598c7b4025005e0e0738d6516b57
-P7-R14 qualified head tree = c8aeff96eb8c884dfc6e2c967c8f32a5d5ca6bd2
-P7-R14 merge = beb4a82bce6959fc4adde5f3f0966baea43b3479
-P7-R14 source = b4749bd8f797d23eda789bd4aebb24deb1845aa4
-P7-R14 schema = 81815ec1a2eef67d574b86dc94020cb53f0e5ad4
-P7-R14 test = 435a5ba2f1691c9b20d46e9319842712d095a6bb
+P7-R15 qualified head = e6000f4094d5399f1ab404ae67cb630375804950
+P7-R15 qualified head tree = 66ed8df9b83a402ff3a153c1b186ad0f7af62149
+P7-R15 merge = 1dcfce3f5817fb6022c4a835f5c2af30b4c986d0
+P7-R15 source = b287ebb9e64aec73feaa94ac6cf244f800c92ba7
+P7-R15 schema = 11c77bfcdf62cec6e929137eb4aaa303eb457024
+P7-R15 test = 44dd09fee4775aaef5104bb9cf7eb37b9c109632
 ```
 
 ---
@@ -124,47 +124,53 @@ GIT_CHANGE_REPORT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R11_CONTRACT
 RECEIPT_REPORT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R12_CONTRACT
 POLICY_REPORT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R13_CONTRACT
 RECEIPT_RECORD_SET_EVIDENCE_BOUND = ESTABLISHED_BY_P7_R14_CONTRACT
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R15_CONTRACT
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
 DONE_GATE_PROVEN_READY = NOT_ESTABLISHED
 ```
 
-P7-R14 proves deterministic supplied-record-to-report-reference consistency only. It binds one exact revalidated R13 predecessor to one supplied strictly validated execution-receipt record for every exact receipt ID in the R13/R12 report-reference set, with no supplied extras, and enforces the bounded receipt predicates already claimed by the passing P7-R6 `evidence.receipts` and `evidence.policy` projections. It does not prove historical ledger bytes/completeness, receipt authenticity, policy authorization, historical workspace/Git semantics, or verification-engine historical execution.
+P7-R15 binds one exact canonically revalidated P7-R14 lineage to one caller-supplied bounded UTF-8 JSONL receipt-ledger snapshot. Exact supplied text and line order are identity-significant, and the parsed record set must revalidate to the same canonical P7-R14 receipt-record-set identity, count, IDs, and strict receipt semantics.
+
+It does not prove historical ledger read/bytes/completeness/absence, append history, receipt authenticity, policy authenticity/authorization, historical workspace/Git semantics, verification-engine historical execution, or lifecycle completion.
 
 ---
 
-## Mandatory R14 non-equivalences
+## Mandatory R15 non-equivalences
 
 ```text
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != HISTORICAL_LEDGER_READ_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != RECEIPT_LEDGER_BYTES_OR_SNAPSHOT_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != EXECUTION_RECEIPT_AUTHENTICITY_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != RECEIPT_SIGNATURE_OR_EXTERNAL_ATTESTATION_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != POLICY_DECISION_AUTHENTICITY_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != POLICY_RULE_OR_VERSION_IDENTITY_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != POLICY_AUTHORIZATION_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != EXECUTION_INTENT_PREIMAGE_PROOF_FOR_ARBITRARY_RECEIPTS
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != HISTORICAL_WORKSPACE_OR_GIT_SEMANTICS
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != VERIFICATION_ENGINE_HISTORICAL_EXECUTION_PROOF
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != K2_INVOCATION
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != K2_APPROVAL
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != VERIFIED
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != FIXED
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != REVERIFIED
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != DONE_GATE
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != PROVEN_READY
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != AUTOFIX
-RECEIPT_RECORD_SET_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
-P7_R14_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
-P7_R14_CLOSED != P7_OVERALL_CLOSED
-P7_R14_CLOSED != P8_AUTHORITY
-P7_R14_CLOSED != PROJECT_COMPLETION
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != HISTORICAL_LEDGER_READ_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != HISTORICAL_RECEIPT_LEDGER_BYTES_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != RECEIPT_LEDGER_COMPLETENESS_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != RECEIPT_LEDGER_ABSENCE_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != RECEIPT_LEDGER_APPEND_HISTORY_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != RECEIPT_LEDGER_FILE_IDENTITY_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != EXECUTION_RECEIPT_AUTHENTICITY_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != RECEIPT_SIGNATURE_OR_EXTERNAL_ATTESTATION_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != POLICY_DECISION_AUTHENTICITY_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != POLICY_RULE_OR_VERSION_IDENTITY_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != POLICY_AUTHORIZATION_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != EXECUTION_INTENT_PREIMAGE_PROOF_FOR_ARBITRARY_RECEIPTS
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != HISTORICAL_WORKSPACE_OR_GIT_SEMANTICS
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != VERIFICATION_ENGINE_HISTORICAL_EXECUTION_PROOF
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != VERIFICATION_EXECUTION_AUTHORITY
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != K2_INVOCATION
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != K2_APPROVAL
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != VERIFIED
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != FIXED
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != REVERIFIED
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != DONE_GATE
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != PROVEN_READY
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != AUTOFIX
+RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY != PATCH_RETRY_AUTHORITY
+P7_R15_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
+P7_R15_CLOSED != P7_OVERALL_CLOSED
+P7_R15_CLOSED != P8_AUTHORITY
+P7_R15_CLOSED != PROJECT_COMPLETION
 ```
 
-All still-effective canonical P7-R10, P7-R11, P7-R12, and P7-R13 predecessor non-grants remain in force. Omission of a predecessor boundary from this condensed current roadmap is not authorization, proof, waiver, supersession, or narrowing.
+All still-effective canonical P7-R10 through P7-R14 predecessor non-grants remain in force. Omission of a predecessor boundary from this condensed current roadmap is not authorization, proof, waiver, supersession, or narrowing.
 
 ---
 
@@ -174,7 +180,7 @@ All still-effective canonical P7-R10, P7-R11, P7-R12, and P7-R13 predecessor non
 K2 SIDE-EFFECT AUTHORITY = UNCHANGED
 K5 / DONE GATE AUTHORITY = UNCHANGED
 P7 OVERALL = NOT_CLOSED
-POST-R14 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+POST-R15 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -213,4 +219,4 @@ WAIVER = NO
 
 ## Next transition
 
-Only after this exact five-view R14 reconciliation independently qualifies, merges guarded with exact expected-head protection, and receives complete mandatory post-merge proof may fresh successor-authority analysis run from then-live repository truth. No R15, verification/K2/Done-Gate, patch/retry/autofix, P8/P9, release, or project-completion authority follows by numbering or composition.
+Only after this exact five-view R15 reconciliation independently qualifies, merges guarded with exact expected-head protection, and receives complete mandatory post-merge proof may fresh successor-authority analysis run from then-live repository truth. No later P7 slice, verification/K2/Done-Gate, patch/retry/autofix, P8/P9, release, or project-completion authority follows by numbering or composition.
