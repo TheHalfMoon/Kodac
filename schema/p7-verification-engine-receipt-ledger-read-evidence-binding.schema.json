@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-verification-engine-receipt-ledger-read-evidence-binding.schema.json",
+  "title": "Kodac P7-R18 Verification-Engine Receipt-Ledger Read Evidence Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "evidenceIdentity",
+    "state",
+    "sourceReceiptLedgerFileReadEvidenceIdentity",
+    "sourceReceiptLedgerSnapshotEvidenceIdentity",
+    "sourceReceiptRecordSetEvidenceIdentity",
+    "sourcePolicyReportEvidenceIdentity",
+    "sourceReceiptReportEvidenceIdentity",
+    "sourceCommandSuccessEvidenceIdentity",
+    "sourceAppliedEvidenceIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "postStateDigest",
+    "verificationReportIdentity",
+    "verificationSessionId",
+    "receiptCount",
+    "receiptIds",
+    "receiptLedgerPathSha256",
+    "receiptLedgerReadUtf8Bytes",
+    "receiptLedgerReadSha256",
+    "receiptLedgerFileObservationIdentity",
+    "receiptLedgerReadIdentity",
+    "verificationReceiptLedgerReadEventIdentity",
+    "verificationReceiptLedgerReadEventProtocol",
+    "verificationReceiptLedgerReadEventVersion",
+    "verificationReceiptLedgerReadEventId",
+    "verificationReceiptLedgerReadEventSequence",
+    "verificationReceiptLedgerReadEventEmittedAt",
+    "verificationReceiptLedgerReadEventType",
+    "parsedReceiptCount"
+  ],
+  "properties": {
+    "version": { "const": "p7-r18-verification-engine-receipt-ledger-read-evidence-binding-v1" },
+    "evidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "state": { "const": "VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY" },
+    "sourceReceiptLedgerFileReadEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceReceiptLedgerSnapshotEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceReceiptRecordSetEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourcePolicyReportEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceReceiptReportEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceCommandSuccessEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceAppliedEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "repositoryIdentity": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "canonicalBase": { "$ref": "#/$defs/gitObject" },
+    "targetHead": { "$ref": "#/$defs/gitObject" },
+    "postStateDigest": { "$ref": "#/$defs/sha256" },
+    "verificationReportIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationSessionId": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "receiptCount": { "type": "integer", "minimum": 1, "maximum": 256 },
+    "receiptIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/uuidV4" }
+    },
+    "receiptLedgerPathSha256": { "$ref": "#/$defs/sha256" },
+    "receiptLedgerReadUtf8Bytes": { "type": "integer", "minimum": 1, "maximum": 16777216 },
+    "receiptLedgerReadSha256": { "$ref": "#/$defs/sha256" },
+    "receiptLedgerFileObservationIdentity": { "$ref": "#/$defs/sha256" },
+    "receiptLedgerReadIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationReceiptLedgerReadEventIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationReceiptLedgerReadEventProtocol": { "const": "kodac.event" },
+    "verificationReceiptLedgerReadEventVersion": { "const": 1 },
+    "verificationReceiptLedgerReadEventId": { "$ref": "#/$defs/uuidV4" },
+    "verificationReceiptLedgerReadEventSequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "verificationReceiptLedgerReadEventEmittedAt": { "$ref": "#/$defs/canonicalTimestamp" },
+    "verificationReceiptLedgerReadEventType": { "const": "verification.receipt_ledger.read" },
+    "parsedReceiptCount": { "type": "integer", "minimum": 1, "maximum": 256 }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitObject": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "uuidV4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "canonicalTimestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    }
+  }
+}
