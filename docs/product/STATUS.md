@@ -52,8 +52,15 @@ P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE IMPLEMENTATION = CLOSED_CANONICAL / 
 P7-R8 STATE MEANING = VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
 P7-R8 CURRENT-VIEW RECONCILIATION ANALYSIS = #385 / comment 5555454827 / ANALYSIS_ONLY
 P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #386 / proof 5555472241
-P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-P7-R9+ = NOT_AUTHORIZED_BY_NUMBERING
+P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / #387 / proof 5555510161
+P7-R9 SUCCESSOR ANALYSIS = #387 / comment 5555523272 / ANALYSIS_ONLY
+P7-R9 AGENT-COMPLETION EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / #388 / proof 5555544464
+P7-R9 AGENT-COMPLETION EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / #389 / proof 5558925165
+P7-R9 STATE MEANING = AGENT_COMPLETION_EVIDENCE_BOUND_ONLY
+P7-R9 CURRENT-VIEW RECONCILIATION ANALYSIS = #389 / comment 5558926963 / ANALYSIS_ONLY
+P7-R9 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / #390 / proof 5558956711
+P7-R9 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7 POST-R9 SUCCESSOR = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 
 APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
@@ -61,6 +68,7 @@ VERIFICATION_PLAN_BOUND_ONLY = ESTABLISHED_BY_P7_R5_CONTRACT
 VERIFICATION_REPORT_BOUND_ONLY = ESTABLISHED_BY_P7_R6_CONTRACT
 VERIFICATION_FAILED = ESTABLISHED_BY_P7_R7_CONTRACT / BOUNDED_RECEIPT_BACKED_ONLY
 VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R8_CONTRACT
+AGENT_COMPLETION_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R9_CONTRACT
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
@@ -86,15 +94,15 @@ PERSISTENCE / DATABASE / TELEMETRY / UPLOAD / LEARNING = NOT_AUTHORIZED
 CLI / API / PACKAGE-ROOT / PRODUCT INTEGRATION = NOT_AUTHORIZED
 P8-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
-PROJECT COMPLETION = NOT_ESTABLISHED
+PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
 ---
 
-## Product-facing P7-R4 through P7-R8 meaning
+## Product-facing P7-R4 through P7-R9 meaning
 
-P7-R1 through P7-R8 remain internal bounded trust/remediation evidence contracts. They do not imply product availability, API stability, package publication, patch execution, repository mutation, K2 invocation, verification execution, verified remediation, finding closure, Done Gate, or release authority.
+P7-R1 through P7-R9 remain internal bounded trust/remediation evidence contracts. They do not imply product availability, API stability, package publication, patch execution, repository mutation, K2 invocation, verification execution, verified remediation, finding closure, Done Gate, or release authority.
 
 P7-R4 provides one pure/data-only immutable `APPLIED` evidence binding over exact P7-R1/R2/R3 lineage and one supplied strictly validated successful existing K2 `repo.apply_patch` receipt. It does not itself invoke K2 or apply a patch.
 
@@ -105,6 +113,8 @@ P7-R6 provides one pure/data-only deterministic content-addressed `VERIFICATION_
 P7-R7 provides one pure/data-only deterministic `VERIFICATION_FAILED` disposition only for one exact failed planned verification command whose P7-R5/P7-R6 lineage and complete matching K2 failure receipt are independently revalidated.
 
 P7-R8 provides one pure/data-only deterministic `VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND` record over one exact canonically revalidated passing P7-R6 report and every exact P7-R5 planned command. Each planned command is independently bound to one complete matching K2 success receipt plus an independently reconstructed generic-gateway command-intent preimage. It consumes historical evidence only and invokes no planner, verification engine, ExecutionGateway, K2, Done Gate, filesystem, Git, process, network, provider/model, persistence, or patch-application surface.
+
+P7-R9 provides one pure/data-only deterministic `AGENT_COMPLETION_EVIDENCE_BOUND` record over one exact canonically revalidated P7-R8 predecessor plus one hostile-input-validated canonical `kodac.event` v1 `agent.loop.completed` event whose session identity and semantic report evidence reference match the exact passing P7-R6 `agent.completed` check. It proves only that bounded supplied completion-event evidence linkage. It does not reconstruct complete session event history or establish workspace, Git, receipt-ledger, policy-ledger, Done Gate, verified remediation, or project-completion truth.
 
 Canonical implementation blobs:
 
@@ -126,6 +136,11 @@ P7-R8 merge = 9edd998ccd56e491634adda44e632b91ab6decf4
 P7-R8 source = dc150e9b3d4ea305445ca59de9ef483a92b9ef8d
 P7-R8 schema = 7b256db53a02ef9d32a133994a8fb0c9582b6981
 P7-R8 test = b25cb1094a75b2eba275c604005ed1facfc1c300
+P7-R9 qualified head = e71e9dacb503afe32a8f85a4d2226d316544ee93
+P7-R9 merge = 77337b141367f2e9c9f4dedac527c5574043deaf
+P7-R9 source = bf53a3bdf6f24c5b721fc63d6c0bf32206ba27e2
+P7-R9 schema = 07f77fffe5480b6bd6f115def04396a14df7cff3
+P7-R9 test = 8b27d8345c278861a3356ca57cda67cb33095f3b
 ```
 
 Required non-equivalences:
@@ -139,28 +154,27 @@ VERIFICATION_PLAN_BOUND != VERIFICATION_PLANNER_EXECUTION
 VERIFICATION_PLAN_BOUND != VERIFICATION_EXECUTION
 VERIFICATION_REPORT_BOUND != VERIFICATION_ENGINE_INVOCATION
 VERIFICATION_REPORT_BOUND != VERIFICATION_EXECUTION
-R6_PASSED_BOOLEAN != VERIFIED
-ALL_PLANNED_COMMAND_SUCCESS_RECEIPTS != VERIFIED
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != COMPLETE_REPORT_EVIDENCE_PROOF
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != AGENT_COMPLETION_PROOF
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != WORKSPACE_INTEGRITY_PROOF
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != GIT_DIFF_SEMANTIC_PROOF
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != LEDGER_COMPLETENESS_PROOF
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFICATION_ENGINE_INVOCATION
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != K2_INVOCATION
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != K2_APPROVAL
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != VERIFIED
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != FIXED
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != REVERIFIED
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != DONE_GATE
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != PROVEN_READY
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != AUTOFIX
-VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
-P7_R8_CLOSED != P7_R9_PLUS_AUTHORITY
-P7_R8_CLOSED != P7_OVERALL_CLOSED
-P7_R8_CLOSED != P8_AUTHORITY
-P7_R8_CLOSED != PROJECT_COMPLETION
+AGENT_COMPLETION_EVIDENCE_BOUND != COMPLETE_SESSION_EVENT_LOG_PROOF
+AGENT_COMPLETION_EVIDENCE_BOUND != AGENT_TURN_HISTORY_RECONSTRUCTION
+AGENT_COMPLETION_EVIDENCE_BOUND != WORKSPACE_INTEGRITY_PROOF
+AGENT_COMPLETION_EVIDENCE_BOUND != GIT_DIFF_SEMANTIC_PROOF
+AGENT_COMPLETION_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
+AGENT_COMPLETION_EVIDENCE_BOUND != POLICY_LEDGER_COMPLETENESS_PROOF
+AGENT_COMPLETION_EVIDENCE_BOUND != VERIFICATION_ENGINE_INVOCATION
+AGENT_COMPLETION_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
+AGENT_COMPLETION_EVIDENCE_BOUND != K2_INVOCATION
+AGENT_COMPLETION_EVIDENCE_BOUND != K2_APPROVAL
+AGENT_COMPLETION_EVIDENCE_BOUND != VERIFIED
+AGENT_COMPLETION_EVIDENCE_BOUND != FIXED
+AGENT_COMPLETION_EVIDENCE_BOUND != REVERIFIED
+AGENT_COMPLETION_EVIDENCE_BOUND != DONE_GATE
+AGENT_COMPLETION_EVIDENCE_BOUND != PROVEN_READY
+AGENT_COMPLETION_EVIDENCE_BOUND != AUTOFIX
+AGENT_COMPLETION_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
+P7_R9_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
+P7_R9_CLOSED != P7_OVERALL_CLOSED
+P7_R9_CLOSED != P8_AUTHORITY
+P7_R9_CLOSED != PROJECT_COMPLETION
 ```
 
 ---
@@ -182,6 +196,12 @@ P7_R8_CLOSED != PROJECT_COMPLETION
 #385 P7-R8 verification-command success-evidence implementation / proof 5555449960
 #385 P7-R8 current-view reconciliation analysis / comment 5555454827 / ANALYSIS_ONLY
 #386 P7-R8 current-view reconciliation authorization / proof 5555472241
+#387 P7-R8 current-view reconciliation / proof 5555510161
+#387 P7-R9 successor analysis / comment 5555523272 / ANALYSIS_ONLY
+#388 P7-R9 agent-completion evidence-binding authorization / proof 5555544464
+#389 P7-R9 agent-completion evidence-binding implementation / proof 5558925165
+#389 P7-R9 current-view reconciliation analysis / comment 5558926963 / ANALYSIS_ONLY
+#390 P7-R9 current-view reconciliation authorization / proof 5558956711
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 ```
 
@@ -203,7 +223,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-P7-R9+ = NOT_AUTHORIZED_BY_NUMBERING
+P7 POST-R9 SUCCESSOR = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -242,7 +262,7 @@ The canonical PR #381 durable-orchestration/skill-trust amendment remains planni
 
 ## Current authorized unit
 
-Canonical #386 / proof `5555472241` authorizes exactly this five-path documentation-only reconciliation candidate:
+Canonical #390 / proof `5558956711` authorizes exactly this five-path documentation-only reconciliation candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -254,4 +274,4 @@ docs/product/STATUS.md
 
 No sixth path is authorized. This candidate records only already-proven P7 facts and preserves every still-effective non-grant. It cannot claim its own reconciliation closure before guarded merge and complete post-merge proof.
 
-After proof, fresh successor-authority analysis is required. No P7-R9+, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, lifecycle advancement, P8/P9, product/release work, or project completion follows by numbering, composition, roadmap language, or planning amendments.
+After proof, fresh successor-authority analysis is required. No post-R9 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, lifecycle advancement, P8/P9, product/release work, or project completion follows by numbering, composition, roadmap language, or planning amendments.
