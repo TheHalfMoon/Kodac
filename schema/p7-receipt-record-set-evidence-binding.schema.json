@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-receipt-record-set-evidence-binding.schema.json",
+  "title": "Kodac P7-R14 Receipt Record Set Evidence Binding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "evidenceIdentity",
+    "state",
+    "sourcePolicyReportEvidenceIdentity",
+    "sourceReceiptReportEvidenceIdentity",
+    "sourceGitChangeReportEvidenceIdentity",
+    "sourceWorkspaceReferenceEvidenceIdentity",
+    "sourceAgentCompletionEvidenceIdentity",
+    "sourceCommandSuccessEvidenceIdentity",
+    "sourceVerificationReportBindingIdentity",
+    "sourceAppliedEvidenceIdentity",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "verificationPlanBindingIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "postStateDigest",
+    "verificationPlanDigest",
+    "verificationReportIdentity",
+    "verificationSessionId",
+    "verificationStartedAt",
+    "verificationCompletedAt",
+    "receiptCount",
+    "receiptIds",
+    "receiptRecordIdentities",
+    "receiptRecordSetIdentity",
+    "receiptRecords"
+  ],
+  "properties": {
+    "version": { "const": "p7-r14-receipt-record-set-evidence-binding-v1" },
+    "evidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "state": { "const": "RECEIPT_RECORD_SET_EVIDENCE_BOUND" },
+    "sourcePolicyReportEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceReceiptReportEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceGitChangeReportEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceWorkspaceReferenceEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceAgentCompletionEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceCommandSuccessEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceVerificationReportBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "sourceAppliedEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "proposalIdentity": { "$ref": "#/$defs/sha256" },
+    "authorizationIdentity": { "$ref": "#/$defs/sha256" },
+    "intentBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationPlanBindingIdentity": { "$ref": "#/$defs/sha256" },
+    "repositoryIdentity": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "canonicalBase": { "$ref": "#/$defs/gitObject" },
+    "targetHead": { "$ref": "#/$defs/gitObject" },
+    "postStateDigest": { "$ref": "#/$defs/sha256" },
+    "verificationPlanDigest": { "$ref": "#/$defs/sha256" },
+    "verificationReportIdentity": { "$ref": "#/$defs/sha256" },
+    "verificationSessionId": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "verificationStartedAt": { "$ref": "#/$defs/timestamp" },
+    "verificationCompletedAt": { "$ref": "#/$defs/timestamp" },
+    "receiptCount": { "type": "integer", "minimum": 1, "maximum": 256 },
+    "receiptIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/uuidV4" }
+    },
+    "receiptRecordIdentities": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/sha256" }
+    },
+    "receiptRecordSetIdentity": { "$ref": "#/$defs/sha256" },
+    "receiptRecords": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/receiptRecord" }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gitObject": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "uuidV4": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "nullableSha256": {
+      "anyOf": [
+        { "$ref": "#/$defs/sha256" },
+        { "type": "null" }
+      ]
+    },
+    "pathArray": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 1024 }
+    },
+    "mutationResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "status", "added", "modified", "deleted", "postStateDigest"],
+      "properties": {
+        "kind": { "const": "mutation" },
+        "status": { "const": "success" },
+        "added": { "$ref": "#/$defs/pathArray" },
+        "modified": { "$ref": "#/$defs/pathArray" },
+        "deleted": { "$ref": "#/$defs/pathArray" },
+        "postStateDigest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "processResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "status", "outputDigest", "outputBytes", "exitCode"],
+      "properties": {
+        "kind": { "const": "process" },
+        "status": { "const": "success" },
+        "outputDigest": { "$ref": "#/$defs/sha256" },
+        "outputBytes": { "type": "integer", "minimum": 0, "maximum": 2097153 },
+        "exitCode": { "type": "integer", "minimum": -9007199254740991, "maximum": 9007199254740991 }
+      }
+    },
+    "receiptRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receiptRecordIdentity",
+        "receiptId",
+        "capability",
+        "inputDigest",
+        "paths",
+        "policyDecision",
+        "policyReason",
+        "approvalRecordIdentity",
+        "approvalEvidenceIdentity",
+        "confinementBindingIdentity",
+        "startedAt",
+        "completedAt",
+        "result"
+      ],
+      "properties": {
+        "receiptRecordIdentity": { "$ref": "#/$defs/sha256" },
+        "receiptId": { "$ref": "#/$defs/uuidV4" },
+        "capability": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "inputDigest": { "$ref": "#/$defs/sha256" },
+        "paths": { "$ref": "#/$defs/pathArray" },
+        "policyDecision": { "const": "allow" },
+        "policyReason": { "type": "string", "maxLength": 4096 },
+        "approvalRecordIdentity": { "$ref": "#/$defs/nullableSha256" },
+        "approvalEvidenceIdentity": { "$ref": "#/$defs/nullableSha256" },
+        "confinementBindingIdentity": { "$ref": "#/$defs/nullableSha256" },
+        "startedAt": { "$ref": "#/$defs/timestamp" },
+        "completedAt": { "$ref": "#/$defs/timestamp" },
+        "result": {
+          "oneOf": [
+            { "$ref": "#/$defs/mutationResult" },
+            { "$ref": "#/$defs/processResult" }
+          ]
+        }
+      }
+    }
+  }
+}
