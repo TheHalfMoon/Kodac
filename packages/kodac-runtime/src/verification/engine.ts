@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto"
 import { realpath, stat } from "node:fs/promises"
 import { NodeWorkspaceFileSystem } from "../edit/filesystem.ts"
-import { JsonlReceiptLedger, readReceiptLedger } from "../evidence/ledger.ts"
+import { JsonlReceiptLedger, readReceiptLedgerObserved } from "../evidence/ledger.ts"
 import type { ExecutionReceipt } from "../evidence/receipt.ts"
 import { ExecutionFailedError, ExecutionGateway, type ExecutionObserver } from "../execution/gateway.ts"
 import { fixedPolicy } from "../trust/policy.ts"
@@ -188,12 +188,14 @@ function commandVerifier(spec: VerificationCommandSpec, gateway: ExecutionGatewa
   }
 }
 
-function receiptsVerifier(): Verifier {
+type ReceiptSnapshotReader = () => Promise<ExecutionReceipt[]>
+
+function receiptsVerifier(readReceipts: ReceiptSnapshotReader): Verifier {
   return {
     id: "evidence.receipts",
-    async run(context) {
+    async run() {
       try {
-        const receipts = await readReceiptLedger(context.receiptPath)
+        const receipts = await readReceipts()
         const mutation = receipts.find((receipt) => receipt.capability === "repo.apply_patch" && receipt.result.status === "success")
         const allSuccess = receipts.length > 0 && receipts.every((receipt) => receipt.result.status === "success")
         const mutationHasPostState = Boolean(
@@ -223,12 +225,12 @@ function receiptsVerifier(): Verifier {
   }
 }
 
-function policyVerifier(): Verifier {
+function policyVerifier(readReceipts: ReceiptSnapshotReader): Verifier {
   return {
     id: "evidence.policy",
-    async run(context) {
+    async run() {
       try {
-        const receipts = await readReceiptLedger(context.receiptPath)
+        const receipts = await readReceipts()
         const passed = receipts.length > 0 && receipts.every((receipt) => receipt.policy.decision === "allow")
         return {
           id: "evidence.policy",
@@ -250,11 +252,11 @@ function policyVerifier(): Verifier {
   }
 }
 
-function commandAggregateVerifier(specs: VerificationCommandSpec[]): Verifier {
+function commandAggregateVerifier(specs: VerificationCommandSpec[], readReceipts: ReceiptSnapshotReader): Verifier {
   return {
     id: "verification.commands",
     async run(context) {
-      const receipts = await readReceiptLedger(context.receiptPath)
+      const receipts = await readReceipts()
       const commandReceipts = receipts.filter((receipt) => receipt.capability.startsWith("verification.command."))
       const hasTests = specs.some((spec) => spec.category === "tests")
       const allExpected = specs.length > 0 && specs.every((spec) =>
@@ -288,14 +290,26 @@ export async function runVerificationEngine(input: VerificationContext): Promise
     fs,
     fixedPolicy(input.approveVerification ? "allow" : "ask", input.approveVerification ? "explicit --approve-verification authorization" : "verification process authorization required"),
   )
+  let sharedReceiptSnapshot: Promise<ExecutionReceipt[]> | undefined
+  const readSharedReceiptSnapshot: ReceiptSnapshotReader = () => {
+    if (!sharedReceiptSnapshot) {
+      sharedReceiptSnapshot = (async () => {
+        const observed = await readReceiptLedgerObserved(input.receiptPath)
+        await input.session.emit("verification.receipt_ledger.read", observed.observation)
+        return observed.receipts
+      })()
+    }
+    return sharedReceiptSnapshot
+  }
+
   const registry = new VerifierRegistry()
   registry.register(agentVerifier())
   registry.register(workspaceVerifier())
   registry.register(changeEvidenceVerifier(readGateway, ledger))
   for (const spec of input.commands) registry.register(commandVerifier(spec, commandGateway, ledger))
-  registry.register(receiptsVerifier())
-  registry.register(policyVerifier())
-  registry.register(commandAggregateVerifier(input.commands))
+  registry.register(receiptsVerifier(readSharedReceiptSnapshot))
+  registry.register(policyVerifier(readSharedReceiptSnapshot))
+  registry.register(commandAggregateVerifier(input.commands, readSharedReceiptSnapshot))
 
   const checks = await registry.runAll(input)
   const report: VerificationReport = {
