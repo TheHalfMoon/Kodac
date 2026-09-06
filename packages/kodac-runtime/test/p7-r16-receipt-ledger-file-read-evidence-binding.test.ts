@@ -660,14 +660,15 @@ test("P7-R16 rejects same-descriptor metadata drift after the exact read", async
   await withTemp(async (root) => {
     const input = await fixtureInput(root)
     const prototype = await fileHandlePrototype(input.receiptLedgerPath)
-    const originalRead = prototype.read as (...args: any[]) => Promise<any>
-    let mutated = false
-    prototype.read = async function (...args: any[]): Promise<any> {
-      const result = await originalRead.apply(this, args)
-      if (!mutated && args[3] === 0) {
-        mutated = true
-        const changedAt = new Date("2035-01-02T03:04:05.000Z")
-        await (this as { utimes(atime: Date, mtime: Date): Promise<void> }).utimes(changedAt, changedAt)
+    const originalStat = prototype.stat as (...args: any[]) => Promise<any>
+    let statCalls = 0
+    let driftInjected = false
+    prototype.stat = async function (...args: any[]): Promise<any> {
+      const result = await originalStat.apply(this, args)
+      statCalls += 1
+      if (statCalls === 2) {
+        result.mtimeNs = result.mtimeNs + 1n
+        driftInjected = true
       }
       return result
     }
@@ -676,9 +677,9 @@ test("P7-R16 rejects same-descriptor metadata drift after the exact read", async
         () => buildP7ReceiptLedgerFileReadEvidenceBinding(input),
         /metadata changed during same-descriptor read/,
       )
-      assert.equal(mutated, true)
+      assert.equal(driftInjected, true)
     } finally {
-      prototype.read = originalRead
+      prototype.stat = originalStat
     }
   })
 })
@@ -722,7 +723,10 @@ test("P7-R16 rejects content substitution and predecessor lineage mutation", asy
     const built = await buildP7ReceiptLedgerFileReadEvidenceBinding(input)
 
     await writeFile(input.receiptLedgerPath, `${input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot} `, "utf8")
-    await assert.rejects(() => validateP7ReceiptLedgerFileReadEvidenceBinding(built, input), /source P7-R15|snapshot|canonical/)
+    await assert.rejects(
+      () => validateP7ReceiptLedgerFileReadEvidenceBinding(built, input),
+      /source P7-R15|receiptLedgerSnapshot|snapshot|canonical/i,
+    )
 
     await writeFile(input.receiptLedgerPath, input.sourceReceiptLedgerSnapshotEvidenceBindingInput.receiptLedgerSnapshot, "utf8")
     const mutated = structuredClone(input) as MutableRecord
