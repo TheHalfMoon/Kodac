@@ -130,9 +130,15 @@ line count <= P7_R14_RECEIPT_RECORD_SET_EVIDENCE_LIMITS.maxReceipts
 
 The fixed 16 MiB input ceiling is an explicit bound for this state. A valid P7-R14 record set whose serialized caller-supplied snapshot exceeds this bound is outside this bounded successor and must fail closed; this authorization does not promise universal snapshot support for every theoretically valid R14 record set.
 
-Each non-empty line must be parsed independently with `JSON.parse`. Parse failure is fatal. The implementation must not use `readReceiptLedger()`, filesystem APIs, or any implicit line normalization.
+Each non-empty line must be parsed independently with `JSON.parse`. Parse failure is fatal. After parsing, each exact line must satisfy:
 
-The exact supplied snapshot string is identity-significant. Whitespace or property-order changes that preserve parsed JSON semantics may leave the R14 semantic record set unchanged, but they must change the exact snapshot digest/evidence identity because this state binds the supplied snapshot text itself.
+```text
+line === JSON.stringify(parsedLineValue)
+```
+
+This exact round-trip rule is compatible with the live canonical writer form `JSON.stringify(receipt) + LF` and rejects alternate JSON representations that the writer would not emit, including JSON-external whitespace, duplicate object keys that collapse during parsing, and equivalent non-canonical escape/number spellings. The implementation must not use a custom JSON parser, `readReceiptLedger()`, filesystem APIs, or any implicit line normalization.
+
+The exact supplied snapshot string is identity-significant. Receipt line-order changes preserve semantic R14 set membership when the same records are present, but they must change the exact snapshot digest/evidence identity because this state binds the supplied snapshot text and order itself.
 
 ---
 
@@ -280,6 +286,8 @@ leading JSON-external whitespace rejection
 trailing JSON-external whitespace rejection
 malformed JSON line
 non-object JSON line
+non-canonical per-line JSON serialization rejection
+duplicate JSON object key rejection
 oversized snapshot byte length
 excessive line count
 Unicode scalar validation
