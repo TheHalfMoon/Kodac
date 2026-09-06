@@ -187,7 +187,7 @@ function gitObject(value: unknown, label: string): string {
 }
 
 function canonicalTimestamp(value: unknown, label: string): string {
-  const text = unicodeText(value, label, 24)
+  const text = unicodeText(value, label, 64)
   if (!CANONICAL_TIMESTAMP.test(text)) fail(label, "must be a canonical UTC millisecond timestamp")
   const epoch = Date.parse(text)
   if (!Number.isFinite(epoch) || new Date(epoch).toISOString() !== text) {
