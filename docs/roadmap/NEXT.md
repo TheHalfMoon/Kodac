@@ -53,7 +53,7 @@ P7-R1 THROUGH P7-R4 BOUNDED DATA-CONTRACT WORK = CLOSED_CANONICAL
 P7-R5 VERIFICATION-PLAN-BINDING = CLOSED_CANONICAL / PR #369 / proof 5553946597 / VERIFICATION_PLAN_BOUND_ONLY
 P7-R6 VERIFICATION-REPORT-BINDING = CLOSED_CANONICAL / PR #373 / proof 5554262587 / VERIFICATION_REPORT_BOUND_ONLY
 P7-R7 VERIFICATION-FAILURE-DISPOSITION = CLOSED_CANONICAL / PR #380 / proof 5555040304 / VERIFICATION_FAILED_BOUNDED_ONLY
-P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE-BINDING = CLOSED_CANONICAL / PR #385 / proof 5555449960 / VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
+P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE = CLOSED_CANONICAL / PR #385 / proof 5555449960 / VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
 P7-R9 AGENT-COMPLETION EVIDENCE-BINDING = CLOSED_CANONICAL / PR #389 / proof 5558925165 / AGENT_COMPLETION_EVIDENCE_BOUND_ONLY
 P7-R10 WORKSPACE-REFERENCE EVIDENCE-BINDING = CLOSED_CANONICAL / PR #393 / proof 5559155207 / WORKSPACE_REFERENCE_EVIDENCE_BOUND_ONLY
 P7-R10 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #395 / proof 5559289934
@@ -90,8 +90,14 @@ P7-R17 VERIFICATION-ENGINE RECEIPT-LEDGER READ-OBSERVATION AUTHORIZATION = CLOSE
 P7-R17 VERIFICATION-ENGINE RECEIPT-LEDGER READ-OBSERVATION IMPLEMENTATION = CLOSED_CANONICAL / PR #421 / proof 5562661892 / VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY
 P7-R17 CURRENT-VIEW DRIFT ANALYSIS = PR #421 / comment 5562669148 / ANALYSIS_ONLY
 P7-R17 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #422 / proof 5562709592
-P7-R17 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-POST-R17 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+P7-R17 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #423 / proof 5562763610
+POST-R17 SUCCESSOR ANALYSIS = PR #423 / comment 5562787162 / ANALYSIS_ONLY
+P7-R18 VERIFICATION-ENGINE RECEIPT-LEDGER READ-EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #424 / proof 5562835182
+P7-R18 VERIFICATION-ENGINE RECEIPT-LEDGER READ-EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #425 / proof 5562984262 / VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY
+P7-R18 CURRENT-VIEW DRIFT ANALYSIS = PR #425 / comment 5562991754 / ANALYSIS_ONLY
+P7-R18 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #426 / proof 5563024476
+P7-R18 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST-R18 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 P8-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
@@ -99,9 +105,9 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 
 ---
 
-## NOW — exact five-view R17 reconciliation candidate
+## NOW — exact five-view R18 reconciliation candidate
 
-Canonical PR #422 and mandatory post-merge proof `5562709592` authorize exactly this documentation-only candidate:
+Canonical PR #426 and mandatory post-merge proof `5563024476` authorize exactly this documentation-only candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -113,13 +119,13 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate records only already-proven canonical R16/R17 facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate records only already-proven canonical R17/R18 facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
 It cannot certify its own closure. Until guarded merge and complete mandatory post-merge proof exist:
 
 ```text
-P7-R17 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-POST-R17 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+P7-R18 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST-R18 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 P8-P9 IMPLEMENTATION = NOT_AUTHORIZED
 PROJECT COMPLETION = NOT_ESTABLISHED
@@ -130,41 +136,40 @@ PROJECT COMPLETION = NOT_ESTABLISHED
 ## Canonical P7 frontier
 
 ```text
-#415 P7-R15 post-merge current-view reconciliation / proof 5562065929
-#415 comment 5562089582 post-R15 successor analysis / ANALYSIS_ONLY
-#416 P7-R16 receipt-ledger file-read evidence-binding authorization / proof 5562117957
-#417 P7-R16 receipt-ledger file-read evidence-binding implementation / proof 5562275168
-#417 comment 5562282568 P7-R16 current-view drift analysis / ANALYSIS_ONLY
-#418 P7-R16 post-merge current-view reconciliation authorization / proof 5562358271
 #419 P7-R16 post-merge current-view reconciliation / proof 5562430859
 #419 comment 5562467805 post-R16 successor analysis / ANALYSIS_ONLY
 #420 P7-R17 verification-engine receipt-ledger read-observation authorization / proof 5562574802
 #421 P7-R17 verification-engine receipt-ledger read-observation implementation / proof 5562661892
 #421 comment 5562669148 P7-R17 current-view drift analysis / ANALYSIS_ONLY
 #422 P7-R17 post-merge current-view reconciliation authorization / proof 5562709592
-CURRENT exact five-current-view R17 reconciliation candidate
+#423 P7-R17 post-merge current-view reconciliation / proof 5562763610
+#423 comment 5562787162 post-R17 successor analysis / ANALYSIS_ONLY
+#424 P7-R18 verification-engine receipt-ledger read-evidence-binding authorization / proof 5562835182
+#425 P7-R18 verification-engine receipt-ledger read-evidence-binding implementation / proof 5562984262
+#425 comment 5562991754 P7-R18 current-view drift analysis / ANALYSIS_ONLY
+#426 P7-R18 post-merge current-view reconciliation authorization / proof 5563024476
+CURRENT exact five-current-view R18 reconciliation candidate
 ```
 
-Canonical R17 implementation identities:
+Canonical R18 implementation identities:
 
 ```text
-P7-R17 qualified head = 905808f746f8951be7af735e62b2033a3a5396fe
-P7-R17 qualified head tree = 44498a7f5f2db4836a3c07b41455cc7289ca30c4
-P7-R17 merge = bb1c68adf8fd04f2eba5e72b5f28b9c115eb1801
-P7-R17 ledger source blob = bd3bb52fb92b2a3b55108527e75d703a20366e37
-P7-R17 event source blob = c357a2cdee4d94bfa083e92210c7e5ad59c16d29
-P7-R17 verification-engine blob = 8d6c0edaea477fc09d1398447bd560d48f8df0ef
-P7-R17 test blob = b49c151cbaad6ee673e31671980c703a776f29b2
-P7-R17 exact-head review = 5126806195 / CLEAN
-P7-R17 pre-merge governance run = 34063985878
-P7-R17 pre-merge runtime run = 34063985960
-P7-R17 post-merge governance run = 34064181872
-P7-R17 post-merge runtime run = 34064181903
+P7-R18 qualified head = 174a0926c1ddff36b89428903b449c8b6d1f7833
+P7-R18 qualified head tree = cf835e5efc10559ce3961075ac825d5bd5f45bdb
+P7-R18 merge = 7c1b61a52fd5b0bdbaefa0095c5020d41a0b09a4
+P7-R18 source blob = a8c2069eb977e32f7d8024fb20fd83e277fdc8c6
+P7-R18 schema blob = e5d9c5121f8a0581b1e765747fdaab29bd203ecc
+P7-R18 test blob = 1ecb5d5b8f2dc35472a04f9d9af9f3a0215f3de6
+P7-R18 exact-head review = 5126954648 / CLEAN
+P7-R18 pre-merge governance run = 34066638250
+P7-R18 pre-merge runtime run = 34066638266
+P7-R18 post-merge governance run = 34066805837
+P7-R18 post-merge runtime run = 34066805811
 ```
 
 ---
 
-## Bounded P7-R17 meaning
+## Bounded P7 meaning
 
 ```text
 APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
@@ -181,50 +186,53 @@ RECEIPT_RECORD_SET_EVIDENCE_BOUND = ESTABLISHED_BY_P7_R14_CONTRACT
 RECEIPT_LEDGER_SNAPSHOT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R15_CONTRACT
 RECEIPT_LEDGER_FILE_READ_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R16_CONTRACT
 VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY = ESTABLISHED_BY_P7_R17_CONTRACT
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R18_CONTRACT
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
 DONE_GATE_PROVEN_READY = NOT_ESTABLISHED
 ```
 
-P7-R16 remains one bounded current local file-read evidence binding to the canonical P7-R15 snapshot identity.
+P7-R18 establishes only one bounded event-to-canonical-read evidence binding:
 
-P7-R17 establishes only that during one bounded `runVerificationEngine()` invocation, after requested verification-command receipts have been produced, the engine obtains one receipt-ledger snapshot through the canonical local ledger reader, content-addresses the exact raw UTF-8 text before parser normalization, reuses the same parsed snapshot for the three ledger-dependent checks, and emits one same-session `verification.receipt_ledger.read` event binding a digest of the supplied path, presence state, exact raw UTF-8 byte count and SHA-256 where present, and parsed receipt count. The raw path and raw ledger text are not emitted.
+> One structurally valid `verification.receipt_ledger.read` event occurring inside the exact canonically revalidated verification-report interval is bound to the same verification session and to the exact receipt-ledger path digest, raw UTF-8 byte count, raw SHA-256, and parsed receipt count proven by one canonically revalidated P7-R16 file-read evidence record and its P7-R15/R14/report predecessor lineage.
 
-This is one bounded verification-engine receipt-ledger read observation only. It does not prove historical ledger completeness, absence or append history, receipt authenticity, policy authenticity/authorization, historical workspace/Git execution, full historical verification-engine execution, verification execution authority, Done Gate proof by P7, or lifecycle completion.
+It does not authenticate the event producer, prove historical receipt-ledger file identity/completeness/absence/append history, authenticate execution receipts or policy decisions, prove the complete historical verification-engine trace, authorize verification execution, invoke K2 or Done Gate, or establish remediation lifecycle completion.
 
 ---
 
-## Mandatory P7-R17 non-equivalences
+## Mandatory P7-R18 non-equivalences
 
 ```text
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != HISTORICAL_RECEIPT_LEDGER_COMPLETENESS_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != RECEIPT_LEDGER_ABSENCE_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != RECEIPT_LEDGER_APPEND_HISTORY_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != EXECUTION_RECEIPT_AUTHENTICITY
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != RECEIPT_SIGNATURE_OR_EXTERNAL_ATTESTATION_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != POLICY_DECISION_AUTHENTICITY_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != POLICY_RULE_OR_VERSION_IDENTITY_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != POLICY_AUTHORIZATION_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != WORKSPACE_INTEGRITY_HISTORICAL_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != GIT_DIFF_OR_STATUS_HISTORICAL_SEMANTIC_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != FULL_VERIFICATION_ENGINE_HISTORICAL_EXECUTION_PROOF
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != VERIFICATION_EXECUTION_AUTHORITY
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != K2_INVOCATION
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != K2_APPROVAL
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != DONE_GATE_PROVEN_READY_BY_P7
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != VERIFIED
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != FIXED
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != REVERIFIED
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != AUTOFIX
-VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVED_ONLY != PATCH_RETRY_AUTHORITY
-P7_R17_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
-P7_R17_CLOSED != P7_OVERALL_CLOSED
-P7_R17_CLOSED != P8_P9_AUTHORITY
-P7_R17_CLOSED != PROJECT_COMPLETION
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != EVENT_PRODUCER_AUTHENTICITY_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != HISTORICAL_RECEIPT_LEDGER_FILE_IDENTITY_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != HISTORICAL_RECEIPT_LEDGER_COMPLETENESS_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != RECEIPT_LEDGER_ABSENCE_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != RECEIPT_LEDGER_APPEND_HISTORY_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != EXECUTION_RECEIPT_AUTHENTICITY_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != RECEIPT_SIGNATURE_OR_EXTERNAL_ATTESTATION_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != POLICY_DECISION_AUTHENTICITY_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != POLICY_RULE_OR_VERSION_IDENTITY_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != POLICY_AUTHORIZATION_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != WORKSPACE_INTEGRITY_HISTORICAL_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != GIT_DIFF_OR_STATUS_HISTORICAL_SEMANTIC_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != FULL_VERIFICATION_ENGINE_HISTORICAL_EXECUTION_PROOF
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != VERIFICATION_EXECUTION_AUTHORITY
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != K2_INVOCATION
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != K2_APPROVAL
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != DONE_GATE_PROVEN_READY_BY_P7
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != VERIFIED
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != FIXED
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != REVERIFIED
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != AUTOFIX
+VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BOUND_ONLY != PATCH_RETRY_AUTHORITY
+P7_R18_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
+P7_R18_CLOSED != P7_OVERALL_CLOSED
+P7_R18_CLOSED != P8_P9_AUTHORITY
+P7_R18_CLOSED != PROJECT_COMPLETION
 ```
 
-All still-effective predecessor P7 non-grants remain in force exactly as their canonical authorization/evidence records state, including the complete canonical R16 non-equivalences. Omission of a predecessor non-grant from this condensed current view is not authorization, proof, waiver, supersession, or narrowing.
+All still-effective predecessor P7 non-grants remain in force exactly as their canonical authorization/evidence records state, including the complete canonical R17 and R16 non-equivalences. Omission of a predecessor non-grant from this condensed current view is not authorization, proof, waiver, supersession, or narrowing.
 
 ---
 
@@ -244,7 +252,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-POST-R17 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+POST-R18 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -257,8 +265,8 @@ VERIFICATION_PLANNER_INVOCATION = NOT_AUTHORIZED
 VERIFICATION_ENGINE_INVOCATION = NOT_AUTHORIZED_BY_THIS_RECONCILIATION
 VERIFICATION_EXECUTION = NOT_AUTHORIZED
 VERIFICATION_REPORT_CREATION = NOT_AUTHORIZED
-HISTORICAL_VERIFICATION_ENGINE_LEDGER_READ_PROOF = NOT_ESTABLISHED
-HISTORICAL_RECEIPT_LEDGER_BYTES_PROOF = NOT_ESTABLISHED
+EVENT_PRODUCER_AUTHENTICITY_PROOF = NOT_ESTABLISHED
+HISTORICAL_RECEIPT_LEDGER_FILE_IDENTITY_PROOF = NOT_ESTABLISHED
 HISTORICAL_RECEIPT_LEDGER_COMPLETENESS_PROOF = NOT_ESTABLISHED
 RECEIPT_LEDGER_COMPLETENESS_PROOF = NOT_ESTABLISHED
 RECEIPT_LEDGER_ABSENCE_PROOF = NOT_ESTABLISHED
@@ -286,7 +294,7 @@ CLI_API_PACKAGE_ROOT_PRODUCT_INTEGRATION = NOT_AUTHORIZED
 P8_P9_IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC_RELEASE_PACKAGE_PUBLICATION_DEPLOYMENT = NOT_AUTHORIZED
 RULESET_CHANGE_BYPASS = NOT_AUTHORIZED
-PROJECT COMPLETION = NOT_ESTABLISHED
+PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
@@ -296,12 +304,12 @@ The canonical PR #381 durable-orchestration/skill-trust amendment remains planni
 
 ## THEN — proof and fresh successor-authority analysis
 
-Only after this exact five-path R17 reconciliation independently qualifies, merges guarded with the exact expected head, and receives complete mandatory post-merge proof may fresh successor-authority analysis run from then-live repository truth.
+Only after this exact five-path R18 reconciliation independently qualifies, merges guarded with the exact expected head, and receives complete mandatory post-merge proof may fresh successor-authority analysis run from then-live repository truth.
 
-Do not infer any post-R17 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering, composition, roadmap language, or planning amendments.
+Do not infer any post-R18 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering, composition, roadmap language, prior founder permission, or planning amendments.
 
 ## Navigation
 
 - Working rules: `AGENTS.md`
-- P7-R17 implementation authorization: `docs/planning/KODAC_P7_R17_VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_OBSERVATION_AUTHORIZATION_2026-09-07.md`
-- P7-R17 current-view reconciliation authorization: `docs/planning/KODAC_P7_R17_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-07.md`
+- P7-R18 implementation authorization: `docs/planning/KODAC_P7_R18_VERIFICATION_ENGINE_RECEIPT_LEDGER_READ_EVIDENCE_BINDING_AUTHORIZATION_2026-09-07.md`
+- P7-R18 current-view reconciliation authorization: `docs/planning/KODAC_P7_R18_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-07.md`
