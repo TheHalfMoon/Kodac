@@ -312,13 +312,6 @@ async function normalizedBuildCore(value: unknown): Promise<EvidenceCore> {
   const receiptLedgerPath = validatePath(input.receiptLedgerPath)
   const observed = await observeReceiptLedgerFile(receiptLedgerPath)
 
-  if (observed.utf8Bytes !== source.receiptLedgerSnapshotUtf8Bytes) {
-    fail("receiptLedgerPath", "read byte count does not match the exact source P7-R15 snapshot")
-  }
-  if (observed.sha256 !== source.receiptLedgerSnapshotSha256) {
-    fail("receiptLedgerPath", "read SHA-256 does not match the exact source P7-R15 snapshot")
-  }
-
   const reboundInput: P7ReceiptLedgerSnapshotEvidenceBindingBuildInput = {
     ...sourceInput,
     receiptLedgerSnapshot: observed.utf8Text,
@@ -329,6 +322,12 @@ async function normalizedBuildCore(value: unknown): Promise<EvidenceCore> {
   )
   if (rebound.evidenceIdentity !== source.evidenceIdentity) {
     fail("receiptLedgerPath", "must revalidate to the exact source P7-R15 evidence identity")
+  }
+  if (observed.utf8Bytes !== source.receiptLedgerSnapshotUtf8Bytes) {
+    fail("receiptLedgerPath", "read byte count does not match the exact source P7-R15 snapshot")
+  }
+  if (observed.sha256 !== source.receiptLedgerSnapshotSha256) {
+    fail("receiptLedgerPath", "read SHA-256 does not match the exact source P7-R15 snapshot")
   }
 
   const receiptLedgerPathSha256 = hashText(receiptLedgerPath)
