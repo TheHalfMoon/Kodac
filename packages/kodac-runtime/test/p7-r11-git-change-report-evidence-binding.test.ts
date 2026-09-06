@@ -685,7 +685,10 @@ test("P7-R11 rejects report-level predecessor tamper instead of trusting project
   const tampered = structuredClone(input) as MutableRecord
   tampered.sourceWorkspaceReferenceEvidenceBindingInput.sourceAgentCompletionEvidenceBindingInput
     .sourceCommandSuccessEvidenceBindingInput.sourceVerificationReportBinding = tamperedR6
-  assert.throws(() => buildP7GitChangeReportEvidenceBinding(tampered), /verificationReportIdentity|bindingIdentity|canonical/)
+  assert.throws(
+    () => buildP7GitChangeReportEvidenceBinding(tampered as unknown as P7GitChangeReportEvidenceBindingBuildInput),
+    /verificationReportIdentity|bindingIdentity|canonical/,
+  )
 })
 
 test("P7-R11 schema mirrors the runtime output boundary", () => {
