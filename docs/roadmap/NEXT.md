@@ -56,53 +56,34 @@ P7-R5 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #371 / proo
 P7-R6 VERIFICATION-REPORT-BINDING = CLOSED_CANONICAL / PR #373 / proof 5554262587 / VERIFICATION_REPORT_BOUND_ONLY
 P7-R5 SERIALIZED-PREIMAGE REPAIR = CLOSED_CANONICAL / PR #375 / proof 5554351748
 P7-R6 POST-REPAIR CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #378 / proof 5554468185
-P7-R7 SUCCESSOR ANALYSIS = PR #378 / comment 5554700232 / ANALYSIS_ONLY
-P7-R7 VERIFICATION-FAILURE-DISPOSITION AUTHORIZATION = CLOSED_CANONICAL / PR #379 / proof 5554794663
-P7-R7 VERIFICATION-FAILURE-DISPOSITION IMPLEMENTATION = CLOSED_CANONICAL / PR #380 / proof 5555040304 / VERIFICATION_FAILED_BOUNDED_ONLY
-P7-R7 CURRENT-VIEW RECONCILIATION ANALYSIS = PR #380 / comment 5555091086 / ANALYSIS_ONLY
-DURABLE REVIEW ORCHESTRATION + SKILL TRUST PLAN AMENDMENT = CLOSED_CANONICAL / PR #381 / proof 5555071864 / PLANNING_ONLY
-P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #382 / proof 5555110307
+P7-R7 VERIFICATION-FAILURE-DISPOSITION = CLOSED_CANONICAL / PR #380 / proof 5555040304 / VERIFICATION_FAILED_BOUNDED_ONLY
 P7-R7 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #383 / proof 5555153084
-P7-R8 SUCCESSOR ANALYSIS = PR #383 / comment 5555171313 / ANALYSIS_ONLY
-P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #384 / proof 5555204137
-P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #385 / proof 5555449960 / VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
-P7-R8 CURRENT-VIEW RECONCILIATION ANALYSIS = PR #385 / comment 5555454827 / ANALYSIS_ONLY
-P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #386 / proof 5555472241
+P7-R8 VERIFICATION-COMMAND-SUCCESS-EVIDENCE-BINDING = CLOSED_CANONICAL / PR #385 / proof 5555449960 / VERIFICATION_COMMAND_SUCCESS_EVIDENCE_BOUND_ONLY
 P7-R8 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #387 / proof 5555510161
-P7-R9 SUCCESSOR ANALYSIS = PR #387 / comment 5555523272 / ANALYSIS_ONLY
-P7-R9 AGENT-COMPLETION EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #388 / proof 5555544464
-P7-R9 AGENT-COMPLETION EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #389 / proof 5558925165 / AGENT_COMPLETION_EVIDENCE_BOUND_ONLY
-P7-R9 CURRENT-VIEW RECONCILIATION ANALYSIS = PR #389 / comment 5558926963 / ANALYSIS_ONLY
-P7-R9 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #390 / proof 5558956711
+P7-R9 AGENT-COMPLETION EVIDENCE-BINDING = CLOSED_CANONICAL / PR #389 / proof 5558925165 / AGENT_COMPLETION_EVIDENCE_BOUND_ONLY
 P7-R9 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #391 / proof 5559029920
-P7-R10 SUCCESSOR ANALYSIS = PR #391 / comment 5559072672 / ANALYSIS_ONLY
-P7-R10 WORKSPACE-REFERENCE EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #392 / proof 5559094935
-P7-R10 WORKSPACE-REFERENCE EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #393 / proof 5559155207 / WORKSPACE_REFERENCE_EVIDENCE_BOUND_ONLY
-P7-R10 CURRENT-VIEW DRIFT ANALYSIS = PR #393 / comment 5559162759 / ANALYSIS_ONLY
-P7-R10 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #394 / proof 5559192294
+P7-R10 WORKSPACE-REFERENCE EVIDENCE-BINDING = CLOSED_CANONICAL / PR #393 / proof 5559155207 / WORKSPACE_REFERENCE_EVIDENCE_BOUND_ONLY
 P7-R10 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #395 / proof 5559289934
-POST-R10 SUCCESSOR ANALYSIS = PR #395 / comment 5559371295 / ANALYSIS_ONLY
-P7-R11 GIT-CHANGE REPORT-EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #396 / proof 5559404299
-P7-R11 GIT-CHANGE REPORT-EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #397 / proof 5559564647 / GIT_CHANGE_REPORT_EVIDENCE_BOUND_ONLY
-P7-R11 CURRENT-VIEW DRIFT ANALYSIS = PR #397 / comment 5559574625 / ANALYSIS_ONLY
-P7-R11 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #398 / proof 5559602973
+P7-R11 GIT-CHANGE REPORT-EVIDENCE-BINDING = CLOSED_CANONICAL / PR #397 / proof 5559564647 / GIT_CHANGE_REPORT_EVIDENCE_BOUND_ONLY
 P7-R11 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #399 / proof 5560084029
-POST-R11 SUCCESSOR ANALYSIS = PR #399 / comment 5560104142 / ANALYSIS_ONLY
-P7-R12 RECEIPT-REPORT EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #400 / proof 5560142791
-P7-R12 RECEIPT-REPORT EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #401 / proof 5560276716 / RECEIPT_REPORT_EVIDENCE_BOUND_ONLY
-P7-R12 CURRENT-VIEW DRIFT ANALYSIS = PR #401 / comment 5560285444 / ANALYSIS_ONLY
-P7-R12 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #402 / proof 5560312888
-P7-R12 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
-POST-R12 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+P7-R12 RECEIPT-REPORT EVIDENCE-BINDING = CLOSED_CANONICAL / PR #401 / proof 5560276716 / RECEIPT_REPORT_EVIDENCE_BOUND_ONLY
+P7-R12 POST-MERGE CURRENT-VIEW RECONCILIATION = CLOSED_CANONICAL / PR #403 / proof 5560512547
+POST-R12 SUCCESSOR ANALYSIS = PR #403 / comment 5560530226 / ANALYSIS_ONLY
+P7-R13 POLICY-REPORT EVIDENCE-BINDING AUTHORIZATION = CLOSED_CANONICAL / PR #404 / proof 5560568777
+P7-R13 POLICY-REPORT EVIDENCE-BINDING IMPLEMENTATION = CLOSED_CANONICAL / PR #405 / proof 5560655007 / POLICY_REPORT_EVIDENCE_BOUND_ONLY
+P7-R13 CURRENT-VIEW DRIFT ANALYSIS = PR #405 / comment 5560661273 / ANALYSIS_ONLY
+P7-R13 POST-MERGE CURRENT-VIEW RECONCILIATION AUTHORIZATION = CLOSED_CANONICAL / PR #406 / proof 5560697815
+P7-R13 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST-R13 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 P7 OVERALL = NOT_CLOSED
 PROJECT COMPLETION = NOT_ESTABLISHED
 ```
 
 ---
 
-## NOW — exact five-view R12 reconciliation candidate
+## NOW — exact five-view R13 reconciliation candidate
 
-Canonical PR #402 and post-merge proof `5560312888` authorize exactly this documentation-only candidate:
+Canonical PR #406 and post-merge proof `5560697815` authorize exactly this documentation-only candidate:
 
 ```text
 docs/roadmap/NEXT.md
@@ -114,12 +95,15 @@ docs/product/STATUS.md
 
 No sixth path is authorized.
 
-This candidate records only already-proven canonical R11/R12 facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
+This candidate records only already-proven canonical R12/R13 facts. It changes no runtime, schema, tests, workflows, dependencies, historical authorization/evidence, KRI/K5/K2 authority, benchmark data, provider/model configuration, persistence, product implementation, release configuration, ruleset, or repository protection.
 
 It cannot certify its own closure. Until guarded merge and complete post-merge proof exist:
 
 ```text
-P7-R12 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+P7-R13 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST-R13 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+P7 OVERALL = NOT_CLOSED
+PROJECT COMPLETION = NOT_ESTABLISHED
 ```
 
 ---
@@ -128,80 +112,42 @@ P7-R12 POST-MERGE CURRENT-VIEW RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOS
 
 ```text
 #383 P7-R7 post-merge current-view reconciliation / proof 5555153084
-#383 comment 5555171313 P7-R8 successor analysis / ANALYSIS_ONLY
-#384 P7-R8 verification-command success-evidence-binding authorization / proof 5555204137
 #385 P7-R8 verification-command success-evidence-binding implementation / proof 5555449960
-#385 comment 5555454827 P7-R8 current-view reconciliation analysis / ANALYSIS_ONLY
-#386 P7-R8 post-merge current-view reconciliation authorization / proof 5555472241
 #387 P7-R8 post-merge current-view reconciliation / proof 5555510161
-#387 comment 5555523272 P7-R9 successor analysis / ANALYSIS_ONLY
-#388 P7-R9 agent-completion evidence-binding authorization / proof 5555544464
 #389 P7-R9 agent-completion evidence-binding implementation / proof 5558925165
-#389 comment 5558926963 P7-R9 current-view drift analysis / ANALYSIS_ONLY
-#390 P7-R9 post-merge current-view reconciliation authorization / proof 5558956711
 #391 P7-R9 post-merge current-view reconciliation / proof 5559029920
-#391 comment 5559072672 P7-R10 successor analysis / ANALYSIS_ONLY
-#392 P7-R10 workspace-reference evidence-binding authorization / proof 5559094935
 #393 P7-R10 workspace-reference evidence-binding implementation / proof 5559155207
-#393 comment 5559162759 P7-R10 current-view drift analysis / ANALYSIS_ONLY
-#394 P7-R10 post-merge current-view reconciliation authorization / proof 5559192294
 #395 P7-R10 post-merge current-view reconciliation / proof 5559289934
-#395 comment 5559371295 post-R10 successor analysis / ANALYSIS_ONLY
-#396 P7-R11 git-change report-evidence-binding authorization / proof 5559404299
 #397 P7-R11 git-change report-evidence-binding implementation / proof 5559564647
-#397 comment 5559574625 P7-R11 current-view drift analysis / ANALYSIS_ONLY
-#398 P7-R11 post-merge current-view reconciliation authorization / proof 5559602973
 #399 P7-R11 post-merge current-view reconciliation / proof 5560084029
-#399 comment 5560104142 post-R11 successor analysis / ANALYSIS_ONLY
-#400 P7-R12 receipt-report evidence-binding authorization / proof 5560142791
 #401 P7-R12 receipt-report evidence-binding implementation / proof 5560276716
-#401 comment 5560285444 P7-R12 current-view drift analysis / ANALYSIS_ONLY
-#402 P7-R12 post-merge current-view reconciliation authorization / proof 5560312888
-CURRENT exact five-current-view R12 reconciliation candidate
+#403 P7-R12 post-merge current-view reconciliation / proof 5560512547
+#403 comment 5560530226 post-R12 successor analysis / ANALYSIS_ONLY
+#404 P7-R13 policy-report evidence-binding authorization / proof 5560568777
+#405 P7-R13 policy-report evidence-binding implementation / proof 5560655007
+#405 comment 5560661273 P7-R13 current-view drift analysis / ANALYSIS_ONLY
+#406 P7-R13 post-merge current-view reconciliation authorization / proof 5560697815
+CURRENT exact five-current-view R13 reconciliation candidate
 ```
 
-Canonical implementation identities:
+Canonical R12/R13 implementation identities:
 
 ```text
-P7-R5 source = 723edd547dddc75987fca96ea70e8ea176ee9a3b
-P7-R5 schema = 04f596f6a3053effb436f65e85de9b1b376fea4d
-P7-R5 test = a920f774e8e99b8b63e222cac03171a4c8c0f64b
-P7-R6 source = 3ec02f33eec231e0f90a0a1da069c620db9b379c
-P7-R6 schema = 304db4fa8287c28a35a1ce4a7f8c8a79a9888fe1
-P7-R6 test = b3675abd40da8e16b2b48f7b2403915b91e1ca18
-P7-R7 source = 71396d3d2890f797370b4185901c2ad079ad049d
-P7-R7 schema = 6f3bd493861f42736cb60026293e3bd7be2d9eec
-P7-R7 test = d00286b780e00808c6c683ef4bc9f223b3ce43e9
-P7-R8 qualified head = 5dd1b87a2508fe99694d30d22f756449cf947df0
-P7-R8 merge = 9edd998ccd56e491634adda44e632b91ab6decf4
-P7-R8 source = dc150e9b3d4ea305445ca59de9ef483a92b9ef8d
-P7-R8 schema = 7b256db53a02ef9d32a133994a8fb0c9582b6981
-P7-R8 test = b25cb1094a75b2eba275c604005ed1facfc1c300
-P7-R9 qualified head = e71e9dacb503afe32a8f85a4d2226d316544ee93
-P7-R9 merge = 77337b141367f2e9c9f4dedac527c5574043deaf
-P7-R9 source = bf53a3bdf6f24c5b721fc63d6c0bf32206ba27e2
-P7-R9 schema = 07f77fffe5480b6bd6f115def04396a14df7cff3
-P7-R9 test = 8b27d8345c278861a3356ca57cda67cb33095f3b
-P7-R10 qualified head = 32cc75db854ef1f2e5bedf38d3a5fadac8ae4528
-P7-R10 merge = 26a398caa67ef51f7df01bf0fb9459839a05f50d
-P7-R10 source = 3bbdf9174e2b939ceed36afcd8fc4036e8356712
-P7-R10 schema = f0895ce90986eb5d10e5228080557833e1ae8ca4
-P7-R10 test = 415e051156e77cc43137a03c85fc73b4733deea0
-P7-R11 qualified head = c055cd40c11f2784a1b308335280a0db2b35c1b4
-P7-R11 merge = 1abfe82825dec2cdf5002ecbe35c6457585bc0fb
-P7-R11 source = 3a7695bbd8555a63c0c4505ad0e5943885ee523b
-P7-R11 schema = 0a6a9ad802e1af4e00c9798f2f0d58b58957db6a
-P7-R11 test = 102ae0cc7c5bc733ca8b3161dc67cf51df54bd81
 P7-R12 qualified head = 2eb3a3d9f6269c7450e93428e317d1413b4a3c99
 P7-R12 merge = 644d672fbc9361163dcd895904c0b9b7a3c432c3
 P7-R12 source = 77fc7bc27794dcf3d3629a62794cda1597a8b557
 P7-R12 schema = 119f557c57016db5ee0bf86b6a71fdfc8c06dbf3
 P7-R12 test = ad6e56dbaa9eaddb1c20b56d13c7d3dc1a627a52
+P7-R13 qualified head = 91547fd15643a70b2880613123e2a498979222e4
+P7-R13 merge = 275281936995e99b1e6562ad6cc467088b4ef977
+P7-R13 source = 634f59cfc95490a1af1d27fd06a09a361b41a1c5
+P7-R13 schema = 59789efa1c212039ff0491198c09e1f50288fd19
+P7-R13 test = f30d417bb9715069968d85b29f43e904b1a72f9c
 ```
 
 ---
 
-## Bounded P7-R12 meaning
+## Bounded P7-R13 meaning
 
 ```text
 APPLIED_EVIDENCE_ONLY = ESTABLISHED_BY_P7_R4_CONTRACT
@@ -213,59 +159,61 @@ AGENT_COMPLETION_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R9_CONTRACT
 WORKSPACE_REFERENCE_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R10_CONTRACT
 GIT_CHANGE_REPORT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R11_CONTRACT
 RECEIPT_REPORT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R12_CONTRACT
+POLICY_REPORT_EVIDENCE_BOUND_ONLY = ESTABLISHED_BY_P7_R13_CONTRACT
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
 DONE_GATE_PROVEN_READY = NOT_ESTABLISHED
 ```
 
-P7-R10 remains a pure/data-only deterministic historical evidence binding over one exact canonically revalidated P7-R9 predecessor and the exact passing P7-R6 `workspace.integrity` report evidence. It establishes only that the single historical workspace reference is linked to a digest equal to SHA-256 of that exact reference string.
+P7-R10 remains a pure/data-only deterministic historical evidence binding over one exact canonically revalidated P7-R9 predecessor and one passing historical workspace-reference report. It does not establish live workspace integrity.
 
-P7-R11 remains a pure/data-only deterministic historical report-evidence-shape binding over one exact canonically revalidated P7-R10 predecessor and the exact passing P7-R6 `git.diff` report evidence. It establishes only the strict canonical summary with bounded historical `diffBytes`/`statusBytes` values and exactly two unique digest-free receipt references. It does not authenticate either receipt or reconstruct Git execution, environment, output, changed paths, workspace cleanliness, or Git semantics.
+P7-R11 remains a pure/data-only deterministic historical report-evidence-shape binding. It does not authenticate receipts or reconstruct Git command intent, environment, output, changed paths, workspace cleanliness, or Git semantics.
 
-P7-R12 is a pure/data-only deterministic historical report-evidence-shape binding over one exact canonically revalidated P7-R11 predecessor and the exact passing P7-R6 `evidence.receipts` report evidence. It establishes only the strict canonical positive receipt-count summary and exactly that many unique digest-free `kind=receipt` references normalized deterministically. It does not authenticate any receipt, read or snapshot a receipt ledger, reconstruct capability/input/post-state/affected-path truth, prove all-success authenticity, or establish policy authorization or ledger completeness.
+P7-R12 remains a pure/data-only deterministic historical receipt-report shape binding. It does not authenticate receipts, read/snapshot the receipt ledger, reconstruct capability/input/post-state/affected-path truth, or establish policy authorization or ledger completeness.
+
+P7-R13 is a pure/data-only deterministic historical policy-report projection binding. It revalidates one exact P7-R12 predecessor and requires the passing P7-R6 `evidence.policy` projection to contain the exact canonical passing summary and a normalized non-empty bounded set of unique digest-free receipt references whose count and set equal the already-bound R12 receipt references. It does not independently reconstruct or authenticate policy decisions, execution receipts, or either ledger.
+
+Mandatory non-equivalences remain in force:
 
 ```text
 WORKSPACE_REFERENCE_EVIDENCE_BOUND != WORKSPACE_INTEGRITY_PROOF
-WORKSPACE_REFERENCE_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
-WORKSPACE_REFERENCE_EVIDENCE_BOUND != POLICY_LEDGER_COMPLETENESS_PROOF
-WORKSPACE_REFERENCE_EVIDENCE_BOUND != VERIFIED
-WORKSPACE_REFERENCE_EVIDENCE_BOUND != DONE_GATE
-GIT_CHANGE_REPORT_EVIDENCE_BOUND != RECEIPT_AUTHENTICITY
 GIT_CHANGE_REPORT_EVIDENCE_BOUND != GIT_COMMAND_INTENT_OR_ENVIRONMENT_PROOF
 GIT_CHANGE_REPORT_EVIDENCE_BOUND != GIT_OUTPUT_CONTENT_OR_DIGEST_PROOF
 GIT_CHANGE_REPORT_EVIDENCE_BOUND != GIT_DIFF_OR_STATUS_SEMANTIC_PROOF
 GIT_CHANGE_REPORT_EVIDENCE_BOUND != CHANGED_PATH_SET_TRUTH
 GIT_CHANGE_REPORT_EVIDENCE_BOUND != WORKSPACE_CLEANLINESS_PROOF
-GIT_CHANGE_REPORT_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
-GIT_CHANGE_REPORT_EVIDENCE_BOUND != POLICY_LEDGER_COMPLETENESS_PROOF
-GIT_CHANGE_REPORT_EVIDENCE_BOUND != VERIFIED
-GIT_CHANGE_REPORT_EVIDENCE_BOUND != DONE_GATE
 RECEIPT_REPORT_EVIDENCE_BOUND != EXECUTION_RECEIPT_AUTHENTICITY_PROOF
 RECEIPT_REPORT_EVIDENCE_BOUND != RECEIPT_LEDGER_BYTES_OR_SNAPSHOT_PROOF
 RECEIPT_REPORT_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != RECEIPT_CAPABILITY_MAPPING_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != INPUT_DIGEST_PREIMAGE_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != MUTATION_POST_STATE_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != MUTATION_AFFECTED_PATH_SET_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != ALL_RECEIPTS_SUCCESS_AUTHENTICITY_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != POLICY_LEDGER_COMPLETENESS_PROOF
 RECEIPT_REPORT_EVIDENCE_BOUND != POLICY_AUTHORIZATION_PROOF
-RECEIPT_REPORT_EVIDENCE_BOUND != VERIFICATION_ENGINE_INVOCATION
-RECEIPT_REPORT_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
-RECEIPT_REPORT_EVIDENCE_BOUND != K2_INVOCATION
-RECEIPT_REPORT_EVIDENCE_BOUND != K2_APPROVAL
-RECEIPT_REPORT_EVIDENCE_BOUND != VERIFIED
-RECEIPT_REPORT_EVIDENCE_BOUND != FIXED
-RECEIPT_REPORT_EVIDENCE_BOUND != REVERIFIED
-RECEIPT_REPORT_EVIDENCE_BOUND != DONE_GATE
-RECEIPT_REPORT_EVIDENCE_BOUND != PROVEN_READY
-RECEIPT_REPORT_EVIDENCE_BOUND != AUTOFIX
-RECEIPT_REPORT_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
-P7_R12_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
-P7_R12_CLOSED != P7_OVERALL_CLOSED
-P7_R12_CLOSED != P8_AUTHORITY
-P7_R12_CLOSED != PROJECT_COMPLETION
+POLICY_REPORT_EVIDENCE_BOUND != POLICY_AUTHORIZATION_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != POLICY_DECISION_AUTHENTICITY_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != POLICY_RULE_OR_VERSION_IDENTITY_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != POLICY_LEDGER_BYTES_OR_SNAPSHOT_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != POLICY_LEDGER_COMPLETENESS_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != EXECUTION_RECEIPT_AUTHENTICITY_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != RECEIPT_LEDGER_BYTES_OR_SNAPSHOT_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != EXECUTION_INTENT_PREIMAGE_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != CAPABILITY_AUTHORIZATION_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != MUTATION_POST_STATE_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != MUTATION_AFFECTED_PATH_SET_PROOF
+POLICY_REPORT_EVIDENCE_BOUND != VERIFICATION_ENGINE_INVOCATION
+POLICY_REPORT_EVIDENCE_BOUND != VERIFICATION_EXECUTION_AUTHORITY
+POLICY_REPORT_EVIDENCE_BOUND != K2_INVOCATION
+POLICY_REPORT_EVIDENCE_BOUND != K2_APPROVAL
+POLICY_REPORT_EVIDENCE_BOUND != VERIFIED
+POLICY_REPORT_EVIDENCE_BOUND != FIXED
+POLICY_REPORT_EVIDENCE_BOUND != REVERIFIED
+POLICY_REPORT_EVIDENCE_BOUND != DONE_GATE
+POLICY_REPORT_EVIDENCE_BOUND != PROVEN_READY
+POLICY_REPORT_EVIDENCE_BOUND != AUTOFIX
+POLICY_REPORT_EVIDENCE_BOUND != PATCH_RETRY_AUTHORITY
+P7_R13_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
+P7_R13_CLOSED != P7_OVERALL_CLOSED
+P7_R13_CLOSED != P8_AUTHORITY
+P7_R13_CLOSED != PROJECT_COMPLETION
 ```
 
 ---
@@ -286,7 +234,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-POST-R12 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+POST-R13 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -300,7 +248,6 @@ VERIFICATION_ENGINE_INVOCATION = NOT_AUTHORIZED
 VERIFICATION_EXECUTION = NOT_AUTHORIZED
 VERIFICATION_REPORT_CREATION = NOT_AUTHORIZED
 WORKSPACE_INTEGRITY_PROOF = NOT_ESTABLISHED
-GIT_DIFF_SEMANTIC_PROOF = NOT_ESTABLISHED
 GIT_COMMAND_INTENT_OR_ENVIRONMENT_PROOF = NOT_ESTABLISHED
 GIT_OUTPUT_CONTENT_OR_DIGEST_PROOF = NOT_ESTABLISHED
 GIT_DIFF_OR_STATUS_SEMANTIC_PROOF = NOT_ESTABLISHED
@@ -308,8 +255,11 @@ CHANGED_PATH_SET_TRUTH = NOT_ESTABLISHED
 WORKSPACE_CLEANLINESS_PROOF = NOT_ESTABLISHED
 EXECUTION_RECEIPT_AUTHENTICITY = NOT_ESTABLISHED
 RECEIPT_LEDGER_COMPLETENESS_PROOF = NOT_ESTABLISHED
+POLICY_DECISION_AUTHENTICITY_PROOF = NOT_ESTABLISHED
+POLICY_RULE_OR_VERSION_IDENTITY_PROOF = NOT_ESTABLISHED
 POLICY_LEDGER_COMPLETENESS_PROOF = NOT_ESTABLISHED
 POLICY_AUTHORIZATION_PROOF = NOT_ESTABLISHED
+CAPABILITY_AUTHORIZATION_PROOF = NOT_ESTABLISHED
 VERIFIED = NOT_ESTABLISHED
 FIXED = NOT_ESTABLISHED
 REVERIFIED = NOT_ESTABLISHED
@@ -326,34 +276,30 @@ CLI_API_PACKAGE_ROOT_PRODUCT_INTEGRATION = NOT_AUTHORIZED
 P8_P9_IMPLEMENTATION = NOT_AUTHORIZED
 PUBLIC_RELEASE_PACKAGE_PUBLICATION_DEPLOYMENT = NOT_AUTHORIZED
 RULESET_CHANGE_BYPASS = NOT_AUTHORIZED
-PROJECT_COMPLETION = NOT_ESTABLISHED
+PROJECT COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
 The canonical PR #381 durable-orchestration/skill-trust amendment remains planning direction only and does not relax any boundary above.
 
+Omission of a predecessor non-grant from this condensed current view is not authorization, proof, waiver, supersession, or narrowing. All canonical P7-R10, P7-R11, P7-R12, and P7-R13 non-grants remain in force exactly as their canonical authorization/evidence records state.
+
 ---
 
 ## THEN — proof and fresh successor-authority analysis
 
-Only after this exact five-path R12 reconciliation independently qualifies, merges guarded, and receives complete post-merge proof may fresh successor-authority analysis run from then-live repository truth.
+Only after this exact five-path R13 reconciliation independently qualifies, merges guarded, and receives complete post-merge proof may fresh successor-authority analysis run from then-live repository truth.
 
-Do not infer any post-R12 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering, composition, roadmap language, or planning amendments.
+Do not infer any post-R13 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, autofix, P8/P9, product/release work, or project completion by numbering, composition, roadmap language, or planning amendments.
 
 ## Navigation
 
 - Working rules: `AGENTS.md`
 - P7-R10 implementation authorization: `docs/planning/KODAC_P7_R10_WORKSPACE_REFERENCE_EVIDENCE_BINDING_AUTHORIZATION_2026-09-06.md`
-- P7-R10 current-view reconciliation authorization: `docs/planning/KODAC_P7_R10_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
 - P7-R11 implementation authorization: `docs/planning/KODAC_P7_R11_GIT_CHANGE_REPORT_EVIDENCE_BINDING_AUTHORIZATION_2026-09-06.md`
-- P7-R11 current-view reconciliation authorization: `docs/planning/KODAC_P7_R11_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
 - P7-R12 implementation authorization: `docs/planning/KODAC_P7_R12_RECEIPT_REPORT_EVIDENCE_BINDING_AUTHORIZATION_2026-09-06.md`
 - P7-R12 current-view reconciliation authorization: `docs/planning/KODAC_P7_R12_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
+- P7-R13 implementation authorization: `docs/planning/KODAC_P7_R13_POLICY_REPORT_EVIDENCE_BINDING_AUTHORIZATION_2026-09-06.md`
+- P7-R13 current-view reconciliation authorization: `docs/planning/KODAC_P7_R13_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
 - Durable orchestration / skill trust direction: `docs/planning/KODAC_DURABLE_REVIEW_ORCHESTRATION_AND_SKILL_TRUST_MASTER_PLAN_AMENDMENT_2026-09-06.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
-
----
-
-## Predecessor non-grant preservation
-
-All canonical P7-R10 and P7-R11 non-grants and non-equivalences remain in force and are preserved by this R12 reconciliation. In particular, predecessor boundaries covering historical workspace/filesystem truth, Git command intent/environment/output/digest and changed-path/workspace-cleanliness semantics, receipt/policy ledger completeness, verification/K2/Done Gate/autofix/retry authority, successor authority, P7/P8 closure, and project completion remain `NOT_ESTABLISHED` or `NOT_AUTHORIZED` exactly as their canonical records state. Omission of a predecessor boundary from this condensed current view is not an authorization, proof, waiver, supersession, or narrowing of that boundary.
