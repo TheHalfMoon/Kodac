@@ -645,13 +645,19 @@ test("P7-R14 binds normalized receipt mutations and rejects predecessor/output i
 
   const mutatedSource = structuredClone(input) as MutableRecord
   mutatedSource.sourcePolicyReportEvidenceBinding.evidenceIdentity = "f".repeat(64)
-  assert.throws(() => buildP7ReceiptRecordSetEvidenceBinding(mutatedSource), /evidenceIdentity|canonical/)
+  assert.throws(
+    () => buildP7ReceiptRecordSetEvidenceBinding(mutatedSource as unknown as P7ReceiptRecordSetEvidenceBindingBuildInput),
+    /evidenceIdentity|canonical/,
+  )
 
   const mutatedNested = structuredClone(input) as MutableRecord
   mutatedNested.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
     .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBindingInput
     .sourceAgentCompletionEvidenceBindingInput.sourceCommandSuccessEvidenceBinding.evidenceIdentity = "e".repeat(64)
-  assert.throws(() => buildP7ReceiptRecordSetEvidenceBinding(mutatedNested), /evidenceIdentity|canonical/)
+  assert.throws(
+    () => buildP7ReceiptRecordSetEvidenceBinding(mutatedNested as unknown as P7ReceiptRecordSetEvidenceBindingBuildInput),
+    /evidenceIdentity|canonical/,
+  )
 
   const badOutput = structuredClone(built) as MutableRecord
   badOutput.evidenceIdentity = "d".repeat(64)
