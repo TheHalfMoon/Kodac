@@ -59,9 +59,15 @@ This file is a current milestone ledger only. It does not authorize implementati
 | P7-R10 workspace-reference evidence-binding implementation | **CLOSED_CANONICAL / WORKSPACE_REFERENCE_EVIDENCE_BOUND_ONLY** | #393 / proof `5559155207` |
 | P7-R10 current-view drift analysis | **ANALYSIS_ONLY** | #393 comment `5559162759` |
 | P7-R10 current-view reconciliation authorization | **CLOSED_CANONICAL** | #394 / proof `5559192294` |
-| P7-R10 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
-| Post-R10 successor implementation | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence/composition |
-| P7 overall | **NOT_CLOSED** | R10 bounded closure is not overall closure |
+| P7-R10 post-merge current-view reconciliation | **CLOSED_CANONICAL** | #395 / proof `5559289934` |
+| Post-R10 successor analysis | **ANALYSIS_ONLY** | #395 comment `5559371295` |
+| P7-R11 git-change report-evidence-binding authorization | **CLOSED_CANONICAL** | #396 / proof `5559404299` |
+| P7-R11 git-change report-evidence-binding implementation | **CLOSED_CANONICAL / GIT_CHANGE_REPORT_EVIDENCE_BOUND_ONLY** | #397 / proof `5559564647` |
+| P7-R11 current-view drift analysis | **ANALYSIS_ONLY** | #397 comment `5559574625` |
+| P7-R11 current-view reconciliation authorization | **CLOSED_CANONICAL** | #398 / proof `5559602973` |
+| P7-R11 post-merge current-view reconciliation | **CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL** | Exactly five current-view paths |
+| Post-R11 successor implementation | **NOT_AUTHORIZED_BY_NUMBERING** | No authority by sequence/composition |
+| P7 overall | **NOT_CLOSED** | R11 bounded closure is not overall closure |
 | Applied evidence only | **ESTABLISHED_BY_P7_R4_CONTRACT** | No patch application authority |
 | Verification plan bound only | **ESTABLISHED_BY_P7_R5_CONTRACT** | No verification execution authority |
 | Verification report bound only | **ESTABLISHED_BY_P7_R6_CONTRACT** | No verification execution authority |
@@ -69,6 +75,7 @@ This file is a current milestone ledger only. It does not authorize implementati
 | Verification command success evidence bound | **ESTABLISHED_BY_P7_R8_CONTRACT / BOUNDED_RECEIPT_BACKED_ONLY** | Still not `VERIFIED` |
 | Agent completion evidence bound | **ESTABLISHED_BY_P7_R9_CONTRACT / BOUNDED_EVENT_EVIDENCE_ONLY** | Still not complete session history or `VERIFIED` |
 | Workspace reference evidence bound | **ESTABLISHED_BY_P7_R10_CONTRACT / HISTORICAL_REFERENCE_LINKAGE_ONLY** | Still not workspace integrity or `VERIFIED` |
+| Git-change report evidence bound | **ESTABLISHED_BY_P7_R11_CONTRACT / HISTORICAL_REPORT_SHAPE_ONLY** | Still not receipt authenticity, Git semantics, or `VERIFIED` |
 | Verified / fixed / reverified / Done Gate | **NOT_ESTABLISHED** | No lifecycle-completion evidence |
 | Patch application / retry / remediation execution | **NOT_AUTHORIZED** | Current P7 contracts are evidence-only |
 | Verification planner / engine invocation | **NOT_AUTHORIZED** | No execution authority |
@@ -108,6 +115,12 @@ P7_R10_AUTHORIZATION = #392 / proof 5559094935 / CLOSED_CANONICAL
 P7_R10_IMPLEMENTATION = #393 / proof 5559155207 / WORKSPACE_REFERENCE_EVIDENCE_BOUND_ONLY
 P7_R10_RECONCILIATION_ANALYSIS = #393 / comment 5559162759 / ANALYSIS_ONLY
 P7_R10_RECONCILIATION_AUTHORIZATION = #394 / proof 5559192294 / CLOSED_CANONICAL
+P7_R10_RECONCILIATION = #395 / proof 5559289934 / CLOSED_CANONICAL
+POST_R10_SUCCESSOR_ANALYSIS = #395 / comment 5559371295 / ANALYSIS_ONLY
+P7_R11_AUTHORIZATION = #396 / proof 5559404299 / CLOSED_CANONICAL
+P7_R11_IMPLEMENTATION = #397 / proof 5559564647 / GIT_CHANGE_REPORT_EVIDENCE_BOUND_ONLY
+P7_R11_RECONCILIATION_ANALYSIS = #397 / comment 5559574625 / ANALYSIS_ONLY
+P7_R11_RECONCILIATION_AUTHORIZATION = #398 / proof 5559602973 / CLOSED_CANONICAL
 CURRENT_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 RULESET = 20707483 / active / bypass_actors=[] / current_user_can_bypass=never
 WAIVER = NO
@@ -131,13 +144,20 @@ P7-R10 merge = 26a398caa67ef51f7df01bf0fb9459839a05f50d
 P7-R10 source = 3bbdf9174e2b939ceed36afcd8fc4036e8356712
 P7-R10 schema = f0895ce90986eb5d10e5228080557833e1ae8ca4
 P7-R10 test = 415e051156e77cc43137a03c85fc73b4733deea0
+P7-R11 qualified head = c055cd40c11f2784a1b308335280a0db2b35c1b4
+P7-R11 merge = 1abfe82825dec2cdf5002ecbe35c6457585bc0fb
+P7-R11 source = 3a7695bbd8555a63c0c4505ad0e5943885ee523b
+P7-R11 schema = 0a6a9ad802e1af4e00c9798f2f0d58b58957db6a
+P7-R11 test = 102ae0cc7c5bc733ca8b3161dc67cf51df54bd81
 ```
 
 ---
 
-## P7-R10 bounded meaning
+## P7-R11 bounded meaning
 
 P7-R10 binds only the supplied historical `workspace.integrity` report reference and its SHA-256 reference digest. It does not prove historical filesystem observations or current workspace truth.
+
+P7-R11 binds only the supplied historical passing `git.diff` report shape: the strict canonical summary with bounded historical `diffBytes` and `statusBytes` values plus exactly two unique digest-free receipt references. It authenticates no receipt and proves no Git execution, environment, output content/digest, changed-path set, workspace cleanliness, or Git diff/status semantics.
 
 ```text
 WORKSPACE_REFERENCE_DIGEST_MATCH != WORKSPACE_INTEGRITY_PROOF
@@ -154,6 +174,18 @@ WORKSPACE_REFERENCE_EVIDENCE_BOUND != VERIFIED
 WORKSPACE_REFERENCE_EVIDENCE_BOUND != DONE_GATE
 P7_R10_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
 P7_R10_CLOSED != PROJECT_COMPLETION
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != RECEIPT_AUTHENTICITY
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != GIT_COMMAND_INTENT_OR_ENVIRONMENT_PROOF
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != GIT_OUTPUT_CONTENT_OR_DIGEST_PROOF
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != GIT_DIFF_OR_STATUS_SEMANTIC_PROOF
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != CHANGED_PATH_SET_TRUTH
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != WORKSPACE_CLEANLINESS_PROOF
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != RECEIPT_LEDGER_COMPLETENESS_PROOF
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != POLICY_LEDGER_COMPLETENESS_PROOF
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != VERIFIED
+GIT_CHANGE_REPORT_EVIDENCE_BOUND != DONE_GATE
+P7_R11_CLOSED != SUCCESSOR_IMPLEMENTATION_AUTHORITY
+P7_R11_CLOSED != PROJECT_COMPLETION
 ```
 
 ---
@@ -174,7 +206,7 @@ P5-R3+ = NOT_AUTHORIZED
 PROOFGRAPH = NOT_AUTHORIZED
 AUTOMATIC FRESHNESS / DEPENDENCY INVALIDATION = NOT_AUTHORIZED
 P6-R2+ = NOT_AUTHORIZED_BY_NUMBERING
-POST-R10 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
+POST-R11 SUCCESSOR IMPLEMENTATION = NOT_AUTHORIZED_BY_NUMBERING
 PATCH_APPLICATION = NOT_AUTHORIZED
 PATCH_RETRY = NOT_AUTHORIZED
 AUTOFIX_REMEDIATION_EXECUTION = NOT_AUTHORIZED
@@ -189,6 +221,12 @@ VERIFICATION_EXECUTION = NOT_AUTHORIZED
 VERIFICATION_REPORT_CREATION = NOT_AUTHORIZED
 WORKSPACE_INTEGRITY_PROOF = NOT_ESTABLISHED
 GIT_DIFF_SEMANTIC_PROOF = NOT_ESTABLISHED
+RECEIPT_AUTHENTICITY = NOT_ESTABLISHED
+GIT_COMMAND_INTENT_OR_ENVIRONMENT_PROOF = NOT_ESTABLISHED
+GIT_OUTPUT_CONTENT_OR_DIGEST_PROOF = NOT_ESTABLISHED
+GIT_DIFF_OR_STATUS_SEMANTIC_PROOF = NOT_ESTABLISHED
+CHANGED_PATH_SET_TRUTH = NOT_ESTABLISHED
+WORKSPACE_CLEANLINESS_PROOF = NOT_ESTABLISHED
 RECEIPT_LEDGER_COMPLETENESS_PROOF = NOT_ESTABLISHED
 POLICY_LEDGER_COMPLETENESS_PROOF = NOT_ESTABLISHED
 VERIFIED = NOT_ESTABLISHED
@@ -217,6 +255,6 @@ The canonical PR #381 amendment remains planning direction only and creates no i
 
 ## Current candidate gate
 
-Canonical #394 / proof `5559192294` authorizes exactly the five current-view paths and no sixth path. This candidate cannot self-certify its own closure.
+Canonical #398 / proof `5559602973` authorizes exactly the five current-view paths and no sixth path. This candidate cannot self-certify its own closure.
 
-After guarded merge and complete post-merge proof, run fresh successor-authority analysis. Do not infer any post-R10 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch execution/retry, K2 invocation, autofix, P8/P9, release, or project completion.
+After guarded merge and complete post-merge proof, run fresh successor-authority analysis. Do not infer any post-R11 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch execution/retry, K2 invocation, autofix, P8/P9, release, or project completion.
