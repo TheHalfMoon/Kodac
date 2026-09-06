@@ -657,7 +657,12 @@ async function rejectsBuild(
   input: P7VerificationEngineReceiptLedgerReadEvidenceBindingBuildInput,
   pattern?: RegExp,
 ): Promise<void> {
-  await assert.rejects(buildP7VerificationEngineReceiptLedgerReadEvidenceBinding(input), pattern)
+  const build = buildP7VerificationEngineReceiptLedgerReadEvidenceBinding(input)
+  if (pattern === undefined) {
+    await assert.rejects(build)
+  } else {
+    await assert.rejects(build, pattern)
+  }
 }
 
 function clonedInput(input: P7VerificationEngineReceiptLedgerReadEvidenceBindingBuildInput): MutableRecord {
