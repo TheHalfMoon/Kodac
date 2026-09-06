@@ -94,6 +94,7 @@ const GIT_OBJECT = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 const CANONICAL_TIMESTAMP = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{3}Z$/
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/u
+const ARRAY_INDEX = /^(?:0|[1-9][0-9]*)$/
 
 const BUILD_KEYS = [
   "sourceCommandSuccessEvidenceBinding",
@@ -221,7 +222,7 @@ function ownDataRecord(
   if (prototype !== Object.prototype && prototype !== null) fail(label, "must be a plain object")
   if (Object.getOwnPropertySymbols(value).length !== 0) fail(label, "must not contain symbol fields")
   const record = value as UnknownRecord
-  const keys = Object.keys(record)
+  const keys = Object.getOwnPropertyNames(record)
   const allowed = new Set(allowedKeys)
   for (const key of keys) {
     if (!allowed.has(key)) fail(label, `contains unknown field: ${key}`)
@@ -238,11 +239,26 @@ function ownDataRecord(
 
 function denseArray(value: unknown, label: string, maximum: number): readonly unknown[] {
   if (!Array.isArray(value) || nodeTypes.isProxy(value)) fail(label, "must be a non-Proxy array")
+  if (Object.getPrototypeOf(value) !== Array.prototype) fail(label, "must use the standard Array prototype")
   if (value.length > maximum) fail(label, `must contain at most ${maximum} items`)
-  for (let index = 0; index < value.length; index += 1) {
-    if (!Object.prototype.hasOwnProperty.call(value, index)) fail(label, "must not be sparse")
-  }
   if (Object.getOwnPropertySymbols(value).length !== 0) fail(label, "must not contain symbol fields")
+
+  for (const key of Object.getOwnPropertyNames(value)) {
+    if (key === "length") continue
+    if (!ARRAY_INDEX.test(key)) fail(label, `contains unknown array field: ${key}`)
+    const index = Number(key)
+    if (!Number.isSafeInteger(index) || index < 0 || index >= value.length) {
+      fail(label, `contains invalid array index: ${key}`)
+    }
+  }
+
+  for (let index = 0; index < value.length; index += 1) {
+    const descriptor = Object.getOwnPropertyDescriptor(value, String(index))
+    if (descriptor === undefined) fail(label, "must not be sparse")
+    if (!("value" in descriptor) || descriptor.enumerable !== true) {
+      fail(`${label}[${index}]`, "must be an enumerable data property")
+    }
+  }
   return value
 }
 
@@ -268,15 +284,19 @@ function assertSafeJsonGraph(value: unknown, label: string): void {
     seen.add(current)
 
     if (Array.isArray(current)) {
-      denseArray(current, path, P7_R9_AGENT_COMPLETION_EVIDENCE_LIMITS.maxJsonNodes)
-      for (let index = 0; index < current.length; index += 1) visit(current[index], `${path}[${index}]`, depth + 1)
+      const array = denseArray(current, path, P7_R9_AGENT_COMPLETION_EVIDENCE_LIMITS.maxJsonNodes)
+      for (let index = 0; index < array.length; index += 1) {
+        const descriptor = Object.getOwnPropertyDescriptor(array, String(index))
+        if (descriptor === undefined || !("value" in descriptor)) fail(`${path}[${index}]`, "must be a data property")
+        visit(descriptor.value, `${path}[${index}]`, depth + 1)
+      }
       return
     }
 
     const prototype = Object.getPrototypeOf(current)
     if (prototype !== Object.prototype && prototype !== null) fail(path, "must be a plain object")
     if (Object.getOwnPropertySymbols(current).length !== 0) fail(path, "must not contain symbol fields")
-    for (const key of Object.keys(current as UnknownRecord)) {
+    for (const key of Object.getOwnPropertyNames(current)) {
       const descriptor = Object.getOwnPropertyDescriptor(current, key)
       if (descriptor === undefined || !("value" in descriptor) || descriptor.enumerable !== true) {
         fail(`${path}.${key}`, "must be an enumerable data property")
