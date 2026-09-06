@@ -37,6 +37,7 @@ export type KodacEventType =
   | "agent.loop.stopped"
   | "verification.plan.created"
   | "verification.started"
+  | "verification.receipt_ledger.read"
   | "verification.check.completed"
   | "verification.completed"
   | "done_gate.evaluated"
