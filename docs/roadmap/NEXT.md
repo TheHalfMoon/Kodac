@@ -346,3 +346,9 @@ Do not infer any post-R12 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gat
 - P7-R12 current-view reconciliation authorization: `docs/planning/KODAC_P7_R12_POST_MERGE_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-06.md`
 - Durable orchestration / skill trust direction: `docs/planning/KODAC_DURABLE_REVIEW_ORCHESTRATION_AND_SKILL_TRUST_MASTER_PLAN_AMENDMENT_2026-09-06.md`
 - Trust v2 direction: `docs/planning/KODAC_TRUST_AND_VERIFICATION_MASTER_PLAN_V2_AMENDMENT_2026-09-02.md`
+
+---
+
+## Predecessor non-grant preservation
+
+All canonical P7-R10 and P7-R11 non-grants and non-equivalences remain in force and are preserved by this R12 reconciliation. In particular, predecessor boundaries covering historical workspace/filesystem truth, Git command intent/environment/output/digest and changed-path/workspace-cleanliness semantics, receipt/policy ledger completeness, verification/K2/Done Gate/autofix/retry authority, successor authority, P7/P8 closure, and project completion remain `NOT_ESTABLISHED` or `NOT_AUTHORIZED` exactly as their canonical records state. Omission of a predecessor boundary from this condensed current view is not an authorization, proof, waiver, supersession, or narrowing of that boundary.
