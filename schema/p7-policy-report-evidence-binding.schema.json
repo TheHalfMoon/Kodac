@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/p7-policy-report-evidence-binding.schema.json",
+  "title": "Kodac P7-R13 Policy Report Evidence Binding",
+  "description": "Pure data-only binding from one exact P7-R12 predecessor to the exact historical passing evidence.policy report shape and its normalized equality with the already-bound P7-R12 receipt-reference set. It establishes POLICY_REPORT_EVIDENCE_BOUND only and grants no policy-authorization, policy-decision-authenticity, ledger-completeness, receipt-authenticity, VERIFIED, Done Gate, execution, or completion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "evidenceIdentity",
+    "state",
+    "sourceReceiptReportEvidenceIdentity",
+    "sourceGitChangeReportEvidenceIdentity",
+    "sourceWorkspaceReferenceEvidenceIdentity",
+    "sourceAgentCompletionEvidenceIdentity",
+    "sourceCommandSuccessEvidenceIdentity",
+    "sourceVerificationReportBindingIdentity",
+    "proposalIdentity",
+    "authorizationIdentity",
+    "intentBindingIdentity",
+    "appliedEvidenceIdentity",
+    "verificationPlanBindingIdentity",
+    "repositoryIdentity",
+    "canonicalBase",
+    "targetHead",
+    "postStateDigest",
+    "verificationPlanDigest",
+    "verificationReportIdentity",
+    "verificationSessionId",
+    "verificationStartedAt",
+    "verificationCompletedAt",
+    "policyReportCheckSummary",
+    "policyReportReceiptCount",
+    "policyReportEvidence",
+    "policyReportRefs"
+  ],
+  "properties": {
+    "version": {
+      "const": "p7-r13-policy-report-evidence-binding-v1"
+    },
+    "evidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state": {
+      "const": "POLICY_REPORT_EVIDENCE_BOUND"
+    },
+    "sourceReceiptReportEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceGitChangeReportEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceWorkspaceReferenceEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceAgentCompletionEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceCommandSuccessEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sourceVerificationReportBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "proposalIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "authorizationIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "intentBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "appliedEvidenceIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationPlanBindingIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repositoryIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024
+    },
+    "canonicalBase": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "targetHead": {
+      "type": "string",
+      "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+    },
+    "postStateDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationPlanDigest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationReportIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "verificationSessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "verificationStartedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "verificationCompletedAt": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z$"
+    },
+    "policyReportCheckSummary": {
+      "const": "Every persisted execution receipt was authorized by policy."
+    },
+    "policyReportReceiptCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256
+    },
+    "policyReportEvidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": {
+            "const": "receipt"
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1024
+          }
+        }
+      }
+    },
+    "policyReportRefs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1024
+      }
+    }
+  }
+}
