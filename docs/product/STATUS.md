@@ -326,7 +326,7 @@ CLI_API_PACKAGE_ROOT_PRODUCT_INTEGRATION = NOT_AUTHORIZED
 PUBLIC_RELEASE_PACKAGE_PUBLICATION_DEPLOYMENT = NOT_AUTHORIZED
 P8_P9_IMPLEMENTATION = NOT_AUTHORIZED
 RULESET_CHANGE_BYPASS = NOT_AUTHORIZED
-PROJECT COMPLETION = NOT_ESTABLISHED
+PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
@@ -349,3 +349,9 @@ docs/product/STATUS.md
 No sixth path is authorized. This candidate records only already-proven P7 facts and preserves every still-effective non-grant. It cannot claim its own reconciliation closure before guarded merge and complete post-merge proof.
 
 After proof, fresh successor-authority analysis is required. No post-R12 successor, `VERIFIED`, `FIXED`, `REVERIFIED`, Done Gate, verification execution, patch application/retry, K2 invocation, lifecycle advancement, P8/P9, product/release work, or project completion follows by numbering, composition, roadmap language, or planning amendments.
+
+---
+
+## Predecessor non-grant preservation
+
+All canonical P7-R10 and P7-R11 non-grants and non-equivalences remain in force and are preserved by this R12 reconciliation. In particular, predecessor boundaries covering historical workspace/filesystem truth, Git command intent/environment/output/digest and changed-path/workspace-cleanliness semantics, receipt/policy ledger completeness, verification/K2/Done Gate/autofix/retry authority, successor authority, P7/P8 closure, and project completion remain `NOT_ESTABLISHED` or `NOT_AUTHORIZED` exactly as their canonical records state. Omission of a predecessor boundary from this condensed current view is not an authorization, proof, waiver, supersession, or narrowing of that boundary.
