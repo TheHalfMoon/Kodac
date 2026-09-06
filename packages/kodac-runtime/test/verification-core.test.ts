@@ -49,8 +49,11 @@ async function applyFixturePatch(workspace: string, receiptsPath: string): Promi
 class MutatingEventSink implements EventSink {
   readonly events: KodacEvent[] = []
   private mutated = false
+  private readonly receiptsPath: string
 
-  constructor(private readonly receiptsPath: string) {}
+  constructor(receiptsPath: string) {
+    this.receiptsPath = receiptsPath
+  }
 
   async append(event: KodacEvent): Promise<void> {
     this.events.push(event)
