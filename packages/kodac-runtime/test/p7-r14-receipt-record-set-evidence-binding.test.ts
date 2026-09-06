@@ -536,10 +536,34 @@ test("P7-R14 enforces exact R13/R12 receipt set, IDs, and generic passing predic
   }
 })
 
+test("P7-R14 explicitly rejects blocked receipts and malformed timestamp/approval data", () => {
+  const blocked = canonicalReceiptRecords()
+  findReceipt(blocked, GIT_DIFF_RECEIPT_ID).result = { status: "blocked", reason: "policy denied" }
+  assert.throws(() => buildP7ReceiptRecordSetEvidenceBinding(withRecords(blocked)), /success|unknown field/)
+
+  const invalidTimestamp = canonicalReceiptRecords()
+  findReceipt(invalidTimestamp, GIT_DIFF_RECEIPT_ID).startedAt = "2026-09-06T12:00:03Z"
+  assert.throws(() => buildP7ReceiptRecordSetEvidenceBinding(withRecords(invalidTimestamp)), /timestamp/)
+
+  const badApproval = canonicalReceiptRecords()
+  findReceipt(badApproval, GIT_DIFF_RECEIPT_ID).approval = {
+    version: "kodac-h4-r1-one-shot-approval-v1",
+    requestIdentity: "not-a-digest",
+    requestInstanceId: "823e4567-e89b-42d3-a456-426614174007",
+    decisionEvidenceIdentity: "2".repeat(64),
+    outcome: "allowed-once",
+  }
+  assert.throws(() => buildP7ReceiptRecordSetEvidenceBinding(withRecords(badApproval)), /SHA-256/)
+})
+
 test("P7-R14 validates both success variants and anchors the exact P7-R4 mutation receipt", () => {
   const built = buildP7ReceiptRecordSetEvidenceBinding(fixtureInput())
   assert.equal(built.receiptRecords.find((record) => record.receiptId === APPLY_RECEIPT_ID)!.result.kind, "mutation")
   assert.equal(built.receiptRecords.find((record) => record.receiptId === GIT_DIFF_RECEIPT_ID)!.result.kind, "process")
+
+  const missingDigest = canonicalReceiptRecords()
+  delete findReceipt(missingDigest, APPLY_RECEIPT_ID).result.postStateDigest
+  assert.throws(() => buildP7ReceiptRecordSetEvidenceBinding(withRecords(missingDigest)), /postStateDigest|required field/)
 
   const malformed = canonicalReceiptRecords()
   findReceipt(malformed, APPLY_RECEIPT_ID).result.postStateDigest = "bad"
@@ -662,6 +686,61 @@ test("P7-R14 binds normalized receipt mutations and rejects predecessor/output i
   const badOutput = structuredClone(built) as MutableRecord
   badOutput.evidenceIdentity = "d".repeat(64)
   assert.throws(() => validateP7ReceiptRecordSetEvidenceBinding(badOutput, input), /evidenceIdentity/)
+})
+
+test("P7-R14 reconstructs and rejects independent R12 through R4 predecessor identity drift", () => {
+  const cases: Array<[string, (input: MutableRecord) => void]> = [
+    ["R12", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBinding.evidenceIdentity = "f".repeat(64)
+    }],
+    ["R11", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBinding.evidenceIdentity = "f".repeat(64)
+    }],
+    ["R10", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBinding.evidenceIdentity = "f".repeat(64)
+    }],
+    ["R9", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBindingInput
+        .sourceAgentCompletionEvidenceBinding.evidenceIdentity = "f".repeat(64)
+    }],
+    ["R8", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBindingInput
+        .sourceAgentCompletionEvidenceBindingInput.sourceCommandSuccessEvidenceBinding.evidenceIdentity = "f".repeat(64)
+    }],
+    ["R6", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBindingInput
+        .sourceAgentCompletionEvidenceBindingInput.sourceCommandSuccessEvidenceBindingInput
+        .sourceVerificationReportBinding.bindingIdentity = "f".repeat(64)
+    }],
+    ["R5", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBindingInput
+        .sourceAgentCompletionEvidenceBindingInput.sourceCommandSuccessEvidenceBindingInput
+        .sourceVerificationReportBindingInput.sourceVerificationPlanBinding.bindingIdentity = "f".repeat(64)
+    }],
+    ["R4", (input) => {
+      input.sourcePolicyReportEvidenceBindingInput.sourceReceiptReportEvidenceBindingInput
+        .sourceGitChangeReportEvidenceBindingInput.sourceWorkspaceReferenceEvidenceBindingInput
+        .sourceAgentCompletionEvidenceBindingInput.sourceCommandSuccessEvidenceBindingInput
+        .sourceVerificationReportBindingInput.sourceVerificationPlanBindingInput
+        .sourceAppliedEvidence.appliedEvidenceIdentity = "f".repeat(64)
+    }],
+  ]
+
+  for (const [label, mutate] of cases) {
+    const input = structuredClone(fixtureInput()) as MutableRecord
+    mutate(input)
+    assert.throws(
+      () => buildP7ReceiptRecordSetEvidenceBinding(input as unknown as P7ReceiptRecordSetEvidenceBindingBuildInput),
+      /identity|canonical|evidence/,
+      `${label} identity drift must fail closed`,
+    )
+  }
 })
 
 test("P7-R14 source remains pure/data-only and does not import forbidden execution surfaces", () => {
