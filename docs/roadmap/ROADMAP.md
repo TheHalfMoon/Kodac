@@ -130,18 +130,18 @@ This is a current engineering roadmap view only. It does not create implementati
   -> #393 P7-R10 workspace-reference evidence-binding implementation / proof 5559155207
   -> #393 comment 5559162759 P7-R10 current-view drift analysis / ANALYSIS_ONLY
   -> #394 P7-R10 current-view reconciliation authorization / proof 5559192294
-  -> #395 P7-R10 current-view reconciliation / proof 5559289934
+  -> #395 P7-R10 post-merge current-view reconciliation / proof 5559289934
   -> #395 comment 5559371295 post-R10 successor analysis / ANALYSIS_ONLY
   -> #396 P7-R11 git-change report-evidence-binding authorization / proof 5559404299
   -> #397 P7-R11 git-change report-evidence-binding implementation / proof 5559564647
   -> #397 comment 5559574625 P7-R11 current-view drift analysis / ANALYSIS_ONLY
-  -> #398 P7-R11 current-view reconciliation authorization / proof 5559602973
-  -> #399 P7-R11 current-view reconciliation / proof 5560084029
+  -> #398 P7-R11 post-merge current-view reconciliation authorization / proof 5559602973
+  -> #399 P7-R11 post-merge current-view reconciliation / proof 5560084029
   -> #399 comment 5560104142 post-R11 successor analysis / ANALYSIS_ONLY
   -> #400 P7-R12 receipt-report evidence-binding authorization / proof 5560142791
   -> #401 P7-R12 receipt-report evidence-binding implementation / proof 5560276716
   -> #401 comment 5560285444 P7-R12 current-view drift analysis / ANALYSIS_ONLY
-  -> #402 P7-R12 current-view reconciliation authorization / proof 5560312888
+  -> #402 P7-R12 post-merge current-view reconciliation authorization / proof 5560312888
   -> CURRENT: exact five-current-view R12 reconciliation candidate
 ```
 
@@ -289,3 +289,9 @@ The canonical PR #381 plan amendment remains planning-only and creates no succes
 Only the exact five current-view paths authorized by PR #402 / proof `5560312888` may be reconciled. This candidate may not certify its own closure.
 
 After this R12 reconciliation independently qualifies, merges guarded, and receives complete post-merge proof, fresh successor-authority analysis may run from then-live repository truth. No successor implementation follows by numbering or composition.
+
+---
+
+## Predecessor non-grant preservation
+
+All canonical P7-R10 and P7-R11 non-grants and non-equivalences remain in force and are preserved by this R12 reconciliation. In particular, predecessor boundaries covering historical workspace/filesystem truth, Git command intent/environment/output/digest and changed-path/workspace-cleanliness semantics, receipt/policy ledger completeness, verification/K2/Done Gate/autofix/retry authority, successor authority, P7/P8 closure, and project completion remain `NOT_ESTABLISHED` or `NOT_AUTHORIZED` exactly as their canonical records state. Omission of a predecessor boundary from this condensed current view is not an authorization, proof, waiver, supersession, or narrowing of that boundary.
