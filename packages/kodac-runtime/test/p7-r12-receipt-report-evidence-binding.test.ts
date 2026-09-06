@@ -517,6 +517,77 @@ const sourceText = readFileSync(
   "utf8",
 )
 
+function schemaRecord(value: unknown, path: string): UnknownRecord {
+  assert.ok(value !== null && typeof value === "object" && !Array.isArray(value), `${path} must be a schema object`)
+  return value as UnknownRecord
+}
+
+function schemaEqual(left: unknown, right: unknown): boolean {
+  return JSON.stringify(left) === JSON.stringify(right)
+}
+
+function validateAgainstSchema(schemaValue: unknown, value: unknown, path = "$root"): void {
+  const node = schemaRecord(schemaValue, path)
+  if (Object.hasOwn(node, "const")) assert.ok(schemaEqual(value, node.const), `${path} violates const`)
+
+  if (node.type === "object") {
+    assert.ok(value !== null && typeof value === "object" && !Array.isArray(value), `${path} must be object`)
+    const record = value as UnknownRecord
+    const properties = node.properties === undefined ? {} : schemaRecord(node.properties, `${path}.properties`)
+    if (Array.isArray(node.required)) {
+      for (const key of node.required) {
+        assert.equal(typeof key, "string", `${path}.required entries must be strings`)
+        assert.ok(Object.hasOwn(record, key), `${path} missing required field ${key}`)
+      }
+    }
+    if (node.additionalProperties === false) {
+      for (const key of Object.keys(record)) {
+        assert.ok(Object.hasOwn(properties, key), `${path} has additional property ${key}`)
+      }
+    }
+    for (const [key, childSchema] of Object.entries(properties)) {
+      if (Object.hasOwn(record, key)) validateAgainstSchema(childSchema, record[key], `${path}.${key}`)
+    }
+    return
+  }
+
+  if (node.type === "string") {
+    assert.equal(typeof value, "string", `${path} must be string`)
+    const text = value as string
+    const length = [...text].length
+    if (typeof node.minLength === "number") assert.ok(length >= node.minLength, `${path} violates minLength`)
+    if (typeof node.maxLength === "number") assert.ok(length <= node.maxLength, `${path} violates maxLength`)
+    if (typeof node.pattern === "string") assert.match(text, new RegExp(node.pattern), `${path} violates pattern`)
+    return
+  }
+
+  if (node.type === "integer") {
+    assert.ok(typeof value === "number" && Number.isInteger(value), `${path} must be integer`)
+    if (typeof node.minimum === "number") assert.ok(value >= node.minimum, `${path} violates minimum`)
+    if (typeof node.maximum === "number") assert.ok(value <= node.maximum, `${path} violates maximum`)
+    return
+  }
+
+  if (node.type === "array") {
+    assert.ok(Array.isArray(value), `${path} must be array`)
+    const array = value as unknown[]
+    if (typeof node.minItems === "number") assert.ok(array.length >= node.minItems, `${path} violates minItems`)
+    if (typeof node.maxItems === "number") assert.ok(array.length <= node.maxItems, `${path} violates maxItems`)
+    if (node.uniqueItems === true) {
+      const keys = array.map((item) => JSON.stringify(item))
+      assert.equal(new Set(keys).size, keys.length, `${path} violates uniqueItems`)
+    }
+    if (node.items !== undefined) {
+      for (let index = 0; index < array.length; index += 1) {
+        validateAgainstSchema(node.items, array[index], `${path}[${index}]`)
+      }
+    }
+    return
+  }
+
+  if (node.type !== undefined) assert.fail(`${path} uses unsupported schema type ${String(node.type)}`)
+}
+
 test("P7-R12 builds and validates one deterministic RECEIPT_REPORT_EVIDENCE_BOUND record", () => {
   const input = fixtureInput()
   const built = buildP7ReceiptReportEvidenceBinding(input)
@@ -723,7 +794,7 @@ test("P7-R12 rejects report-level and nested predecessor tamper instead of trust
   )
 })
 
-test("P7-R12 schema mirrors the runtime output boundary and canonical output constraints", () => {
+test("P7-R12 schema accepts canonical output and rejects malformed output", () => {
   const built = buildP7ReceiptReportEvidenceBinding(fixtureInput())
   assert.equal(schema.$id, "https://kodac.dev/schema/p7-receipt-report-evidence-binding.schema.json")
   assert.equal(schema.additionalProperties, false)
@@ -740,16 +811,35 @@ test("P7-R12 schema mirrors the runtime output boundary and canonical output con
   assert.equal(schema.properties.receiptReportRefs.minItems, 1)
   assert.equal(schema.properties.receiptReportRefs.maxItems, 256)
   assert.equal(schema.properties.receiptReportRefs.uniqueItems, true)
-  assert.match(built.receiptReportCheckSummary, new RegExp(schema.properties.receiptReportCheckSummary.pattern))
-  assert.ok(built.receiptReportCount >= schema.properties.receiptReportCount.minimum)
-  assert.ok(built.receiptReportCount <= schema.properties.receiptReportCount.maximum)
-  assert.equal(built.receiptReportEvidence.length, built.receiptReportCount)
-  assert.equal(built.receiptReportRefs.length, built.receiptReportCount)
 
-  const malformed = structuredClone(built) as MutableRecord
-  malformed.receiptReportCount = 0
-  assert.ok(malformed.receiptReportCount < schema.properties.receiptReportCount.minimum)
-  assert.throws(() => validateP7ReceiptReportEvidenceBinding(malformed, fixtureInput()), /canonical|evidenceIdentity/)
+  assert.doesNotThrow(() => validateAgainstSchema(schema, built))
+
+  const malformedCount = structuredClone(built) as MutableRecord
+  malformedCount.receiptReportCount = 0
+  assert.throws(() => validateAgainstSchema(schema, malformedCount), /minimum/)
+
+  const malformedDigest = structuredClone(built) as MutableRecord
+  malformedDigest.receiptReportEvidence[0].digest = "1".repeat(64)
+  assert.throws(() => validateAgainstSchema(schema, malformedDigest), /additional property digest/)
+
+  const malformedSummary = structuredClone(built) as MutableRecord
+  malformedSummary.receiptReportCheckSummary = "Receipts valid."
+  assert.throws(() => validateAgainstSchema(schema, malformedSummary), /pattern/)
+
+  const malformedMissing = structuredClone(built) as MutableRecord
+  delete malformedMissing.receiptReportRefs
+  assert.throws(() => validateAgainstSchema(schema, malformedMissing), /missing required field receiptReportRefs/)
+
+  const malformedDuplicate = structuredClone(built) as MutableRecord
+  malformedDuplicate.receiptReportRefs[1] = malformedDuplicate.receiptReportRefs[0]
+  assert.throws(() => validateAgainstSchema(schema, malformedDuplicate), /uniqueItems/)
+
+  const malformedRuntime = structuredClone(built) as MutableRecord
+  malformedRuntime.receiptReportCount = 4
+  assert.throws(
+    () => validateP7ReceiptReportEvidenceBinding(malformedRuntime, fixtureInput()),
+    /canonical source-derived semantics|evidenceIdentity/,
+  )
 
   const required = new Set(schema.required as string[])
   for (const field of [
