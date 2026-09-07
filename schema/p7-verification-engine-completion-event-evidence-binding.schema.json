@@ -67,9 +67,9 @@
       "minLength": 1,
       "maxLength": 256
     },
-    "verificationReportPassed": { "type": "boolean" },
+    "verificationReportPassed": { "type": "boolean", "const": true },
     "verificationReportCheckCount": { "$ref": "#/$defs/checkCount" },
-    "verificationReportFailedCheckIds": { "$ref": "#/$defs/checkIds" },
+    "verificationReportFailedCheckIds": { "$ref": "#/$defs/checkIds", "maxItems": 0 },
     "verificationReceiptLedgerReadEventIdentity": { "$ref": "#/$defs/sha256" },
     "verificationReceiptLedgerReadEventSequence": { "$ref": "#/$defs/sequence" },
     "verificationReceiptLedgerReadEventEmittedAt": { "$ref": "#/$defs/timestamp" },
@@ -80,9 +80,9 @@
     "verificationCompletedEventSequence": { "$ref": "#/$defs/sequence" },
     "verificationCompletedEventEmittedAt": { "$ref": "#/$defs/timestamp" },
     "verificationCompletedEventType": { "const": "verification.completed" },
-    "verificationCompletedEventPassed": { "type": "boolean" },
+    "verificationCompletedEventPassed": { "type": "boolean", "const": true },
     "verificationCompletedEventCheckCount": { "$ref": "#/$defs/checkCount" },
-    "verificationCompletedEventFailedCheckIds": { "$ref": "#/$defs/checkIds" }
+    "verificationCompletedEventFailedCheckIds": { "$ref": "#/$defs/checkIds", "maxItems": 0 }
   },
   "$defs": {
     "sha256": {
