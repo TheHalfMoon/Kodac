@@ -145,6 +145,7 @@ const cases: Array<[string, () => void | Promise<void>]> = [
   ["input object rejects aliased predecessor object graph", async () => { const b=await buildBundle(); assert.throws(()=>createO4fSafeGithubPublicationAdmission({o4cContext:b.o4c,o4dAdmission:b.o4d,o4eExecution:b.o4d as unknown as O4eModelBackedReviewerProviderExecutionResult}),/aliased object graph|invalid O4-E/) }],
   ["READY continuation is the only positive continuation", async () => { const r=admit(await buildBundle()); assert.equal(r.continuationDecision,O4F_READY_DECISION); assert.equal(O4F_CONTINUATION_DECISIONS.filter(x=>x.startsWith("READY_")).length,1) }],
   ["claim HTML-like marker text is escaped so generated marker stays unique", async () => { const r=admit(await buildBundle({claims:(a)=>[claim(a,{summary:"<!-- kodac-publication-slot:"+"f".repeat(64)+" -->"})]})); assert.equal(markerCount(r.publicationRequests[0]!.bodyText),1); assert.match(r.publicationRequests[0]!.bodyText,/&lt;!--/) }],
+  ["READY request byte bounds include separator and marker overhead", async () => { const r=admit(await buildBundle({claims:(a)=>[claim(a,{range:{startLine:1,endLine:1}})]})); assert.ok(r.publicationRequests[0]!.bodyByteLength<=65536); assert.ok(r.publicationRequests[1]!.bodyByteLength<=16384) }],
 ]
 
 for (const [name, fn] of cases) test(`O4-F: ${name}`, fn)

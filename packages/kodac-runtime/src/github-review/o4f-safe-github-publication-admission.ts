@@ -313,15 +313,18 @@ export function createO4fSafeGithubPublicationAdmission(raw: unknown): O4fSafeGi
   }
 
   const summaryBase = renderSummary(c, e, ids)
-  if (Buffer.byteLength(summaryBase, "utf8") > O4F_LIMITS.maxSummaryBodyUtf8Bytes - 96) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
-  const requests: O4fPublicationRequest[] = [makeRequest({ publicationClass: "TOP_LEVEL_REVIEW_SUMMARY", c, e, claimIdentity: null, path: null, lineAnchor: null, bodyWithoutMarker: summaryBase })]
+  const summaryRequest = makeRequest({ publicationClass: "TOP_LEVEL_REVIEW_SUMMARY", c, e, claimIdentity: null, path: null, lineAnchor: null, bodyWithoutMarker: summaryBase })
+  if (summaryRequest.bodyByteLength > O4F_LIMITS.maxSummaryBodyUtf8Bytes) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
+  const requests: O4fPublicationRequest[] = [summaryRequest]
   for (let i = 0; i < e.claims.length; i += 1) {
     const claim = e.claims[i]!, id = ids[i]!
     if (!claim.range) continue
     const lineAnchor = claim.range.startLine
     const inlineBase = renderInline(claim, id, lineAnchor)
-    if (Buffer.byteLength(inlineBase, "utf8") > O4F_LIMITS.maxInlineBodyUtf8Bytes - 96) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
-    requests.push(makeRequest({ publicationClass: "INLINE_FINDING_COMMENT", c, e, claimIdentity: id, path: claim.path, lineAnchor, bodyWithoutMarker: inlineBase }))
+    if (Buffer.byteLength(inlineBase, "utf8") > O4F_LIMITS.maxClaimRenderingUtf8Bytes) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
+    const inlineRequest = makeRequest({ publicationClass: "INLINE_FINDING_COMMENT", c, e, claimIdentity: id, path: claim.path, lineAnchor, bodyWithoutMarker: inlineBase })
+    if (inlineRequest.bodyByteLength > O4F_LIMITS.maxInlineBodyUtf8Bytes) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
+    requests.push(inlineRequest)
   }
   if (requests.length > O4F_LIMITS.maxPublicationRequests) return blockedResult("BLOCK_PUBLICATION_REQUEST_CONSTRUCTION", c, d, e)
   requests.sort(requestOrder)
