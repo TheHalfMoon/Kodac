@@ -198,7 +198,12 @@ function repositoryPath(value: unknown, label: string): string {
   return v
 }
 function exactStrings(a: readonly string[], b: readonly string[]): boolean { return a.length === b.length && a.every((v, i) => v === b[i]) }
-function escaped(value: string): string { return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;") }
+const MARKDOWN_INERT_ENTITIES: Readonly<Record<string, string>> = Object.freeze({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", "@": "&#64;", "`": "&#96;", "\\": "&#92;",
+  "[": "&#91;", "]": "&#93;", "(": "&#40;", ")": "&#41;", "*": "&#42;", "_": "&#95;",
+  "#": "&#35;", "!": "&#33;", "|": "&#124;", "~": "&#126;",
+})
+function escaped(value: string): string { return Array.from(value, (char) => MARKDOWN_INERT_ENTITIES[char] ?? char).join("") }
 function marker(slot: string): string { return `<!-- kodac-publication-slot:${slot} -->` }
 function markerCount(body: string): number { return (body.match(/<!-- kodac-publication-slot:[0-9a-f]{64} -->/g) ?? []).length }
 
@@ -278,7 +283,7 @@ function renderSummary(c: O4cGithubReviewerContextResult, e: O4eModelBackedRevie
 function renderInline(claim: O4eReviewerClaim, id: string, lineAnchor: number): string {
   return [
     `**${escaped(claim.severity.toUpperCase())} · ${escaped(claim.category)}**`, "",
-    escaped(claim.summary), "", `Contract claim: ${escaped(claim.contractClaim)}`, "",
+    `Summary: ${escaped(claim.summary)}`, "", `Contract claim: ${escaped(claim.contractClaim)}`, "",
     `Path: \`${escaped(claim.path)}\``, `Line anchor: ${lineAnchor}`, `Claim identity: \`${id}\``,
   ].join("\n")
 }
