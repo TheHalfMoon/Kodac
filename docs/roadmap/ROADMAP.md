@@ -164,7 +164,7 @@ All intervening exact authorization, reconciliation, and analysis records remain
 
 ---
 
-## Current active roadmap unit — post-O4-B project-completion audit and current-view reconciliation candidate
+## Current active roadmap unit — post-O4-C project-completion audit and current-view reconciliation candidate
 
 Canonical authority exists through PR #595 / external post-merge proof `5638430775` only for this exact six-file post-O4-C audit/current-view reconciliation.
 

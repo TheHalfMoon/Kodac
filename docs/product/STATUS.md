@@ -139,7 +139,7 @@ Historical authorization, reconciliation, repair, anomaly, and adverse-evidence 
 
 ---
 
-## Active product-status unit — post-O4-B project-completion audit and current-view reconciliation candidate
+## Active product-status unit — post-O4-C project-completion audit and current-view reconciliation candidate
 
 Canonical authority exists through PR #595 / external post-merge proof `5638430775` only for this exact six-file post-O4-C audit/current-view reconciliation.
 

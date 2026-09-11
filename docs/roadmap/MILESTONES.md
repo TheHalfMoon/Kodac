@@ -141,7 +141,7 @@ Historical P7 R1-R30 records, earlier P8 authorization/reconciliation records, a
 
 ---
 
-## Active milestone unit — post-O4-B project-completion audit and current-view reconciliation candidate
+## Active milestone unit — post-O4-C project-completion audit and current-view reconciliation candidate
 
 Canonical authority exists through PR #595 / external post-merge proof `5638430775` only for this exact six-file post-O4-C audit/current-view reconciliation.
 
