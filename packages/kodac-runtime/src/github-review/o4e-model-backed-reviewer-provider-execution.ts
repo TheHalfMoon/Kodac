@@ -24,6 +24,7 @@ export const O4E_LIMITS = Object.freeze({
   defaultMaxClaims: 32,
   maxModelUtf8Bytes: 256,
   maxProviderNameUtf8Bytes: 128,
+  maxProviderResponseUtf8Bytes: 262_144,
   maxClaimKeyUtf8Bytes: 128,
   maxCategoryUtf8Bytes: 128,
   maxClaimTextUtf8Bytes: 4_096,
@@ -173,7 +174,7 @@ function deepFreeze<T>(value: T, seen = new Set<object>()): T {
   return Object.freeze(value)
 }
 function claimOrder(a: O4eReviewerClaim, b: O4eReviewerClaim): number {
-  return cmp(a.path, b.path) || ((a.range?.startLine ?? 0) - (b.range?.startLine ?? 0)) || ((a.range?.endLine ?? 0) - (b.range?.endLine ?? 0)) || cmp(a.claimKey, b.claimKey) || cmp(a.summary, b.summary)
+  return cmp(a.path, b.path) || ((a.range?.startLine ?? 0) - (b.range?.startLine ?? 0)) || ((a.range?.endLine ?? 0) - (b.range?.endLine ?? 0)) || cmp(a.claimKey, b.claimKey) || cmp(a.summary, b.summary) || cmp(canonical(a), canonical(b))
 }
 function normalizeRange(value: unknown, label: string): { startLine: number; endLine: number } | undefined {
   if (value === undefined) return undefined
@@ -213,6 +214,7 @@ function normalizeProviderOutput(response: ModelProviderResponse, maxClaims: num
   if (response.finishReason !== "stop") fail("provider finish reason must be stop")
   if (!Array.isArray(response.toolCalls) || response.toolCalls.length !== 0) fail("provider tool calls are forbidden")
   if (typeof response.assistant !== "string") fail("provider assistant output must be text")
+  if (utf8(response.assistant) > O4E_LIMITS.maxProviderResponseUtf8Bytes) fail("provider assistant output exceeds byte bound")
   let parsed: unknown
   try { parsed = JSON.parse(response.assistant) } catch { fail("provider assistant output must be valid JSON") }
   const root = ownRecord(parsed, "provider output"); keys(root, ["claims"], [], "provider output")
