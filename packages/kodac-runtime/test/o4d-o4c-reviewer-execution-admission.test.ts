@@ -32,6 +32,35 @@ const clone=<T>(x:T):T=>structuredClone(x)
 function canonicalTest(value:unknown):string{if(value===null||typeof value!=="object")return JSON.stringify(value);if(Array.isArray(value))return `[${value.map(canonicalTest).join(",")}]`;const r=value as Obj;return `{${Object.keys(r).sort().map(k=>`${JSON.stringify(k)}:${canonicalTest(r[k])}`).join(",")}}`}
 function resign(value:Obj):Obj{const {admissionIdentity:_old,...rest}=value;value.admissionIdentity=createHash("sha256").update("o4d-reviewer-execution-admission-identity","utf8").update("\0","utf8").update(canonicalTest(rest),"utf8").digest("hex");return value}
 function deepFrozen(v:unknown,seen=new Set<object>()){if(typeof v!=="object"||v===null||seen.has(v))return;seen.add(v);assert.equal(Object.isFrozen(v),true);for(const x of Object.values(v as Obj))deepFrozen(x,seen)}
+function schemaRef(root:Obj,ref:string):Obj{assert.match(ref,/^#\/\$defs\/[A-Za-z0-9_-]+$/);const key=ref.slice("#/$defs/".length);const target=root.$defs?.[key];assert.equal(typeof target,"object",`missing schema ref ${ref}`);assert.notEqual(target,null,`missing schema ref ${ref}`);return target as Obj}
+function schemaTypeMatches(typeName:string,value:unknown):boolean{if(typeName==="null")return value===null;if(typeName==="array")return Array.isArray(value);if(typeName==="object")return typeof value==="object"&&value!==null&&!Array.isArray(value);if(typeName==="integer")return typeof value==="number"&&Number.isInteger(value);return typeof value===typeName}
+function assertSchemaSubset(schema:Obj,value:unknown,root:Obj,label="$"):void{
+ if(typeof schema.$ref==="string"){assertSchemaSubset(schemaRef(root,schema.$ref),value,root,label);return}
+ if(Array.isArray(schema.anyOf)){const errors:unknown[]=[];for(const option of schema.anyOf){try{assertSchemaSubset(option as Obj,value,root,label);return}catch(error){errors.push(error)}}assert.fail(`${label} did not match anyOf (${errors.length} alternatives)`)}
+ if(Object.prototype.hasOwnProperty.call(schema,"const"))assert.deepEqual(value,schema.const,`${label} const mismatch`)
+ if(Array.isArray(schema.enum))assert.equal(schema.enum.some((candidate:unknown)=>JSON.stringify(candidate)===JSON.stringify(value)),true,`${label} enum mismatch`)
+ if(schema.type!==undefined){const types=Array.isArray(schema.type)?schema.type:[schema.type];assert.equal(types.some((typeName:unknown)=>typeof typeName==="string"&&schemaTypeMatches(typeName,value)),true,`${label} type mismatch`)}
+ if(typeof value==="string"){
+  if(typeof schema.minLength==="number")assert.ok([...value].length>=schema.minLength,`${label} minLength`)
+  if(typeof schema.maxLength==="number")assert.ok([...value].length<=schema.maxLength,`${label} maxLength`)
+  if(typeof schema.pattern==="string")assert.match(value,new RegExp(schema.pattern),`${label} pattern`)
+ }
+ if(typeof value==="number"){
+  if(typeof schema.minimum==="number")assert.ok(value>=schema.minimum,`${label} minimum`)
+  if(typeof schema.maximum==="number")assert.ok(value<=schema.maximum,`${label} maximum`)
+ }
+ if(Array.isArray(value)){
+  if(typeof schema.maxItems==="number")assert.ok(value.length<=schema.maxItems,`${label} maxItems`)
+  if(schema.uniqueItems===true)assert.equal(new Set(value.map((item)=>canonicalTest(item))).size,value.length,`${label} uniqueItems`)
+  if(schema.items&&typeof schema.items==="object")value.forEach((item,index)=>assertSchemaSubset(schema.items as Obj,item,root,`${label}[${index}]`))
+ }
+ if(typeof value==="object"&&value!==null&&!Array.isArray(value)){
+  const record=value as Obj,properties=(schema.properties??{}) as Obj
+  if(Array.isArray(schema.required))for(const key of schema.required)assert.equal(Object.prototype.hasOwnProperty.call(record,key),true,`${label}.${key} required`)
+  if(schema.additionalProperties===false)for(const key of Object.keys(record))assert.equal(Object.prototype.hasOwnProperty.call(properties,key),true,`${label}.${key} additional property`)
+  for(const [key,child] of Object.entries(properties))if(Object.prototype.hasOwnProperty.call(record,key))assertSchemaSubset(child as Obj,record[key],root,`${label}.${key}`)
+ }
+}
 const cases:Array<[string,()=>void|Promise<void>]>=[
  ["one changed path admits exact O4-C context",async()=>{const c=await context(),r=admission(c);assert.equal(r.continuationDecision,O4D_READY_DECISION);assert.deepEqual(r.changedPaths,[PRIMARY]);assert.equal(r.items.length,1)}],
  ["multiple changed paths preserve canonical sequence",async()=>{const c=await context({rows:[changed("z.ts"),changed("a.ts")]});const r=admission(c);assert.deepEqual(r.changedPaths,["a.ts","z.ts"]);assert.deepEqual(r.items.map(x=>x.subjectPath),["a.ts","z.ts"])}],
@@ -48,6 +77,12 @@ const cases:Array<[string,()=>void|Promise<void>]>=[
  ["runtime validator accepts canonical output",async()=>{const r=admission(await context());assert.deepEqual(validateO4dO4cReviewerExecutionAdmissionResult(r),r)}],
  ["schema result and item key surfaces match runtime",()=>{const s=JSON.parse(readFileSync(new URL("../../../schema/o4d-o4c-reviewer-execution-admission.schema.json",import.meta.url),"utf8"));assert.deepEqual([...s.required].sort(),[...O4D_ADMISSION_RESULT_KEYS].sort());assert.deepEqual(Object.keys(s.properties).sort(),[...O4D_ADMISSION_RESULT_KEYS].sort());assert.deepEqual([...s.$defs.item.required].sort(),[...O4D_EXECUTION_READY_ITEM_KEYS].sort())}],
  ["schema constants mirror runtime constants",()=>{const s=JSON.parse(readFileSync(new URL("../../../schema/o4d-o4c-reviewer-execution-admission.schema.json",import.meta.url),"utf8"));assert.equal(s.properties.version.const,O4D_REVIEWER_EXECUTION_ADMISSION_VERSION);assert.deepEqual(s.properties.continuationDecision.enum,O4D_CONTINUATION_DECISIONS)}],
+ ["invalid O4-C item identity fails closed",async()=>{const c=clone(await context()) as Obj;c.items[0].itemId="f".repeat(64);assert.throws(()=>admission(c),/invalid O4-C context/)}],
+ ["canonical-base mutation fails closed",async()=>{const c=clone(await context()) as Obj;c.canonicalBase="c".repeat(40);assert.throws(()=>admission(c),/invalid O4-C context/)}],
+ ["reviewed-head mutation fails closed",async()=>{const c=clone(await context()) as Obj;c.reviewedHead="c".repeat(40);assert.throws(()=>admission(c),/invalid O4-C context/)}],
+ ["item byte-length mutation fails closed",async()=>{const c=clone(await context()) as Obj;c.items[0].contextUtf8Bytes+=1;assert.throws(()=>admission(c),/invalid O4-C context/)}],
+ ["content-identity mutation fails closed",async()=>{const c=clone(await context()) as Obj;c.items[0].contentIdentity="e".repeat(64);assert.throws(()=>admission(c),/invalid O4-C context/)}],
+ ["canonical positive result is schema-valid",async()=>{const schema=JSON.parse(readFileSync(new URL("../../../schema/o4d-o4c-reviewer-execution-admission.schema.json",import.meta.url),"utf8")) as Obj;const result=admission(await context({support:["docs/context.md"]}));assertSchemaSubset(schema,result,schema)}],
  ["blocked O4-C decision yields zero execution-ready items",async()=>{const bad=new Uint8Array([255]);const c=await context({rows:[changed(PRIMARY,"modified",bad)],content:{[PRIMARY]:fileBody(PRIMARY,bad)}});const r=admission(c);assert.notEqual(r.continuationDecision,O4D_READY_DECISION);assert.equal(r.items.length,0);assert.equal(r.itemCount,0)}],
  ["task mismatch blocks with zero items",async()=>{const r=admission(await context(),{taskId:"other"});assert.equal(r.continuationDecision,"BLOCK_TASK_ID_MISMATCH");assert.equal(r.items.length,0)}],
  ["invalid O4-C context identity fails closed",async()=>{const c=clone(await context()) as Obj;c.contextIdentity="f".repeat(64);assert.throws(()=>admission(c),/invalid O4-C context/)}],
