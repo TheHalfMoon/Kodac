@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/o4c-github-context-to-reviewer-context.schema.json",
+  "title": "Kodac O4-C GitHub Reviewer Context",
+  "description": "Pure-data, provenance-preserving reviewer context projected from canonical O4-B GitHub context. This schema grants no provider/model execution, GitHub publication, mutation, persistence, sandbox, release, deployment, or project-completion authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "contextIdentity",
+    "taskId",
+    "taskIdentity",
+    "objectiveIdentity",
+    "repositoryId",
+    "repositoryFullName",
+    "pullRequestNumber",
+    "pullRequestId",
+    "canonicalBase",
+    "reviewedHead",
+    "snapshotEvidenceIdentity",
+    "readContextEvidenceIdentity",
+    "changedPathSetIdentity",
+    "changedPaths",
+    "items",
+    "itemIdentities",
+    "itemCount",
+    "totalUtf8Bytes",
+    "omittedSupportingPaths",
+    "omittedSupportingPathCount",
+    "selectionStrategy",
+    "trust",
+    "continuationDecision"
+  ],
+  "properties": {
+    "version": { "const": "kodac-o4c-github-reviewer-context-v1" },
+    "contextIdentity": { "$ref": "#/$defs/sha256" },
+    "taskId": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "taskIdentity": { "$ref": "#/$defs/sha256" },
+    "objectiveIdentity": { "$ref": "#/$defs/sha256" },
+    "repositoryId": { "$ref": "#/$defs/decimalId" },
+    "repositoryFullName": { "$ref": "#/$defs/repositoryName" },
+    "pullRequestNumber": { "type": "integer", "minimum": 1, "maximum": 9007199254740991 },
+    "pullRequestId": { "$ref": "#/$defs/decimalId" },
+    "canonicalBase": { "$ref": "#/$defs/gitSha1" },
+    "reviewedHead": { "$ref": "#/$defs/gitSha1" },
+    "snapshotEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "readContextEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+    "changedPathSetIdentity": { "$ref": "#/$defs/sha256" },
+    "changedPaths": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/path" },
+      "maxItems": 512,
+      "uniqueItems": true
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" },
+      "maxItems": 64
+    },
+    "itemIdentities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/sha256" },
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "itemCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+    "totalUtf8Bytes": { "type": "integer", "minimum": 0, "maximum": 65536 },
+    "omittedSupportingPaths": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/path" },
+      "maxItems": 640,
+      "uniqueItems": true
+    },
+    "omittedSupportingPathCount": { "type": "integer", "minimum": 0, "maximum": 640 },
+    "selectionStrategy": { "const": "kodac.o4c.exact-github-context-v1" },
+    "trust": { "const": "untrusted-repository-data" },
+    "continuationDecision": {
+      "enum": [
+        "READY_FOR_SEPARATELY_AUTHORIZED_REVIEWER_EXECUTION",
+        "BLOCK_O4B_NOT_READY",
+        "BLOCK_O4B_LINEAGE_OR_IDENTITY_MISMATCH",
+        "BLOCK_CHANGED_PATH_CONTEXT_INCOMPLETE",
+        "BLOCK_REVIEWER_CONTEXT_BUDGET"
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gitSha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "decimalId": { "type": "string", "pattern": "^[1-9][0-9]{0,19}$" },
+    "repositoryName": {
+      "type": "string",
+      "pattern": "^(?!\\.{1,2}/)[A-Za-z0-9_.-]{1,100}/(?!\\.{1,2}$)[A-Za-z0-9_.-]{1,100}$",
+      "maxLength": 201
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1024,
+      "pattern": "^(?!/)(?![A-Za-z]:/)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*\\\\)(?!.*//).+$"
+    },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "subjectPath",
+        "readRole",
+        "changedFileStatus",
+        "previousPath",
+        "contentRepositoryId",
+        "contentRepositoryFullName",
+        "contentRevisionSha",
+        "contentRevisionKind",
+        "providerBlobSha",
+        "materializedByteLength",
+        "contentIdentity",
+        "contentRecordIdentity",
+        "readEvidenceIdentity",
+        "readContextEvidenceIdentity",
+        "snapshotEvidenceIdentity",
+        "text",
+        "contextUtf8Bytes",
+        "provenanceRefs",
+        "trust"
+      ],
+      "properties": {
+        "itemId": { "$ref": "#/$defs/sha256" },
+        "subjectPath": { "$ref": "#/$defs/path" },
+        "readRole": { "enum": ["CHANGED_PATH", "SUPPORTING_CONTEXT"] },
+        "changedFileStatus": {
+          "anyOf": [
+            { "enum": ["added", "modified", "removed", "renamed", "copied", "changed", "unchanged"] },
+            { "type": "null" }
+          ]
+        },
+        "previousPath": {
+          "anyOf": [
+            { "$ref": "#/$defs/path" },
+            { "type": "null" }
+          ]
+        },
+        "contentRepositoryId": { "$ref": "#/$defs/decimalId" },
+        "contentRepositoryFullName": { "$ref": "#/$defs/repositoryName" },
+        "contentRevisionSha": { "$ref": "#/$defs/gitSha1" },
+        "contentRevisionKind": { "enum": ["HEAD", "BASE_REMOVED"] },
+        "providerBlobSha": {
+          "anyOf": [
+            { "$ref": "#/$defs/gitSha1" },
+            { "type": "null" }
+          ]
+        },
+        "materializedByteLength": { "type": "integer", "minimum": 0, "maximum": 65536 },
+        "contentIdentity": { "$ref": "#/$defs/sha256" },
+        "contentRecordIdentity": { "$ref": "#/$defs/sha256" },
+        "readEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "readContextEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "snapshotEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "text": { "type": "string", "maxLength": 65536 },
+        "contextUtf8Bytes": { "type": "integer", "minimum": 0, "maximum": 65536 },
+        "provenanceRefs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 1024 },
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "trust": { "const": "untrusted-repository-data" }
+      }
+    }
+  }
+}
