@@ -438,7 +438,8 @@ export function buildO4cGithubReviewerContext(raw: unknown): O4cGithubReviewerCo
 
   const snapshotKeys: Array<keyof O4aRepositorySnapshotInput> = ["repositoryId", "repositoryFullName", "pullRequestNumber", "pullRequestId", "canonicalBase", "reviewedHead", "baseRepositoryId", "headRepositoryId", "headRepositoryFullName", "forkClassification", "snapshotEvidenceIdentity"]
   const snapshotMatches = snapshotKeys.every((key) => canonicalJson(snapshot[key]) === canonicalJson((evidence as unknown as UnknownRecord)[key]))
-  const readIds = reads.map((r) => r.readEvidenceIdentity).sort(compareStrings)
+  const orderedReadIds = reads.map((r) => r.readEvidenceIdentity)
+  const expectedOrderedReadIds = evidence.contentRecords.map((record) => record.readEvidenceIdentity)
   const contentByKey = new Map(evidence.contentRecords.map((record) => [`${record.path}\0${record.readRole}`, record]))
   const contentItems: O4bTransientContentItem[] = []
   for (let i = 0; i < rawItems.length; i += 1) {
@@ -453,9 +454,9 @@ export function buildO4cGithubReviewerContext(raw: unknown): O4cGithubReviewerCo
   }
   const outerLineageMatches = snapshotMatches
     && sameStrings(outerChanged, evidence.changedPaths)
-    && sameStrings(readIds, evidence.readEvidenceIdentities)
+    && sameStrings(orderedReadIds, expectedOrderedReadIds)
     && contentItems.length === evidence.contentRecords.length
-    && sameStrings(contentItems.map((i) => i.contentRecordIdentity).sort(compareStrings), evidence.contentRecordIdentities)
+    && sameStrings(contentItems.map((i) => i.contentRecordIdentity), evidence.contentRecords.map((record) => record.contentRecordIdentity))
   const supportingUniverse = contentItems.filter((i) => i.readRole === "SUPPORTING_CONTEXT").map((i) => i.path).sort(compareUtf8)
   if (!outerLineageMatches) return baseResult(taskId, taskIdentity, objectiveIdentity, evidence, "BLOCK_O4B_LINEAGE_OR_IDENTITY_MISMATCH", [], supportingUniverse)
   if (evidence.continuationDecision !== "READY_FOR_O4A_REVIEW") return baseResult(taskId, taskIdentity, objectiveIdentity, evidence, "BLOCK_O4B_NOT_READY", [], supportingUniverse)
