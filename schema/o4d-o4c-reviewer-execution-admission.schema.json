@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.dev/schema/o4d-o4c-reviewer-execution-admission.schema.json",
+  "title": "Kodac O4-D O4-C Reviewer Execution Admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version", "admissionIdentity", "taskId", "policyIdentity", "canonicalBase", "reviewedHead",
+    "instructions", "instructionsIdentity", "contextProtocol", "contextIdentity", "contextSelectionStrategy",
+    "changedPathSetIdentity", "changedPaths", "items", "itemIdentities", "itemCount", "totalUtf8Bytes",
+    "omittedSupportingPaths", "omittedSupportingPathCount", "trust", "continuationDecision"
+  ],
+  "properties": {
+    "version": { "const": "kodac-o4d-o4c-reviewer-execution-admission-v1" },
+    "admissionIdentity": { "$ref": "#/$defs/sha256" },
+    "taskId": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "policyIdentity": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "canonicalBase": { "$ref": "#/$defs/gitSha1" },
+    "reviewedHead": { "$ref": "#/$defs/gitSha1" },
+    "instructions": { "type": "string", "minLength": 1, "maxLength": 8192 },
+    "instructionsIdentity": { "$ref": "#/$defs/sha256" },
+    "contextProtocol": { "const": "kodac-o4c-github-reviewer-context-v1" },
+    "contextIdentity": { "$ref": "#/$defs/sha256" },
+    "contextSelectionStrategy": { "const": "kodac.o4c.exact-github-context-v1" },
+    "changedPathSetIdentity": { "$ref": "#/$defs/sha256" },
+    "changedPaths": {
+      "type": "array", "maxItems": 512, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/repositoryPath" }
+    },
+    "items": {
+      "type": "array", "maxItems": 64, "items": { "$ref": "#/$defs/item" }
+    },
+    "itemIdentities": {
+      "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" }
+    },
+    "itemCount": { "type": "integer", "minimum": 0, "maximum": 64 },
+    "totalUtf8Bytes": { "type": "integer", "minimum": 0, "maximum": 65536 },
+    "omittedSupportingPaths": {
+      "type": "array", "maxItems": 640, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/repositoryPath" }
+    },
+    "omittedSupportingPathCount": { "type": "integer", "minimum": 0, "maximum": 640 },
+    "trust": { "const": "untrusted-repository-data" },
+    "continuationDecision": {
+      "enum": [
+        "READY_FOR_SEPARATELY_AUTHORIZED_REVIEWER_PROVIDER_EXECUTION",
+        "BLOCK_O4C_NOT_READY",
+        "BLOCK_O4C_LINEAGE_OR_IDENTITY_MISMATCH",
+        "BLOCK_TASK_ID_MISMATCH",
+        "BLOCK_EXECUTION_ADMISSION_INPUT"
+      ]
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gitSha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "repositoryPath": {
+      "type": "string", "minLength": 1, "maxLength": 1024,
+      "pattern": "^(?!/)(?![A-Za-z]:/)(?!.*\\\\)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*//).+$"
+    },
+    "provenanceRef": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId", "subjectPath", "readRole", "changedFileStatus", "previousPath", "contentRevisionSha",
+        "contentRevisionKind", "contentIdentity", "contentRecordIdentity", "readEvidenceIdentity",
+        "readContextEvidenceIdentity", "snapshotEvidenceIdentity", "text", "contextUtf8Bytes", "provenanceRefs", "trust"
+      ],
+      "properties": {
+        "itemId": { "$ref": "#/$defs/sha256" },
+        "subjectPath": { "$ref": "#/$defs/repositoryPath" },
+        "readRole": { "enum": ["CHANGED_PATH", "SUPPORTING_CONTEXT"] },
+        "changedFileStatus": {
+          "type": ["string", "null"],
+          "enum": ["added", "modified", "removed", "renamed", "copied", "changed", "unchanged", null]
+        },
+        "previousPath": { "anyOf": [{ "$ref": "#/$defs/repositoryPath" }, { "type": "null" }] },
+        "contentRevisionSha": { "$ref": "#/$defs/gitSha1" },
+        "contentRevisionKind": { "enum": ["HEAD", "BASE_REMOVED"] },
+        "contentIdentity": { "$ref": "#/$defs/sha256" },
+        "contentRecordIdentity": { "$ref": "#/$defs/sha256" },
+        "readEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "readContextEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "snapshotEvidenceIdentity": { "$ref": "#/$defs/sha256" },
+        "text": { "type": "string", "maxLength": 65536 },
+        "contextUtf8Bytes": { "type": "integer", "minimum": 0, "maximum": 65536 },
+        "provenanceRefs": {
+          "type": "array", "maxItems": 32, "uniqueItems": true, "items": { "$ref": "#/$defs/provenanceRef" }
+        },
+        "trust": { "const": "untrusted-repository-data" }
+      }
+    }
+  }
+}
