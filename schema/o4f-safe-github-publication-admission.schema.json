@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.invalid/schema/o4f-safe-github-publication-admission.schema.json",
+  "title": "Kodac O4-F Safe GitHub Publication Admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "publicationAdmissionIdentity",
+    "status",
+    "repositoryId",
+    "repositoryFullName",
+    "pullRequestNumber",
+    "pullRequestId",
+    "canonicalBase",
+    "reviewedHead",
+    "o4cContextIdentity",
+    "o4dAdmissionIdentity",
+    "o4eExecutionIdentity",
+    "taskId",
+    "policyIdentity",
+    "changedPathSetIdentity",
+    "publicationRequestCount",
+    "publicationRequests",
+    "continuationDecision"
+  ],
+  "properties": {
+    "version": {
+      "const": "kodac-o4f-safe-github-publication-admission-v1"
+    },
+    "publicationAdmissionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "READY",
+        "BLOCK_PREDECESSOR_NOT_READY",
+        "BLOCK_LINEAGE_OR_IDENTITY_MISMATCH",
+        "BLOCK_PUBLICATION_BODY_BUDGET",
+        "BLOCK_PUBLICATION_REQUEST_CONSTRUCTION"
+      ]
+    },
+    "repositoryId": {
+      "type": "string",
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "repositoryFullName": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}$"
+    },
+    "pullRequestNumber": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pullRequestId": {
+      "type": "string",
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "canonicalBase": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "reviewedHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "o4cContextIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "o4dAdmissionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "o4eExecutionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "policyIdentity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "changedPathSetIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "publicationRequestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65
+    },
+    "publicationRequests": {
+      "type": "array",
+      "maxItems": 65,
+      "items": {
+        "$ref": "#/$defs/publicationRequest"
+      }
+    },
+    "continuationDecision": {
+      "enum": [
+        "READY_FOR_SEPARATELY_AUTHORIZED_GITHUB_PUBLICATION",
+        "BLOCK_PREDECESSOR_NOT_READY",
+        "BLOCK_LINEAGE_OR_IDENTITY_MISMATCH",
+        "BLOCK_PUBLICATION_BODY_BUDGET",
+        "BLOCK_PUBLICATION_REQUEST_CONSTRUCTION"
+      ]
+    }
+  },
+  "$defs": {
+    "publicationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "publicationRequestIdentity",
+        "publicationSlotIdentity",
+        "publicationClass",
+        "repositoryId",
+        "repositoryFullName",
+        "pullRequestNumber",
+        "reviewedHead",
+        "o4eExecutionIdentity",
+        "bodyText",
+        "bodyIdentity",
+        "bodyByteLength",
+        "claimIdentity",
+        "path",
+        "lineAnchor",
+        "sideHint",
+        "requiresDiffAnchorPreflight"
+      ],
+      "properties": {
+        "publicationRequestIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "publicationSlotIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "publicationClass": {
+          "enum": [
+            "TOP_LEVEL_REVIEW_SUMMARY",
+            "INLINE_FINDING_COMMENT"
+          ]
+        },
+        "repositoryId": {
+          "type": "string",
+          "pattern": "^(?:[1-9][0-9]{0,19})$"
+        },
+        "repositoryFullName": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}$"
+        },
+        "pullRequestNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewedHead": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "o4eExecutionIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bodyText": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 65536
+        },
+        "bodyIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bodyByteLength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        },
+        "claimIdentity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1024
+        },
+        "lineAnchor": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 10000000
+        },
+        "sideHint": {
+          "enum": [
+            "RIGHT",
+            null
+          ]
+        },
+        "requiresDiffAnchorPreflight": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
