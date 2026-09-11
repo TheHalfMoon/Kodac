@@ -60,7 +60,8 @@
     "itemIdentities": {
       "type": "array",
       "items": { "$ref": "#/$defs/sha256" },
-      "maxItems": 64
+      "maxItems": 64,
+      "uniqueItems": true
     },
     "itemCount": { "type": "integer", "minimum": 0, "maximum": 64 },
     "totalUtf8Bytes": { "type": "integer", "minimum": 0, "maximum": 65536 },

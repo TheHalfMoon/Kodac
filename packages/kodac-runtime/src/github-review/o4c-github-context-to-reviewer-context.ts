@@ -457,7 +457,7 @@ export function buildO4cGithubReviewerContext(raw: unknown): O4cGithubReviewerCo
     && sameStrings(orderedReadIds, expectedOrderedReadIds)
     && contentItems.length === evidence.contentRecords.length
     && sameStrings(contentItems.map((i) => i.contentRecordIdentity), evidence.contentRecords.map((record) => record.contentRecordIdentity))
-  const supportingUniverse = contentItems.filter((i) => i.readRole === "SUPPORTING_CONTEXT").map((i) => i.path).sort(compareUtf8)
+  const supportingUniverse = evidence.contentRecords.filter((record) => record.readRole === "SUPPORTING_CONTEXT").map((record) => record.path).sort(compareUtf8)
   if (!outerLineageMatches) return baseResult(taskId, taskIdentity, objectiveIdentity, evidence, "BLOCK_O4B_LINEAGE_OR_IDENTITY_MISMATCH", [], supportingUniverse)
   if (evidence.continuationDecision !== "READY_FOR_O4A_REVIEW") return baseResult(taskId, taskIdentity, objectiveIdentity, evidence, "BLOCK_O4B_NOT_READY", [], supportingUniverse)
 
