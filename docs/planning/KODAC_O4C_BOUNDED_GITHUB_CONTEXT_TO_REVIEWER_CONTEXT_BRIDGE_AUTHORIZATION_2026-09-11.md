@@ -130,6 +130,8 @@ O4B_CONTINUATION_DECISION = READY_FOR_O4A_REVIEW
 SNAPSHOT_EVIDENCE_IDENTITY = EXACTLY_BOUND
 READ_CONTEXT_EVIDENCE_IDENTITY = EXACTLY_BOUND
 CHANGED_PATH_SET_IDENTITY = EXACTLY_BOUND
+CHANGED_PATH_ARRAY = EXACTLY_EQUAL_TO_O4B_CHANGED_PATHS_IN_CANONICAL_ORDER
+CHANGED_PATH_COUNT = EXACTLY_BOUND
 READ_EVIDENCE_SET_IDENTITY = EXACTLY_BOUND
 CONTENT_RECORD_SET = EXACTLY_BOUND
 CANONICAL_BASE = CONSISTENT_ACROSS_SNAPSHOT_AND_READ_CONTEXT_EVIDENCE
@@ -143,7 +145,9 @@ ALL_CHANGED_PATH_CONTENT_RECORDS = PRESENT_AND_IDENTITY_MATCHED
 
 A supporting-context record may be admitted only when its O4-B content record, read evidence, exact revision, path, identity, and full text all agree. O4-C may never synthesize unseen repository bytes.
 
-Any O4-B `TRUNCATED` changed path, blocked O4-B continuation decision, identity mismatch, missing content item, missing read evidence, missing content record, duplicate changed path, stale/moved lineage, or malformed predecessor surface must fail closed before producing reviewer-ready context.
+The successful O4-C `changedPaths[]` array must be exactly equal, element-for-element and in the same canonical order, to the validated O4-B `readContextEvidence.changedPaths` array. Its length must equal O4-B `changedPathCount`, and the ordered paths of all `CHANGED_PATH` reviewer items must equal that same array. Missing, extra, duplicated, substituted, or reordered changed paths are lineage failures even if aggregate identities or content identities would otherwise validate.
+
+Any O4-B `TRUNCATED` changed path, blocked O4-B continuation decision, identity mismatch, missing content item, missing read evidence, missing content record, duplicate changed path, changed-path array mismatch, stale/moved lineage, or malformed predecessor surface must fail closed before producing reviewer-ready context.
 
 ## Exact byte-to-reviewer-item binding
 
@@ -239,9 +243,10 @@ O4-C v1 performs no heuristic, lexical, structural, model-driven, or relevance-r
 2. then admit `FULL` O4-B supporting-context items in canonical O4-B path order only if the aggregate reviewer-context budget remains positive;
 3. never drop, truncate, summarize, or partially include a changed-path item;
 4. if every changed-path item cannot fit exactly, return a non-positive budget decision rather than reviewer-ready context;
-5. supporting context may be omitted only through the explicit deterministic budget rule and its omission must be bound into the result identity and accounting.
+5. supporting context may be omitted only through the explicit deterministic budget rule and its omission must be bound into the result identity and accounting;
+6. preserve `changedPaths[]` exactly from validated O4-B evidence, including canonical order; the result may neither recompute a differently ordered array nor derive it from a subset of materialized items.
 
-The result must never claim complete reviewer context when any changed-path byte is absent.
+The result must never claim complete reviewer context when any changed-path byte is absent or when the result changed-path array differs from O4-B by value, count, or order.
 
 ## Reviewer-context budgets
 
@@ -297,7 +302,8 @@ The future implementation schema must:
 7. require deterministic item and aggregate accounting;
 8. distinguish changed-path and supporting-context roles;
 9. preserve O4-B revision kind and predecessor identities;
-10. contain no raw credential field, provider/model field, GitHub write field, publication body field, persistence field, or deployment field.
+10. require exact value/count/order equality between result `changedPaths[]` and validated O4-B `changedPaths`;
+11. contain no raw credential field, provider/model field, GitHub write field, publication body field, persistence field, or deployment field.
 
 The schema is a validation/documentation boundary only. It does not grant wire transport, persistence, provider, or publication authority.
 
@@ -311,7 +317,7 @@ The future implementation candidate must cover at minimum:
 - exact fork-repository O4-B result;
 - removed-path `BASE_REMOVED` content preservation;
 - renamed-path metadata preservation;
-- multiple changed paths with deterministic canonical order;
+- multiple changed paths with exact O4-B array equality and deterministic canonical order;
 - supporting-context admission within budget;
 - deterministic repeat execution producing byte-identical serialized result;
 - exact UTF-8 byte identity preservation including LF and CRLF content;
@@ -328,6 +334,10 @@ The future implementation candidate must cover at minimum:
 - mismatched snapshot/read-context reviewed head;
 - mismatched repository/PR identities;
 - changed-path set mismatch;
+- output changed-path array missing one O4-B path;
+- output changed-path array containing an extra path;
+- output changed-path array with the same members in a different order;
+- changed-path item sequence differing from the exact O4-B changed-path array;
 - duplicate changed path or duplicate item identity;
 - full-content SHA-256 mismatch;
 - materialized byte-length mismatch;
