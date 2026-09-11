@@ -109,7 +109,7 @@ function makeFixture(options: FixtureOptions = {}): { run: () => Promise<O4bBoun
   const times = ["2026-09-11T01:00:00.000Z", "2026-09-11T01:00:01.000Z"]
   return { run: () => acquireO4bBoundedReadOnlyGithubContext(input, { fetchImpl, now: () => times[Math.min(clock++, 1)]! }) }
 }
-function bridgeInput(result: O4bBoundedReadOnlyGithubContextResult, overrides: Obj = {}): Obj {
+function bridgeInput(result: unknown, overrides: Obj = {}): Obj {
   return { taskId: "review-pr-42", objective: "Review the exact changed paths for correctness and safety.", o4bContext: result, ...overrides }
 }
 function clone<T>(value: T): T { return structuredClone(value) }

@@ -492,7 +492,7 @@ export function buildO4cGithubReviewerContext(raw: unknown): O4cGithubReviewerCo
 
 function normalizeResultItem(raw: unknown, index: number): O4cReviewerContextItem {
   const r = ownExactRecord(raw, O4C_REVIEWER_CONTEXT_ITEM_KEYS, `result.items[${index}]`)
-  const role = r.readRole === "CHANGED_PATH" || r.readRole === "SUPPORTING_CONTEXT" ? r.readRole : fail("result item readRole is unsupported")
+  const role: O4cReadRole = r.readRole === "CHANGED_PATH" || r.readRole === "SUPPORTING_CONTEXT" ? r.readRole : fail("result item readRole is unsupported")
   let changedFileStatus: O4bCanonicalContentRecord["changedFileStatus"] = null
   if (r.changedFileStatus !== null) {
     const status = boundedText(r.changedFileStatus, "result item changedFileStatus", 16)
@@ -504,7 +504,7 @@ function normalizeResultItem(raw: unknown, index: number): O4cReviewerContextIte
   if (changedFileStatus === "renamed") {
     if (previousPath === null || previousPath === r.subjectPath) fail("renamed result item requires a distinct previous path")
   } else if (previousPath !== null) fail("non-renamed result item must not carry previous-path authority")
-  const revisionKind = r.contentRevisionKind === "HEAD" || r.contentRevisionKind === "BASE_REMOVED" ? r.contentRevisionKind : fail("result item revision kind is unsupported")
+  const revisionKind: O4cContentRevisionKind = r.contentRevisionKind === "HEAD" || r.contentRevisionKind === "BASE_REMOVED" ? r.contentRevisionKind : fail("result item revision kind is unsupported")
   if (role === "SUPPORTING_CONTEXT" && revisionKind !== "HEAD") fail("supporting result item must bind HEAD")
   if (role === "CHANGED_PATH" && revisionKind !== (changedFileStatus === "removed" ? "BASE_REMOVED" : "HEAD")) fail("changed result item revision kind/status mismatch")
   const text = boundedText(r.text, "result item text", O4C_LIMITS.maxContextItemUtf8Bytes, true)
