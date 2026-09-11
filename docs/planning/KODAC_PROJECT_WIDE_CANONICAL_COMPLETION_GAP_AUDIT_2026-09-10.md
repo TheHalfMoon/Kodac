@@ -23,14 +23,18 @@ POST_O4C_RECONCILIATION = CLOSED_CANONICAL / PR #596 / merge 46306f1b02ab3c32c15
 O4D_AUTHORIZATION = CLOSED_CANONICAL / PR #597 / merge ee3bc05e19ff97a5f9aab0c060f5f3baea8cdc42 / proof 5639129573
 O4D_IMPLEMENTATION = CLOSED_CANONICAL / PR #598 / merge cc0f5cb793e6e136f7192c71ebb29d7bb1d53c8a / proof 5640392166
 POST_O4D_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #599 / merge f35c77ed9a58e4463a0c08ba2e3cc617dc8a489b / proof 5640475111
-POST_O4D_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4D_RECONCILIATION = CLOSED_CANONICAL / PR #600 / merge 62e49779a92f13428d0343974e38e16bf957dd58 / proof 5640666949
+O4E_AUTHORIZATION = CLOSED_CANONICAL / PR #601 / merge d422ccf5a5587b4b96e9a68722e45a148b495fc4 / proof 5640754422
+O4E_IMPLEMENTATION = CLOSED_CANONICAL / PR #602 / merge 8874a91916c6f9b5a2100254583bd4c9d2ee9d55 / proof 5641093369
+POST_O4E_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #603 / merge 8c0333836fabaa1d9f4db451bd15d1b4fbda8ed4 / proof 5641275010
+POST_O4E_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 PROJECT_COMPLETION = NOT_ESTABLISHED
 PHASE_OVERALL_STATUS_MUTATION = NONE
 IMPLEMENTATION_AUTHORITY = NONE
 WAIVER = NO
 ```
 
-This file is the authorized post-O4-C reconciliation candidate for the already-canonical project-wide audit. The baseline audit remains closed canonical at PR #572 / proof `5622021535`; post-O4-B reconciliation is externally closed canonical at PR #592 / proof `5635622515`; O4-C authorization and implementation are externally closed canonical at PRs #593-#594 / proofs `5636973578` and `5637965527`; and post-O4-C reconciliation authorization is externally closed canonical at PR #595 / proof `5638430775`. This modified reconciliation cannot certify its own closure. It re-audits the same 25 criteria against canonical evidence through PR #595 and creates no successor implementation, provider/model execution, publication, persistence, telemetry, donor adoption, release, phase-overall, or project-completion authority.
+This file is the authorized post-O4-E reconciliation candidate for the already-canonical project-wide audit. The baseline audit remains closed canonical at PR #572 / proof `5622021535`; post-O4-D reconciliation is externally closed canonical at PR #600 / proof `5640666949`; O4-E authorization and implementation are externally closed canonical at PRs #601-#602 / proofs `5640754422` and `5641093369`; and post-O4-E reconciliation authorization is externally closed canonical at PR #603 / proof `5641275010`. This modified reconciliation cannot certify its own closure. It re-audits the same 25 criteria against canonical evidence through PR #603 and creates no successor implementation, GitHub publication/write, persistence, telemetry, donor adoption, release, phase-overall, or project-completion authority.
 
 ## Canonical authority and live snapshot
 
@@ -57,7 +61,15 @@ POST_O4B_RECONCILIATION = PR #592 / merge 76514ae63735fb7ed98d2579404697cc6a6ac2
 O4C_AUTHORIZATION = PR #593 / merge ce9acde7f32fa0d3d2fa9d5152e19c76ab3198f2 / proof 5636973578
 O4C_IMPLEMENTATION = PR #594 / merge 8cf4cc357e378d673521c488c317301c6b157ece / proof 5637965527
 POST_O4C_RECONCILIATION_AUTHORIZATION = PR #595 / merge 17c58b55ddf7656b02cd0363fbbb3b6d0a9c4efe / proof 5638430775
-CANONICAL_MAIN_AT_RECONCILIATION_CONSTRUCTION = 17c58b55ddf7656b02cd0363fbbb3b6d0a9c4efe
+POST_O4C_RECONCILIATION = PR #596 / merge 46306f1b02ab3c32c15c26a1dba38d04683c14d0 / proof 5638640497
+O4D_AUTHORIZATION = PR #597 / merge ee3bc05e19ff97a5f9aab0c060f5f3baea8cdc42 / proof 5639129573
+O4D_IMPLEMENTATION = PR #598 / merge cc0f5cb793e6e136f7192c71ebb29d7bb1d53c8a / proof 5640392166
+POST_O4D_RECONCILIATION_AUTHORIZATION = PR #599 / merge f35c77ed9a58e4463a0c08ba2e3cc617dc8a489b / proof 5640475111
+POST_O4D_RECONCILIATION = PR #600 / merge 62e49779a92f13428d0343974e38e16bf957dd58 / proof 5640666949
+O4E_AUTHORIZATION = PR #601 / merge d422ccf5a5587b4b96e9a68722e45a148b495fc4 / proof 5640754422
+O4E_IMPLEMENTATION = PR #602 / merge 8874a91916c6f9b5a2100254583bd4c9d2ee9d55 / proof 5641093369
+POST_O4E_RECONCILIATION_AUTHORIZATION = PR #603 / merge 8c0333836fabaa1d9f4db451bd15d1b4fbda8ed4 / proof 5641275010
+CANONICAL_MAIN_AT_RECONCILIATION_CONSTRUCTION = 8c0333836fabaa1d9f4db451bd15d1b4fbda8ed4
 RULESET_20707483 = ACTIVE / NO_BYPASS
 GIT_TAGS = 0
 GITHUB_RELEASES = 0
@@ -75,7 +87,7 @@ docs/roadmap/VERSION_PLAN.md
 docs/product/STATUS.md
 ```
 
-The six preimage blobs at canonical base `17c58b55ddf7656b02cd0363fbbb3b6d0a9c4efe` are observations used to detect unauthorized drift: audit `95a7bba13fdab6c6c1dcebe10b14d8f8ee4e4ab2`, NEXT `dbc70f94cbd2b9b732b3d17dd32b8af7407b835a`, ROADMAP `d8dc7bfd43ca75b537490669d7d4775602ddc462`, MILESTONES `7e93a4e0ae6717676ceb8b0e6911a741c58c1ce5`, VERSION_PLAN `dec0079680c0ece0593e329abdeb4963c244de49`, and STATUS `0e875b2fc66c4d1b1690d53d88b98e4392129e3b`. The resulting candidate must independently qualify its new blobs.
+The six preimage blobs at canonical base `8c0333836fabaa1d9f4db451bd15d1b4fbda8ed4` are observations used to detect unauthorized drift: audit `677e77f7b387edfeb1e6a12b409729199aa30e96`, NEXT `9fac9da10916a0a7f192b039d50f033708f42601`, ROADMAP `b3e0a28043074e443f1cd14e373bfb33ca2791e4`, MILESTONES `5638885d3b0f85141052686e5c451f35c613e399`, VERSION_PLAN `064159b27091bc57b502a00b6f8b2a36b99a44aa`, and STATUS `ef9888369118c46a587a00f77c48a0194772b262`. The resulting candidate must independently qualify its new blobs.
 
 ## Evidence identity binding
 
@@ -83,13 +95,16 @@ The audit binds the repository snapshot through exact Git blobs read from canoni
 
 ```text
 AGENTS.md = 1eca5018cbfb829f6da1ac417457e0abc5fd2371
-NEXT.md = dbc70f94cbd2b9b732b3d17dd32b8af7407b835a
-ROADMAP.md = d8dc7bfd43ca75b537490669d7d4775602ddc462
-MILESTONES.md = 7e93a4e0ae6717676ceb8b0e6911a741c58c1ce5
-VERSION_PLAN.md = dec0079680c0ece0593e329abdeb4963c244de49
-STATUS.md = 0e875b2fc66c4d1b1690d53d88b98e4392129e3b
+NEXT.md = 9fac9da10916a0a7f192b039d50f033708f42601
+ROADMAP.md = b3e0a28043074e443f1cd14e373bfb33ca2791e4
+MILESTONES.md = 5638885d3b0f85141052686e5c451f35c613e399
+VERSION_PLAN.md = 064159b27091bc57b502a00b6f8b2a36b99a44aa
+STATUS.md = ef9888369118c46a587a00f77c48a0194772b262
 KODAC_INTELLIGENCE_IMPROVEMENT_MASTER_PLAN_2026-08-26.md = 9b4b478a0485196263e7595649310dd5e5f9259f
 KODAC_OPENREVIEW_SELECTIVE_SOURCE_ADOPTION_AND_DURABLE_REVIEW_ORCHESTRATION_MASTER_PLAN_V2_AMENDMENT_2026-09-07.md = a5779a5bbb05236fcfb421dd266f321ad3a69277
+KODAC_O4E_MODEL_BACKED_O4D_REVIEWER_PROVIDER_EXECUTION_AUTHORIZATION_2026-09-12.md = 8bf4d451c8c4aa450bbb7f74639c87d8df5d8b09
+O4E_MODEL_BACKED_REVIEWER_PROVIDER_EXECUTION_SOURCE = 62dc1e7d57a406b601d5d81ae925cd01f7f019cc
+O4E_MODEL_BACKED_REVIEWER_PROVIDER_EXECUTION_SCHEMA = e235c73200b755cb5c5a57c849369ef868572460
 K2_CLOSEOUT = cc698755345bfe447b8dc4946f6ce39228b834cb
 K3_CLOSEOUT = c3a8de53f4512185112119d4e34ec9a71298870b
 K4_CLOSEOUT = 3434f4cb97ee5a83dae9c33a2e4b9152e0c063ff
@@ -126,7 +141,8 @@ O3_GENERAL_FILESYSTEM_DISCOVERY_INSTALLATION_OR_SKILL_EXECUTION_RUNTIME = NOT_ES
 O4A_PURE_DATA_REVIEW_PRODUCT_LINEAGE = CLOSED_CANONICAL_BOUNDED / PR #586 / proof 5627038508
 O4B_BOUNDED_READ_ONLY_GITHUB_CONTEXT = CLOSED_CANONICAL_BOUNDED / PR #590 / proof 5628651791
 O4C_GITHUB_CONTEXT_TO_REVIEWER_CONTEXT_BRIDGE = CLOSED_CANONICAL_BOUNDED / PR #594 / proof 5637965527
-O4_PRODUCTION_REVIEWER_PROVIDER_EXECUTION = NOT_ESTABLISHED
+O4E_MODEL_BACKED_REVIEWER_EXECUTION = CLOSED_CANONICAL_BOUNDED / PR #602 / proof 5641093369
+O4_PROVIDER_CONSTRUCTION_CREDENTIAL_CONFIGURATION = NOT_ESTABLISHED_BY_O4E / CALLER_BOUNDARY
 O4_GITHUB_REVIEW_OR_COMMENT_PUBLICATION = NOT_ESTABLISHED
 PERSISTENT_P9_DEPENDENCY_INDEX = NOT_FOUND
 CONTINUOUS_P9_WATCHER_RUNTIME = NOT_FOUND
@@ -137,7 +153,7 @@ PUBLIC_PACKAGE_PUBLICATION = NOT_FOUND
 
 `packages/kodac-runtime/src/protocol/event.ts` is an internal `kodac.event` sink/protocol with generated event IDs and session sequence. It is not authenticated GitHub event ingestion and must not be counted as O1.
 
-The repository now also has bounded canonical O2, O3, O1 issue-comment, O4-A pure-data lineage, O4-B live read-only GitHub context, and O4-C provenance-preserving reviewer-context bridging. Those closures are real but remain narrower than persistence-backed workflow execution, general skill execution, deployed ingress, live production reviewer-provider execution, or GitHub publication.
+The repository now also has bounded canonical O2, O3, O1 issue-comment, O4-A pure-data lineage, O4-B live read-only GitHub context, O4-C provenance-preserving reviewer context, O4-D execution admission, and O4-E bounded model-backed reviewer execution. Those closures are real but remain narrower than persistence-backed workflow execution, general skill execution, deployed ingress, GitHub review/comment publication, or a complete end-to-end product path.
 
 ## OpenReview-derived program completion criteria
 
@@ -148,7 +164,7 @@ Each criterion below uses exactly one authorized classification.
 | AUTHENTICATED_REPLAY_SAFE_EVENT_INGESTION | PARTIAL_CANONICAL | PR #574 / proof `5622532026` and PR #583 / proof `5625935288` canonically prove bounded raw-body authentication/strict parsing plus a separately versioned `issue_comment/created` evidence path with caller-materialized PR-head binding. Persistence-backed replay protection, atomic cross-process duplicate claim, retention/crash recovery, deployed listener/GitHub App, and end-to-end product ingress remain unproven. |
 | DURABLE_WORKFLOW_RETRY_RESUME_LEASE_CANCELLATION_MIGRATION | PARTIAL_CANONICAL | O2 implementation PR #578 / proof `5624406028` canonically proves the bounded pure-data workflow definition/run/step identity model, explicit transition evidence, retry/idempotency lineage, subject leases, cancellation, resume freshness, definition drift, and migration evidence. Durable persistence, a worker/scheduler/queue, distributed locking, process-crash recovery, and privileged side-effect execution remain unproven. |
 | TRUST_GATED_SKILLS | PARTIAL_CANONICAL | O3 implementation PR #580 / proof `5625068569` canonically proves the bounded pure-data progressive skill trust/admission gate on top of earlier K4/P7 skill evidence. General filesystem discovery, installation, dynamic instruction/code execution, network retrieval, and a production skill runtime remain unproven. |
-| PROVIDER_NEUTRAL_READ_ONLY_REVIEW | PARTIAL_CANONICAL | O4-A implementation PR #586 / proof `5627038508` binds authenticated trigger and review-lineage evidence; O4-B PR #590 / proof `5628651791` adds bounded exact-route live GitHub reads and verified content; O4-C PR #594 / proof `5637965527` adds deterministic provenance-preserving reviewer context; O4-D PR #598 / proof `5640392166` adds a distinct O4-C-native reviewer-execution admission envelope without impersonating K3-R5. The wider criterion remains partial because no production model-backed `ReviewerProvider` execution is established, GitHub review/comment publication is not established, and the end-to-end product path remains incomplete. |
+| PROVIDER_NEUTRAL_READ_ONLY_REVIEW | PARTIAL_CANONICAL | O4-A implementation PR #586 / proof `5627038508` binds authenticated trigger and review-lineage/publication-intent evidence; O4-B PR #590 / proof `5628651791` adds bounded exact-route live GitHub reads and verified content; O4-C PR #594 / proof `5637965527` adds deterministic provenance-preserving reviewer context; O4-D PR #598 / proof `5640392166` adds O4-C-native execution admission; O4-E PR #602 / proof `5641093369` adds bounded model-backed execution through an injected `ModelProvider` with exact-head checks, no tools, bounded output, and evidence-bound claims. The wider criterion remains partial because GitHub review/comment publication, publication idempotency/receipt evidence, and the complete end-to-end product path remain unestablished. |
 | ADMITTED_SANDBOX_CLEANUP_PROOF | PARTIAL_CANONICAL | H4 canonically proves bounded gVisor physical CPU/memory/network/TTL/output conjunction and durable lifecycle cleanup/recovery primitives, with exact sandbox approval/admission contracts present. The repository does not have a single OpenReview O5 backend-neutral admitted-sandbox adapter closure proving the complete current product-path checkout-to-cleanup lifecycle across an admitted backend. |
 | IMMUTABLE_PATCH_PROPOSALS | PROVEN_CANONICAL | P7-R1 immutable patch proposal is canonical: authorization PR #352 / proof 5552233040; implementation PR #353 / proof 5552429216. P7 bounded closeout revalidates the R1-R30 lineage. |
 | K2_BACKED_EXACT_MUTATION | PROVEN_CANONICAL | K2 is closed as the trusted side-effect boundary. P7-R2 canonical patch-application chain is authorization PR #356 / proof 5552630320 and implementation PR #357 / proof 5552730805; later P7 bindings preserve exact-head and receipt evidence. |
@@ -158,7 +174,7 @@ Each criterion below uses exactly one authorized classification.
 | ADVERSARIAL_BENCHMARKS | PARTIAL_CANONICAL | P2/P3 contain deterministic benchmark fixtures, provenance, hostile/adversarial tests, context measurements, two-case reduction/comparison evidence, and benchmark hooks. P2/P3 closeouts explicitly leave general/public KodacBench and real benchmark participant/task execution unclosed/unauthorized. OpenReview adversarial families therefore are not proven end-to-end. |
 | NO_BROAD_SHELL_OR_GITHUB_CREDENTIAL_ESCAPE_HATCH | PARTIAL_CANONICAL | K2/H4 execution paths use typed policy, bounded argv, `shell:false`, exact sandbox admission, physical confinement and no ambient product GitHub write-token contract. Trusted CI workflows do use scoped GitHub tokens for repository evidence. A dedicated project-wide proof that every default privileged path lacks a broad shell/GitHub credential escape hatch has not been canonically closed. |
 | EXACT_DONOR_MAPPING_FOR_COPIED_OR_DERIVED_CODE | PARTIAL_CANONICAL | Canonical provenance machinery exists (`provenance/imports`, `provenance/authorizations`, `provenance/main-adoptions`, `tools/validate_provenance.py`) and the admitted opencode patch import is mapped. Multiple donor studies are explicitly audit/planning-only. A current project-wide completeness attestation that every copied/derived production byte is covered by the provenance ledger is not independently established. |
-| SEPARATE_CURRENT_VIEW_AND_RELEASE_PROOF | PARTIAL_CANONICAL | Post-O4-C reconciliation PR #596 / proof `5638640497` is closed canonical, O4-D authorization/implementation PRs #597-#598 are closed canonical, and post-O4-D reconciliation authorization PR #599 / proof `5640475111` separately authorizes this exact six-file candidate. The candidate cannot self-certify its closure. P8 release/version separation remains PR #548 / proof `5610161609`; no Kodac release version, tag, GitHub Release, public package, or release-artifact proof exists. |
+| SEPARATE_CURRENT_VIEW_AND_RELEASE_PROOF | PARTIAL_CANONICAL | Post-O4-D reconciliation PR #600 / proof `5640666949`, O4-E authorization/implementation PRs #601-#602 / proofs `5640754422` and `5641093369`, and post-O4-E reconciliation authorization PR #603 / proof `5641275010` are closed canonical. This six-file reconciliation remains a candidate and cannot self-certify closure. P8 release/version separation remains PR #548 / proof `5610161609`; no Kodac release version, tag, GitHub Release, public package, or release-artifact proof exists. |
 | MULTI_PROVIDER_MULTI_BACKEND_PORTABILITY_WHERE_REQUIRED | NOT_APPLICABLE_BY_CURRENT_PRODUCT_POSTURE | Core review/evidence contracts are provider-neutral and K6 models provider candidates without invocation, but the current package is private/unpublished and no public production posture requires a second live provider/backend. This classification expires if a release/product requirement mandates portability. |
 
 ## Master-plan definition-of-success audit
@@ -166,7 +182,7 @@ Each criterion below uses exactly one authorized classification.
 | # | Criterion | Classification | Evidence and boundary |
 | --- | --- | --- | --- |
 | 1 | The repo has one obvious current-action page | PROVEN_CANONICAL | `docs/roadmap/NEXT.md` is the explicit navigation/current-action surface and root `AGENTS.md` requires it to be read after live GitHub. |
-| 2 | Roadmap truth stays synchronized with canonical state | PARTIAL_CANONICAL | Reconciliation remains a separately authorized recurring workflow. PR #596 / proof `5638640497` closed the post-O4-C view update; PR #599 / proof `5640475111` authorizes this post-O4-D six-file reconciliation. Because the candidate cannot embed its own future external closure proof, synchronization remains controlled rather than instantaneous. |
+| 2 | Roadmap truth stays synchronized with canonical state | PARTIAL_CANONICAL | Reconciliation remains a separately authorized recurring workflow. PR #600 / proof `5640666949` closed the post-O4-D view update; PR #603 / proof `5641275010` authorizes this post-O4-E six-file reconciliation. Because the candidate cannot embed its own future external closure proof, synchronization remains controlled rather than instantaneous. |
 | 3 | Improvements are benchmarked before broad quality claims | PARTIAL_CANONICAL | P2/P3 provide bounded benchmark/evidence infrastructure and broad superiority/promotion claims remain prohibited. Real benchmark task/participant execution and general/public KodacBench remain unclosed, so broad empirical quality promotion is not yet available. |
 | 4 | Context becomes selective rather than simply larger | PROVEN_CANONICAL | P3 R1-R17 canonically implement deterministic context-selection planning, caller-declared policy application, context measurement and bounded comparison/qualification evidence. This proves bounded selective-context mechanics, not global superiority. |
 | 5 | Reviewer disagreement becomes evidence-grounded rather than consensus-driven | PROVEN_CANONICAL | P4-R1 provides evidence-linked claim/verifier proposals and P4-R2 provides deterministic critic disposition including `SUPPORTED`, `CONTRADICTED`, `UNVERIFIED_CONCERN`, and supersession/duplicate semantics without critic-vote authority transfer. |
@@ -221,7 +237,7 @@ O0 DONOR QUALIFICATION / PROVENANCE = PARTIAL_CANONICAL_PROJECT_WIDE / CANONICAL
 O1 AUTHENTICATED GITHUB EVENT EVIDENCE = BOUNDED_FOUNDATION_CLOSED / WIDER_OPERATIONAL_CRITERION_PARTIAL
 O2 DURABLE WORKFLOW EVIDENCE KERNEL = BOUNDED_FOUNDATION_CLOSED / WIDER_DURABILITY_CRITERION_PARTIAL
 O3 TRUST-GATED PROGRESSIVE SKILL LOADER = BOUNDED_TRUST_GATE_CLOSED / WIDER_EXECUTION_CRITERION_PARTIAL
-O4 READ-ONLY GITHUB REVIEW PRODUCT PATH = PARTIAL_CANONICAL / O4A_LINEAGE_CLOSED / O4B_LIVE_READ_CONTEXT_CLOSED / O4C_REVIEWER_CONTEXT_BRIDGE_CLOSED / O4D_EXECUTION_ADMISSION_CLOSED / PRODUCTION_REVIEWER_PROVIDER_EXECUTION_AND_PUBLICATION_REMAIN
+O4 READ-ONLY GITHUB REVIEW PRODUCT PATH = PARTIAL_CANONICAL / O4A_LINEAGE_CLOSED / O4B_LIVE_READ_CONTEXT_CLOSED / O4C_REVIEWER_CONTEXT_BRIDGE_CLOSED / O4D_EXECUTION_ADMISSION_CLOSED / O4E_MODEL_BACKED_EXECUTION_CLOSED / GITHUB_PUBLICATION_REMAINS
 O5 ADMITTED SANDBOX ADAPTER / CLEANUP = PARTIAL_CANONICAL
 O6 PROPOSAL-ONLY REMEDIATION = PROVEN_CANONICAL_BY_P7_R1
 O7 K2-BACKED MUTATION = PROVEN_CANONICAL_BY_K2_AND_P7_R2
@@ -231,7 +247,7 @@ O10 CONTINUOUS ASSURANCE = PARTIAL_CANONICAL_BY_P9_R1_R3
 O11 MULTI-PROVIDER / MULTI-BACKEND PORTABILITY = NOT_APPLICABLE_BY_CURRENT_PRODUCT_POSTURE
 ```
 
-No criterion is `MISSING`, and the bounded implementation-sequence frontier has advanced through O1/O2/O3, O4-A, O4-B, O4-C, and O4-D. O4-D canonically admits exact O4-C reviewer context to a separately authorized provider-execution boundary, but fresh repository inspection still finds no production model-backed `ReviewerProvider` implementation consuming that admission. Production reviewer-provider/model execution is therefore the earliest remaining O4 dependency. GitHub publication remains later and separately authorized.
+No criterion is `MISSING`, and the bounded implementation-sequence frontier has advanced through O1/O2/O3, O4-A, O4-B, O4-C, O4-D, and O4-E. O4-E canonically consumes O4-D admission through bounded model-backed execution. Fresh repository inspection still finds no production GitHub review/comment publisher consuming publication intents/results, so separately authorized typed publication is the earliest remaining O4 dependency.
 
 ## Required output summary
 
@@ -242,24 +258,22 @@ MISSING_CRITERIA = 0
 NOT_APPLICABLE_CRITERIA = 2
 SEPARATE_AUTHORITY_REQUIRED_CRITERIA = 0
 TOTAL_CRITERIA = 25
-MINIMUM_NEXT_PARTIAL_BLOCKER = O4_PRODUCTION_REVIEWER_PROVIDER_EXECUTION
-NEXT_REQUIRED_ACTION = FRESH_POST_O4D_RECONCILIATION_SUCCESSOR_ANALYSIS
+MINIMUM_NEXT_PARTIAL_BLOCKER = O4_GITHUB_REVIEW_OR_COMMENT_PUBLICATION
+NEXT_REQUIRED_ACTION = FRESH_POST_O4E_RECONCILIATION_SUCCESSOR_ANALYSIS
 SUCCESSOR_IMPLEMENTATION = NOT_AUTHORIZED_BY_THIS_RECONCILIATION
 PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-The counts cover the same fifteen OpenReview-derived program criteria plus ten master-plan definition-of-success criteria. No classification was upgraded to `PROVEN_CANONICAL` merely because bounded O2, O3, O1 issue-comment, O4-A, O4-B, O4-C, or O4-D foundations closed.
+The counts cover the same fifteen OpenReview-derived program criteria plus ten master-plan definition-of-success criteria. No classification was upgraded to `PROVEN_CANONICAL` merely because bounded O2, O3, O1 issue-comment, O4-A, O4-B, O4-C, O4-D, or O4-E foundations closed.
 
 ## Minimum next partial blocker contract boundary
 
-The bounded implementation-sequence frontier is now production reviewer-provider execution. O4-A proves deterministic review lineage and publication-intent evidence; O4-B proves bounded exact-route live GitHub PR/repository read acquisition and verified content evidence; O4-C proves deterministic provenance-preserving reviewer-context bridging. None creates production reviewer-provider invocation or GitHub publication authority.
+The bounded implementation-sequence frontier is now GitHub review/comment publication. O4-A proves deterministic review lineage and publication-intent evidence; O4-B proves bounded exact-route live GitHub read acquisition; O4-C proves reviewer-context bridging; O4-D proves execution admission; O4-E proves bounded model-backed reviewer execution. None creates GitHub publication authority, publication idempotency, or resulting comment/review receipt evidence.
 
 Before any new implementation authorization, fresh successor analysis must decide the earliest unmet dependency among at least:
 
 ```text
-PRODUCTION_REVIEWER_PROVIDER_OR_EQUIVALENT_EXECUTION
-PROVIDER_MODEL_CREDENTIAL_AND_EGRESS_BOUNDARY
 SEPARATELY_AUTHORIZED_REVIEW_OR_COMMENT_PUBLICATION_CAPABILITY
 PUBLICATION_IDEMPOTENCY_AND_SIDE_EFFECT_RETRY_SAFETY
 EXACT_REPOSITORY_PR_SUBJECT_HEAD_BINDING
@@ -311,4 +325,4 @@ AUDIT_CLOSED_CANONICAL != PHASE_OVERALL_CLOSURE
 AUDIT_CLOSED_CANONICAL != RELEASE_AUTHORITY
 ```
 
-Only after this six-file reconciliation itself is externally post-merge proven may fresh successor analysis treat the reconciled audit/current views as canonical navigation. A separate canonical authorization is required before production reviewer-provider execution, provider/model credential or egress use, GitHub publication, GlitchTip adoption, O5 work, release action, or phase/project closure.
+Only after this six-file reconciliation itself is externally post-merge proven may fresh successor analysis treat the reconciled audit/current views as canonical navigation. A separate canonical authorization is required before GitHub publication/write credentials, publication retry/idempotency behavior, GlitchTip adoption, O5 work, release action, or phase/project closure.
