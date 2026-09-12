@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.invalid/schema/o4i-bounded-production-publication-wiring.schema.json",
+  "title": "Kodac O4-I Bounded Production Publication Wiring",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "wiringExecutionIdentity",
+    "status",
+    "credentialPolicyIdentity",
+    "composedResult",
+    "reviewId",
+    "reviewNodeId",
+    "reviewReceiptIdentity",
+    "failureCode",
+    "continuationDecision"
+  ],
+  "properties": {
+    "version": {
+      "const": "kodac-o4i-bounded-production-publication-wiring-v1"
+    },
+    "wiringExecutionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "COMPLETED_PUBLISHED",
+        "COMPLETED_ALREADY_PRESENT",
+        "COMPLETED_RECOVERED_AFTER_UNCONFIRMED_POST",
+        "BLOCKED_COMPOSITION_NOT_COMPLETED"
+      ]
+    },
+    "credentialPolicyIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "composedResult": {
+      "type": "object"
+    },
+    "reviewId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reviewNodeId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "reviewReceiptIdentity": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "failureCode": {
+      "enum": [
+        "COMPOSITION_NOT_COMPLETED",
+        null
+      ]
+    },
+    "continuationDecision": {
+      "enum": [
+        "PRODUCTION_PUBLICATION_COMPLETE",
+        "STOP_AT_COMPOSITION"
+      ]
+    }
+  }
+}
