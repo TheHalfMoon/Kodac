@@ -149,7 +149,11 @@ POST_O4G_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANON
 O4H_BOUNDED_END_TO_END_COMPOSITION_AUTHORIZATION = CLOSED_CANONICAL / PR #613 / merge 7cd4704e24fed50c53a3a7c131882fe81b8b179b / proof 5642495454
 O4H_BOUNDED_END_TO_END_COMPOSITION_IMPLEMENTATION = CLOSED_CANONICAL / PR #614 / merge 42c8e0da14874481deb0e53169358f3b3bcaaee0 / proof 5642667756
 POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #615 / merge 87b7846ffadbf8e582d50cb50e72efacc80e7b1f / proof 5642708851
-POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL / PR #616 / merge afa86610f9b364c84677c38082f98ce793fd4533 / push proof 34667120406
+O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_AUTHORIZATION = CLOSED_CANONICAL / PR #617 / merge b2ea57478cf6a64610967c5fbae400f21d41a6a4 / push proof 34668808376
+O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_IMPLEMENTATION = MERGED_WITH_POST_MERGE_CHECKS_SUCCESS / PR #618 / merge 71baaca58ac37c38d128d41155e000786a1c1868 / push governance 34671153604 / push k2-runtime 34671153605
+POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #619 / merge 3a93b2abc6a3f9d300dd7637d1746868ce33a3e0 / push proof 34671481253
+POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P9_R4_PLUS = NOT_AUTHORIZED_BY_NUMBERING
 P9_OVERALL = NOT_CLOSED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
@@ -159,9 +163,9 @@ WAIVER = NO
 
 ---
 
-## Active unit — post-O4-H project-completion audit and current-view reconciliation candidate
+## Active unit — post-O4-I project-completion audit and current-view reconciliation candidate
 
-Canonical authority exists through PR #615 / external post-merge proof `5642708851` only for this exact six-file post-O4-H audit/current-view reconciliation.
+Canonical authority exists through PR #619 / push proof `34671481253` only for this exact six-file post-O4-I audit/current-view reconciliation.
 
 This candidate may modify exactly:
 
@@ -218,10 +222,14 @@ POST_O4G_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANON
 O4H_BOUNDED_END_TO_END_COMPOSITION_AUTHORIZATION = CLOSED_CANONICAL / PR #613 / merge 7cd4704e24fed50c53a3a7c131882fe81b8b179b / proof 5642495454
 O4H_BOUNDED_END_TO_END_COMPOSITION_IMPLEMENTATION = CLOSED_CANONICAL / PR #614 / merge 42c8e0da14874481deb0e53169358f3b3bcaaee0 / proof 5642667756
 POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #615 / merge 87b7846ffadbf8e582d50cb50e72efacc80e7b1f / proof 5642708851
-POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL / PR #616 / merge afa86610f9b364c84677c38082f98ce793fd4533 / push proof 34667120406
+O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_AUTHORIZATION = CLOSED_CANONICAL / PR #617 / merge b2ea57478cf6a64610967c5fbae400f21d41a6a4 / push proof 34668808376
+O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_IMPLEMENTATION = MERGED_WITH_POST_MERGE_CHECKS_SUCCESS / PR #618 / merge 71baaca58ac37c38d128d41155e000786a1c1868 / push governance 34671153604 / push k2-runtime 34671153605
+POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #619 / merge 3a93b2abc6a3f9d300dd7637d1746868ce33a3e0 / push proof 34671481253
+POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
-This post-O4-H reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
+This post-O4-I reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
 
 The re-audited project-wide classification remains:
 
@@ -232,16 +240,16 @@ MISSING_CRITERIA = 0
 NOT_APPLICABLE_CRITERIA = 2
 SEPARATE_AUTHORITY_REQUIRED_CRITERIA = 0
 TOTAL_CRITERIA = 25
-MINIMUM_NEXT_PARTIAL_BLOCKER = O4_LIVE_PUBLICATION_RECEIPT_AND_PRODUCTION_WIRING
-NEXT_REQUIRED_ACTION = FRESH_POST_O4H_RECONCILIATION_SUCCESSOR_ANALYSIS
+MINIMUM_NEXT_PARTIAL_BLOCKER = O4_LIVE_PUBLICATION_RECEIPT
+NEXT_REQUIRED_ACTION = FRESH_POST_O4I_RECONCILIATION_SUCCESSOR_ANALYSIS
 SUCCESSOR_IMPLEMENTATION = NOT_AUTHORIZED_BY_THIS_RECONCILIATION
 PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-The unchanged counts are deliberate. O2, O3, the O1 issue-comment extension, and O4-A through O4-H provide stronger canonical foundations, but O4-H proves bounded end-to-end composition only under synthetic transport with no production caller. Wider persistence, deployed ingress, skill execution, live GitHub write receipts, new provider/model admission, and complete production product semantics remain unproven.
+The unchanged counts are deliberate. O2, O3, the O1 issue-comment extension, and O4-A through O4-H provide stronger canonical foundations, but O4-H proves bounded end-to-end composition only under synthetic transport and O4-I merges the bounded production caller with the same synthetic-transport qualification and no live receipt. Wider persistence, deployed ingress, skill execution, live GitHub write receipts, new provider/model admission, and complete production product semantics remain unproven.
 
-The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-H. O4-H now composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport, but fresh repository inspection finds no production wiring invoking the composition, no live GitHub write receipt, and no new provider/model admission. Live publication receipt and production wiring are therefore the earliest remaining O4 dependencies.
+The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-H. O4-H now composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport, but fresh repository inspection finds the O4-I bounded production caller merged with synthetic-transport qualification and caller-injected credential boundary, no live GitHub write receipt, and no new provider/model admission. Live publication receipt is therefore the earliest remaining O4 dependency.
 
 Broader state remains:
 
@@ -572,7 +580,7 @@ No successor implementation concern is authorized while this reconciliation is a
 Only after this exact six-path reconciliation independently qualifies, merges with the exact expected head, and receives external post-merge proof may the next action become:
 
 ```text
-FRESH_POST_O4H_RECONCILIATION_SUCCESSOR_ANALYSIS = ALLOWED
+FRESH_POST_O4I_RECONCILIATION_SUCCESSOR_ANALYSIS = ALLOWED
 SUCCESSOR_IMPLEMENTATION = NOT_AUTHORIZED_BY_THIS_VIEW
 ```
 
