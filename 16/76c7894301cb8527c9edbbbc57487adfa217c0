@@ -1,0 +1,19 @@
+docs/planning/KODAC_O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_AUTHORIZATION_2026-09-12.md
+  s_8de7341949a985::t_26c9cefd61fb7a 1-274
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1676c7894301cb8527c9edbbbc57487adfa217c0",
+  "prompts": {},
+  "sessions": {
+    "s_8de7341949a985": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6c94e686ffeVR7OB0RbYXY7Hm",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
