@@ -1,0 +1,71 @@
+docs/planning/KODAC_PROJECT_WIDE_CANONICAL_COMPLETION_GAP_AUDIT_2026-09-10.md
+  s_cb293ae9f49adc::t_53fc69d403968d 303-304
+  s_cb293ae9f49adc::t_acc73ef398c99b 369
+  s_cb293ae9f49adc::t_ea9d2ff5d4ca02 122-126
+  s_cb293ae9f49adc::t_d9d95ef0edca97 310
+  s_cb293ae9f49adc::t_c14b323351e623 209
+  s_cb293ae9f49adc::t_eac8aab4f8cbac 114
+  s_cb293ae9f49adc::t_d8f55ba332d67b 227
+  s_cb293ae9f49adc::t_39a91326c2fd42 219
+  s_cb293ae9f49adc::t_0a04c3dea8d4e8 38-42
+  s_cb293ae9f49adc::t_e91505cb5bed72 314
+  s_cb293ae9f49adc::t_92e47c54897d7d 198
+  s_cb293ae9f49adc::t_1dbb334a3d700e 186
+  s_cb293ae9f49adc::t_a0f549b3a18522 282
+  s_cb293ae9f49adc::t_666f333f60c00a 49
+  s_cb293ae9f49adc::t_9b583d1380c6bd 292
+  s_cb293ae9f49adc::t_78d2c3968c9d60 92-96
+  s_cb293ae9f49adc::t_a333cfd6e98cd0 142-146
+docs/roadmap/ROADMAP.md
+  s_cb293ae9f49adc::t_bd5a77b9d22d23 187,189
+  s_cb293ae9f49adc::t_8cb97a3fe7fcb4 291
+  s_cb293ae9f49adc::t_1824c1fa5bdc02 249
+  s_cb293ae9f49adc::t_4c24ae879b245a 267,269
+  s_cb293ae9f49adc::t_8de347c0f81716 148-152,242-246
+  s_cb293ae9f49adc::t_dc29c49aa858b2 260-261
+docs/roadmap/MILESTONES.md
+  s_cb293ae9f49adc::t_751ae8fe937224 226
+  s_cb293ae9f49adc::t_b6aa956112d23d 164,166
+  s_cb293ae9f49adc::t_f87a54e1cf0f64 268
+  s_cb293ae9f49adc::t_3ddbcb6a372bb1 244,246
+  s_cb293ae9f49adc::t_e27ae4504a2739 148-152,219-223
+  s_cb293ae9f49adc::t_24bf9d74910571 237-238
+docs/roadmap/VERSION_PLAN.md
+  s_cb293ae9f49adc::t_493df1e177a416 237-238
+  s_cb293ae9f49adc::t_75d6b60ae70f9f 164,166
+  s_cb293ae9f49adc::t_419760fcb337cd 226
+  s_cb293ae9f49adc::t_4e256ae4aa040c 244,246
+  s_cb293ae9f49adc::t_e290c9e2020df7 268
+  s_cb293ae9f49adc::t_25cd9bc2a07cd0 148-152,219-223
+docs/product/STATUS.md
+  s_cb293ae9f49adc::t_96089806331f5e 146-150,217-221
+  s_cb293ae9f49adc::t_2bba026a1abb3f 235-236
+  s_cb293ae9f49adc::t_aa629dc4b8f56f 162,164
+  s_cb293ae9f49adc::t_875767773cf00d 242,244
+  s_cb293ae9f49adc::t_59dd4be2c3acd7 224
+  s_cb293ae9f49adc::t_3e69fb3ad8e275 266
+docs/roadmap/NEXT.md
+  s_cb293ae9f49adc::t_36bbd9f7d781c8 162,164
+  s_cb293ae9f49adc::t_072ea9e7f89648 235-236
+  s_cb293ae9f49adc::t_ea425b840ee5d3 242,244
+  s_cb293ae9f49adc::t_817d4e15c92d42 575
+  s_cb293ae9f49adc::t_73961b464a6f9a 224
+  s_cb293ae9f49adc::t_507857e50c6f28 266
+  s_cb293ae9f49adc::t_15e7cd48cee79a 148-152,217-221
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "31ccefd340bc7a2d2cd98c347af666f75e5452e5",
+  "prompts": {},
+  "sessions": {
+    "s_cb293ae9f49adc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6d01dcc5ffet8FnjXFKNyOOI2",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
