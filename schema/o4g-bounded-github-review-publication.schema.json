@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.invalid/schema/o4g-bounded-github-review-publication.schema.json",
+  "title": "Kodac O4-G Bounded GitHub Review Publication",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "publicationExecutionIdentity",
+    "status",
+    "credentialPolicyIdentity",
+    "publicationAdmissionIdentity",
+    "repositoryId",
+    "repositoryFullName",
+    "pullRequestNumber",
+    "pullRequestId",
+    "reviewedHead",
+    "evaluatedHead",
+    "o4eExecutionIdentity",
+    "reviewId",
+    "reviewNodeId",
+    "reviewReceiptIdentity",
+    "slotReceipts",
+    "publicationRequestCount",
+    "failureCode",
+    "continuationDecision"
+  ],
+  "properties": {
+    "version": {
+      "const": "kodac-o4g-bounded-github-review-publication-v1"
+    },
+    "publicationExecutionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "COMPLETED_CREATED",
+        "COMPLETED_ALREADY_PRESENT",
+        "COMPLETED_RECOVERED_AFTER_UNCONFIRMED_POST",
+        "BLOCKED_O4F_NOT_READY",
+        "BLOCKED_HEAD_MISMATCH",
+        "BLOCKED_DIFF_ANCHOR",
+        "BLOCKED_EXISTING_PUBLICATION",
+        "READ_FAILED",
+        "POST_REJECTED",
+        "AMBIGUOUS_POST_OUTCOME",
+        "INVALID_GITHUB_RESPONSE"
+      ]
+    },
+    "credentialPolicyIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "publicationAdmissionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "repositoryId": {
+      "type": "string",
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "repositoryFullName": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}$"
+    },
+    "pullRequestNumber": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pullRequestId": {
+      "type": "string",
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "reviewedHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "evaluatedHead": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "o4eExecutionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "reviewId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "reviewNodeId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 512
+    },
+    "reviewReceiptIdentity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "slotReceipts": {
+      "type": "array",
+      "maxItems": 65,
+      "items": {
+        "$ref": "#/$defs/slotReceipt"
+      }
+    },
+    "publicationRequestCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65
+    },
+    "failureCode": {
+      "enum": [
+        "O4F_NOT_READY",
+        "LIVE_PR_IDENTITY_MISMATCH",
+        "LIVE_HEAD_MISMATCH",
+        "DIFF_ANCHOR_UNPROVEN",
+        "EXISTING_PUBLICATION_PARTIAL",
+        "EXISTING_PUBLICATION_DUPLICATE",
+        "EXISTING_PUBLICATION_MISMATCH",
+        "SCAN_BOUND_EXHAUSTED",
+        "READ_TRANSPORT_FAILED",
+        "READ_HTTP_REJECTED",
+        "INVALID_RESPONSE",
+        "POST_HTTP_REJECTED",
+        "POST_OUTCOME_UNCONFIRMED",
+        "READBACK_UNCONFIRMED",
+        null
+      ]
+    },
+    "continuationDecision": {
+      "enum": [
+        "PUBLICATION_COMPLETE",
+        "STOP_NO_AUTOMATIC_POST_RETRY"
+      ]
+    }
+  },
+  "$defs": {
+    "slotReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slotReceiptIdentity",
+        "publicationSlotIdentity",
+        "publicationRequestIdentity",
+        "publicationClass",
+        "bodyIdentity",
+        "githubObjectKind",
+        "githubObjectId",
+        "githubNodeId",
+        "pullRequestReviewId",
+        "commitId",
+        "path",
+        "line",
+        "side"
+      ],
+      "properties": {
+        "slotReceiptIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "publicationSlotIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "publicationRequestIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "publicationClass": {
+          "enum": [
+            "TOP_LEVEL_REVIEW_SUMMARY",
+            "INLINE_FINDING_COMMENT"
+          ]
+        },
+        "bodyIdentity": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "githubObjectKind": {
+          "enum": [
+            "PULL_REQUEST_REVIEW",
+            "PULL_REQUEST_REVIEW_COMMENT"
+          ]
+        },
+        "githubObjectId": {
+          "type": "string",
+          "pattern": "^(?:[1-9][0-9]{0,19})$"
+        },
+        "githubNodeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "pullRequestReviewId": {
+          "type": "string",
+          "pattern": "^(?:[1-9][0-9]{0,19})$"
+        },
+        "commitId": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "path": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1024
+        },
+        "line": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 10000000
+        },
+        "side": {
+          "enum": [
+            "RIGHT",
+            null
+          ]
+        }
+      }
+    }
+  }
+}
