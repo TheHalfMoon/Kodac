@@ -1,0 +1,164 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kodac.invalid/schema/o4h-end-to-end-review-to-publication.schema.json",
+  "title": "Kodac O4-H Bounded End-to-End Review-to-Publication Composition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "compositionExecutionIdentity",
+    "status",
+    "credentialPolicyIdentity",
+    "taskId",
+    "policyIdentity",
+    "repositoryId",
+    "repositoryFullName",
+    "pullRequestNumber",
+    "pullRequestId",
+    "reviewedHead",
+    "o4bReadContextEvidenceIdentity",
+    "o4cContextIdentity",
+    "o4dAdmissionIdentity",
+    "o4eExecutionIdentity",
+    "o4fAdmissionIdentity",
+    "terminalPublication",
+    "failureStage",
+    "failureCode",
+    "continuationDecision"
+  ],
+  "properties": {
+    "version": {
+      "const": "kodac-o4h-end-to-end-review-to-publication-v1"
+    },
+    "compositionExecutionIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "COMPLETED_PUBLISHED",
+        "COMPLETED_ALREADY_PRESENT",
+        "COMPLETED_RECOVERED_AFTER_UNCONFIRMED_POST",
+        "BLOCKED_O4B_NOT_READY",
+        "BLOCKED_O4C_NOT_READY",
+        "BLOCKED_O4D_NOT_READY",
+        "BLOCKED_O4E_NOT_COMPLETED",
+        "BLOCKED_O4F_NOT_READY",
+        "BLOCKED_HEAD_MISMATCH",
+        "BLOCKED_DIFF_ANCHOR",
+        "BLOCKED_EXISTING_PUBLICATION",
+        "READ_FAILED",
+        "POST_REJECTED",
+        "AMBIGUOUS_POST_OUTCOME",
+        "INVALID_GITHUB_RESPONSE"
+      ]
+    },
+    "credentialPolicyIdentity": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "taskId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policyIdentity": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repositoryId": {
+      "type": "string",
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "repositoryFullName": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,100}/[A-Za-z0-9_.-]{1,100}$"
+    },
+    "pullRequestNumber": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "pullRequestId": {
+      "type": "string",
+      "pattern": "^(?:[1-9][0-9]{0,19})$"
+    },
+    "reviewedHead": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "o4bReadContextEvidenceIdentity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "o4cContextIdentity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "o4dAdmissionIdentity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "o4eExecutionIdentity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "o4fAdmissionIdentity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "terminalPublication": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "failureStage": {
+      "enum": [
+        "O4B",
+        "O4C",
+        "O4D",
+        "O4E",
+        "O4F",
+        "O4G",
+        null
+      ]
+    },
+    "failureCode": {
+      "enum": [
+        "O4B_NOT_READY",
+        "O4C_NOT_READY",
+        "O4D_NOT_READY",
+        "O4E_NOT_COMPLETED",
+        "O4F_NOT_READY",
+        "O4G_BLOCKED_HEAD_MISMATCH",
+        "O4G_BLOCKED_DIFF_ANCHOR",
+        "O4G_BLOCKED_EXISTING_PUBLICATION",
+        "O4G_READ_FAILED",
+        "O4G_POST_REJECTED",
+        "O4G_AMBIGUOUS_POST_OUTCOME",
+        "O4G_INVALID_GITHUB_RESPONSE",
+        null
+      ]
+    },
+    "continuationDecision": {
+      "enum": [
+        "END_TO_END_COMPLETE",
+        "STOP_AT_FAILED_STAGE"
+      ]
+    }
+  }
+}
