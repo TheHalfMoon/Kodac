@@ -1,0 +1,46 @@
+schema/o4h-end-to-end-review-to-publication.schema.json
+  s_cb293ae9f49adc::t_734f791adbaf3f 1-164
+packages/kodac-runtime/test/o4h-end-to-end-review-to-publication.test.ts
+  s_cb293ae9f49adc::t_c4396be1dfb915 187
+  s_cb293ae9f49adc::t_70fa0fa4a2628a 177-178
+  s_cb293ae9f49adc::t_cb09f0c2817c68 158
+  s_cb293ae9f49adc::t_e3564edd0f7e1d 189
+  s_cb293ae9f49adc::t_9600fd9876342a 206
+  s_cb293ae9f49adc::t_ec85a76891c483 62
+  s_cb293ae9f49adc::t_369709e3e04ff1 103
+  s_cb293ae9f49adc::t_b2fb50e8a08ede 182
+  s_cb293ae9f49adc::t_500817d1f614df 107
+  s_cb293ae9f49adc::t_34d4429de62235 181
+  s_cb293ae9f49adc::t_4d81b93007cac8 183-184
+  s_cb293ae9f49adc::t_696a12f92972ec 1-5,7-38,40-61,63-102,104-105,108-118,121-138,141-157,159-162,164-176,179-180,185-186,188,190-205,207-211
+  s_cb293ae9f49adc::t_4f4d308d7f126a 106
+  s_cb293ae9f49adc::t_0cc785b6a21978 139-140
+  s_cb293ae9f49adc::t_647d6948e71028 6
+  s_cb293ae9f49adc::t_e5c98ef654dcbd 163
+  s_cb293ae9f49adc::t_b3c9d7404a6a27 39
+  s_cb293ae9f49adc::t_307220a1d87ff6 119-120
+packages/kodac-runtime/src/github-review/o4h-end-to-end-review-to-publication.ts
+  s_cb293ae9f49adc::t_99744243386df8 409,411
+  s_cb293ae9f49adc::t_dd8bcf687bd9e6 1-267,269-280,283,285-408,410,412-425,431-445,451-465
+  s_cb293ae9f49adc::t_16be77ebe6d062 281-282,284
+  s_cb293ae9f49adc::t_21ee5ab9e730c5 426
+  s_cb293ae9f49adc::t_c3f47fb8df687d 427-430
+  s_cb293ae9f49adc::t_c604f09dcac56a 268
+  s_cb293ae9f49adc::t_f8833592564ae3 446-450
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "51af5bc14679f0238e59b04d68d21ac7c0c724ec",
+  "prompts": {},
+  "sessions": {
+    "s_cb293ae9f49adc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6d01dcc5ffet8FnjXFKNyOOI2",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
