@@ -1,0 +1,75 @@
+docs/roadmap/MILESTONES.md
+  s_1d19efe56225f9::t_cc27f2363f2101 156-166,241-251
+  s_1d19efe56225f9::t_243e86cb8a4894 178,180
+  s_1d19efe56225f9::t_020549cd4f8c20 272
+  s_1d19efe56225f9::t_52ffbb4e166718 274
+  s_1d19efe56225f9::t_0cdd4d4498b9ad 296
+  s_1d19efe56225f9::t_6c257ebdecda92 254
+  s_1d19efe56225f9::t_a9837b1d045f83 265-266
+docs/planning/KODAC_PROJECT_WIDE_CANONICAL_COMPLETION_GAP_AUDIT_2026-09-10.md
+  s_1d19efe56225f9::t_03c39a050c3ca7 346-347,353
+  s_1d19efe56225f9::t_549558c1aff9c4 114-122
+  s_1d19efe56225f9::t_d12311b45aab53 46-56
+  s_1d19efe56225f9::t_78126c6e0c1756 362
+  s_1d19efe56225f9::t_59290be9b7c1a1 241
+  s_1d19efe56225f9::t_0e290a5f0a78af 63
+  s_1d19efe56225f9::t_68d91382f477ef 178-183
+  s_1d19efe56225f9::t_88858d559f7f00 148-152
+  s_1d19efe56225f9::t_6878efad6905d7 270
+  s_1d19efe56225f9::t_a1a42ac7d1d016 262
+  s_1d19efe56225f9::t_01d6b092b87931 140
+  s_1d19efe56225f9::t_edd3761555808d 373
+  s_1d19efe56225f9::t_f33744aaf512d2 225-228,230-231
+  s_1d19efe56225f9::t_526304bb91a655 357
+  s_1d19efe56225f9::t_7d39df9ba9c531 335
+  s_1d19efe56225f9::t_d94d115a0edecf 252
+  s_1d19efe56225f9::t_ad13017a7ff7b6 325
+docs/product/STATUS.md
+  s_1d19efe56225f9::t_f64525707dd5d2 270
+  s_1d19efe56225f9::t_41a3f0b7380e28 272
+  s_1d19efe56225f9::t_a2d3c386fb4bf6 263-264
+  s_1d19efe56225f9::t_5b89cbbee01aa1 294
+  s_1d19efe56225f9::t_f2fb5ae14fd3eb 154-164,239-249
+  s_1d19efe56225f9::t_e1d62de5d2840d 176,178
+  s_1d19efe56225f9::t_80b72f97754478 252
+docs/roadmap/NEXT.md
+  s_1d19efe56225f9::t_f0b7e62ca15c97 176,178
+  s_1d19efe56225f9::t_77d9ba6ea0b410 263-264
+  s_1d19efe56225f9::t_09af8f25c4aa22 270
+  s_1d19efe56225f9::t_20efdfbe46356a 272,294
+  s_1d19efe56225f9::t_08303ca42ec99c 603
+  s_1d19efe56225f9::t_156576f6b5b71c 156-166,239-249
+  s_1d19efe56225f9::t_f0841f61c009e1 252
+docs/roadmap/VERSION_PLAN.md
+  s_1d19efe56225f9::t_13ab683505661b 178,180
+  s_1d19efe56225f9::t_6edd76f5d4ed94 272
+  s_1d19efe56225f9::t_8f15a73308c81a 296
+  s_1d19efe56225f9::t_73cfae7d330ea0 156-166,241-251
+  s_1d19efe56225f9::t_36273f37303197 254
+  s_1d19efe56225f9::t_9e3b6a91529b5b 274
+  s_1d19efe56225f9::t_a147ac42eb7045 265-266
+docs/roadmap/ROADMAP.md
+  s_1d19efe56225f9::t_b865d419ce4031 295
+  s_1d19efe56225f9::t_362836f9425de0 288-289
+  s_1d19efe56225f9::t_4b9fcd6b88bc2b 201,203
+  s_1d19efe56225f9::t_42dd9cf7035dfa 156-166,264-274
+  s_1d19efe56225f9::t_93d9ab2a295448 277
+  s_1d19efe56225f9::t_a29982a070cd06 319
+  s_1d19efe56225f9::t_ed57fa61d430a8 297
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5f4f79d8b2460f444b2ff09006d46b2b3bbd0c3a",
+  "prompts": {},
+  "sessions": {
+    "s_1d19efe56225f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f673f5e9fffe9oswTETX8vsljG",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
