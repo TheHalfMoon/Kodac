@@ -153,7 +153,17 @@ POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANON
 O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_AUTHORIZATION = CLOSED_CANONICAL / PR #617 / merge b2ea57478cf6a64610967c5fbae400f21d41a6a4 / push proof 34668808376
 O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_IMPLEMENTATION = MERGED_WITH_POST_MERGE_CHECKS_SUCCESS / PR #618 / merge 71baaca58ac37c38d128d41155e000786a1c1868 / push governance 34671153604 / push k2-runtime 34671153605
 POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #619 / merge 3a93b2abc6a3f9d300dd7637d1746868ce33a3e0 / push proof 34671481253
-POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL / PR #620 / merge c00a96a330b1af7de7f67b7367927cc831a833dc / proof 5643301978
+O4J_AGENT_EXECUTED_LIVE_PROOF_AUTHORIZATION = CLOSED_CANONICAL / PR #621 / merge 3449a51d90f7a2561e91e284411981325cf45ba4 / proof 5649935879
+O4J_LIVE_PROOF_ATTEMPT = BLOCKED_BEFORE_PROCESS_START / ZERO_LIVE_WRITES
+O4K_GH_API_BROKERED_LIVE_PROOF_AUTHORIZATION = CLOSED_CANONICAL / PR #622 / merge ce60779a123e4069955baac497d2b7d4ccab9940 / proof 5649996263
+O4K_LIVE_PROOF = BLOCKED_AFTER_ONE_POST / ADVERSE / EXACT_CAUSAL_MECHANISM_NOT_PROVEN
+O4L_LIVE_PUBLICATION_RECOVERY_AUTHORIZATION = CLOSED_CANONICAL / PR #623 / merge 8b014b1307bb22f59dff49e543718393227e5861 / proof 5650195160
+O4L_LIVE_EXECUTION = SUCCESSFULLY_OBSERVED / review 5189105929 COMMENTED at exact PR 163 head
+O4M_LIVE_RECEIPT_EVIDENCE_CANONICALIZATION_AUTHORIZATION = CLOSED_CANONICAL / PR #624 / merge 56e60ef4d75bdb09f60ff1086a5e3cd6b0736be2 / proof 5650376641
+O4M_LIVE_PUBLICATION_RECEIPT_CANONICAL_EVIDENCE = CLOSED_CANONICAL / PR #625 / merge 5a71b16f0a89cbdc75b28aac65ea83bb36b7c605 / proof 5650782736
+POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #626 / merge c4ba21ae24cf4a0ac078010dee6f6fe2816eed22 / proof 5650877230
+POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P9_R4_PLUS = NOT_AUTHORIZED_BY_NUMBERING
 P9_OVERALL = NOT_CLOSED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
@@ -165,9 +175,9 @@ Historical P7 R1-R30 records, earlier P8 authorization/reconciliation records, a
 
 ---
 
-## Active milestone unit — post-O4-H project-completion audit and current-view reconciliation candidate
+## Active milestone unit — post-O4-M project-completion audit and current-view reconciliation candidate
 
-Canonical authority exists through PR #615 / external post-merge proof `5642708851` only for this exact six-file post-O4-H audit/current-view reconciliation.
+Canonical authority exists through PR #626 / proof `5650877230` only for this exact six-file post-O4M audit/current-view reconciliation.
 
 This candidate may modify exactly:
 
@@ -228,10 +238,20 @@ POST_O4H_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANON
 O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_AUTHORIZATION = CLOSED_CANONICAL / PR #617 / merge b2ea57478cf6a64610967c5fbae400f21d41a6a4 / push proof 34668808376
 O4I_BOUNDED_PRODUCTION_PUBLICATION_WIRING_IMPLEMENTATION = MERGED_WITH_POST_MERGE_CHECKS_SUCCESS / PR #618 / merge 71baaca58ac37c38d128d41155e000786a1c1868 / push governance 34671153604 / push k2-runtime 34671153605
 POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #619 / merge 3a93b2abc6a3f9d300dd7637d1746868ce33a3e0 / push proof 34671481253
-POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4I_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL / PR #620 / merge c00a96a330b1af7de7f67b7367927cc831a833dc / proof 5643301978
+O4J_AGENT_EXECUTED_LIVE_PROOF_AUTHORIZATION = CLOSED_CANONICAL / PR #621 / merge 3449a51d90f7a2561e91e284411981325cf45ba4 / proof 5649935879
+O4J_LIVE_PROOF_ATTEMPT = BLOCKED_BEFORE_PROCESS_START / ZERO_LIVE_WRITES
+O4K_GH_API_BROKERED_LIVE_PROOF_AUTHORIZATION = CLOSED_CANONICAL / PR #622 / merge ce60779a123e4069955baac497d2b7d4ccab9940 / proof 5649996263
+O4K_LIVE_PROOF = BLOCKED_AFTER_ONE_POST / ADVERSE / EXACT_CAUSAL_MECHANISM_NOT_PROVEN
+O4L_LIVE_PUBLICATION_RECOVERY_AUTHORIZATION = CLOSED_CANONICAL / PR #623 / merge 8b014b1307bb22f59dff49e543718393227e5861 / proof 5650195160
+O4L_LIVE_EXECUTION = SUCCESSFULLY_OBSERVED / review 5189105929 COMMENTED at exact PR 163 head
+O4M_LIVE_RECEIPT_EVIDENCE_CANONICALIZATION_AUTHORIZATION = CLOSED_CANONICAL / PR #624 / merge 56e60ef4d75bdb09f60ff1086a5e3cd6b0736be2 / proof 5650376641
+O4M_LIVE_PUBLICATION_RECEIPT_CANONICAL_EVIDENCE = CLOSED_CANONICAL / PR #625 / merge 5a71b16f0a89cbdc75b28aac65ea83bb36b7c605 / proof 5650782736
+POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #626 / merge c4ba21ae24cf4a0ac078010dee6f6fe2816eed22 / proof 5650877230
+POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
-This post-O4-I reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
+This post-O4-M reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
 
 The re-audited project-wide classification remains:
 
@@ -242,16 +262,16 @@ MISSING_CRITERIA = 0
 NOT_APPLICABLE_CRITERIA = 2
 SEPARATE_AUTHORITY_REQUIRED_CRITERIA = 0
 TOTAL_CRITERIA = 25
-MINIMUM_NEXT_PARTIAL_BLOCKER = O4_LIVE_PUBLICATION_RECEIPT
-NEXT_REQUIRED_ACTION = FRESH_POST_O4I_RECONCILIATION_SUCCESSOR_ANALYSIS
+MINIMUM_NEXT_PARTIAL_BLOCKER = O4_PRODUCTION_COMPLETENESS_WITH_CREDENTIAL_GENERALITY
+NEXT_REQUIRED_ACTION = FRESH_POST_O4M_RECONCILIATION_SUCCESSOR_ANALYSIS
 SUCCESSOR_IMPLEMENTATION = NOT_AUTHORIZED_BY_THIS_RECONCILIATION
 PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-The unchanged counts are deliberate. O2, O3, the O1 issue-comment extension, and O4-A through O4-H provide stronger canonical foundations, but O4-H proves bounded end-to-end composition only under synthetic transport and O4-I merges the bounded production caller with the same synthetic-transport qualification and no live receipt. Wider persistence, deployed ingress, skill execution, live GitHub write receipts, new provider/model admission, and complete production product semantics remain unproven.
+The counts are recomputed from the rows in the post-O4M audit: PROVEN rows are IMMUTABLE_PATCH_PROPOSALS, K2_BACKED_EXACT_MUTATION, VERIFICATION_REVIEW_K5_DONE_GATE_INTEGRATION, and master-plan rows 1, 4, 5, 6, 8, 9, 10 (3 + 7 = 10); PARTIAL rows are the remaining ten OpenReview rows including PROVIDER_NEUTRAL_READ_ONLY_REVIEW with its narrowed live-receipt-closed boundary plus master-plan rows 2, 3, 7 (10 + 3 = 13). O2, O3, the O1 issue-comment extension, and O4-A through O4-M provide stronger canonical foundations: O4-H proves bounded end-to-end composition only under synthetic transport, O4-I merges the bounded production caller with the same synthetic-transport qualification, the O4-J attempt was blocked before process start with zero live writes, the O4-K proof was blocked after one POST with exact causal mechanism not proven, and O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head through the already-authenticated `gh api` session. Wider persistence, deployed ingress, skill execution, credential-general live write authority, new provider/model admission, and complete production product semantics remain unproven.
 
-The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-H. O4-H now composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport, but fresh repository inspection finds the O4-I bounded production caller merged with synthetic-transport qualification and caller-injected credential boundary, no live GitHub write receipt, and no new provider/model admission. Live publication receipt is therefore the earliest remaining O4 dependency.
+The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-M. O4-H composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport; O4-I merges the bounded production caller with synthetic-transport qualification and caller-injected credential boundary; the O4-J attempt was blocked before process start with zero live writes; the O4-K proof was blocked after one POST with exact causal mechanism not proven; and O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head (review 5189105929, exact marker count 1, stray review absent) with credential-path generality explicitly not proven. Production completeness with credential generality is therefore the earliest remaining O4 dependency.
 
 Broader state remains:
 
@@ -273,7 +293,7 @@ PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-After this reconciliation receives external proof, only fresh evidence-driven successor analysis may authorize live publication receipt handling, production wiring, new provider/model admission, admitted-sandbox work, or release scoping. No ambient GitHub credential, broad authenticated shell, persistence, GlitchTip adoption, O5 sandbox work, phase-overall closure, release, or project-completion authority follows by implication.
+After this reconciliation receives external proof, only fresh evidence-driven successor analysis may authorize production-completeness scoping, new provider/model admission, admitted-sandbox work, or release scoping. No ambient GitHub credential, broad authenticated shell, persistence, GlitchTip adoption, O5 sandbox work, phase-overall closure, release, or project-completion authority follows by implication.
 
 ---
 
