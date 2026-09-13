@@ -1,0 +1,19 @@
+docs/planning/KODAC_POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION_2026-09-13.md
+  s_1d19efe56225f9::t_aaae2a6f250e3b 1-141
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1b09db215a810570a912e055c9e238976edc4962",
+  "prompts": {},
+  "sessions": {
+    "s_1d19efe56225f9": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f673f5e9fffe9oswTETX8vsljG",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
