@@ -174,7 +174,6 @@ The founder-held credential must be a GitHub fine-grained personal access token 
 minimum scope required for the exact bound target and nothing more:
 
 ```text
-CONTENTS = Read-only (bounded pull-request files reads for anchor preflight where applicable)
 PULL_REQUESTS = Read and write (bounded review reads plus exactly one COMMENT review creation)
 METADATA = Read-only (implicit)
 ADMINISTRATION = NO
