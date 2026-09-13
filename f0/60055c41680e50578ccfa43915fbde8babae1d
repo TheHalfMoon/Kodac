@@ -1,0 +1,19 @@
+docs/planning/KODAC_O4N_CALLER_INJECTED_CREDENTIAL_PATH_GENERALITY_PROOF_AUTHORIZATION_2026-09-13.md
+  s_03052ba93a9a57::t_fb3631d759ef13 1-468
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f060055c41680e50578ccfa43915fbde8babae1d",
+  "prompts": {},
+  "sessions": {
+    "s_03052ba93a9a57": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f670f7237ffezYGGBc68WBw1Qt",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "TheHalfMoon <alshehriofficial@gmail.com>"
+    }
+  }
+}
