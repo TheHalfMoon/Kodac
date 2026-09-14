@@ -1,0 +1,40 @@
+packages/kodac-runtime/test/o4g-bounded-github-review-publication.test.ts
+  s_af6b78923649db::t_93a363d3e3ff25 58,60
+  s_af6b78923649db::t_6b730037231b0c 47-48
+  s_af6b78923649db::t_aab7006865b57c 34
+  s_af6b78923649db::t_400068be903f3b 218-219
+packages/kodac-runtime/test/o4f-safe-github-publication-admission.test.ts
+  s_af6b78923649db::t_47b16b6783e965 46-47
+  s_af6b78923649db::t_ba6636e32f0101 101-108
+  s_af6b78923649db::t_32e3a83d7e0044 31
+packages/kodac-runtime/src/github-review/o4f-safe-github-publication-admission.ts
+  s_af6b78923649db::t_72206a47cbac07 331
+  s_af6b78923649db::t_8909af94b6c583 249,253-254
+  s_af6b78923649db::t_f16dd8f35be63d 219
+  s_af6b78923649db::t_edfdbf42a2e30c 214
+  s_af6b78923649db::t_805ad46a21b82a 349
+  s_af6b78923649db::t_43ad1739f0aa8e 398
+  s_af6b78923649db::t_f41d1b98099980 322
+  s_af6b78923649db::t_e98ff35fc1147b 368
+packages/kodac-runtime/src/github-review/o4g-bounded-github-review-publication.ts
+  s_af6b78923649db::t_4e69bd7fb18ec8 382
+  s_af6b78923649db::t_43d9f63cbb09c5 335,349-362,364
+  s_af6b78923649db::t_e01f0caf8a696d 523
+  s_af6b78923649db::t_b68ff3c055a74f 504-506
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4f4080e2b907a4eedb003773778a03e28813f847",
+  "prompts": {},
+  "sessions": {
+    "s_af6b78923649db": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f625bf3b6ffeLvkNtdalzasR6x",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "TheHalfMoon <alshehriofficial@gmail.com>"
+    }
+  }
+}

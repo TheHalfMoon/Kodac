@@ -1,0 +1,19 @@
+docs/planning/KODAC_O4N_ADVERSE_OUTCOME_EVIDENCE_AUTHORIZATION_2026-09-13.md
+  s_b16c3e824f814c::t_3ef1a2d27a151b 1-308
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6454961c72ce428d57bf93dccf7b1cf0b16b90df",
+  "prompts": {},
+  "sessions": {
+    "s_b16c3e824f814c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f669a24b2ffepNKwKl4R0flD4T",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}

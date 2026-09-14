@@ -1,0 +1,19 @@
+docs/planning/KODAC_O4H_BOUNDED_END_TO_END_COMPOSITION_AUTHORIZATION_2026-09-12.md
+  s_cb293ae9f49adc::t_1ef5f1d24150a7 1-195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5585981cc17cd0fe84f5dd7900dc098749a8a544",
+  "prompts": {},
+  "sessions": {
+    "s_cb293ae9f49adc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6d01dcc5ffet8FnjXFKNyOOI2",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
