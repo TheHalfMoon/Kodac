@@ -1,0 +1,19 @@
+docs/planning/KODAC_NO_BROAD_SHELL_OR_GITHUB_CREDENTIAL_ESCAPE_HATCH_PROOF_AUTHORIZATION_2026-09-14.md
+  s_1ac5a3a9bc8bf8::t_680b874be6db9c 1-148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "96c7e58e8f5ccafb52c4c1cae020b659b37a8172",
+  "prompts": {},
+  "sessions": {
+    "s_1ac5a3a9bc8bf8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6219b78fffed0hkQcL6zR1LPH",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
