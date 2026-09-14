@@ -104,7 +104,7 @@ await test("no dynamic code execution in product runtime", () => {
 
 await test("no GitHub credential in product runtime source", () => {
   const offenders = productFiles
-    .filter((file) => relative(packageRoot, file).startsWith("src/"))
+    .filter((file) => relative(packageRoot, file).replace(/\\/g, "/").startsWith("src/"))
     .filter((file) => /GITHUB_TOKEN|github\.token|getOctokit|secrets\./.test(read(file)))
   assert.deepEqual(offenders.map((file) => relative(repoRoot, file)), [])
 })
@@ -117,10 +117,10 @@ await test("CI token use is enumerated and read-only scoped", () => {
   const writeVerbs: string[] = []
   for (const file of workflowFiles) {
     const lines = read(file).split("\n")
+    const name = relative(repoRoot, file).replace(/\\/g, "/")
     lines.forEach((line, index) => {
-      const tag = `${relative(repoRoot, file)}:${index + 1}`
+      const tag = `${name}:${index + 1}`
       if (/github\.token|GITHUB_TOKEN|GH_TOKEN/.test(line)) {
-        const name = relative(repoRoot, file)
         if (!CI_TOKEN_ALLOWLIST.has(name)) offendingFiles.push(tag)
         const isOrigin = /github\.token/.test(line)
         if (isOrigin && !CI_TOKEN_ORIGIN_PATTERNS.some((pattern) => pattern.test(line))) unscopedOrigins.push(tag)
