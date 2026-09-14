@@ -31,7 +31,7 @@ const fileBody = (path: string, b: Uint8Array) => ({ type: "file", encoding: "ba
 const changed = (path = PRIMARY, status = "modified", b = BYTES, extra: Obj = {}) => ({ filename: path, status, sha: blobSha(b), ...extra })
 const clone = <T>(v: T): T => structuredClone(v)
 
-function o4bFixture(opts: { rows?: Obj[]; head?: string } = {}) {
+function o4bFixture(opts: { rows?: Obj[]; head?: string; times?: string[] } = {}) {
   const head = opts.head ?? HEAD, rows = opts.rows ?? [changed()]
   const content: Record<string, Obj> = {}
   for (const row of rows) { const path = String(row.filename), b = path === PRIMARY ? BYTES : new TextEncoder().encode(`content:${path}\n`); content[path] = fileBody(path, b); row.sha = content[path].sha }
@@ -44,8 +44,8 @@ function o4bFixture(opts: { rows?: Obj[]; head?: string } = {}) {
     return new Response(null, { status: 404 })
   }) as typeof fetch
   const input: O4bBoundedReadOnlyGithubContextInput = { expectedRepositoryId: REPO_ID, expectedRepositoryFullName: REPO, pullRequestNumber: PR, expectedPullRequestId: PR_ID, expectedBaseRepositoryId: REPO_ID, expectedHeadRepositoryId: REPO_ID, expectedHeadRepositoryFullName: REPO, expectedHeadSha: head, credentialPolicyIdentity: CREDENTIAL_POLICY, supportingPaths: [], credential: "fixture" }
-  let i = 0; const times = ["2026-09-12T00:00:00.000Z", "2026-09-12T00:00:01.000Z"]
-  return acquireO4bBoundedReadOnlyGithubContext(input, { fetchImpl, now: () => times[Math.min(i++, 1)]! })
+  let i = 0; const times = opts.times ?? ["2026-09-12T00:00:00.000Z", "2026-09-12T00:00:01.000Z"]
+  return acquireO4bBoundedReadOnlyGithubContext(input, { fetchImpl, now: () => times[Math.min(i++, times.length - 1)]! })
 }
 const claim = (a: O4dO4cReviewerExecutionAdmissionResult, path: string, range: { startLine: number; endLine: number } | undefined, key: string) => ({ claimKey: key, path, summary: `Material defect in ${path}.`, contractClaim: "The changed code violates the contract.", category: "correctness", severity: "high", confidenceBps: 9000, ...(range ? { range } : {}), evidenceItemIds: [a.items.find((x) => x.subjectPath === path)!.itemId] })
 const output = (claims: Obj[]): ModelProviderResponse => ({ assistant: JSON.stringify({ claims }), toolCalls: [], finishReason: "stop" })
@@ -55,9 +55,9 @@ class Provider implements ModelProvider {
   constructor(fn: (request: ModelProviderRequest) => ModelProviderResponse) { this.fn = fn }
   generate(request: ModelProviderRequest): Promise<ModelProviderResponse> { return Promise.resolve(this.fn(request)) }
 }
-async function admission(kind: "zero" | "one" | "multi" | "blocked" = "zero", line = 1): Promise<O4fSafeGithubPublicationAdmissionResult> {
+async function admission(kind: "zero" | "one" | "multi" | "blocked" = "zero", line = 1, times?: string[]): Promise<O4fSafeGithubPublicationAdmissionResult> {
   const rows = kind === "multi" ? [changed("src/a.ts"), changed("src/b.ts")] : [changed()]
-  const o4b = await o4bFixture({ rows }), o4c = buildO4cGithubReviewerContext({ taskId: "review-pr-42", objective: "Review exact changed paths.", o4bContext: o4b })
+  const o4b = await o4bFixture({ rows, times }), o4c = buildO4cGithubReviewerContext({ taskId: "review-pr-42", objective: "Review exact changed paths.", o4bContext: o4b })
   const o4d = createO4dO4cReviewerExecutionAdmission({ taskId: "review-pr-42", policyIdentity: POLICY, instructions: "Find evidence-grounded material defects only.", o4cContext: o4c })
   const claims = kind === "one" ? [claim(o4d, PRIMARY, { startLine: line, endLine: line }, "c1")] : kind === "multi" ? [claim(o4d, "src/a.ts", { startLine: 1, endLine: 1 }, "a"), claim(o4d, "src/b.ts", { startLine: 1, endLine: 1 }, "b")] : []
   let n = 0; const heads = kind === "blocked" ? [HEAD, ALT_HEAD] : [HEAD, HEAD]
@@ -215,6 +215,8 @@ const cases: Array<[string, () => void | Promise<void>]> = [
   ["result validator rejects review receipt mutation",async()=>{ const r=clone(await run(READY_ZERO,server(READY_ZERO))) as Obj; r.reviewReceiptIdentity="f".repeat(64); assert.throws(()=>validateO4gBoundedGithubReviewPublicationResult(r),/review receipt identity mismatch|publication execution identity mismatch/) }],
   ["result validator rejects slot receipt mutation",async()=>{ const r=clone(await run(READY_ONE,server(READY_ONE))) as Obj; r.slotReceipts[1].line=2; assert.throws(()=>validateO4gBoundedGithubReviewPublicationResult(r),/slot receipt identity mismatch/) }],
   ["POST content type is JSON and bodies stay exact",async()=>{ const s=server(READY_ZERO); await run(READY_ZERO,s); const p=postCalls(s)[0]!; assert.equal(p.headers.get("content-type"),"application/json"); assert.equal(JSON.parse(p.body!).body,READY_ZERO.publicationRequests[0]!.bodyText) }],
+  ["time-only execution difference preserves logical slot",async()=>{ const a=await admission("one",1,["2026-09-12T00:00:00.000Z","2026-09-12T00:00:01.000Z"]); const b=await admission("one",1,["2026-09-12T00:10:00.000Z","2026-09-12T00:10:01.000Z"]); assert.notEqual(a.o4eExecutionIdentity,b.o4eExecutionIdentity); assert.equal(a.publicationRequests[0]!.publicationSlotIdentity,b.publicationRequests[0]!.publicationSlotIdentity); assert.equal(a.publicationRequests[1]!.publicationSlotIdentity,b.publicationRequests[1]!.publicationSlotIdentity); assert.notEqual(a.publicationRequests[0]!.publicationRequestIdentity,b.publicationRequests[0]!.publicationRequestIdentity); assert.notEqual(a.publicationAdmissionIdentity,b.publicationAdmissionIdentity) }],
+  ["repeat execution against already-published logical slot recovers original object with zero POSTs and stable receipt",async()=>{ const a=await admission("one",1,["2026-09-12T00:00:00.000Z","2026-09-12T00:00:01.000Z"]); const b=await admission("one",1,["2026-09-12T00:10:00.000Z","2026-09-12T00:10:01.000Z"]); const e=exactObjects(a); const sa=server(a,{reviews:[e.review],comments:e.comments}); const ra=await run(a,sa); assert.equal(ra.status,"COMPLETED_ALREADY_PRESENT"); assert.equal(postCalls(sa).length,0); const sb=server(b,{reviews:[clone(e.review)],comments:clone(e.comments)}); const rb=await run(b,sb); assert.equal(rb.status,"COMPLETED_ALREADY_PRESENT"); assert.equal(postCalls(sb).length,0); assert.equal(rb.reviewId,ra.reviewId); assert.equal(rb.reviewNodeId,ra.reviewNodeId); assert.equal(rb.reviewReceiptIdentity,ra.reviewReceiptIdentity); assert.deepEqual(rb.slotReceipts.map((x)=>x.slotReceiptIdentity),ra.slotReceipts.map((x)=>x.slotReceiptIdentity)) }],
   ["full runtime runner discovers O4-G by canonical test filename",()=>{ const runner=readFileSync(new URL("../scripts/run-tests.mjs",import.meta.url),"utf8"); assert.match(runner,/\.test\.ts/); assert.ok(new URL("o4g-bounded-github-review-publication.test.ts",import.meta.url).pathname.endsWith(".test.ts")) }],
 ]
 for (const [name,fn] of cases) test(`O4-G: ${name}`,fn)

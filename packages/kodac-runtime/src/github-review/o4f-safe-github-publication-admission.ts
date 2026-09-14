@@ -211,12 +211,12 @@ function claimIdentity(claim: O4eReviewerClaim): string {
   return digest("o4f-normalized-claim-identity", {
     claimKey: claim.claimKey, path: claim.path, range: claim.range ?? null, summary: claim.summary,
     contractClaim: claim.contractClaim, category: claim.category, severity: claim.severity,
-    confidenceBps: claim.confidenceBps, evidenceItemIds: [...claim.evidenceItemIds],
+    confidenceBps: claim.confidenceBps,
   })
 }
 function slotIdentity(input: {
   publicationClass: O4fPublicationClass; repositoryId: string; pullRequestNumber: number; reviewedHead: string;
-  o4eExecutionIdentity: string; claimIdentity: string | null; path: string | null; lineAnchor: number | null
+  taskId: string; policyIdentity: string; claimIdentity: string | null; path: string | null; lineAnchor: number | null
 }): string { return digest("o4f-publication-slot-identity", input) }
 function requestIdentity(input: Omit<O4fPublicationRequest, "publicationRequestIdentity" | "bodyText" | "repositoryFullName">): string {
   return digest("o4f-publication-request-identity", input)
@@ -246,11 +246,12 @@ function blockedResult(
 }
 
 function makeRequest(input: {
-  publicationClass: O4fPublicationClass; c: O4cGithubReviewerContextResult; e: O4eModelBackedReviewerProviderExecutionResult;
+  publicationClass: O4fPublicationClass; c: O4cGithubReviewerContextResult; d: O4dO4cReviewerExecutionAdmissionResult; e: O4eModelBackedReviewerProviderExecutionResult;
   claimIdentity: string | null; path: string | null; lineAnchor: number | null; bodyWithoutMarker: string;
 }): O4fPublicationRequest {
   const publicationSlotIdentity = slotIdentity({ publicationClass: input.publicationClass, repositoryId: input.c.repositoryId,
-    pullRequestNumber: input.c.pullRequestNumber, reviewedHead: input.c.reviewedHead, o4eExecutionIdentity: input.e.executionIdentity,
+    pullRequestNumber: input.c.pullRequestNumber, reviewedHead: input.c.reviewedHead, taskId: input.c.taskId,
+    policyIdentity: input.d.policyIdentity,
     claimIdentity: input.claimIdentity, path: input.path, lineAnchor: input.lineAnchor })
   const bodyText = `${input.bodyWithoutMarker}\n\n${marker(publicationSlotIdentity)}`
   if (markerCount(bodyText) !== 1) fail("publication body marker accounting mismatch")
@@ -318,7 +319,7 @@ export function createO4fSafeGithubPublicationAdmission(raw: unknown): O4fSafeGi
   }
 
   const summaryBase = renderSummary(c, e, ids)
-  const summaryRequest = makeRequest({ publicationClass: "TOP_LEVEL_REVIEW_SUMMARY", c, e, claimIdentity: null, path: null, lineAnchor: null, bodyWithoutMarker: summaryBase })
+  const summaryRequest = makeRequest({ publicationClass: "TOP_LEVEL_REVIEW_SUMMARY", c, d, e, claimIdentity: null, path: null, lineAnchor: null, bodyWithoutMarker: summaryBase })
   if (summaryRequest.bodyByteLength > O4F_LIMITS.maxSummaryBodyUtf8Bytes) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
   const requests: O4fPublicationRequest[] = [summaryRequest]
   for (let i = 0; i < e.claims.length; i += 1) {
@@ -327,7 +328,7 @@ export function createO4fSafeGithubPublicationAdmission(raw: unknown): O4fSafeGi
     const lineAnchor = claim.range.startLine
     const inlineBase = renderInline(claim, id, lineAnchor)
     if (Buffer.byteLength(inlineBase, "utf8") > O4F_LIMITS.maxClaimRenderingUtf8Bytes) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
-    const inlineRequest = makeRequest({ publicationClass: "INLINE_FINDING_COMMENT", c, e, claimIdentity: id, path: claim.path, lineAnchor, bodyWithoutMarker: inlineBase })
+    const inlineRequest = makeRequest({ publicationClass: "INLINE_FINDING_COMMENT", c, d, e, claimIdentity: id, path: claim.path, lineAnchor, bodyWithoutMarker: inlineBase })
     if (inlineRequest.bodyByteLength > O4F_LIMITS.maxInlineBodyUtf8Bytes) return blockedResult("BLOCK_PUBLICATION_BODY_BUDGET", c, d, e)
     requests.push(inlineRequest)
   }
@@ -345,7 +346,7 @@ export function createO4fSafeGithubPublicationAdmission(raw: unknown): O4fSafeGi
   return deepFreeze({ ...base, publicationAdmissionIdentity: resultIdentity(base) })
 }
 
-function normalizeRequest(raw: unknown, index: number): O4fPublicationRequest {
+function normalizeRequest(raw: unknown, index: number, taskId: string, policyIdentity: string): O4fPublicationRequest {
   const r = ownExactRecord(raw, O4F_PUBLICATION_REQUEST_KEYS, `result.publicationRequests[${index}]`)
   const publicationClass = text(r.publicationClass, "request.publicationClass", 32) as O4fPublicationClass
   if (!CLASSES.has(publicationClass)) fail("request publication class unsupported")
@@ -364,7 +365,7 @@ function normalizeRequest(raw: unknown, index: number): O4fPublicationRequest {
     if (claimId !== null || path !== null || lineAnchor !== null || sideHint !== null || requiresDiffAnchorPreflight) fail("summary request anchor fields mismatch")
   } else if (claimId === null || path === null || lineAnchor === null || sideHint !== "RIGHT" || !requiresDiffAnchorPreflight) fail("inline request anchor fields mismatch")
   const publicationSlotIdentity = sha256(r.publicationSlotIdentity, "request.publicationSlotIdentity")
-  const expectedSlot = slotIdentity({ publicationClass, repositoryId, pullRequestNumber, reviewedHead, o4eExecutionIdentity, claimIdentity: claimId, path, lineAnchor })
+  const expectedSlot = slotIdentity({ publicationClass, repositoryId, pullRequestNumber, reviewedHead, taskId, policyIdentity, claimIdentity: claimId, path, lineAnchor })
   if (publicationSlotIdentity !== expectedSlot) fail("request publication slot identity mismatch")
   const maxBody = publicationClass === "TOP_LEVEL_REVIEW_SUMMARY" ? O4F_LIMITS.maxSummaryBodyUtf8Bytes : O4F_LIMITS.maxInlineBodyUtf8Bytes
   const bodyText = text(r.bodyText, "request.bodyText", maxBody)
@@ -394,7 +395,7 @@ export function validateO4fSafeGithubPublicationAdmissionResult(raw: unknown): O
   const taskId = text(r.taskId, "result.taskId", O4F_LIMITS.maxTaskIdUtf8Bytes), policyIdentity = text(r.policyIdentity, "result.policyIdentity", O4F_LIMITS.maxPolicyIdentityUtf8Bytes)
   const changedPathSetIdentity = sha256(r.changedPathSetIdentity, "result.changedPathSetIdentity")
   if (!Array.isArray(r.publicationRequests) || r.publicationRequests.length > O4F_LIMITS.maxPublicationRequests) fail("result publicationRequests must be bounded")
-  const publicationRequests = r.publicationRequests.map(normalizeRequest)
+  const publicationRequests = r.publicationRequests.map((item, index) => normalizeRequest(item, index, taskId, policyIdentity))
   const publicationRequestCount = integer(r.publicationRequestCount, "result.publicationRequestCount", 0, O4F_LIMITS.maxPublicationRequests)
   if (publicationRequestCount !== publicationRequests.length) fail("result publication request accounting mismatch")
   for (const request of publicationRequests) if (request.repositoryId !== repositoryId || request.repositoryFullName !== repositoryFullName || request.pullRequestNumber !== pullRequestNumber || request.reviewedHead !== reviewedHead || request.o4eExecutionIdentity !== o4eExecutionIdentity) fail("result request aggregate subject mismatch")
