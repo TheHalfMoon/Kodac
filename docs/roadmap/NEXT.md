@@ -170,7 +170,8 @@ O4N_ADVERSE_OUTCOME_EVIDENCE = CLOSED_CANONICAL / PR #630 / merge 3150da7659b20c
 O4O_DETERMINISTIC_IDEMPOTENCY_FIX_AUTHORIZATION = CLOSED_CANONICAL / PR #631 / merge 4c73441c18fb15ed8bddbc26e0c9d402ff005f8d / proof 5658052672
 O4O_DETERMINISTIC_IDEMPOTENCY_FIX_IMPLEMENTATION = CLOSED_CANONICAL / PR #632 / merge 31ac188f031f78aa3377fba532571daa6bbeb7fe / proof 5658218591
 POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #633 / merge 888eecb19bababd4cd324372b06b6dc203434aaa / proof 5658295461
-POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL / PR #634 / merge 84eb89b3851387916e42ec16b163614b733eb655 / push proof 34800911500
+POST_O4O_POST_MERGE_PROOF_CLOSURE_AUTHORIZATION = CLOSED_CANONICAL / PR #635 / merge 5450b3dc2aa4a611d5e3c98aa54c6594df021e8e / push proof 34802494822
 P9_R4_PLUS = NOT_AUTHORIZED_BY_NUMBERING
 P9_OVERALL = NOT_CLOSED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
@@ -180,9 +181,9 @@ WAIVER = NO
 
 ---
 
-## Active unit — post-O4-O project-completion audit and current-view reconciliation candidate
+## Active unit — post-O4-O closure recorded; successor analysis allowed
 
-Canonical authority exists through PR #633 / proof `5658295461` only for this exact six-file post-O4O audit/current-view reconciliation.
+Post-O4-O closure is recorded as CLOSED_CANONICAL under PR #635 authority. Only fresh evidence-driven successor analysis is allowed next; successor implementation is not authorized by this view.
 
 This candidate may modify exactly:
 
@@ -260,10 +261,11 @@ O4N_ADVERSE_OUTCOME_EVIDENCE = CLOSED_CANONICAL / PR #630 / merge 3150da7659b20c
 O4O_DETERMINISTIC_IDEMPOTENCY_FIX_AUTHORIZATION = CLOSED_CANONICAL / PR #631 / merge 4c73441c18fb15ed8bddbc26e0c9d402ff005f8d / proof 5658052672
 O4O_DETERMINISTIC_IDEMPOTENCY_FIX_IMPLEMENTATION = CLOSED_CANONICAL / PR #632 / merge 31ac188f031f78aa3377fba532571daa6bbeb7fe / proof 5658218591
 POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #633 / merge 888eecb19bababd4cd324372b06b6dc203434aaa / proof 5658295461
-POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CLOSED_CANONICAL / PR #634 / merge 84eb89b3851387916e42ec16b163614b733eb655 / push proof 34800911500
+POST_O4O_POST_MERGE_PROOF_CLOSURE_AUTHORIZATION = CLOSED_CANONICAL / PR #635 / merge 5450b3dc2aa4a611d5e3c98aa54c6594df021e8e / push proof 34802494822
 ```
 
-This post-O4-O reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
+Closure recorded: PR #634 external post-merge proof is bound (merge 84eb89b, verified signature, push run 34800911500 SUCCESS) under PR #635 authority (merge 5450b3d, push run 34802494822 SUCCESS).
 
 The re-audited project-wide classification remains:
 
@@ -607,11 +609,11 @@ WAIVER = NO
 
 ---
 
-## Next action after this candidate
+## Next action after this closure
 
-No successor implementation concern is authorized while this reconciliation is a candidate.
+No successor implementation concern is authorized by this closure.
 
-Only after this exact six-path reconciliation independently qualifies, merges with the exact expected head, and receives external post-merge proof may the next action become:
+The next action is:
 
 ```text
 FRESH_POST_O4O_RECONCILIATION_SUCCESSOR_ANALYSIS = ALLOWED
