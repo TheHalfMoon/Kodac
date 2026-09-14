@@ -1,0 +1,42 @@
+docs/planning/KODAC_PROJECT_WIDE_CANONICAL_COMPLETION_GAP_AUDIT_2026-09-10.md
+  s_1ac5a3a9bc8bf8::t_4a5ae642d054c1 270
+  s_1ac5a3a9bc8bf8::t_7e7c4076667204 71
+  s_1ac5a3a9bc8bf8::t_a2777f902a4a74 421-432
+  s_1ac5a3a9bc8bf8::t_005843530e691f 63-64
+docs/roadmap/MILESTONES.md
+  s_1ac5a3a9bc8bf8::t_aaf7bed008b62b 173-174,266-267
+  s_1ac5a3a9bc8bf8::t_cd81bf33833987 186,188
+  s_1ac5a3a9bc8bf8::t_a008027c60a732 270
+docs/roadmap/NEXT.md
+  s_1ac5a3a9bc8bf8::t_ca92e34f34cfdb 612,614,616
+  s_1ac5a3a9bc8bf8::t_81b43f3e04abdf 173-174,264-265
+  s_1ac5a3a9bc8bf8::t_18472a6a664424 184,186
+  s_1ac5a3a9bc8bf8::t_b4fca8c4c373af 268
+docs/roadmap/ROADMAP.md
+  s_1ac5a3a9bc8bf8::t_dd69de9e9152e0 173-174,289-290
+  s_1ac5a3a9bc8bf8::t_2121c7409c5083 293
+docs/roadmap/VERSION_PLAN.md
+  s_1ac5a3a9bc8bf8::t_5d863f97c07f76 270
+  s_1ac5a3a9bc8bf8::t_4f253b6ba2d4ce 186,188
+  s_1ac5a3a9bc8bf8::t_80c47f464ea7d2 173-174,266-267
+docs/product/STATUS.md
+  s_1ac5a3a9bc8bf8::t_07bc32e6c570cc 171-172,264-265
+  s_1ac5a3a9bc8bf8::t_e145efabaa7a65 184,186
+  s_1ac5a3a9bc8bf8::t_e33b83bf2511e4 268
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1c2a239722adcac42fa4d396ed3f54521c7a0c7e",
+  "prompts": {},
+  "sessions": {
+    "s_1ac5a3a9bc8bf8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6219b78fffed0hkQcL6zR1LPH",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
