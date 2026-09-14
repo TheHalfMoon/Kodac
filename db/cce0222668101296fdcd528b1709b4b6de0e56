@@ -1,0 +1,27 @@
+packages/kodac-runtime/test/exact-donor-mapping-attestation.test.ts
+  s_1ac5a3a9bc8bf8::t_504578808281df 125,154,163-164
+  s_1ac5a3a9bc8bf8::t_21c29ca569bccd 73-74
+  s_1ac5a3a9bc8bf8::t_f91ead175081e5 78-79
+  s_1ac5a3a9bc8bf8::t_19277627a15d7c 55
+  s_1ac5a3a9bc8bf8::t_46db7b0bd1ac9d 62-72
+  s_1ac5a3a9bc8bf8::t_ef6d5965422754 165,168-182
+  s_1ac5a3a9bc8bf8::t_d526d219cc9589 190-192,194
+  s_1ac5a3a9bc8bf8::t_179f475e060bb0 80
+  s_1ac5a3a9bc8bf8::t_1ca33c5494644a 1-54,56-61,75-77,81-124,126-153,155-162,166-167,183-189,193,195
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dbcce0222668101296fdcd528b1709b4b6de0e56",
+  "prompts": {},
+  "sessions": {
+    "s_1ac5a3a9bc8bf8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6219b78fffed0hkQcL6zR1LPH",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
