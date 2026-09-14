@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { readdirSync, readFileSync, statSync } from "node:fs"
+import { readdirSync, readFileSync, statSync, type Dirent } from "node:fs"
 import { dirname, join, relative } from "node:path"
 import test from "node:test"
 import { fileURLToPath } from "node:url"
@@ -22,7 +22,7 @@ function listFiles(root: string, extensions: readonly string[]): string[] {
   if (!rootStat.isDirectory()) failClosed(`scan root is not a directory: ${root}`)
   const out: string[] = []
   const walk = (dir: string): void => {
-    let entries: ReturnType<typeof readdirSync>
+    let entries: Dirent[]
     try {
       entries = readdirSync(dir, { withFileTypes: true })
     } catch {
