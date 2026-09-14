@@ -161,7 +161,14 @@ O4L_LIVE_EXECUTION = SUCCESSFULLY_OBSERVED / review 5189105929 COMMENTED at exac
 O4M_LIVE_RECEIPT_EVIDENCE_CANONICALIZATION_AUTHORIZATION = CLOSED_CANONICAL / PR #624 / merge 56e60ef4d75bdb09f60ff1086a5e3cd6b0736be2 / proof 5650376641
 O4M_LIVE_PUBLICATION_RECEIPT_CANONICAL_EVIDENCE = CLOSED_CANONICAL / PR #625 / merge 5a71b16f0a89cbdc75b28aac65ea83bb36b7c605 / proof 5650782736
 POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #626 / merge c4ba21ae24cf4a0ac078010dee6f6fe2816eed22 / proof 5650877230
-POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = SUPERSEDED_AS_CANDIDATE_BY_O4N_O4O_LINEAGE / NEVER_MERGED
+O4N_CALLER_INJECTED_GENERALITY_AUTHORIZATION = CLOSED_CANONICAL / PR #628 / merge 62d53e6e2848f8bbd7379e8fef82299c411a5c34 / proof 5651366430
+O4N_PROOF_PROCEDURE_REPAIR_AUTHORIZATION = CLOSED_CANONICAL / PR #629 / merge 6d69674ccd7ff88234765ccd753d4482391fce04 / proof 5651554205
+O4N_ADVERSE_OUTCOME_EVIDENCE = CLOSED_CANONICAL / PR #630 / merge 3150da7659b20cabf1b33492c118edd138337c26 / proof 5656388868
+O4O_DETERMINISTIC_IDEMPOTENCY_FIX_AUTHORIZATION = CLOSED_CANONICAL / PR #631 / merge 4c73441c18fb15ed8bddbc26e0c9d402ff005f8d / proof 5658052672
+O4O_DETERMINISTIC_IDEMPOTENCY_FIX_IMPLEMENTATION = CLOSED_CANONICAL / PR #632 / merge 31ac188f031f78aa3377fba532571daa6bbeb7fe / proof 5658218591
+POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #633 / merge 888eecb19bababd4cd324372b06b6dc203434aaa / proof 5658295461
+POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P9_R4_PLUS = NOT_AUTHORIZED_BY_NUMBERING
 P9_OVERALL = NOT_CLOSED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
@@ -173,9 +180,9 @@ Historical authorization, reconciliation, repair, anomaly, and adverse-evidence 
 
 ---
 
-## Active product-status unit — post-O4-M project-completion audit and current-view reconciliation candidate
+## Active product-status unit — post-O4-O project-completion audit and current-view reconciliation candidate
 
-Canonical authority exists through PR #626 / proof `5650877230` only for this exact six-file post-O4M audit/current-view reconciliation.
+Canonical authority exists through PR #633 / proof `5658295461` only for this exact six-file post-O4O audit/current-view reconciliation.
 
 This candidate may modify exactly:
 
@@ -246,10 +253,17 @@ O4L_LIVE_EXECUTION = SUCCESSFULLY_OBSERVED / review 5189105929 COMMENTED at exac
 O4M_LIVE_RECEIPT_EVIDENCE_CANONICALIZATION_AUTHORIZATION = CLOSED_CANONICAL / PR #624 / merge 56e60ef4d75bdb09f60ff1086a5e3cd6b0736be2 / proof 5650376641
 O4M_LIVE_PUBLICATION_RECEIPT_CANONICAL_EVIDENCE = CLOSED_CANONICAL / PR #625 / merge 5a71b16f0a89cbdc75b28aac65ea83bb36b7c605 / proof 5650782736
 POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #626 / merge c4ba21ae24cf4a0ac078010dee6f6fe2816eed22 / proof 5650877230
-POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_O4M_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = SUPERSEDED_AS_CANDIDATE_BY_O4N_O4O_LINEAGE / NEVER_MERGED
+O4N_CALLER_INJECTED_GENERALITY_AUTHORIZATION = CLOSED_CANONICAL / PR #628 / merge 62d53e6e2848f8bbd7379e8fef82299c411a5c34 / proof 5651366430
+O4N_PROOF_PROCEDURE_REPAIR_AUTHORIZATION = CLOSED_CANONICAL / PR #629 / merge 6d69674ccd7ff88234765ccd753d4482391fce04 / proof 5651554205
+O4N_ADVERSE_OUTCOME_EVIDENCE = CLOSED_CANONICAL / PR #630 / merge 3150da7659b20cabf1b33492c118edd138337c26 / proof 5656388868
+O4O_DETERMINISTIC_IDEMPOTENCY_FIX_AUTHORIZATION = CLOSED_CANONICAL / PR #631 / merge 4c73441c18fb15ed8bddbc26e0c9d402ff005f8d / proof 5658052672
+O4O_DETERMINISTIC_IDEMPOTENCY_FIX_IMPLEMENTATION = CLOSED_CANONICAL / PR #632 / merge 31ac188f031f78aa3377fba532571daa6bbeb7fe / proof 5658218591
+POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION_AUTHORIZATION = CLOSED_CANONICAL / PR #633 / merge 888eecb19bababd4cd324372b06b6dc203434aaa / proof 5658295461
+POST_O4O_PROJECT_COMPLETION_AUDIT_AND_CURRENT_VIEW_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
-This post-O4-M reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
+This post-O4-O reconciliation cannot certify its own closure. Only complete external post-merge proof may establish it as `CLOSED_CANONICAL`.
 
 The re-audited project-wide classification remains:
 
@@ -261,15 +275,15 @@ NOT_APPLICABLE_CRITERIA = 2
 SEPARATE_AUTHORITY_REQUIRED_CRITERIA = 0
 TOTAL_CRITERIA = 25
 MINIMUM_NEXT_PARTIAL_BLOCKER = O4_PRODUCTION_COMPLETENESS_WITH_CREDENTIAL_GENERALITY
-NEXT_REQUIRED_ACTION = FRESH_POST_O4M_RECONCILIATION_SUCCESSOR_ANALYSIS
+NEXT_REQUIRED_ACTION = FRESH_POST_O4O_RECONCILIATION_SUCCESSOR_ANALYSIS
 SUCCESSOR_IMPLEMENTATION = NOT_AUTHORIZED_BY_THIS_RECONCILIATION
 PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-The counts are recomputed from the rows in the post-O4M audit: PROVEN rows are IMMUTABLE_PATCH_PROPOSALS, K2_BACKED_EXACT_MUTATION, VERIFICATION_REVIEW_K5_DONE_GATE_INTEGRATION, and master-plan rows 1, 4, 5, 6, 8, 9, 10 (3 + 7 = 10); PARTIAL rows are the remaining ten OpenReview rows including PROVIDER_NEUTRAL_READ_ONLY_REVIEW with its narrowed live-receipt-closed boundary plus master-plan rows 2, 3, 7 (10 + 3 = 13). O2, O3, the O1 issue-comment extension, and O4-A through O4-M provide stronger canonical foundations: O4-H proves bounded end-to-end composition only under synthetic transport, O4-I merges the bounded production caller with the same synthetic-transport qualification, the O4-J attempt was blocked before process start with zero live writes, the O4-K proof was blocked after one POST with exact causal mechanism not proven, and O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head through the already-authenticated `gh api` session. Wider persistence, deployed ingress, skill execution, credential-general live write authority, new provider/model admission, and complete production product semantics remain unproven.
+The counts are recomputed from the rows in the post-O4O audit: PROVEN rows are IMMUTABLE_PATCH_PROPOSALS, K2_BACKED_EXACT_MUTATION, VERIFICATION_REVIEW_K5_DONE_GATE_INTEGRATION, and master-plan rows 1, 4, 5, 6, 8, 9, 10 (3 + 7 = 10); PARTIAL rows are the remaining ten OpenReview rows including PROVIDER_NEUTRAL_READ_ONLY_REVIEW with its narrowed live-receipt-closed boundary plus master-plan rows 2, 3, 7 (10 + 3 = 13). O2, O3, the O1 issue-comment extension, and O4-A through O4-O provide stronger canonical foundations: O4-H proves bounded end-to-end composition only under synthetic transport, O4-I merges the bounded production caller with the same synthetic-transport qualification, the O4-J attempt was blocked before process start with zero live writes, the O4-K proof was blocked after one POST with exact causal mechanism not proven, O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head through the already-authenticated `gh api` session, O4-N canonicalizes the adverse second-POST outcome with its time-derived slot-identity root cause, and O4-O closes the bounded deterministic slot-and-receipt-identity fix proven under injected fake transport with synthetic credentials only. Wider persistence, deployed ingress, skill execution, credential-general live write authority, new provider/model admission, and complete production product semantics remain unproven.
 
-The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-M. O4-H composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport; O4-I merges the bounded production caller with synthetic-transport qualification and caller-injected credential boundary; the O4-J attempt was blocked before process start with zero live writes; the O4-K proof was blocked after one POST with exact causal mechanism not proven; and O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head (review 5189105929, exact marker count 1, stray review absent) with credential-path generality explicitly not proven. Production completeness with credential generality is therefore the earliest remaining O4 dependency.
+The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-O. O4-H composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport; O4-I merges the bounded production caller with synthetic-transport qualification and caller-injected credential boundary; the O4-J attempt was blocked before process start with zero live writes; the O4-K proof was blocked after one POST with exact causal mechanism not proven; O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head (review 5189105929, exact marker count 1, stray review absent) with credential-path generality explicitly not proven; O4-N canonicalizes the adverse second-POST outcome with its time-derived slot-identity root cause; and O4-O closes the bounded deterministic slot-and-receipt-identity fix with time-only stability and already-present recovery proven under injected fake transport. Production completeness with credential generality is therefore the earliest remaining O4 dependency.
 
 Broader state remains:
 
