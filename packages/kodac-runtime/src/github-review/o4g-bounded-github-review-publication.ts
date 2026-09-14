@@ -332,7 +332,7 @@ function slotReceipt(request: O4fPublicationRequest, object: GithubReview | Gith
   const inline = request.publicationClass === "INLINE_FINDING_COMMENT"
   const comment = inline ? object as GithubReviewComment : null
   if (inline && (comment!.line === null || comment!.side !== "RIGHT")) fail("inline receipt requires an exact RIGHT-side anchor")
-  const core = {
+  const receipt = {
     publicationSlotIdentity: request.publicationSlotIdentity,
     publicationRequestIdentity: request.publicationRequestIdentity,
     publicationClass: request.publicationClass,
@@ -346,9 +346,22 @@ function slotReceipt(request: O4fPublicationRequest, object: GithubReview | Gith
     line: inline ? comment!.line! : null,
     side: inline ? "RIGHT" as const : null,
   }
-  return deepFreeze({ ...core, slotReceiptIdentity: digest("o4g-slot-receipt-v1", core) })
+  const identityPreimage = {
+    publicationSlotIdentity: receipt.publicationSlotIdentity,
+    publicationClass: receipt.publicationClass,
+    bodyIdentity: receipt.bodyIdentity,
+    githubObjectKind: receipt.githubObjectKind,
+    githubObjectId: receipt.githubObjectId,
+    githubNodeId: receipt.githubNodeId,
+    pullRequestReviewId: receipt.pullRequestReviewId,
+    commitId: receipt.commitId,
+    path: receipt.path,
+    line: receipt.line,
+    side: receipt.side,
+  }
+  return deepFreeze({ ...receipt, slotReceiptIdentity: digest("o4g-slot-receipt-v1", identityPreimage) })
 }
-function reviewReceiptIdentity(admission: O4fSafeGithubPublicationAdmissionResult, review: GithubReview, slots: readonly O4gSlotReceipt[]): string { return digest("o4g-review-receipt-v1", { publicationAdmissionIdentity: admission.publicationAdmissionIdentity, reviewId: review.id, reviewNodeId: review.nodeId, reviewState: review.state, commitId: review.commitId, slotReceiptIdentities: slots.map((x) => x.slotReceiptIdentity) }) }
+function reviewReceiptIdentity(review: GithubReview, slots: readonly O4gSlotReceipt[]): string { return digest("o4g-review-receipt-v1", { reviewId: review.id, reviewNodeId: review.nodeId, reviewState: review.state, commitId: review.commitId, slotReceiptIdentities: slots.map((x) => x.slotReceiptIdentity) }) }
 function exactRequestMatch(request: O4fPublicationRequest, comment: GithubReviewComment, reviewId: string): boolean { return comment.body === request.bodyText && comment.path === request.path && comment.line === request.lineAnchor && comment.side === "RIGHT" && comment.reviewId === reviewId && comment.commitId === request.reviewedHead }
 async function scanExisting(input: NormalizedInput, options: NormalizedOptions, state: HttpState): Promise<ScanResult> {
   let reviews: readonly GithubReview[], comments: readonly GithubReviewComment[]
@@ -366,7 +379,7 @@ async function scanExisting(input: NormalizedInput, options: NormalizedOptions, 
   const matchedComments = inlineHits.map((hits) => hits[0]!)
   for (let i = 0; i < inline.length; i += 1) if (!exactRequestMatch(inline[i]!, matchedComments[i]!, review.id)) return { kind: "MARKER_OR_BODY_MISMATCH", complete: null }
   const slots = [slotReceipt(summary, review, review.id), ...inline.map((request, i) => slotReceipt(request, matchedComments[i]!, review.id))]
-  return deepFreeze({ kind: "COMPLETE_EXACT_PUBLICATION_PRESENT", complete: { review, comments: Object.freeze(matchedComments), slotReceipts: Object.freeze(slots), reviewReceiptIdentity: reviewReceiptIdentity(admission, review, slots) } })
+  return deepFreeze({ kind: "COMPLETE_EXACT_PUBLICATION_PRESENT", complete: { review, comments: Object.freeze(matchedComments), slotReceipts: Object.freeze(slots), reviewReceiptIdentity: reviewReceiptIdentity(review, slots) } })
 }
 
 function parseHunks(patch: string, target: number): boolean {
@@ -488,8 +501,9 @@ function normalizeSlot(raw: unknown, index: number): O4gSlotReceipt {
   const path = r.path === null ? null : repositoryPath(r.path, "slot.path"), line = r.line === null ? null : integer(r.line, "slot.line", 1, 10_000_000), side = r.side === null ? null : r.side === "RIGHT" ? "RIGHT" as const : fail("slot.side unsupported")
   if (publicationClass === "TOP_LEVEL_REVIEW_SUMMARY" && (githubObjectKind !== "PULL_REQUEST_REVIEW" || path !== null || line !== null || side !== null)) fail("summary slot shape mismatch")
   if (publicationClass === "INLINE_FINDING_COMMENT" && (githubObjectKind !== "PULL_REQUEST_REVIEW_COMMENT" || path === null || line === null || side !== "RIGHT")) fail("inline slot shape mismatch")
-  const core = { publicationSlotIdentity: sha256(r.publicationSlotIdentity, "slot.publicationSlotIdentity"), publicationRequestIdentity: sha256(r.publicationRequestIdentity, "slot.publicationRequestIdentity"), publicationClass, bodyIdentity: sha256(r.bodyIdentity, "slot.bodyIdentity"), githubObjectKind, githubObjectId: decimalId(r.githubObjectId, "slot.githubObjectId"), githubNodeId: nonEmptyText(r.githubNodeId, "slot.githubNodeId", 512), pullRequestReviewId: decimalId(r.pullRequestReviewId, "slot.pullRequestReviewId"), commitId: sha1(r.commitId, "slot.commitId"), path, line, side }
-  const identity = sha256(r.slotReceiptIdentity, "slot.slotReceiptIdentity"), expected = digest("o4g-slot-receipt-v1", core); if (identity !== expected) fail("slot receipt identity mismatch"); return deepFreeze({ ...core, slotReceiptIdentity: expected })
+  const receipt = { publicationSlotIdentity: sha256(r.publicationSlotIdentity, "slot.publicationSlotIdentity"), publicationRequestIdentity: sha256(r.publicationRequestIdentity, "slot.publicationRequestIdentity"), publicationClass, bodyIdentity: sha256(r.bodyIdentity, "slot.bodyIdentity"), githubObjectKind, githubObjectId: decimalId(r.githubObjectId, "slot.githubObjectId"), githubNodeId: nonEmptyText(r.githubNodeId, "slot.githubNodeId", 512), pullRequestReviewId: decimalId(r.pullRequestReviewId, "slot.pullRequestReviewId"), commitId: sha1(r.commitId, "slot.commitId"), path, line, side }
+  const identityPreimage = { publicationSlotIdentity: receipt.publicationSlotIdentity, publicationClass: receipt.publicationClass, bodyIdentity: receipt.bodyIdentity, githubObjectKind: receipt.githubObjectKind, githubObjectId: receipt.githubObjectId, githubNodeId: receipt.githubNodeId, pullRequestReviewId: receipt.pullRequestReviewId, commitId: receipt.commitId, path: receipt.path, line: receipt.line, side: receipt.side }
+  const identity = sha256(r.slotReceiptIdentity, "slot.slotReceiptIdentity"), expected = digest("o4g-slot-receipt-v1", identityPreimage); if (identity !== expected) fail("slot receipt identity mismatch"); return deepFreeze({ ...receipt, slotReceiptIdentity: expected })
 }
 
 export function validateO4gBoundedGithubReviewPublicationResult(raw: unknown): O4gBoundedGithubReviewPublicationResult {
@@ -506,7 +520,7 @@ export function validateO4gBoundedGithubReviewPublicationResult(raw: unknown): O
     version: O4G_BOUNDED_GITHUB_REVIEW_PUBLICATION_VERSION, status, credentialPolicyIdentity: sha256(r.credentialPolicyIdentity, "result.credentialPolicyIdentity"), publicationAdmissionIdentity: sha256(r.publicationAdmissionIdentity, "result.publicationAdmissionIdentity"), repositoryId: decimalId(r.repositoryId, "result.repositoryId"), repositoryFullName: repository(r.repositoryFullName, "result.repositoryFullName"), pullRequestNumber: integer(r.pullRequestNumber, "result.pullRequestNumber", 1, Number.MAX_SAFE_INTEGER), pullRequestId: decimalId(r.pullRequestId, "result.pullRequestId"), reviewedHead: sha1(r.reviewedHead, "result.reviewedHead"), evaluatedHead, o4eExecutionIdentity: sha256(r.o4eExecutionIdentity, "result.o4eExecutionIdentity"), reviewId, reviewNodeId, reviewReceiptIdentity: reviewReceipt, slotReceipts: Object.freeze(slots), publicationRequestCount: integer(r.publicationRequestCount, "result.publicationRequestCount", 0, 65), failureCode, continuationDecision,
   }
   const completed = status.startsWith("COMPLETED_")
-  if (completed) { if (failureCode !== null || evaluatedHead === null || reviewId === null || reviewNodeId === null || reviewReceipt === null || slots.length !== core.publicationRequestCount || slots.length < 1 || slots[0]!.githubObjectKind !== "PULL_REQUEST_REVIEW" || slots.some((x) => x.pullRequestReviewId !== reviewId || x.commitId !== core.reviewedHead)) fail("completed result shape mismatch"); if (status !== "COMPLETED_ALREADY_PRESENT" && evaluatedHead !== core.reviewedHead) fail("newly-created completion requires exact evaluated head"); const expectedReceipt = digest("o4g-review-receipt-v1", { publicationAdmissionIdentity: core.publicationAdmissionIdentity, reviewId, reviewNodeId, reviewState: "COMMENTED", commitId: core.reviewedHead, slotReceiptIdentities: slots.map((x) => x.slotReceiptIdentity) }); if (reviewReceipt !== expectedReceipt) fail("review receipt identity mismatch") } else if (failureCode === null || reviewId !== null || reviewNodeId !== null || reviewReceipt !== null || slots.length !== 0) fail("non-completed result shape mismatch")
+  if (completed) { if (failureCode !== null || evaluatedHead === null || reviewId === null || reviewNodeId === null || reviewReceipt === null || slots.length !== core.publicationRequestCount || slots.length < 1 || slots[0]!.githubObjectKind !== "PULL_REQUEST_REVIEW" || slots.some((x) => x.pullRequestReviewId !== reviewId || x.commitId !== core.reviewedHead)) fail("completed result shape mismatch"); if (status !== "COMPLETED_ALREADY_PRESENT" && evaluatedHead !== core.reviewedHead) fail("newly-created completion requires exact evaluated head"); const expectedReceipt = digest("o4g-review-receipt-v1", { reviewId, reviewNodeId, reviewState: "COMMENTED", commitId: core.reviewedHead, slotReceiptIdentities: slots.map((x) => x.slotReceiptIdentity) }); if (reviewReceipt !== expectedReceipt) fail("review receipt identity mismatch") } else if (failureCode === null || reviewId !== null || reviewNodeId !== null || reviewReceipt !== null || slots.length !== 0) fail("non-completed result shape mismatch")
   const identity = sha256(r.publicationExecutionIdentity, "result.publicationExecutionIdentity"), expected = digest("o4g-publication-execution-v1", core); if (identity !== expected) fail("publication execution identity mismatch")
   return deepFreeze({ ...core, publicationExecutionIdentity: expected })
 }
