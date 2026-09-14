@@ -1,0 +1,19 @@
+docs/planning/KODAC_EXACT_DONOR_MAPPING_ATTESTATION_AUTHORIZATION_2026-09-14.md
+  s_1ac5a3a9bc8bf8::t_9a75137f11a3f4 1-155
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "27983636364afa32a20fa67b5ab3aee3b1fff84d",
+  "prompts": {},
+  "sessions": {
+    "s_1ac5a3a9bc8bf8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6219b78fffed0hkQcL6zR1LPH",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
