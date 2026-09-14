@@ -1,0 +1,65 @@
+docs/roadmap/ROADMAP.md
+  s_af6b78923649db::t_c5c9550588a339 208
+  s_af6b78923649db::t_7af87cf1476abb 166-173,281-288
+  s_af6b78923649db::t_33e76cef623242 291
+  s_af6b78923649db::t_53bf5b6ccaec63 309
+  s_af6b78923649db::t_3a5eb16636c884 311
+  s_af6b78923649db::t_172e96f73f6021 210
+  s_af6b78923649db::t_de03b03b5b80fd 303
+docs/roadmap/NEXT.md
+  s_af6b78923649db::t_bed11a338bc67b 183,185
+  s_af6b78923649db::t_19ffa16b3a61fe 284
+  s_af6b78923649db::t_2a19d49e931267 256-263
+  s_af6b78923649db::t_e3fd57bdf610f0 278
+  s_af6b78923649db::t_124b686aea5db1 166-173
+  s_af6b78923649db::t_d05f898fbcdf5f 266
+  s_af6b78923649db::t_af84bf126c9503 286
+  s_af6b78923649db::t_6b125e67b31866 617
+docs/roadmap/MILESTONES.md
+  s_af6b78923649db::t_0de4a035deb487 268
+  s_af6b78923649db::t_82ad8502cf9bd1 166-173,258-265
+  s_af6b78923649db::t_3f2c89ffbce21f 286
+  s_af6b78923649db::t_1842d50ed9e820 288
+  s_af6b78923649db::t_00ccda36c217fd 185
+  s_af6b78923649db::t_148e97a57d0b50 187
+  s_af6b78923649db::t_1936b59801250d 280
+docs/roadmap/VERSION_PLAN.md
+  s_af6b78923649db::t_7fa25e008c7c3e 166-173,258-265
+  s_af6b78923649db::t_3dc9e2a6d908cb 268
+  s_af6b78923649db::t_f1510605b656d3 187
+  s_af6b78923649db::t_3ccba9f43a41a4 280
+  s_af6b78923649db::t_c841bf776a195b 286
+  s_af6b78923649db::t_420359a9af4dff 288
+  s_af6b78923649db::t_5503400aea9d7f 185
+docs/planning/KODAC_PROJECT_WIDE_CANONICAL_COMPLETION_GAP_AUDIT_2026-09-10.md
+  s_af6b78923649db::t_9ce3789c9beb9c 259
+  s_af6b78923649db::t_2c8862ee9abd72 354
+  s_af6b78923649db::t_da04f411996b7a 332
+  s_af6b78923649db::t_ea240d649e47a0 56-63
+  s_af6b78923649db::t_1543b3341f62ea 360
+  s_af6b78923649db::t_2b3defc9aaf6d5 70
+docs/product/STATUS.md
+  s_af6b78923649db::t_750161885da8a6 284
+  s_af6b78923649db::t_8a28f5a770cf0b 183
+  s_af6b78923649db::t_b0a60de7cc82fc 266
+  s_af6b78923649db::t_b826c7ba8ed4bc 164-171,256-263
+  s_af6b78923649db::t_3ab0fafd763b86 286
+  s_af6b78923649db::t_6ac3dbd19e1090 185
+  s_af6b78923649db::t_775dbf9da8f47d 278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "74264cac98467fc61bbbb4eeacb9a03629cbc4f5",
+  "prompts": {},
+  "sessions": {
+    "s_af6b78923649db": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f625bf3b6ffeLvkNtdalzasR6x",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "TheHalfMoon <alshehriofficial@gmail.com>"
+    }
+  }
+}
