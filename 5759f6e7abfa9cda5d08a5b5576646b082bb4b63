@@ -1,0 +1,19 @@
+docs/planning/KODAC_O4N_PROOF_PROCEDURE_REPAIR_AUTHORIZATION_2026-09-13.md
+  s_0ffe68214194f3::t_83ce47b37821a5 1-543
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "5759f6e7abfa9cda5d08a5b5576646b082bb4b63",
+  "prompts": {},
+  "sessions": {
+    "s_0ffe68214194f3": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f66befbf6ffeuBJArdYWjc5Kaj",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
