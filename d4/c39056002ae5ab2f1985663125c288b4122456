@@ -1,0 +1,19 @@
+docs/planning/KODAC_FOUNDER_AUTHORIZED_RESEQUENCING_AUTHORIZATION_2026-09-14.md
+  s_1ac5a3a9bc8bf8::t_056366d38b2225 1-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d4c39056002ae5ab2f1985663125c288b4122456",
+  "prompts": {},
+  "sessions": {
+    "s_1ac5a3a9bc8bf8": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f6219b78fffed0hkQcL6zR1LPH",
+        "model": "muse-spark-1.3-contributor-free"
+      },
+      "human_author": "Gocceri <azialshehri@gmail.com>"
+    }
+  }
+}
