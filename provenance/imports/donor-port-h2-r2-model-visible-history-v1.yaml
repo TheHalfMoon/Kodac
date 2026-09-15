@@ -1,0 +1,27 @@
+schema_version: 1
+record_id: donor-port-h2-r2-model-visible-history-v1
+status: candidate
+classification: REIMPLEMENT
+upstream:
+  id: deepseek-harness
+  repository: https://github.com/deepseek-ai/deepseek-harness
+  commit: 47f943859bef60e4160492346772ded9b24f765a
+  source_paths:
+    - docs/subsystems/session.md
+destination_paths:
+  - packages/kodac-runtime/src/session/model-visible-history.ts
+license_review:
+  repository_license: MIT
+  path_scope_reviewed: true
+  notice_required: true
+  evidence:
+    - in-source DONOR_PROVENANCE block in packages/kodac-runtime/src/session/model-visible-history.ts declares MIT with PORT intake mode at the pinned commit
+    - packages/kodac-runtime/THIRD_PARTY_NOTICES.md already preserves a deepseek-ai/deepseek-harness anchor
+verification:
+  behavioral_tests_required: false
+  license_check_required: true
+  provenance_check_required: true
+notes:
+  - Candidate record created under intake authority PR #646; asserts no lifecycle state beyond ledger coverage.
+  - "In-source intakeMode: PORT. Source blob pins mirrored from the declaration without live retrieval."
+  - No source product file was modified by this record.

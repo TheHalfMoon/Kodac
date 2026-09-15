@@ -179,3 +179,15 @@ R3A also studies the validation-feedback design described by:
 - Intake mode: STUDY_ONLY
 
 No Agentica runtime source or dependency is copied or imported by H5-R3A. Kodac adopts only the design lesson that argument/schema validation failures can improve recovery feedback. In Kodac's authority model, validation failure may narrow/block a future tool call, while validation success never grants permission and can never bypass K2.
+## github/spec-kit specification contracts adaptation
+
+Portions of `src/specification/contracts.ts` are behaviorally ported and adapted from:
+
+- Project: spec-kit
+- Repository: https://github.com/github/spec-kit
+- Pinned commit: `e79fa25f3f465b1ce779f570ccacef7b379e9166`
+- Source paths: `templates/commands/specify.md`, `templates/commands/plan.md`, `templates/commands/tasks.md`, `templates/commands/analyze.md`, `templates/commands/converge.md`, `templates/spec-template.md`, `templates/plan-template.md`, `templates/tasks-template.md`
+- License: MIT (as declared by the in-source DONOR_PROVENANCE block; no separate upstream copyright line is declared in the Kodac source)
+- Intake mode: PORT
+
+Kodac reimplements a TypeScript contract surface with Kodac-owned limits and identities guided by these templates.

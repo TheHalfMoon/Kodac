@@ -1,0 +1,35 @@
+schema_version: 1
+record_id: donor-port-s1-specification-contracts-v1
+status: candidate
+classification: REIMPLEMENT
+upstream:
+  id: spec-kit
+  repository: https://github.com/github/spec-kit
+  commit: e79fa25f3f465b1ce779f570ccacef7b379e9166
+  source_paths:
+    - templates/commands/specify.md
+    - templates/commands/plan.md
+    - templates/commands/tasks.md
+    - templates/commands/analyze.md
+    - templates/commands/converge.md
+    - templates/spec-template.md
+    - templates/plan-template.md
+    - templates/tasks-template.md
+destination_paths:
+  - packages/kodac-runtime/src/specification/contracts.ts
+license_review:
+  repository_license: MIT
+  path_scope_reviewed: true
+  notice_required: true
+  evidence:
+    - in-source DONOR_PROVENANCE block in packages/kodac-runtime/src/specification/contracts.ts declares MIT with PORT intake mode at the pinned commit
+    - packages/kodac-runtime/THIRD_PARTY_NOTICES.md preserves the github/spec-kit MIT declaration notice added with this intake
+verification:
+  behavioral_tests_required: false
+  license_check_required: true
+  provenance_check_required: true
+notes:
+  - Candidate record created under intake authority PR #646; asserts no lifecycle state beyond ledger coverage.
+  - "In-source intakeMode: PORT. Source blob pins mirrored from the declaration without live retrieval."
+  - No upstream copyright line is declared in-source; none is asserted here.
+  - No source product file was modified by this record.

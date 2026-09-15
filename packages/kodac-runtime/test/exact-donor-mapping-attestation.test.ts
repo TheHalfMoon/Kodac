@@ -77,18 +77,9 @@ function loadLedger(): LedgerRecord[] {
 
 const DERIVATION = /(^|[^a-zA-Z])(adapted from|ported from)|donor|studied from|opencode|anomalyco/i
 const DERIVATION_DECLARED = /(^|[^a-zA-Z])(adapted from)|KDO_[A-Z0-9_]*DONOR[A-Z0-9_]*|DONOR_[A-Z_]+|Third-Party Notices/i
-const KNOWN_UNMAPPED_PORTS = new Set([
-  "packages/kodac-runtime/src/agent/tool-result-pruning.ts",
-  "packages/kodac-runtime/src/agent/repeat-call-signal.ts",
-  "packages/kodac-runtime/src/agent/guarded-tool-pipeline.ts",
-  "packages/kodac-runtime/src/specification/contracts.ts",
-  "packages/kodac-runtime/src/extensions/contracts.ts",
-  "packages/kodac-runtime/src/model/capabilities.ts",
-  "packages/kodac-runtime/src/semantic/contracts.ts",
-  "packages/kodac-runtime/src/context-connectors/contracts.ts",
-  "packages/kodac-runtime/src/context-connectors/indexer-state-machine.ts",
-  "packages/kodac-runtime/src/session/model-visible-request.ts",
-  "packages/kodac-runtime/src/session/model-visible-history.ts",
+const KNOWN_UNMAPPED_PORTS: ReadonlySet<string> = new Set([
+  // All 11 PORT gaps closed by donor-port intake records (PR #646 authority).
+  // The set stays explicit so any future unmapped PORT file fail-closes here.
 ])
 
 const KNOWN_INTAKE_MODES = new Set(["PORT", "PORT_SELECTED_CONTRACT_IDEAS", "STUDY_ONLY", "STUDY_REIMPLEMENT"])
