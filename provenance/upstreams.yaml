@@ -1,5 +1,5 @@
 schema_version: 1
-as_of: "2026-08-12"
+as_of: "2026-09-15"
 canonical_base: 25e1a1b37417d18c14715faadc7c20579b039990
 policy:
   code_import_authorized: false
@@ -171,3 +171,74 @@ upstreams:
       - evidence requirements
       - finding deduplication and calibration
       - merge-confidence calibration
+
+  - id: deepcode
+    repository: https://github.com/HKUDS/DeepCode
+    commit: 287510fbf6820147a48adf79f7fd86b0ed1afe92
+    repository_license: MIT
+    role: port-donor-discovery-baseline
+    decision: pin-only-no-import-authority
+    license_notes:
+      - "License MIT is declared by the in-source DONOR_PROVENANCE blocks; no upstream license fact beyond the declaration is asserted here."
+    declared_by:
+      - packages/kodac-runtime/src/agent/tool-result-pruning.ts
+      - packages/kodac-runtime/src/agent/repeat-call-signal.ts
+      - packages/kodac-runtime/src/agent/guarded-tool-pipeline.ts
+
+  - id: spec-kit
+    repository: https://github.com/github/spec-kit
+    commit: e79fa25f3f465b1ce779f570ccacef7b379e9166
+    repository_license: MIT
+    role: port-donor-discovery-baseline
+    decision: pin-only-no-import-authority
+    license_notes:
+      - "License MIT is declared by the in-source DONOR_PROVENANCE block; no upstream license fact beyond the declaration is asserted here."
+    declared_by:
+      - packages/kodac-runtime/src/specification/contracts.ts
+
+  - id: deepseek-harness
+    repository: https://github.com/deepseek-ai/deepseek-harness
+    commit: 47f943859bef60e4160492346772ded9b24f765a
+    repository_license: MIT
+    role: port-donor-discovery-baseline
+    decision: pin-only-no-import-authority
+    license_notes:
+      - "License MIT is declared by the in-source DONOR_PROVENANCE blocks; no upstream license fact beyond the declaration is asserted here."
+    declared_by:
+      - packages/kodac-runtime/src/extensions/contracts.ts
+      - packages/kodac-runtime/src/session/model-visible-request.ts
+      - packages/kodac-runtime/src/session/model-visible-history.ts
+
+  - id: continue
+    repository: https://github.com/continuedev/continue
+    commit: 5522c6f44ca0ac3528b37244818fbfa39b5af470
+    repository_license: undeclared-in-source
+    role: port-donor-discovery-baseline
+    decision: pin-only-no-import-authority
+    license_notes:
+      - "The in-source DONOR_PROVENANCE block declares no license; no upstream license fact is asserted here."
+    declared_by:
+      - packages/kodac-runtime/src/model/capabilities.ts
+
+  - id: intellij-community
+    repository: https://github.com/JetBrains/intellij-community
+    commit: bfca8a6815c70221a574383fc23542afb0af5bf7
+    repository_license: undeclared-in-source
+    role: port-donor-discovery-baseline
+    decision: pin-only-no-import-authority
+    license_notes:
+      - "The in-source DONOR_PROVENANCE block declares no license; no upstream license fact is asserted here."
+    declared_by:
+      - packages/kodac-runtime/src/semantic/contracts.ts
+
+  - id: context-connectors
+    repository: https://github.com/augmentcode/context-connectors
+    commit: f7d6472ae626c98fd768f64cdfd6160145eefa77
+    repository_license: undeclared-in-source
+    role: port-donor-discovery-baseline
+    decision: pin-only-no-import-authority
+    license_notes:
+      - "The in-source DONOR_PROVENANCE blocks declare no license; no upstream license fact is asserted here."
+    declared_by:
+      - packages/kodac-runtime/src/context-connectors/contracts.ts
+      - packages/kodac-runtime/src/context-connectors/indexer-state-machine.ts
