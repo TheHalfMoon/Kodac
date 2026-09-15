@@ -1,0 +1,30 @@
+schema_version: 1
+record_id: donor-port-c1-semantic-contracts-v1
+status: candidate
+classification: REIMPLEMENT
+upstream:
+  id: intellij-community
+  repository: https://github.com/JetBrains/intellij-community
+  commit: bfca8a6815c70221a574383fc23542afb0af5bf7
+  source_paths:
+    - platform/core-api/src/com/intellij/psi/PsiElement.java
+    - platform/core-api/src/com/intellij/psi/PsiReference.java
+    - platform/core-api/src/com/intellij/psi/PsiNamedElement.java
+    - platform/core-api/src/com/intellij/psi/SmartPsiElementPointer.java
+destination_paths:
+  - packages/kodac-runtime/src/semantic/contracts.ts
+license_review:
+  repository_license: undeclared-in-source
+  path_scope_reviewed: true
+  notice_required: false
+  evidence:
+    - in-source DONOR_PROVENANCE block in packages/kodac-runtime/src/semantic/contracts.ts declares PORT intake mode at the pinned commit and states no license
+    - the file header describes a Kodac-native port of selected contract ideas with no copied-byte markers
+verification:
+  behavioral_tests_required: false
+  license_check_required: true
+  provenance_check_required: true
+notes:
+  - Candidate record created under intake authority PR #646; asserts no lifecycle state beyond ledger coverage.
+  - "In-source intakeMode: PORT. No upstream license fact is asserted beyond the declaration."
+  - No source product file was modified by this record.

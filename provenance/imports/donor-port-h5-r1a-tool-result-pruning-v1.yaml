@@ -1,0 +1,27 @@
+schema_version: 1
+record_id: donor-port-h5-r1a-tool-result-pruning-v1
+status: candidate
+classification: REIMPLEMENT
+upstream:
+  id: deepcode
+  repository: https://github.com/HKUDS/DeepCode
+  commit: 287510fbf6820147a48adf79f7fd86b0ed1afe92
+  source_paths:
+    - core/agent_runtime/pruner.py
+destination_paths:
+  - packages/kodac-runtime/src/agent/tool-result-pruning.ts
+license_review:
+  repository_license: MIT
+  path_scope_reviewed: true
+  notice_required: true
+  evidence:
+    - in-source DONOR_PROVENANCE block in packages/kodac-runtime/src/agent/tool-result-pruning.ts declares MIT with PORT intake mode at the pinned commit
+    - packages/kodac-runtime/THIRD_PARTY_NOTICES.md preserves the HKUDS/DeepCode MIT notice
+verification:
+  behavioral_tests_required: false
+  license_check_required: true
+  provenance_check_required: true
+notes:
+  - Candidate record created under intake authority PR #646; asserts no lifecycle state beyond ledger coverage.
+  - "In-source intakeMode: PORT. Source tree and blob pins mirrored from the declaration without live retrieval."
+  - No source product file was modified by this record.

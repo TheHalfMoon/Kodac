@@ -136,7 +136,7 @@ test("H4-R3A predecessor donor versions limits and protected authority baseline 
     "../src/agent/loop.ts": "576ad425db7e845b9705c982e95dd4f7522f8c43",
     "../package.json": "af4c20a3dae387c15cc5fb2eb28d415c8f115b95",
     "../scripts/run-tests.mjs": "9a0bcde0e565168c78eb7fe4d3cf08236d24baa7",
-    "../THIRD_PARTY_NOTICES.md": "aaa1ce56d27f5b7dd185f9aaa257d978c2a56c76",
+    "../THIRD_PARTY_NOTICES.md": "5900f9b2da3041e1507b6fc132d749ef4deda32e",
   }
   for (const [path, expected] of Object.entries(protectedBlobs)) {
     assert.equal(gitBlobSha1(source(path)), expected, `${path} must remain byte-identical`)

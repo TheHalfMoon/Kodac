@@ -1,0 +1,27 @@
+schema_version: 1
+record_id: donor-port-c12-indexer-state-machine-v1
+status: candidate
+classification: REIMPLEMENT
+upstream:
+  id: context-connectors
+  repository: https://github.com/augmentcode/context-connectors
+  commit: f7d6472ae626c98fd768f64cdfd6160145eefa77
+  source_paths:
+    - src/core/indexer.ts
+destination_paths:
+  - packages/kodac-runtime/src/context-connectors/indexer-state-machine.ts
+license_review:
+  repository_license: undeclared-in-source
+  path_scope_reviewed: true
+  notice_required: false
+  evidence:
+    - in-source DONOR_PROVENANCE block in packages/kodac-runtime/src/context-connectors/indexer-state-machine.ts declares PORT intake mode at the pinned commit and states no license
+    - the file header describes a Kodac-native port of orchestration semantics with no copied-byte markers
+verification:
+  behavioral_tests_required: false
+  license_check_required: true
+  provenance_check_required: true
+notes:
+  - Candidate record created under intake authority PR #646; asserts no lifecycle state beyond ledger coverage.
+  - "In-source intakeMode: PORT. No upstream license fact is asserted beyond the declaration."
+  - No source product file was modified by this record.

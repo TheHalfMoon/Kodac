@@ -261,7 +261,7 @@ test("protected K2 R3A R3B receipt Done Gate and dependency surfaces remain byte
     "../src/trust/sandbox-backend-evidence.ts": "b9242c5cecc18fd43b2b80aeffd974ef5311fded",
     "../package.json": "af4c20a3dae387c15cc5fb2eb28d415c8f115b95",
     "../scripts/run-tests.mjs": "9a0bcde0e565168c78eb7fe4d3cf08236d24baa7",
-    "../THIRD_PARTY_NOTICES.md": "aaa1ce56d27f5b7dd185f9aaa257d978c2a56c76",
+    "../THIRD_PARTY_NOTICES.md": "5900f9b2da3041e1507b6fc132d749ef4deda32e",
   }
   for (const [path, expected] of Object.entries(protectedBlobs)) assert.equal(gitBlobSha1(source(path)), expected, path)
   assert.doesNotMatch(source("../src/agent/loop.ts"), /sandbox-observer-gvisor|gvisor-proc-observe|GvisorRuntimeObservationCandidate/)
