@@ -181,7 +181,14 @@ O4_CREDENTIAL_GENERALITY_LIVE_PROOF_PROCEDURE_PREPARATION = CLOSED_CANONICAL / P
 EXACT_DONOR_MAPPING_COMPLETENESS_ATTESTATION_AUTHORIZATION = CLOSED_CANONICAL / PR #642 / merge d222ab5a99e41f47308a329790de4cfc84239a2c
 EXACT_DONOR_MAPPING_COMPLETENESS_ATTESTATION = CLOSED_CANONICAL / PR #643 / merge d3453c41bdacf806f1062d71e73fb30091661a8c / push 34806774312 + 34806774298 SUCCESS / 11_PORT_GAPS_PINNED
 POST_PROOF_CYCLE_RECONCILIATION_AUTHORIZATION = MERGED / PR #644 / merge 3419f266190ee5ae7a3796f3769242eec18efc10 / legacy-tests + provenance SUCCESS / GOVERNING_AUTHORITY_FOR_THIS_CANDIDATE
-POST_PROOF_CYCLE_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_PROOF_CYCLE_RECONCILIATION = CLOSED_CANONICAL / PR #645 / merge 47e74f6db8698470698100b43b05cc5f019b7303 / push run 34934944706 SUCCESS
+DONOR_PORT_INTAKE_AUTHORIZATION = CLOSED_CANONICAL / PR #646 / merge 6bc62b52ebfb3f4f7404b027293d7fc2d716ba55 / push checks SUCCESS
+DONOR_UPSTREAM_PIN_AUTHORIZATION = CLOSED_CANONICAL / PR #647 / merge b11a04884fc41f711fe38129ece5fa6c3341a3ef / push checks SUCCESS
+DONOR_UPSTREAM_PINS = CLOSED_CANONICAL / PR #648 / merge 3050afbf8c2b3775da5d80b7f1c4ae7c6cf8bdb6 / push checks SUCCESS
+DONOR_PORT_INTAKE_IMPLEMENTATION = CLOSED_CANONICAL / PR #649 / merge 06a7f8f9d7f36eeb311f7303594f446bfcab9c90 / full matrix + push SUCCESS
+H4_NOTICES_PIN_BUMP_AUTHORIZATION = CLOSED_CANONICAL / PR #650 / merge 0dd53014cdeb1d9cd92f92ea999116644a00ff4e / push checks SUCCESS
+POST_INTAKE_REAUDIT_AUTHORIZATION = MERGED / PR #651 / merge b2d2d0294c43635cc7292107946917c7a68c7645 / legacy-tests + provenance SUCCESS / GOVERNING_AUTHORITY_FOR_THIS_CANDIDATE
+POST_INTAKE_REAUDIT = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 P9_R4_PLUS = NOT_AUTHORIZED_BY_NUMBERING
 P9_OVERALL = NOT_CLOSED
 PUBLIC RELEASE / PACKAGE PUBLICATION / DEPLOYMENT = NOT_AUTHORIZED
@@ -193,9 +200,9 @@ Historical authorization, reconciliation, repair, anomaly, and evidence records 
 
 ---
 
-## Active version-plan unit — post-proof-cycle reconciliation candidate
+## Active version-plan unit — post-intake re-audit candidate
 
-Post-proof-cycle reconciliation is a candidate under merged PR #644 authority (base 3419f26); it is not closed canonical. Post-O4-O closure remains recorded as CLOSED_CANONICAL under PR #635 authority with PR #636 proof closure (merge 15f8473). Only fresh evidence-driven successor analysis is allowed after this candidate closes; successor implementation is not authorized by this view.
+Post-intake re-audit is a candidate under merged PR #651 authority (base b2d2d02); it is not closed canonical. Post-proof-cycle reconciliation remains recorded as CLOSED_CANONICAL (PR #645, merge 47e74f6, push run 34934944706 SUCCESS) with the donor intake lineage closed canonical through PR #650. Only fresh evidence-driven successor analysis is allowed after this candidate closes; successor implementation is not authorized by this view.
 
 This candidate may modify exactly:
 
@@ -284,30 +291,37 @@ O4_CREDENTIAL_GENERALITY_LIVE_PROOF_PROCEDURE_PREPARATION = CLOSED_CANONICAL / P
 EXACT_DONOR_MAPPING_COMPLETENESS_ATTESTATION_AUTHORIZATION = CLOSED_CANONICAL / PR #642 / merge d222ab5a99e41f47308a329790de4cfc84239a2c
 EXACT_DONOR_MAPPING_COMPLETENESS_ATTESTATION = CLOSED_CANONICAL / PR #643 / merge d3453c41bdacf806f1062d71e73fb30091661a8c / push 34806774312 + 34806774298 SUCCESS / 11_PORT_GAPS_PINNED
 POST_PROOF_CYCLE_RECONCILIATION_AUTHORIZATION = MERGED / PR #644 / merge 3419f266190ee5ae7a3796f3769242eec18efc10 / legacy-tests + provenance SUCCESS / GOVERNING_AUTHORITY_FOR_THIS_CANDIDATE
-POST_PROOF_CYCLE_RECONCILIATION = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
+POST_PROOF_CYCLE_RECONCILIATION = CLOSED_CANONICAL / PR #645 / merge 47e74f6db8698470698100b43b05cc5f019b7303 / push run 34934944706 SUCCESS
+DONOR_PORT_INTAKE_AUTHORIZATION = CLOSED_CANONICAL / PR #646 / merge 6bc62b52ebfb3f4f7404b027293d7fc2d716ba55 / push checks SUCCESS
+DONOR_UPSTREAM_PIN_AUTHORIZATION = CLOSED_CANONICAL / PR #647 / merge b11a04884fc41f711fe38129ece5fa6c3341a3ef / push checks SUCCESS
+DONOR_UPSTREAM_PINS = CLOSED_CANONICAL / PR #648 / merge 3050afbf8c2b3775da5d80b7f1c4ae7c6cf8bdb6 / push checks SUCCESS
+DONOR_PORT_INTAKE_IMPLEMENTATION = CLOSED_CANONICAL / PR #649 / merge 06a7f8f9d7f36eeb311f7303594f446bfcab9c90 / full matrix + push SUCCESS
+H4_NOTICES_PIN_BUMP_AUTHORIZATION = CLOSED_CANONICAL / PR #650 / merge 0dd53014cdeb1d9cd92f92ea999116644a00ff4e / push checks SUCCESS
+POST_INTAKE_REAUDIT_AUTHORIZATION = MERGED / PR #651 / merge b2d2d0294c43635cc7292107946917c7a68c7645 / legacy-tests + provenance SUCCESS / GOVERNING_AUTHORITY_FOR_THIS_CANDIDATE
+POST_INTAKE_REAUDIT = CURRENT_CANDIDATE / NOT_YET_CLOSED_CANONICAL
 ```
 
-Closure recorded: PR #634 external post-merge proof is bound (merge 84eb89b, verified signature, push run 34800911500 SUCCESS) under PR #635 authority (merge 5450b3d, push run 34802494822 SUCCESS). This post-proof-cycle reconciliation is a candidate under merged PR #644 authority; it cannot certify its own closure and requires exact-head qualification, substantive review, guarded merge, and external post-merge proof.
+Closure recorded: PR #634 external post-merge proof is bound (merge 84eb89b, verified signature, push run 34800911500 SUCCESS) under PR #635 authority (merge 5450b3d, push run 34802494822 SUCCESS). Post-proof-cycle reconciliation closed canonical as PR #645 (merge 47e74f6, push run 34934944706 SUCCESS) with the donor intake lineage closed canonical through PR #650. This post-intake re-audit is a candidate under merged PR #651 authority; it cannot certify its own closure and requires exact-head qualification, substantive review, guarded merge, and external post-merge proof.
 
 The re-audited project-wide classification remains:
 
 ```text
-PROVEN_CRITERIA = 11
-PARTIAL_CRITERIA = 12
+PROVEN_CRITERIA = 12
+PARTIAL_CRITERIA = 11
 MISSING_CRITERIA = 0
 NOT_APPLICABLE_CRITERIA = 2
 SEPARATE_AUTHORITY_REQUIRED_CRITERIA = 0
 TOTAL_CRITERIA = 25
 MINIMUM_NEXT_PARTIAL_BLOCKER = O4_PRODUCTION_COMPLETENESS_WITH_CREDENTIAL_GENERALITY
-NEXT_REQUIRED_ACTION = FRESH_POST_PROOF_CYCLE_RECONCILIATION_SUCCESSOR_ANALYSIS
+NEXT_REQUIRED_ACTION = FRESH_POST_INTAKE_REAUDIT_SUCCESSOR_ANALYSIS
 SUCCESSOR_IMPLEMENTATION = NOT_AUTHORIZED_BY_THIS_RECONCILIATION
 PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-The counts are recomputed from the rows in the post-proof-cycle audit: PROVEN rows are IMMUTABLE_PATCH_PROPOSALS, K2_BACKED_EXACT_MUTATION, VERIFICATION_REVIEW_K5_DONE_GATE_INTEGRATION, NO_BROAD_SHELL_OR_GITHUB_CREDENTIAL_ESCAPE_HATCH, and master-plan rows 1, 4, 5, 6, 8, 9, 10 (4 + 7 = 11); PARTIAL rows are the remaining nine OpenReview rows including PROVIDER_NEUTRAL_READ_ONLY_REVIEW with its narrowed live-receipt-closed boundary and EXACT_DONOR_MAPPING_FOR_COPIED_OR_DERIVED_CODE with its attestation-closed but 11-PORT-gap-open boundary, plus master-plan rows 2, 3, 7 (9 + 3 = 12). Exactly one row changed: the escape-hatch proof (PR #639, full-matrix plus push SUCCESS) closed that row's exact stated boundary with zero inherited credit; the donor attestation (PR #643) narrowed but did not upgrade its row because 11 PORT files remain pinned gaps; and no row was upgraded merely because re-sequencing was authorized or the O4 procedure was prepared. O2, O3, the O1 issue-comment extension, and O4-A through O4-O provide stronger canonical foundations: O4-H proves bounded end-to-end composition only under synthetic transport, O4-I merges the bounded production caller with the same synthetic-transport qualification, the O4-J attempt was blocked before process start with zero live writes, the O4-K proof was blocked after one POST with exact causal mechanism not proven, O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head through the already-authenticated `gh api` session, O4-N canonicalizes the adverse second-POST outcome with its time-derived slot-identity root cause, and O4-O closes the bounded deterministic slot-and-receipt-identity fix proven under injected fake transport with synthetic credentials only. Wider persistence, deployed ingress, skill execution, credential-general live write authority, new provider/model admission, and complete production product semantics remain unproven.
+The counts are recomputed from the rows in the post-intake audit: PROVEN rows are IMMUTABLE_PATCH_PROPOSALS, K2_BACKED_EXACT_MUTATION, VERIFICATION_REVIEW_K5_DONE_GATE_INTEGRATION, NO_BROAD_SHELL_OR_GITHUB_CREDENTIAL_ESCAPE_HATCH, EXACT_DONOR_MAPPING_FOR_COPIED_OR_DERIVED_CODE, and master-plan rows 1, 4, 5, 6, 8, 9, 10 (5 + 7 = 12); PARTIAL rows are the remaining eight OpenReview rows including PROVIDER_NEUTRAL_READ_ONLY_REVIEW with its narrowed live-receipt-closed boundary, plus master-plan rows 2, 3, 7 (8 + 3 = 11). Exactly one row changed: the donor attestation (PR #643) plus gap coverage (PR #649, full-matrix plus push SUCCESS, all 11 PORT files candidate-covered, pin set emptied) closed that row's exact stated boundary with zero inherited credit; the upgrade rests on mapping completeness with the candidate-status caveat recorded, and no other row was upgraded. O2, O3, the O1 issue-comment extension, and O4-A through O4-O provide stronger canonical foundations: O4-H proves bounded end-to-end composition only under synthetic transport, O4-I merges the bounded production caller with the same synthetic-transport qualification, the O4-J attempt was blocked before process start with zero live writes, the O4-K proof was blocked after one POST with exact causal mechanism not proven, O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head through the already-authenticated `gh api` session, O4-N canonicalizes the adverse second-POST outcome with its time-derived slot-identity root cause, and O4-O closes the bounded deterministic slot-and-receipt-identity fix proven under injected fake transport with synthetic credentials only. Wider persistence, deployed ingress, skill execution, credential-general live write authority, new provider/model admission, and complete production product semantics remain unproven.
 
-The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-O. O4-H composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport; O4-I merges the bounded production caller with synthetic-transport qualification and caller-injected credential boundary; the O4-J attempt was blocked before process start with zero live writes; the O4-K proof was blocked after one POST with exact causal mechanism not proven; O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head (review 5189105929, exact marker count 1, stray review absent) with credential-path generality explicitly not proven; O4-N canonicalizes the adverse second-POST outcome with its time-derived slot-identity root cause; and O4-O closes the bounded deterministic slot-and-receipt-identity fix with time-only stability and already-present recovery proven under injected fake transport. The frontier then advances through governance: PR #636 records the post-O4-O proof closure; PR #637 canonically authorizes founder-ordered dependency re-sequencing; PRs #638-#639 close the dedicated escape-hatch proof; PRs #640-#641 prepare without executing the O4 credential-generality live-proof procedure; and PRs #642-#643 close the donor-mapping attestation with 11 PORT gaps pinned. Production completeness with credential generality remains the earliest remaining O4 technical dependency, but under re-sequencing it no longer globally blocks independent criteria, each of which still requires its own bounded authorization with O4 revisited before final completion if still applicable.
+The bounded implementation-sequence frontier has advanced through O1/O2/O3 and O4-A through O4-O. O4-H composes the O4-B through O4-G chain in fixed dependency order with per-stage validation and verbatim terminal evidence proven under synthetic transport; O4-I merges the bounded production caller with synthetic-transport qualification and caller-injected credential boundary; the O4-J attempt was blocked before process start with zero live writes; the O4-K proof was blocked after one POST with exact causal mechanism not proven; O4-L/O4-M prove bounded live COMMENT publication plus idempotent already-present recovery for the exact PR 163 head (review 5189105929, exact marker count 1, stray review absent) with credential-path generality explicitly not proven; O4-N canonicalizes the adverse second-POST outcome with its time-derived slot-identity root cause; and O4-O closes the bounded deterministic slot-and-receipt-identity fix with time-only stability and already-present recovery proven under injected fake transport. The frontier then advances through governance: PR #636 records the post-O4-O proof closure; PR #637 canonically authorizes founder-ordered dependency re-sequencing; PRs #638-#639 close the dedicated escape-hatch proof; PRs #640-#641 prepare without executing the O4 credential-generality live-proof procedure; and PRs #642-#643 close the donor-mapping attestation with 11 PORT gaps pinned. The frontier then advances through intake: PR #645 closes the post-proof-cycle reconciliation; PR #646 authorizes the 11-gap intake; PRs #647-#648 pin the six PORT-donor upstreams; PR #649 lands 11 candidate ledger records with full-matrix plus push SUCCESS, adds the spec-kit notice anchor, and empties the attestation pin set; PR #650 authorizes the consequential H4 pin bumps. All PORT dispositions are now ledger-covered with mapping completeness mechanically enforced. Production completeness with credential generality remains the earliest remaining O4 technical dependency, but under re-sequencing it no longer globally blocks independent criteria, each of which still requires its own bounded authorization with O4 revisited before final completion if still applicable.
 
 Broader state remains:
 
@@ -329,7 +343,7 @@ PROJECT_COMPLETION = NOT_ESTABLISHED
 WAIVER = NO
 ```
 
-After this post-proof-cycle reconciliation receives external proof, only fresh evidence-driven successor analysis may authorize production-completeness scoping (under re-sequencing, independent criteria may each proceed via their own bounded authorization without waiting for the O4 founder-secret live proof, which remains required before final completion if still applicable), new provider/model admission, admitted-sandbox work, or release scoping. No ambient GitHub credential, broad authenticated shell, persistence, GlitchTip adoption, O5 sandbox work, phase-overall closure, release, or project-completion authority follows by implication.
+After this post-intake re-audit receives external proof, only fresh evidence-driven successor analysis may authorize production-completeness scoping (under re-sequencing, independent criteria may each proceed via their own bounded authorization without waiting for the O4 founder-secret live proof, which remains required before final completion if still applicable), new provider/model admission, admitted-sandbox work, or release scoping. No ambient GitHub credential, broad authenticated shell, persistence, GlitchTip adoption, O5 sandbox work, phase-overall closure, release, or project-completion authority follows by implication.
 
 ---
 
@@ -656,4 +670,4 @@ PROVEN_READY != PROJECT_COMPLETION
 EVIDENCE_BINDING != AUTHORITY_TRANSFER
 ```
 
-After this reconciliation becomes externally post-merge proven, the next action is fresh evidence-driven successor-authority analysis only, conducted under the founder-authorized re-sequencing (PR #637) so independent criteria may each proceed via their own bounded authorization. No package/version change, `--version`, P8-R5+, P9-R3+, release, publication, deployment, or project-completion authority may be inferred from this view or reconciliation closure.
+After this re-audit becomes externally post-merge proven, the next action is fresh evidence-driven successor-authority analysis only, conducted under the founder-authorized re-sequencing (PR #637) so independent criteria may each proceed via their own bounded authorization. No package/version change, `--version`, P8-R5+, P9-R3+, release, publication, deployment, or project-completion authority may be inferred from this view or reconciliation closure.
